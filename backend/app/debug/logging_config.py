@@ -11,6 +11,8 @@ from .correlation import get_correlation_context
 class JSONFormatter(logging.Formatter):
     """Formats log records as JSON lines."""
 
+    _STANDARD_ATTRS = frozenset(logging.LogRecord("", 0, "", 0, "", (), None).__dict__.keys())
+
     def format(self, record: logging.LogRecord) -> str:
         context = get_correlation_context()
 
@@ -28,9 +30,8 @@ class JSONFormatter(logging.Formatter):
         }
 
         # Include any extra fields attached to the record
-        standard_attrs = logging.LogRecord("", 0, "", 0, "", (), None).__dict__.keys()
         for key, value in record.__dict__.items():
-            if key not in standard_attrs and key not in ("message", "msg"):
+            if key not in self._STANDARD_ATTRS and key not in ("message", "msg"):
                 entry["extra"][key] = value
 
         if record.exc_info and record.exc_info[0] is not None:
@@ -42,7 +43,7 @@ class JSONFormatter(logging.Formatter):
         return json.dumps(entry, default=str)
 
 
-def setup_logging(level: str = "DEBUG") -> None:
+def setup_logging(level: str = "DEBUG", module_levels: dict[str, str] | None = None) -> None:
     """Configure root logger with JSONFormatter on a StreamHandler."""
     root = logging.getLogger()
     root.setLevel(getattr(logging, level.upper(), logging.DEBUG))
@@ -55,6 +56,11 @@ def setup_logging(level: str = "DEBUG") -> None:
     root.addHandler(handler)
 
     # Set specific module log levels
-    logging.getLogger("app.agents").setLevel(logging.DEBUG)
-    logging.getLogger("app.db").setLevel(logging.DEBUG)
-    logging.getLogger("app.middleware").setLevel(logging.INFO)
+    default_module_levels = {
+        "app.agents": "DEBUG",
+        "app.db": "DEBUG",
+        "app.middleware": "INFO",
+    }
+    effective_levels = {**default_module_levels, **(module_levels or {})}
+    for module, lvl in effective_levels.items():
+        logging.getLogger(module).setLevel(getattr(logging, lvl.upper(), logging.DEBUG))

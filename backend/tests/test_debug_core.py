@@ -22,6 +22,11 @@ from app.debug.logging_config import JSONFormatter, setup_logging
 
 
 class TestCorrelation:
+    def setup_method(self):
+        set_correlation_id("")
+        set_user_id("")
+        set_pet_id("")
+
     def test_generate_correlation_id_format(self):
         cid = generate_correlation_id()
         assert re.match(r"^req-[0-9a-f]{12}$", cid)
@@ -112,6 +117,12 @@ class TestJSONFormatter:
         assert root.level == logging.WARNING
         assert len(root.handlers) == 1
         assert isinstance(root.handlers[0].formatter, JSONFormatter)
+
+    def test_setup_logging_module_levels(self):
+        setup_logging(module_levels={"app.agents": "DEBUG", "app.db": "DEBUG", "app.middleware": "INFO"})
+        assert logging.getLogger("app.agents").level == logging.DEBUG
+        assert logging.getLogger("app.db").level == logging.DEBUG
+        assert logging.getLogger("app.middleware").level == logging.INFO
 
 
 # --- middleware.py tests ---

@@ -22,7 +22,7 @@ class CorrelationMiddleware(BaseHTTPMiddleware):
     """Generates a correlation ID for each request and sets context vars."""
 
     async def dispatch(self, request: Request, call_next) -> Response:
-        cid = generate_correlation_id()
+        cid = request.headers.get("X-Correlation-ID") or generate_correlation_id()
         set_correlation_id(cid)
 
         # Read user ID from request header if present
@@ -72,14 +72,15 @@ class ErrorCaptureMiddleware(BaseHTTPMiddleware):
             try:
                 from .error_capture import capture_error, save_snapshot
 
-                capture_error(exc)
-                save_snapshot()
-            except ImportError:
-                logger.warning("error_capture module not available, skipping snapshot")
+                snapshot = capture_error(exc)
+                save_snapshot(snapshot)
+            except Exception:
+                logger.warning("error_capture module not available or failed, skipping snapshot")
 
             return JSONResponse(
                 status_code=500,
                 content={
+                    # TODO: In production, replace str(exc) with "Internal server error" to avoid leaking internals
                     "error": str(exc),
                     "correlation_id": cid,
                 },
