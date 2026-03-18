@@ -1,0 +1,17 @@
+[project]
+name = "petpal-backend"
+version = "0.1.0"
+description = "PetPal - AI Pet Health Assistant Backend"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.115.0",
+    "uvicorn>=0.34.0",
+    "click>=8.1.0",
+]
+
+[project.scripts]
+debug = "app.debug.cli:cli"
+
+[build-system]
+requires = ["setuptools>=75.0"]
+build-backend = "setuptools.backends._legacy:_Backend"

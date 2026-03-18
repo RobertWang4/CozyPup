@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+*.egg-info/
+
+# Node
+node_modules/
+dist/
+
+# Logs (keep structure, ignore content)
+backend/logs/error_snapshots/*.json
+
+# Generated tests tracked separately
+# backend/tests/generated/*.py
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+
+# Environment
+.env
+.env.local
