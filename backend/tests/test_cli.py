@@ -50,6 +50,8 @@ class TestTrace:
         assert "req-cli-001" in result.output
         assert "ValueError" in result.output
         assert "something broke" in result.output
+        assert "POST /api/pets" in result.output
+        assert "Traceback ..." in result.output
 
     def test_trace_not_found(self, tmp_path, monkeypatch):
         monkeypatch.setattr("app.debug.cli.SNAPSHOTS_DIR", tmp_path)
@@ -107,7 +109,8 @@ class TestErrors:
         result = runner.invoke(cli, ["errors", "--last", "2"])
         assert result.exit_code == 0
         lines = [l for l in result.output.strip().split("\n") if l.strip()]
-        assert len(lines) == 2
+        # 2 header lines + 2 data lines
+        assert len(lines) == 4
 
     def test_no_snapshots(self, tmp_path, monkeypatch):
         monkeypatch.setattr("app.debug.cli.SNAPSHOTS_DIR", tmp_path)
@@ -180,10 +183,15 @@ class TestReplay:
         snap = _make_snapshot()
         _write_snapshot(snap_dir, snap)
 
+        def raise_connect_error(*args, **kwargs):
+            import httpx
+            raise httpx.ConnectError("Connection refused")
+
+        monkeypatch.setattr("httpx.Client.request", raise_connect_error)
+
         runner = CliRunner()
         result = runner.invoke(cli, ["replay", "req-cli-001"])
         assert result.exit_code == 0
-        # Should fail to connect since no server is running
         assert "Connection failed" in result.output
 
 
@@ -250,7 +258,8 @@ class TestSummary:
         result = runner.invoke(cli, ["summary", "--since", "1h"])
         assert result.exit_code == 0
         lines = [l for l in result.output.strip().split("\n") if "|" in l]
-        assert len(lines) == 1
+        # 1 header line + 1 data line
+        assert len(lines) == 2
 
 
 class TestParseSince:

@@ -6,6 +6,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import click
+import httpx
 
 from .error_capture import SNAPSHOTS_DIR, ErrorSnapshot, load_snapshot
 from .test_generator import generate_test_file
@@ -35,6 +36,19 @@ def trace(correlation_id: str):
     click.echo(f"  Error type: {snap.error_type}")
     click.echo(f"  Message:    {snap.error_message}")
 
+    request_data = snap.request_data
+    if request_data:
+        method = request_data.get("method", "GET").upper()
+        path = request_data.get("path", "/")
+        body = request_data.get("body")
+        click.echo(f"  Request:    {method} {path}")
+        click.echo(f"  Body:       {body}")
+
+    if snap.traceback:
+        click.echo("")
+        click.echo("Traceback:")
+        click.echo(snap.traceback)
+
 
 @cli.command()
 @click.option("--module", default=None, help="Filter by module path")
@@ -52,6 +66,9 @@ def errors(module: str | None, last: int):
     if not snapshots:
         click.echo("No error snapshots found.")
         return
+
+    click.echo("TIMESTAMP            | CATEGORY   | MODULE                  | TYPE            | MESSAGE                                                     | FP")
+    click.echo("-" * 80)
 
     for snap in snapshots:
         ts = _format_ts(snap.timestamp)
@@ -79,7 +96,8 @@ def generate_test_cmd(correlation_id: str):
 
 @cli.command()
 @click.argument("correlation_id")
-def replay(correlation_id: str):
+@click.option("--url", default="http://localhost:8000", help="Base URL for replay (default: http://localhost:8000)")
+def replay(correlation_id: str, url: str):
     """Replay a request using its original data from the snapshot."""
     try:
         snap = load_snapshot(correlation_id)
@@ -92,12 +110,10 @@ def replay(correlation_id: str):
     path = request_data.get("path", "/")
     body = request_data.get("body")
 
-    import httpx
-
-    url = f"http://localhost:8000{path}"
+    target = url + path
     try:
         with httpx.Client() as client:
-            response = client.request(method, url, json=body)
+            response = client.request(method, target, json=body)
         click.echo(f"Status: {response.status_code}")
         click.echo(response.text)
     except httpx.ConnectError:
@@ -120,6 +136,9 @@ def summary(since: str):
     if not snapshots:
         click.echo("No errors in the given time window.")
         return
+
+    click.echo("FP       | COUNT | CATEGORY   | MODULE                  | LAST SEEN           | MESSAGE")
+    click.echo("-" * 80)
 
     groups: dict[str, list[ErrorSnapshot]] = {}
     for snap in snapshots:
