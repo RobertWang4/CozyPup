@@ -54,7 +54,8 @@ async def test_execute_logs_agent_error_and_reraises(caplog):
 async def test_pet_id_set_in_contextvar():
     agent = EchoAgent()
     await agent.execute("hello", {"pet_id": "pet-123"})
-    assert get_pet_id() == "pet-123"
+    # pet_id is reset after execute completes (no leakage)
+    assert get_pet_id() == ""
 
 
 @pytest.mark.asyncio
@@ -62,3 +63,10 @@ async def test_execute_returns_run_result():
     agent = EchoAgent()
     result = await agent.execute("hello", {})
     assert result == {"result": "ok"}
+
+
+def test_subclass_without_name_raises():
+    with pytest.raises(TypeError, match=r"must define a class-level .name"):
+        class UnnamedAgent(BaseAgent):
+            async def _run(self, message, context, **kwargs):
+                return {}

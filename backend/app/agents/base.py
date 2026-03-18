@@ -10,6 +10,13 @@ class BaseAgent(ABC):
 
     name: str  # Override in subclass, e.g. name = "record_agent"
 
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        # Skip check for abstract subclasses (ABCs themselves don't need name)
+        if not getattr(cls, "__abstractmethods__", None):
+            if not isinstance(getattr(cls, "name", None), str):
+                raise TypeError(f"{cls.__name__} must define a class-level `name: str` attribute")
+
     def __init__(self):
         self.logger = logging.getLogger(f"app.agents.{self.name}")
 
@@ -18,8 +25,9 @@ class BaseAgent(ABC):
         start = time.monotonic()
 
         # Set pet_id in ContextVar if context contains it
+        token = None
         if "pet_id" in context:
-            set_pet_id(str(context["pet_id"]))
+            token = set_pet_id(str(context["pet_id"]))
 
         # Log agent start
         self.logger.debug(
@@ -58,6 +66,10 @@ class BaseAgent(ABC):
                 exc_info=True,
             )
             raise
+        finally:
+            if token is not None:
+                from app.debug.correlation import reset_pet_id
+                reset_pet_id(token)
 
     @abstractmethod
     async def _run(self, message: str, context: dict, **kwargs) -> dict:

@@ -32,8 +32,14 @@ def get_pet_id() -> str:
     return pet_id_var.get()
 
 
-def set_pet_id(pid: str) -> None:
-    pet_id_var.set(pid)
+def set_pet_id(pid: str):
+    """Set pet_id ContextVar and return the Token for later reset."""
+    return pet_id_var.set(pid)
+
+
+def reset_pet_id(token) -> None:
+    """Reset pet_id ContextVar to its previous value using a Token."""
+    pet_id_var.reset(token)
 
 
 def get_correlation_context() -> dict:
