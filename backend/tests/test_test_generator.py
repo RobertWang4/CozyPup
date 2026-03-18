@@ -86,6 +86,16 @@ class TestGenerateExternalAPITest:
         code = generate_test(snap)
         compile(code, "<generated>", "exec")
 
+    def test_contains_httpx_reference(self):
+        snap = _make_snapshot(
+            category="external_api",
+            error_type="ExternalAPIError",
+            error_message="service unavailable",
+            fingerprint="cccc111122223333",
+        )
+        code = generate_test(snap)
+        assert "httpx" in code
+
 
 class TestGenerateDefaultTest:
     def test_produces_valid_python(self):
