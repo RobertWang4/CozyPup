@@ -1,3 +1,5 @@
+import os
+
 from fastapi import FastAPI
 from app.debug.logging_config import setup_logging
 from app.debug.middleware import (
@@ -5,7 +7,7 @@ from app.debug.middleware import (
     RequestLoggingMiddleware,
     ErrorCaptureMiddleware,
 )
-from app.debug.error_types import PetPalError, ErrorCategory
+from app.debug.error_types import PetPalError
 
 # Set up JSON logging first
 setup_logging()
@@ -23,10 +25,13 @@ async def health():
     return {"status": "ok"}
 
 
-@app.get("/debug/test-error")
-async def test_error():
-    """Dev-only endpoint to test error capture pipeline."""
-    raise PetPalError(
-        "Test error for debug pipeline verification",
-        context={"triggered_by": "test-error endpoint"},
-    )
+# Only register dev-only routes outside production
+if os.getenv("APP_ENV") != "production":
+
+    @app.get("/debug/test-error")
+    async def test_error():
+        """Dev-only endpoint to test error capture pipeline."""
+        raise PetPalError(
+            "Test error for debug pipeline verification",
+            context={"triggered_by": "test-error endpoint"},
+        )

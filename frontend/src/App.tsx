@@ -1,10 +1,13 @@
+import { useEffect } from "react";
 import { ErrorBoundary } from "./debug/ErrorBoundary";
 import { createLogger } from "./debug/logger";
 
 const logger = createLogger("App");
 
 export function App() {
-  logger.info("App mounted");
+  useEffect(() => {
+    logger.info("App mounted");
+  }, []);
 
   return (
     <ErrorBoundary>
