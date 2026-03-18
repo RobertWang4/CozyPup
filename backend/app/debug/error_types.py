@@ -1,6 +1,7 @@
 """Error hierarchy for PetPal debug system."""
 
 import inspect
+import os
 from enum import Enum
 
 
@@ -24,9 +25,9 @@ class PetPalError(Exception):
 
     def _infer_module(self) -> str:
         """Walk the call stack to find the first frame outside this file."""
-        this_file = __file__
+        this_file = os.path.abspath(__file__)
         for frame_info in inspect.stack():
-            if frame_info.filename != this_file:
+            if os.path.abspath(frame_info.filename) != this_file:
                 frame_module = frame_info.frame.f_globals.get("__name__", "")
                 if frame_module:
                     return frame_module

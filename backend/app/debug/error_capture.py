@@ -2,7 +2,7 @@
 
 import json
 import traceback as tb
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -32,6 +32,7 @@ def capture_error(
     db_context: dict = None,
 ) -> ErrorSnapshot:
     """Create an ErrorSnapshot from an exception."""
+    # Lazy imports to avoid circular dependency (correlation imports from debug, debug from correlation)
     from .correlation import get_correlation_context, get_correlation_id
     from .fingerprint import compute_fingerprint
     from .error_types import ErrorCategory, PetPalError
@@ -54,7 +55,7 @@ def capture_error(
         module=module,
         error_type=error_type,
         error_message=error_message,
-        traceback=tb.format_exc(),
+        traceback="".join(tb.format_exception(type(exc), exc, exc.__traceback__)),
         fingerprint=fingerprint,
         request_data=request_data or {},
         correlation_context=get_correlation_context(),

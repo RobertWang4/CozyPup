@@ -6,7 +6,7 @@ import re
 # UUID pattern (various formats)
 _UUID_RE = re.compile(
     r"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
-    r"|[0-9a-fA-F]{32}"
+    r"|\b[0-9a-fA-F]{32}\b"
 )
 # Standalone numbers (integers and floats)
 _NUM_RE = re.compile(r"\b\d+(?:\.\d+)?\b")

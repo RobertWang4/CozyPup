@@ -161,7 +161,7 @@ class TestCaptureError:
         assert snap.error_message == "LLM timeout"
         assert snap.request_data == {"path": "/api/chat"}
         assert len(snap.fingerprint) == 16
-        assert "AgentError" in snap.traceback or "LLM timeout" in snap.traceback
+        assert "AgentError" in snap.traceback and "LLM timeout" in snap.traceback
 
     @patch("app.debug.correlation.get_correlation_id", return_value="req-plain")
     @patch("app.debug.correlation.get_correlation_context", return_value={
