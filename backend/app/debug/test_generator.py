@@ -83,6 +83,7 @@ def _generate_database_test(snapshot: ErrorSnapshot) -> str:
 
     lines = [
         "import pytest",
+        "from unittest.mock import MagicMock, patch",
         "",
         "from app.debug.error_types import DatabaseError",
         "",
@@ -149,6 +150,7 @@ def _generate_default_test(snapshot: ErrorSnapshot) -> str:
 
     lines = [
         "import pytest",
+        "from unittest.mock import MagicMock, patch",
         "",
         "",
         f"def test_error_{snapshot.fingerprint}():",
