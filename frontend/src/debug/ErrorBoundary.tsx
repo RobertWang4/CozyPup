@@ -48,25 +48,19 @@ export class ErrorBoundary extends React.Component<Props, State> {
       if (this.props.fallback) {
         return this.props.fallback;
       }
-      return React.createElement(
-        "div",
-        { role: "alert", style: { padding: "1rem" } },
-        React.createElement("h2", null, "Something went wrong"),
-        React.createElement(
-          "pre",
-          { style: { whiteSpace: "pre-wrap" } },
-          this.state.error?.message,
-        ),
-        React.createElement(
-          "button",
-          { onClick: this.handleCopyLogs, type: "button" },
-          "Copy Debug Logs",
-        ),
-        React.createElement(
-          "button",
-          { onClick: this.handleRetry, type: "button" },
-          "Retry",
-        ),
+      return (
+        <div role="alert" style={{ padding: "1rem" }}>
+          <h2>Something went wrong</h2>
+          <pre style={{ whiteSpace: "pre-wrap" }}>
+            {this.state.error?.message}
+          </pre>
+          <button onClick={this.handleCopyLogs} type="button">
+            Copy Debug Logs
+          </button>
+          <button onClick={this.handleRetry} type="button">
+            Retry
+          </button>
+        </div>
       );
     }
     return this.props.children;

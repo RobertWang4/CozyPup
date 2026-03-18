@@ -16,6 +16,10 @@ export function setCorrelationId(id: string): void {
   currentCorrelationId = id;
 }
 
+export function clearCorrelationId(): void {
+  currentCorrelationId = undefined;
+}
+
 function addEntry(
   level: LogEntry["level"],
   module: string,
@@ -35,6 +39,8 @@ function addEntry(
     logBuffer.shift();
   }
 }
+
+export type Logger = ReturnType<typeof createLogger>;
 
 export function createLogger(module: string) {
   return {
