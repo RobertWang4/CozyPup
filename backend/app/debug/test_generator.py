@@ -5,7 +5,13 @@ from pathlib import Path
 
 from .error_capture import ErrorSnapshot
 
-GENERATED_TESTS_DIR = Path("tests/generated")
+
+def _safe_str(s: str) -> str:
+    """Escape triple-quotes to prevent docstring injection."""
+    return str(s).replace('"""', "'''")
+
+
+GENERATED_TESTS_DIR = Path(__file__).parent.parent.parent / "tests" / "generated"
 
 
 def generate_test(snapshot: ErrorSnapshot) -> str:
@@ -41,10 +47,10 @@ def _docstring_lines(snapshot: ErrorSnapshot) -> str:
     return (
         f'    """Auto-generated from error snapshot.\n'
         f"\n"
-        f"    Correlation ID: {snapshot.correlation_id}\n"
-        f"    Timestamp:      {snapshot.timestamp}\n"
-        f"    Module:         {snapshot.module}\n"
-        f"    Error:          {snapshot.error_type}: {snapshot.error_message}\n"
+        f"    Correlation ID: {_safe_str(snapshot.correlation_id)}\n"
+        f"    Timestamp:      {_safe_str(snapshot.timestamp)}\n"
+        f"    Module:         {_safe_str(snapshot.module)}\n"
+        f"    Error:          {_safe_str(snapshot.error_type)}: {_safe_str(snapshot.error_message)}\n"
         f'    """'
     )
 
@@ -69,7 +75,7 @@ def _generate_agent_test(snapshot: ErrorSnapshot) -> str:
         '    with patch("litellm.acompletion", new_callable=AsyncMock) as mock_llm:',
         "        mock_llm.return_value = mock_response",
         "        with pytest.raises(AgentError):",
-        "            # TODO: call the agent function that triggered this error",
+        "            # TODO: Replace this raise with an actual call to the module under test",
         f"            raise AgentError({snapshot.error_message!r})",
         "",
     ]
@@ -127,7 +133,7 @@ def _generate_external_api_test(snapshot: ErrorSnapshot) -> str:
         "        mock_client.request.return_value = mock_response",
         "",
         "        with pytest.raises(ExternalAPIError):",
-        "            # TODO: call the function that makes the external API request",
+        "            # TODO: Replace this raise with an actual call to the module under test",
         f"            raise ExternalAPIError({snapshot.error_message!r})",
         "",
     ]
