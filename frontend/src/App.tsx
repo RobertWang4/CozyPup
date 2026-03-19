@@ -16,6 +16,7 @@ import { SettingsDrawer } from "./components/SettingsDrawer";
 import { LoginScreen } from "./components/LoginScreen";
 import { DisclaimerModal } from "./components/DisclaimerModal";
 import OnboardingFlow from "./components/OnboardingFlow";
+import { hapticLight } from "./utils/haptics";
 import styles from "./App.module.css";
 
 const logger = createLogger("App");
@@ -29,9 +30,26 @@ export function App() {
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
 
+  const openCalendar = () => {
+    hapticLight();
+    setCalendarOpen(true);
+  };
+  const closeCalendar = () => {
+    hapticLight();
+    setCalendarOpen(false);
+  };
+  const openSettings = () => {
+    hapticLight();
+    setSettingsOpen(true);
+  };
+  const closeSettings = () => {
+    hapticLight();
+    setSettingsOpen(false);
+  };
+
   useSwipe({
-    onSwipeRight: () => setCalendarOpen(true),
-    onSwipeLeft: () => setSettingsOpen(true),
+    onSwipeRight: () => openCalendar(),
+    onSwipeLeft: () => openSettings(),
   });
 
   useEffect(() => {
@@ -68,11 +86,11 @@ export function App() {
   return (
     <ErrorBoundary>
       <div className={styles.app}>
-        <CalendarDrawer open={calendarOpen} onClose={() => setCalendarOpen(false)} />
-        <SettingsDrawer open={settingsOpen} onClose={() => setSettingsOpen(false)} />
+        <CalendarDrawer open={calendarOpen} onClose={closeCalendar} />
+        <SettingsDrawer open={settingsOpen} onClose={closeSettings} />
         <Header
-          onOpenCalendar={() => setCalendarOpen(true)}
-          onOpenSettings={() => setSettingsOpen(true)}
+          onOpenCalendar={openCalendar}
+          onOpenSettings={openSettings}
         />
         {emergency && (
           <EmergencyBanner
@@ -83,7 +101,11 @@ export function App() {
             onDismiss={dismissEmergency}
           />
         )}
-        <ChatStream messages={messages} isStreaming={isStreaming} />
+        <ChatStream
+          messages={messages}
+          isStreaming={isStreaming}
+          onRecordCardClick={() => openCalendar()}
+        />
         <Disclaimer />
         {isNative ? (
           <div className={styles.nativeBarSpacer} />

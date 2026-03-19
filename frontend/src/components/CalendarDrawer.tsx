@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect, useRef } from "react";
-import { X, ChevronLeft, ChevronRight, Pencil, Trash2, Check } from "lucide-react";
+import { X, ChevronLeft, ChevronRight, Pencil, Trash2, Check, Calendar } from "lucide-react";
+import { EmptyState } from "./EmptyState";
 import {
   getCalendarDays,
   MONTH_NAMES,
@@ -273,12 +274,21 @@ export function CalendarDrawer({ open, onClose }: CalendarDrawerProps) {
           })}
         </div>
 
+        {/* Empty state when no events in month */}
+        {!selectedDay && monthEvents.length === 0 && (
+          <EmptyState
+            icon={Calendar}
+            title="No events yet"
+            subtitle="Chat with Cozy Pup to start recording health events"
+          />
+        )}
+
         {/* Events for selected day */}
         {selectedDay && (
           <div className={styles.events}>
             <div className={styles.eventsTitle}>{selectedDayTitle}</div>
             {selectedEvents.length === 0 && (
-              <div className={styles.eventsEmpty}>No events</div>
+              <EmptyState icon={Calendar} title="No events on this day" />
             )}
             {selectedEvents.map((evt) => {
               const pet = petMap.get(evt.petId);

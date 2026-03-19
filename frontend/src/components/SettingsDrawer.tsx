@@ -1,10 +1,42 @@
-import { useState } from 'react';
-import { X, Bell, Pill, BarChart3, Shield, FileText, Info, LogOut, ChevronRight, Plus, Dog, Cat, Trash2 } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { X, Bell, Pill, BarChart3, Shield, FileText, Info, LogOut, ChevronRight, Plus, Dog, Cat, Trash2, ArrowLeft } from 'lucide-react';
+import { hapticMedium } from '../utils/haptics';
 import styles from './SettingsDrawer.module.css';
 import { usePets, petStore } from '../stores/petStore';
 import { useAuth, authStore } from '../stores/authStore';
 import PetForm from './PetForm';
 import type { Pet } from '../types/pets';
+
+type SubPage = null | 'privacy' | 'disclaimer' | 'about';
+
+const NOTIF_PREFS_KEY = 'cozypup_notification_prefs';
+
+interface NotificationPrefs {
+  notifications: boolean;
+  medication: boolean;
+  insights: boolean;
+}
+
+function loadNotificationPrefs(): NotificationPrefs {
+  try {
+    const stored = localStorage.getItem(NOTIF_PREFS_KEY);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      return {
+        notifications: parsed.notifications ?? true,
+        medication: parsed.medication ?? true,
+        insights: parsed.insights ?? true,
+      };
+    }
+  } catch {
+    // ignore parse errors
+  }
+  return { notifications: true, medication: true, insights: true };
+}
+
+function saveNotificationPrefs(prefs: NotificationPrefs) {
+  localStorage.setItem(NOTIF_PREFS_KEY, JSON.stringify(prefs));
+}
 
 interface SettingsDrawerProps {
   open: boolean;
@@ -15,6 +47,33 @@ export function SettingsDrawer({ open, onClose }: SettingsDrawerProps) {
   const [notifications, setNotifications] = useState(true);
   const [medication, setMedication] = useState(true);
   const [insights, setInsights] = useState(true);
+  const [subPage, setSubPage] = useState<SubPage>(null);
+
+  // Load notification prefs from localStorage on mount
+  useEffect(() => {
+    const prefs = loadNotificationPrefs();
+    setNotifications(prefs.notifications);
+    setMedication(prefs.medication);
+    setInsights(prefs.insights);
+  }, []);
+
+  function handleToggleNotifications() {
+    const next = !notifications;
+    setNotifications(next);
+    saveNotificationPrefs({ notifications: next, medication, insights });
+  }
+
+  function handleToggleMedication() {
+    const next = !medication;
+    setMedication(next);
+    saveNotificationPrefs({ notifications, medication: next, insights });
+  }
+
+  function handleToggleInsights() {
+    const next = !insights;
+    setInsights(next);
+    saveNotificationPrefs({ notifications, medication, insights: next });
+  }
 
   const [showPetForm, setShowPetForm] = useState(false);
   const [editingPet, setEditingPet] = useState<Pet | null>(null);
@@ -44,6 +103,7 @@ export function SettingsDrawer({ open, onClose }: SettingsDrawerProps) {
 
   function handleDeletePet() {
     if (editingPet && window.confirm('Delete pet?')) {
+      hapticMedium();
       petStore.remove(editingPet.id);
       setShowPetForm(false);
       setEditingPet(null);
@@ -74,7 +134,55 @@ export function SettingsDrawer({ open, onClose }: SettingsDrawerProps) {
           </button>
         </div>
 
-        {showPetForm ? (
+        {subPage !== null ? (
+          <div className={styles.subPage}>
+            <div className={styles.subPageHeader}>
+              <button className={styles.backBtn} onClick={() => setSubPage(null)} aria-label="Back">
+                <ArrowLeft size={18} />
+              </button>
+              <span className={styles.subPageTitle}>
+                {subPage === 'privacy' && 'Privacy Policy'}
+                {subPage === 'disclaimer' && 'Disclaimer'}
+                {subPage === 'about' && 'About'}
+              </span>
+            </div>
+            <div className={styles.subPageContent}>
+              {subPage === 'privacy' && (
+                <>
+                  <h4>Data Collection</h4>
+                  <p>
+                    Cozy Pup collects chat messages and pet profile information you provide
+                    in order to deliver personalized pet care suggestions. This data is stored
+                    locally on your device using browser local storage.
+                  </p>
+                  <h4>Third-Party Services</h4>
+                  <p>
+                    Your messages may be processed by third-party AI services to generate
+                    responses. We do not sell or share your personal data with advertisers.
+                  </p>
+                  <h4>Your Rights</h4>
+                  <p>
+                    You can delete all your data at any time by logging out. This will remove
+                    your pet profiles, chat history, and preferences from local storage.
+                  </p>
+                </>
+              )}
+              {subPage === 'disclaimer' && (
+                <p>
+                  AI suggestions are for reference only and do not constitute veterinary
+                  advice. In emergencies, please contact a veterinarian immediately.
+                </p>
+              )}
+              {subPage === 'about' && (
+                <div className={styles.aboutContent}>
+                  <h2 className={styles.aboutName}>Cozy Pup</h2>
+                  <p className={styles.aboutVersion}>Version 1.0.0</p>
+                  <p className={styles.aboutTagline}>Your pet's personal butler</p>
+                </div>
+              )}
+            </div>
+          </div>
+        ) : showPetForm ? (
           <div className={styles.section}>
             <div className={styles.sectionLabel}>
               {editingPet ? 'Edit Pet' : 'Add Pet'}
@@ -151,7 +259,7 @@ export function SettingsDrawer({ open, onClose }: SettingsDrawerProps) {
                 </div>
                 <button
                   className={`${styles.toggle} ${notifications ? styles.toggleOn : ''}`}
-                  onClick={() => setNotifications(!notifications)}
+                  onClick={handleToggleNotifications}
                   role="switch"
                   aria-checked={notifications}
                   aria-label="Push Notifications"
@@ -171,7 +279,7 @@ export function SettingsDrawer({ open, onClose }: SettingsDrawerProps) {
                 </div>
                 <button
                   className={`${styles.toggle} ${medication ? styles.toggleOn : ''}`}
-                  onClick={() => setMedication(!medication)}
+                  onClick={handleToggleMedication}
                   role="switch"
                   aria-checked={medication}
                   aria-label="Medication Reminders"
@@ -191,7 +299,7 @@ export function SettingsDrawer({ open, onClose }: SettingsDrawerProps) {
                 </div>
                 <button
                   className={`${styles.toggle} ${insights ? styles.toggleOn : ''}`}
-                  onClick={() => setInsights(!insights)}
+                  onClick={handleToggleInsights}
                   role="switch"
                   aria-checked={insights}
                   aria-label="Health Insights"
@@ -204,7 +312,7 @@ export function SettingsDrawer({ open, onClose }: SettingsDrawerProps) {
             {/* Legal */}
             <div className={styles.section}>
               <div className={styles.sectionLabel}>Legal</div>
-              <div className={styles.settingRow} style={{ cursor: 'pointer' }}>
+              <div className={styles.settingRow} style={{ cursor: 'pointer' }} onClick={() => setSubPage('privacy')}>
                 <div className={styles.settingLeft}>
                   <div className={`${styles.settingIcon} ${styles.iconPrivacy}`}>
                     <Shield size={18} />
@@ -213,7 +321,7 @@ export function SettingsDrawer({ open, onClose }: SettingsDrawerProps) {
                 </div>
                 <ChevronRight size={14} className={styles.chevron} />
               </div>
-              <div className={styles.settingRow} style={{ cursor: 'pointer' }}>
+              <div className={styles.settingRow} style={{ cursor: 'pointer' }} onClick={() => setSubPage('disclaimer')}>
                 <div className={styles.settingLeft}>
                   <div className={`${styles.settingIcon} ${styles.iconAbout}`}>
                     <FileText size={18} />
@@ -222,7 +330,7 @@ export function SettingsDrawer({ open, onClose }: SettingsDrawerProps) {
                 </div>
                 <ChevronRight size={14} className={styles.chevron} />
               </div>
-              <div className={styles.settingRow} style={{ cursor: 'pointer' }}>
+              <div className={styles.settingRow} style={{ cursor: 'pointer' }} onClick={() => setSubPage('about')}>
                 <div className={styles.settingLeft}>
                   <div className={`${styles.settingIcon} ${styles.iconAbout}`}>
                     <Info size={18} />

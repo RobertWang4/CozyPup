@@ -18,7 +18,7 @@ export function useChat() {
     }
   }, [messages]);
 
-  const sendMessage = useCallback(async (text: string) => {
+  const sendMessage = useCallback(async (text: string, location?: { lat: number; lng: number }) => {
     if (isStreaming || !text.trim()) return;
 
     const userMsg: ChatMessage = {
@@ -49,6 +49,7 @@ export function useChat() {
         body: JSON.stringify({
           message: text.trim(),
           session_id: sessionId,
+          ...(location && { location }),
         }),
         signal: controller.signal,
       });
