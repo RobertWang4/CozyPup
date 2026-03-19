@@ -18,8 +18,10 @@ struct OnboardingView: View {
                 .padding(.top, 60)
 
                 PetFormView { name, species, breed, birthday, weight in
-                    petStore.add(name: name, species: species, breed: breed,
-                                 birthday: birthday, weight: weight)
+                    Task {
+                        await petStore.add(name: name, species: species, breed: breed,
+                                           birthday: birthday, weight: weight)
+                    }
                 }
                 .padding(.horizontal, 24)
             }

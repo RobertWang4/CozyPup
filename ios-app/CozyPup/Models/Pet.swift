@@ -24,6 +24,14 @@ struct Pet: Identifiable, Codable, Equatable {
 
     var color: Color { Color(hex: colorHex) }
 
+    enum CodingKeys: String, CodingKey {
+        case id, name, species, breed, birthday, weight
+        case avatarUrl = "avatar_url"
+        case colorHex = "color_hex"
+        case createdAt = "created_at"
+    }
+
+    // Local creation
     init(name: String, species: Species, breed: String, birthday: String?, weight: Double?, colorIndex: Int) {
         self.id = UUID().uuidString
         self.name = name

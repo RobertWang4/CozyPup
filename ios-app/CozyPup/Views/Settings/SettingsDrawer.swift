@@ -3,7 +3,7 @@ import SwiftUI
 struct SettingsDrawer: View {
     @EnvironmentObject var auth: AuthStore
     @EnvironmentObject var petStore: PetStore
-    @Environment(\.dismiss) var dismiss
+    @Binding var isPresented: Bool
 
     @State private var notifications = true
     @State private var medReminders = true
@@ -95,7 +95,7 @@ struct SettingsDrawer: View {
                     Button(role: .destructive) {
                         Haptics.medium()
                         auth.logout()
-                        dismiss()
+                        withAnimation(.easeInOut(duration: 0.3)) { isPresented = false }
                     } label: {
                         Label("Log Out", systemImage: "rectangle.portrait.and.arrow.right")
                     }
@@ -108,7 +108,7 @@ struct SettingsDrawer: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button { dismiss() } label: {
+                    Button { withAnimation(.easeInOut(duration: 0.3)) { isPresented = false } } label: {
                         Image(systemName: "xmark")
                             .font(.system(size: 14, weight: .semibold))
                             .foregroundColor(Tokens.textSecondary)
@@ -122,8 +122,10 @@ struct SettingsDrawer: View {
             .sheet(item: $editingPet) { pet in
                 NavigationStack {
                     PetFormView(editingPet: pet) { name, species, breed, birthday, weight in
-                        petStore.update(pet.id, name: name, species: species, breed: breed,
-                                        birthday: birthday, weight: weight)
+                        Task {
+                            await petStore.update(pet.id, name: name, species: species, breed: breed,
+                                                  birthday: birthday, weight: weight)
+                        }
                         editingPet = nil
                     } onCancel: {
                         editingPet = nil
@@ -136,8 +138,10 @@ struct SettingsDrawer: View {
             .sheet(isPresented: $showAddPet) {
                 NavigationStack {
                     PetFormView { name, species, breed, birthday, weight in
-                        petStore.add(name: name, species: species, breed: breed,
-                                     birthday: birthday, weight: weight)
+                        Task {
+                            await petStore.add(name: name, species: species, breed: breed,
+                                               birthday: birthday, weight: weight)
+                        }
                         showAddPet = false
                     } onCancel: {
                         showAddPet = false
@@ -153,7 +157,7 @@ struct SettingsDrawer: View {
             )) {
                 Button("Delete", role: .destructive) {
                     if let pet = showDeleteConfirm {
-                        petStore.remove(pet.id)
+                        Task { await petStore.remove(pet.id) }
                     }
                 }
                 Button("Cancel", role: .cancel) { }

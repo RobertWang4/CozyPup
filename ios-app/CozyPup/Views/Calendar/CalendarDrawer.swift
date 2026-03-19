@@ -3,14 +3,15 @@ import SwiftUI
 struct CalendarDrawer: View {
     @EnvironmentObject var calendarStore: CalendarStore
     @EnvironmentObject var petStore: PetStore
-    @Environment(\.dismiss) var dismiss
+    @Binding var isPresented: Bool
 
     @State private var year: Int
     @State private var month: Int
     @State private var selectedDate: String?
     @State private var filterPetId: String?
 
-    init() {
+    init(isPresented: Binding<Bool>) {
+        _isPresented = isPresented
         let cal = Calendar.current
         let now = Date()
         _year = State(initialValue: cal.component(.year, from: now))
@@ -55,7 +56,7 @@ struct CalendarDrawer: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button { dismiss() } label: {
+                    Button { withAnimation(.easeInOut(duration: 0.3)) { isPresented = false } } label: {
                         Image(systemName: "xmark")
                             .font(.system(size: 14, weight: .semibold))
                             .foregroundColor(Tokens.textSecondary)

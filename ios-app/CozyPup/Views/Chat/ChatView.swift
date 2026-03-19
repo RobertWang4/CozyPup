@@ -72,24 +72,56 @@ struct ChatView: View {
             )
         }
         .background(Tokens.bg.ignoresSafeArea())
-        .sheet(isPresented: $showCalendar) {
-            CalendarDrawer()
+        .overlay {
+            if showCalendar || showSettings {
+                Color.black.opacity(0.3)
+                    .ignoresSafeArea()
+                    .onTapGesture {
+                        withAnimation(.easeInOut(duration: 0.3)) {
+                            showCalendar = false
+                            showSettings = false
+                        }
+                    }
+            }
         }
-        .sheet(isPresented: $showSettings) {
-            SettingsDrawer()
+        .overlay(alignment: .leading) {
+            if showCalendar {
+                CalendarDrawer(isPresented: $showCalendar)
+                    .frame(width: UIScreen.main.bounds.width * 0.85)
+                    .frame(maxHeight: .infinity)
+                    .background(Tokens.bg)
+                    .clipShape(UnevenRoundedRectangle(bottomTrailingRadius: 20, topTrailingRadius: 20))
+                    .shadow(color: .black.opacity(0.15), radius: 10, x: 2)
+                    .ignoresSafeArea()
+                    .transition(.move(edge: .leading))
+            }
+        }
+        .overlay(alignment: .trailing) {
+            if showSettings {
+                SettingsDrawer(isPresented: $showSettings)
+                    .frame(width: UIScreen.main.bounds.width * 0.85)
+                    .frame(maxHeight: .infinity)
+                    .background(Tokens.bg)
+                    .clipShape(UnevenRoundedRectangle(topLeadingRadius: 20, bottomLeadingRadius: 20))
+                    .shadow(color: .black.opacity(0.15), radius: 10, x: -2)
+                    .ignoresSafeArea()
+                    .transition(.move(edge: .trailing))
+            }
         }
         .onChange(of: speech.transcript) {
             if speech.isListening { inputText = speech.transcript }
         }
         .onAppear {
-            calendarStore.seedDemoData(pets: petStore.pets)
-            Task { await location.requestLocation() }
+            Task {
+                await petStore.fetchFromAPI()
+                await location.requestLocation()
+            }
         }
     }
 
     private var header: some View {
         HStack {
-            Button { Haptics.light(); showCalendar = true } label: {
+            Button { Haptics.light(); withAnimation(.easeInOut(duration: 0.3)) { showCalendar = true } } label: {
                 Image(systemName: "calendar")
                     .font(.system(size: 18))
                     .foregroundColor(Tokens.text)
@@ -115,7 +147,7 @@ struct ChatView: View {
 
             Spacer()
 
-            Button { Haptics.light(); showSettings = true } label: {
+            Button { Haptics.light(); withAnimation(.easeInOut(duration: 0.3)) { showSettings = true } } label: {
                 Image(systemName: "gearshape")
                     .font(.system(size: 18))
                     .foregroundColor(Tokens.text)
@@ -135,7 +167,7 @@ struct ChatView: View {
         switch card {
         case .record(let data):
             RecordCard(petName: data.pet_name, date: data.date, category: data.category) {
-                showCalendar = true
+                withAnimation(.easeInOut(duration: 0.3)) { showCalendar = true }
             }
         case .map(let data):
             MapCard(items: data.items)

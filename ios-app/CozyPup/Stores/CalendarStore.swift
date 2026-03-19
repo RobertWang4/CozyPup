@@ -6,23 +6,86 @@ class CalendarStore: ObservableObject {
 
     private let key = "cozypup_calendar"
 
-    init() { load() }
+    init() { loadLocal() }
 
-    func load() {
+    // MARK: - Local cache
+
+    private func loadLocal() {
         guard let data = UserDefaults.standard.data(forKey: key),
               let saved = try? JSONDecoder().decode([CalendarEvent].self, from: data) else { return }
         events = saved
     }
 
-    private func save() {
+    private func saveLocal() {
         if let data = try? JSONEncoder().encode(events) {
             UserDefaults.standard.set(data, forKey: key)
         }
     }
 
+    // MARK: - API
+
+    func fetchMonth(year: Int, month: Int) async {
+        let startDate = String(format: "%04d-%02d-01", year, month)
+        // Calculate last day of month
+        var comps = DateComponents(year: year, month: month + 1, day: 0)
+        let lastDay = Calendar.current.date(from: comps).map { Calendar.current.component(.day, from: $0) } ?? 28
+        let endDate = String(format: "%04d-%02d-%02d", year, month, lastDay)
+
+        do {
+            let fetched: [CalendarEvent] = try await APIClient.shared.request(
+                "GET", "/calendar",
+                query: ["start_date": startDate, "end_date": endDate]
+            )
+            // Merge: replace events in this month range, keep others
+            let prefix = String(format: "%04d-%02d", year, month)
+            events.removeAll { $0.eventDate.hasPrefix(prefix) }
+            events.append(contentsOf: fetched)
+            saveLocal()
+        } catch {
+            print("CalendarStore.fetchMonth failed: \(error)")
+        }
+    }
+
     func add(_ event: CalendarEvent) {
+        // Add locally immediately
         events.append(event)
-        save()
+        saveLocal()
+
+        // Sync to API
+        Task {
+            struct CreateBody: Encodable {
+                let pet_id: String
+                let event_date: String
+                let event_time: String?
+                let title: String
+                let type: String
+                let category: String
+                let raw_text: String
+                let source: String
+            }
+
+            let body = CreateBody(
+                pet_id: event.petId,
+                event_date: event.eventDate,
+                event_time: event.eventTime,
+                title: event.title,
+                type: event.type.rawValue,
+                category: event.category.rawValue,
+                raw_text: event.rawText,
+                source: event.source.rawValue
+            )
+
+            do {
+                let created: CalendarEvent = try await APIClient.shared.request("POST", "/calendar", body: body)
+                // Replace local version with server version (has real ID)
+                if let idx = events.firstIndex(where: { $0.id == event.id }) {
+                    events[idx] = created
+                    saveLocal()
+                }
+            } catch {
+                print("CalendarStore.add API sync failed: \(error)")
+            }
+        }
     }
 
     func update(_ id: String, title: String? = nil, category: EventCategory? = nil,
@@ -33,13 +96,46 @@ class CalendarStore: ObservableObject {
         if let d = eventDate { events[idx].eventDate = d }
         if let t = eventTime { events[idx].eventTime = t }
         events[idx].edited = true
-        save()
+        saveLocal()
+
+        // Sync to API
+        Task {
+            struct UpdateBody: Encodable {
+                let title: String?
+                let category: String?
+                let event_date: String?
+                let event_time: String?
+            }
+
+            let body = UpdateBody(
+                title: title,
+                category: category?.rawValue,
+                event_date: eventDate,
+                event_time: eventTime
+            )
+
+            do {
+                let _: CalendarEvent = try await APIClient.shared.request("PUT", "/calendar/\(id)", body: body)
+            } catch {
+                print("CalendarStore.update API sync failed: \(error)")
+            }
+        }
     }
 
     func remove(_ id: String) {
         events.removeAll { $0.id == id }
-        save()
+        saveLocal()
+
+        Task {
+            do {
+                try await APIClient.shared.requestNoContent("DELETE", "/calendar/\(id)")
+            } catch {
+                print("CalendarStore.remove API sync failed: \(error)")
+            }
+        }
     }
+
+    // MARK: - Local filtering (unchanged)
 
     func eventsForDate(_ date: String) -> [CalendarEvent] {
         events.filter { $0.eventDate == date }
@@ -55,30 +151,6 @@ class CalendarStore: ObservableObject {
     }
 
     func seedDemoData(pets: [Pet]) {
-        guard events.isEmpty, let pet = pets.first else { return }
-        let cal = Calendar.current
-        let now = Date()
-        let year = cal.component(.year, from: now)
-        let month = cal.component(.month, from: now)
-        let day = cal.component(.day, from: now)
-        func dateStr(_ d: Int) -> String {
-            String(format: "%04d-%02d-%02d", year, month, d)
-        }
-
-        let demos: [(String, String?, String, EventType, EventCategory)] = [
-            (dateStr(3), "08:30", "Morning walk & breakfast", .log, .daily),
-            (dateStr(7), "10:00", "Annual vaccine booster", .appointment, .vaccine),
-            (dateStr(12), nil, "Ate well, normal stool", .log, .diet),
-            (dateStr(18), "14:00", "Deworming reminder", .reminder, .deworming),
-            (dateStr(day), "09:00", "Morning checkup", .log, .daily),
-        ]
-
-        for (date, time, title, type, cat) in demos {
-            let evt = CalendarEvent(petId: pet.id, eventDate: date, eventTime: time,
-                                    title: title, type: type, category: cat,
-                                    rawText: title, source: .chat)
-            events.append(evt)
-        }
-        save()
+        // No longer needed — data comes from API
     }
 }
