@@ -474,6 +474,9 @@
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "CozyPup uses your location to find nearby pet services";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "CozyPup needs microphone access for voice input";
 				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "CozyPup uses speech recognition for voice input";
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UIStatusBarStyle = UIStatusBarStyleDefault;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -498,6 +501,9 @@
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "CozyPup uses your location to find nearby pet services";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "CozyPup needs microphone access for voice input";
 				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "CozyPup uses speech recognition for voice input";
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UIStatusBarStyle = UIStatusBarStyleDefault;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
