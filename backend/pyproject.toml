@@ -8,11 +8,22 @@ dependencies = [
     "uvicorn>=0.34.0",
     "click>=8.1.0",
     "sse-starlette>=2.0.0",
+    "pydantic-settings>=2.0.0",
+    "sqlalchemy[asyncio]>=2.0.0",
+    "asyncpg>=0.30.0",
+    "alembic>=1.14.0",
+    "pyjwt>=2.9.0",
+    "httpx>=0.28.0",
+    "python-jose[cryptography]>=3.3.0",
+    "litellm>=1.50.0",
 ]
 
 [project.scripts]
 debug = "app.debug.cli:cli"
 
+[tool.setuptools.packages.find]
+include = ["app*"]
+
 [build-system]
 requires = ["setuptools>=75.0"]
-build-backend = "setuptools.backends._legacy:_Backend"
+build-backend = "setuptools.build_meta"

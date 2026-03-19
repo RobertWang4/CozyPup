@@ -24,3 +24,4 @@ backend/logs/error_snapshots/*.json
 # Environment
 .env
 .env.local
+.env

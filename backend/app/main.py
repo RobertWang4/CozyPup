@@ -3,18 +3,29 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.debug.logging_config import setup_logging
+from app.routers.auth import router as auth_router
+from app.routers.calendar import router as calendar_router
 from app.routers.chat import router as chat_router
+from app.routers.chat_history import router as chat_history_router
+from app.routers.devices import router as devices_router
+from app.routers.pets import router as pets_router
+from app.routers.reminders import router as reminders_router
+from app.middleware.rate_limit import ChatRateLimitMiddleware
 from app.debug.middleware import (
     CorrelationMiddleware,
     RequestLoggingMiddleware,
     ErrorCaptureMiddleware,
 )
 from app.debug.error_types import PetPalError
+from app.debug.exception_handlers import register_exception_handlers
 
 # Set up JSON logging first
 setup_logging()
 
 app = FastAPI(title="PetPal API", version="0.1.0")
+
+# Register exception handlers (logs 4xx/5xx with module context)
+register_exception_handlers(app)
 
 # CORS — allow all origins during development
 app.add_middleware(
@@ -25,10 +36,17 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Register chat router
+# Register routers
+app.include_router(auth_router)
+app.include_router(pets_router)
+app.include_router(calendar_router)
+app.include_router(reminders_router)
 app.include_router(chat_router)
+app.include_router(chat_history_router)
+app.include_router(devices_router)
 
 # Register middleware (outermost runs first — last add = outermost)
+app.add_middleware(ChatRateLimitMiddleware)
 app.add_middleware(ErrorCaptureMiddleware)
 app.add_middleware(RequestLoggingMiddleware)
 app.add_middleware(CorrelationMiddleware)

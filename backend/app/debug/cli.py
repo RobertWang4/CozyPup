@@ -122,6 +122,41 @@ def replay(correlation_id: str, url: str):
 
 @cli.command()
 @click.option("--since", default="24h", help="Time window: 1h, 24h, 7d (default: 24h)")
+def modules(since: str):
+    """Show error counts grouped by module — quick health check per module."""
+    delta = _parse_since(since)
+    if delta is None:
+        click.echo(f"Invalid --since value: {since}. Use formats like 1h, 24h, 7d.")
+        return
+
+    cutoff = datetime.now(timezone.utc) - delta
+    snapshots = _load_all_snapshots()
+    snapshots = [s for s in snapshots if _parse_timestamp(s.timestamp) >= cutoff]
+
+    if not snapshots:
+        click.echo("No errors in the given time window.")
+        return
+
+    # Group by module
+    module_groups: dict[str, list[ErrorSnapshot]] = {}
+    for snap in snapshots:
+        module_groups.setdefault(snap.module, []).append(snap)
+
+    click.echo(f"\nError counts by module (last {since}):\n")
+    click.echo(f"{'MODULE':<35} {'COUNT':>5}  {'LAST ERROR':<25} {'LATEST MESSAGE'}")
+    click.echo("-" * 110)
+
+    for module, snaps in sorted(module_groups.items(), key=lambda kv: len(kv[1]), reverse=True):
+        latest = max(snaps, key=lambda s: s.timestamp)
+        last_seen = _format_ts(latest.timestamp)
+        msg = latest.error_message[:50]
+        click.echo(f"{module:<35} {len(snaps):>5}  {last_seen:<25} {msg}")
+
+    click.echo(f"\nTotal: {len(snapshots)} errors across {len(module_groups)} modules")
+
+
+@cli.command()
+@click.option("--since", default="24h", help="Time window: 1h, 24h, 7d (default: 24h)")
 def summary(since: str):
     """Show error summary grouped by fingerprint."""
     delta = _parse_since(since)

@@ -19,6 +19,7 @@ class JSONFormatter(logging.Formatter):
         entry = {
             "timestamp": datetime.fromtimestamp(record.created, tz=timezone.utc).isoformat(),
             "level": record.levelname,
+            "logger": record.name,
             "module": record.module,
             "function": record.funcName,
             "line": record.lineno,
@@ -57,9 +58,20 @@ def setup_logging(level: str = "DEBUG", module_levels: dict[str, str] | None = N
 
     # Set specific module log levels
     default_module_levels = {
+        "app.routers.auth": "INFO",
+        "app.routers.pets": "INFO",
+        "app.routers.calendar": "INFO",
+        "app.routers.chat": "DEBUG",
+        "app.routers.chat_history": "INFO",
+        "app.routers.reminders": "INFO",
+        "app.routers.devices": "INFO",
         "app.agents": "DEBUG",
-        "app.db": "DEBUG",
+        "app.auth": "INFO",
         "app.middleware": "INFO",
+        "app.debug.middleware": "INFO",
+        "httpx": "WARNING",
+        "httpcore": "WARNING",
+        "litellm": "WARNING",
     }
     effective_levels = {**default_module_levels, **(module_levels or {})}
     for module, lvl in effective_levels.items():
