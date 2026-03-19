@@ -24,4 +24,9 @@ backend/logs/error_snapshots/*.json
 # Environment
 .env
 .env.local
-.env
+
+# Xcode build
+ios-app/build/
+
+# Server logs
+backend/server.log
