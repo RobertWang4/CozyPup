@@ -3,6 +3,7 @@ import { ErrorBoundary } from "./debug/ErrorBoundary";
 import { createLogger } from "./debug/logger";
 import { useChat } from "./hooks/useChat";
 import { useNativeInput } from "./hooks/useNativeInput";
+import { useSwipe } from "./hooks/useSwipe";
 import { useAuth } from "./stores/authStore";
 import { usePets } from "./stores/petStore";
 import { Header } from "./components/Header";
@@ -27,6 +28,11 @@ export function App() {
   const { isNative } = useNativeInput(sendMessage);
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+
+  useSwipe({
+    onSwipeRight: () => setCalendarOpen(true),
+    onSwipeLeft: () => setSettingsOpen(true),
+  });
 
   useEffect(() => {
     logger.info("App mounted, isNative:", isNative);
