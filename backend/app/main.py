@@ -1,7 +1,9 @@
 import os
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from app.debug.logging_config import setup_logging
+from app.routers.chat import router as chat_router
 from app.debug.middleware import (
     CorrelationMiddleware,
     RequestLoggingMiddleware,
@@ -13,6 +15,18 @@ from app.debug.error_types import PetPalError
 setup_logging()
 
 app = FastAPI(title="PetPal API", version="0.1.0")
+
+# CORS — allow all origins during development
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Register chat router
+app.include_router(chat_router)
 
 # Register middleware (outermost runs first — last add = outermost)
 app.add_middleware(ErrorCaptureMiddleware)

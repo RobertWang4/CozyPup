@@ -15,7 +15,7 @@ A pet butler app with a single chat interface as the only input method. Unlike t
 ## 3. System Architecture
 
 ```
-User Input (text only, voice-to-text at OS level)
+User Input (text + app-level speech-to-text)
     │
     ▼
 ┌──────────────────────────────────────────────┐
@@ -30,14 +30,14 @@ User Input (text only, voice-to-text at OS level)
 │  ┌──────────────────────┐                    │
 │  │ LLM Router           │                    │
 │  │ (cheap model)        │                    │
-│  │ → intent + entities  │                    │
+│  │ → intent             │                    │
 │  └──────────┬───────────┘                    │
 │             │                                │
-│   ┌────┬───┴────┬────────┬────────┐          │
-│   ▼    ▼        ▼        ▼        ▼         │
-│  Chat Record  Summary   Map     Email       │
-│  Agent Agent   Agent   Agent    Agent       │
-│(strong)(cheap) (cheap)(cheap+API)(cheap)    │
+│   ┌────┬───┴────┬────────┐                   │
+│   ▼    ▼        ▼        ▼                  │
+│  Chat Summary   Map     Email               │
+│  Agent Agent   Agent    Agent               │
+│(strong)(cheap)(cheap+API)(cheap)            │
 │                                              │
 │  ┌────────────────┐  ┌──────────────┐       │
 │  │  PostgreSQL    │  │ Push Service │       │
@@ -86,7 +86,7 @@ def chat_agent(message, context):
 | Role | Overseas Default | China Default (future) |
 |------|-----------------|----------------------|
 | Strong model (Chat Agent) | DeepSeek-V3 | DeepSeek-V3 |
-| Cheap model (Router, Record, Summary, Map, Email) | Qwen Turbo | Qwen Turbo |
+| Cheap model (Router, Summary, Map, Email) | Qwen Turbo | Qwen Turbo |
 
 ### 3.3 Map Abstraction Layer
 
@@ -105,11 +105,7 @@ Input: user message + recent chat context (last 10 messages or 2000 tokens, whic
 Output:
 ```json
 {
-  "intent": "chat" | "record" | "summarize" | "map" | "email",
-  "entities": {
-    "pet_name": "optional",
-    "keywords": []
-  }
+  "intent": "chat" | "summarize" | "map" | "email"
 }
 ```
 
@@ -120,37 +116,25 @@ If LLM Router fails (timeout/error), fallback to `chat` intent.
 - General conversation, health consultation, daily chat
 - Rules: no diagnosis, no prescriptions, reference only
 - Every consultation reply ends with disclaimer
-- Has access to pet profiles and recent logs for context
+- Has access to pet profiles and recent calendar_events for context
 - **Streaming response via SSE** — tokens sent to frontend as they are generated
+- **Auto-records to calendar:** Chat Agent judges whether to write calendar_events based on conversation content (no explicit "record this" needed from user)
+- **Function calling tools:**
+  - `create_calendar_event(pet_id, event_date, title, category, ...)` — write health events to calendar
+  - `query_calendar_events(pet_id, date_range, category)` — query past events for context
+- **Multi-pet resolution:** Chat Agent identifies which pet the user is talking about (see Section 4.6)
 
-### 4.3 Record Agent (cheap model)
-
-Triggered when user explicitly says "record this" / "note this down" or provides appointment info.
-
-Extracts structured data from current message:
-```json
-{
-  "pet_name": "Doudu",
-  "date": "2026-03-17",
-  "category": "abnormal-vomiting",
-  "summary": "Vomited yellow bile in the morning",
-  "reminder": null
-}
-```
-
-Writes to pet_logs + calendar_events. Checks for existing entries on the same date with similar content to avoid duplicates.
-
-### 4.4 Summary Agent (cheap model)
+### 4.3 Summary Agent (cheap model)
 
 Triggered when user says "summarize today's chat to calendar" or similar.
 
 - Reviews current conversation session (bounded by session_id)
 - Extracts key health events and decisions
-- Checks existing pet_logs to avoid duplicate entries
-- Writes summarized entries to pet_logs + calendar_events
+- Checks existing calendar_events to avoid duplicate entries
+- Writes summarized entries to calendar_events
 - Flags items needing push notifications → writes to reminders table
 
-### 4.5 Email Agent (cheap model)
+### 4.4 Email Agent (cheap model)
 
 Triggered when user says "help me write an appointment email" or "generate an email for the vet" or similar.
 
@@ -178,13 +162,13 @@ Thank you,
 [Owner Name]
 ```
 
-### 4.6 Map Agent (cheap model + Google Places API)
+### 4.5 Map Agent (cheap model + Google Places API)
 
 - Understands user intent ("weekend outdoor with dog" → parks, not pet stores)
 - Calls Google Places API with appropriate query
 - Organizes and recommends results with context
 
-### 4.7 Multi-Pet Resolution
+### 4.6 Multi-Pet Resolution
 
 All agents must identify which pet the user is talking about:
 1. Explicit name match ("Doudu is sick" → Doudu)
@@ -228,7 +212,7 @@ All tables include `updated_at TIMESTAMP` (auto-updated on modification) in addi
 | started_at | TIMESTAMP | Session start |
 | ended_at | TIMESTAMP | Nullable, set when session closes |
 
-A new session is created when: (a) user opens the app with no active session, or (b) 30+ minutes of inactivity.
+One session per calendar day, auto-created. If no session exists for today, a new one is created when the user sends a message.
 
 ### chats
 | Field | Type | Description |
@@ -238,23 +222,7 @@ A new session is created when: (a) user opens the app with no active session, or
 | user_id | UUID | FK → users |
 | role | VARCHAR | user / assistant |
 | content | TEXT | Message content |
-| intent | VARCHAR | Router-identified intent (nullable, only for user messages) |
-| pet_ids | UUID[] | Array of resolved pet IDs (nullable) |
 | created_at | TIMESTAMP | |
-
-### pet_logs
-| Field | Type | Description |
-|-------|------|-------------|
-| id | UUID | Primary key |
-| pet_id | UUID | FK → pets |
-| log_date | DATE | Date |
-| category | VARCHAR | diet / excretion / abnormal / vaccine / deworming / medical / daily |
-| summary | TEXT | AI summary |
-| raw_text | TEXT | Original input or conversation excerpt |
-| source | VARCHAR | direct / conversation |
-| edited | BOOLEAN | Whether manually edited by user |
-| created_at | TIMESTAMP | |
-| updated_at | TIMESTAMP | |
 
 ### reminders
 | Field | Type | Description |
@@ -280,7 +248,10 @@ A new session is created when: (a) user opens the app with no active session, or
 | event_time | TIME | Optional |
 | title | VARCHAR | Event title |
 | type | VARCHAR | log / appointment / reminder |
-| log_id | UUID | FK → pet_logs (optional) |
+| category | VARCHAR | diet / excretion / abnormal / vaccine / deworming / medical / daily |
+| raw_text | TEXT | Original input or conversation excerpt |
+| source | VARCHAR | chat / manual |
+| edited | BOOLEAN | Whether manually edited by user |
 | reminder_id | UUID | FK → reminders (optional) |
 | created_at | TIMESTAMP | |
 | updated_at | TIMESTAMP | |
@@ -350,13 +321,6 @@ PUT    /api/v1/calendar/:id     Edit calendar entry
 DELETE /api/v1/calendar/:id     Delete calendar entry
 ```
 
-### Health Logs
-```
-GET    /api/v1/pets/:id/logs    Get pet's health logs
-PUT    /api/v1/logs/:id         Edit log entry
-DELETE /api/v1/logs/:id         Delete log entry
-```
-
 ### Reminders
 ```
 GET    /api/v1/reminders        List reminders
@@ -418,7 +382,7 @@ Write operations (creating logs, calendar events, reminders) are handled by AI a
   - Privacy policy / disclaimer
   - Logout
 - **No bottom tabs, no pet switcher** — AI infers which pet from conversation context
-- **Voice input:** Uses iOS system keyboard voice input, converted to text immediately
+- **Voice input:** App-level speech button using `@capacitor-community/speech-recognition`, converted to text and inserted into input field
 
 ### Chat UI Elements
 - Standard chat bubbles for user/assistant (streamed via SSE)
@@ -459,7 +423,7 @@ Per 1,000 monthly active users, 5 interactions/day:
 | Component | Monthly Cost |
 |-----------|-------------|
 | DeepSeek-V3 (Chat Agent) | ~$50 |
-| Qwen Turbo (Router + Record + Summary + Map + Email) | ~$10 |
+| Qwen Turbo (Router + Summary + Map + Email) | ~$10 |
 | Google Places API (with cache) | ~$160 |
 | PostgreSQL (cloud) | ~$20 |
 | APNs push | $0 |
@@ -469,7 +433,7 @@ Model abstraction layer (LiteLLM) allows swapping to cheaper or better models as
 
 ## 11. Out of Scope for MVP
 
-- Voice conversation (voice is input-only via OS keyboard)
+- Voice conversation (voice is input-only via app-level speech recognition)
 - RAG / vector search
 - Social features
 - Amap integration (reserved in abstraction layer)
