@@ -10,10 +10,13 @@ targets:
     sources: [CozyPup]
     settings:
       base:
-        INFOPLIST_FILE: CozyPup/Info.plist
         PRODUCT_BUNDLE_IDENTIFIER: com.cozypup.app
         MARKETING_VERSION: "1.0"
         CURRENT_PROJECT_VERSION: "1"
         DEVELOPMENT_TEAM: ""
-        GENERATE_INFOPLIST_FILE: false
+        GENERATE_INFOPLIST_FILE: true
+        INFOPLIST_KEY_NSMicrophoneUsageDescription: "CozyPup needs microphone access for voice input"
+        INFOPLIST_KEY_NSSpeechRecognitionUsageDescription: "CozyPup uses speech recognition for voice input"
+        INFOPLIST_KEY_NSLocationWhenInUseUsageDescription: "CozyPup uses your location to find nearby pet services"
+        INFOPLIST_KEY_NSAppTransportSecurity_NSAllowsArbitraryLoads: true
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon

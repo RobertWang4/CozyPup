@@ -468,8 +468,12 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = "";
-				GENERATE_INFOPLIST_FILE = NO;
+				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = CozyPup/Info.plist;
+				INFOPLIST_KEY_NSAppTransportSecurity_NSAllowsArbitraryLoads = YES;
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "CozyPup uses your location to find nearby pet services";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "CozyPup needs microphone access for voice input";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "CozyPup uses speech recognition for voice input";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -488,8 +492,12 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = "";
-				GENERATE_INFOPLIST_FILE = NO;
+				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = CozyPup/Info.plist;
+				INFOPLIST_KEY_NSAppTransportSecurity_NSAllowsArbitraryLoads = YES;
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "CozyPup uses your location to find nearby pet services";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "CozyPup needs microphone access for voice input";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "CozyPup uses speech recognition for voice input";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
