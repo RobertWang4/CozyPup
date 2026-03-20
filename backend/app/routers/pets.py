@@ -57,7 +57,7 @@ async def create_pet(
     db.add(pet)
     await db.commit()
     await db.refresh(pet)
-    logger.info("pet_created", extra={"pet_id": str(pet.id), "name": pet.name, "species": pet.species.value})
+    logger.info("pet_created", extra={"pet_id": str(pet.id), "pet_name": pet.name, "species": pet.species.value})
     return _pet_to_response(pet)
 
 
@@ -131,6 +131,6 @@ async def delete_pet(
     if not pet:
         raise HTTPException(status_code=404, detail="Pet not found")
 
-    logger.info("pet_deleted", extra={"pet_id": str(pet.id), "name": pet.name})
+    logger.info("pet_deleted", extra={"pet_id": str(pet.id), "pet_name": pet.name})
     await db.delete(pet)
     await db.commit()

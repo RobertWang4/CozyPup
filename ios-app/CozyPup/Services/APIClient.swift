@@ -149,20 +149,20 @@ actor APIClient {
                     return
                 }
 
-                let url = URL(string: urlString)!
-                var request = URLRequest(url: url)
-                request.httpMethod = "POST"
-                request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-                request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-                request.httpBody = bodyData
+                // Helper to make the SSE request with a given token
+                func doStream(authToken: String) async throws {
+                    let url = URL(string: urlString)!
+                    var request = URLRequest(url: url)
+                    request.httpMethod = "POST"
+                    request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+                    request.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
+                    request.httpBody = bodyData
 
-                do {
                     let (bytes, response) = try await URLSession.shared.bytes(for: request)
-                    guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
-                        continuation.finish(throwing: APIError.badStatus(
-                            (response as? HTTPURLResponse)?.statusCode ?? 0
-                        ))
-                        return
+                    let status = (response as? HTTPURLResponse)?.statusCode ?? 0
+
+                    guard status == 200 else {
+                        throw APIError.badStatus(status)
                     }
 
                     var currentEvent = ""
@@ -175,12 +175,34 @@ actor APIClient {
                             currentEvent = ""
                         }
                     }
+                }
+
+                do {
+                    try await doStream(authToken: token)
                     continuation.finish()
+                } catch APIError.badStatus(401) {
+                    // Try refresh and retry once
+                    if let refreshed = try? await APIClient.shared.attemptRefreshAndGetToken() {
+                        do {
+                            try await doStream(authToken: refreshed)
+                            continuation.finish()
+                        } catch {
+                            continuation.finish(throwing: error)
+                        }
+                    } else {
+                        continuation.finish(throwing: APIError.notAuthenticated)
+                    }
                 } catch {
                     continuation.finish(throwing: error)
                 }
             }
         }
+    }
+
+    /// Attempt refresh and return the new access token, or nil on failure.
+    func attemptRefreshAndGetToken() async throws -> String? {
+        guard try await attemptRefresh() else { return nil }
+        return accessToken
     }
 }
 
