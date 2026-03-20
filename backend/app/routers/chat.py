@@ -1,5 +1,6 @@
 """Chat SSE endpoint — streams LLM responses to the frontend."""
 
+import asyncio
 import json
 import logging
 import uuid
@@ -124,20 +125,27 @@ async def _save_message(
     return msg
 
 
-async def _handle_chat(request, session, user_id, db, pets, context_messages):
-    """Handle intent=chat via ChatAgent with streaming."""
+_SENTINEL = object()  # Marks end of streaming queue
+
+
+async def _run_chat_agent_to_queue(
+    queue: asyncio.Queue,
+    request,
+    session,
+    user_id,
+    db,
+    pets,
+    context_messages,
+):
+    """Run ChatAgent, pushing SSE events into the queue as they arrive."""
     pet_context = await _build_pet_context(pets)
     system_msg = CHAT_SYSTEM_PROMPT.format(pet_context=pet_context)
 
-    full_response = ""
-    cards = []
-
     async def on_token(text):
-        nonlocal full_response
-        full_response += text
+        await queue.put({"event": "token", "data": json.dumps({"text": text})})
 
     async def on_card(card_data):
-        cards.append(card_data)
+        await queue.put({"event": "card", "data": json.dumps(card_data)})
 
     try:
         result = await _chat_agent.execute(
@@ -152,16 +160,18 @@ async def _handle_chat(request, session, user_id, db, pets, context_messages):
             on_token=on_token,
             on_card=on_card,
         )
-        full_response = result.get("response", full_response)
-        cards = result.get("cards", cards)
+        # Stash the final result for the caller to save
+        await queue.put(("_result", result))
     except Exception as e:
         logger.error("chat_agent_error", extra={
             "error_type": type(e).__name__,
             "error_message": str(e)[:500],
         })
-        full_response = f"Sorry, I'm having trouble right now. Please try again. (Error: {type(e).__name__})"
-
-    return full_response, cards
+        error_text = f"Sorry, I'm having trouble right now. Please try again. (Error: {type(e).__name__})"
+        await queue.put({"event": "token", "data": json.dumps({"text": error_text})})
+        await queue.put(("_result", {"response": error_text, "cards": []}))
+    finally:
+        await queue.put(_SENTINEL)
 
 
 async def _handle_summary(request, session, user_id, db, pets):
@@ -253,44 +263,63 @@ async def _event_generator(
     logger.info("intent_routed", extra={"session_id": session_id, "intent": intent})
 
     # 6. Dispatch to the appropriate agent
-    cards = []
     if intent == "chat":
-        full_response, cards = await _handle_chat(
-            request, session, user_id, db, pets, context_messages
+        # Stream tokens in real-time via queue
+        queue: asyncio.Queue = asyncio.Queue()
+        task = asyncio.create_task(
+            _run_chat_agent_to_queue(
+                queue, request, session, user_id, db, pets, context_messages
+            )
         )
-    elif intent == "summarize":
-        full_response, cards = await _handle_summary(
-            request, session, user_id, db, pets
-        )
-    elif intent == "map":
-        full_response, cards = await _handle_map(request, user_id, pets)
-    elif intent == "email":
-        full_response, cards = await _handle_email(
-            request, user_id, db, session, pets, context_messages
-        )
+
+        result = {"response": "", "cards": []}
+        while True:
+            item = await queue.get()
+            if item is _SENTINEL:
+                break
+            if isinstance(item, tuple) and item[0] == "_result":
+                result = item[1]
+                continue
+            # item is an SSE event dict
+            yield item
+
+        await task  # ensure task exceptions propagate
+        full_response = result.get("response", "")
+        cards = result.get("cards", [])
     else:
-        full_response = "I'm not sure how to handle that. Could you rephrase?"
+        # Non-streaming agents: summarize, map, email
+        if intent == "summarize":
+            full_response, cards = await _handle_summary(
+                request, session, user_id, db, pets
+            )
+        elif intent == "map":
+            full_response, cards = await _handle_map(request, user_id, pets)
+        elif intent == "email":
+            full_response, cards = await _handle_email(
+                request, user_id, db, session, pets, context_messages
+            )
+        else:
+            full_response = "I'm not sure how to handle that. Could you rephrase?"
+            cards = []
 
-    # 7. Emit response tokens
-    yield {
-        "event": "token",
-        "data": json.dumps({"text": full_response}),
-    }
-
-    # 8. Emit card events
-    for card in cards:
+        # Emit full response as single token + cards
         yield {
-            "event": "card",
-            "data": json.dumps(card),
+            "event": "token",
+            "data": json.dumps({"text": full_response}),
         }
+        for card in cards:
+            yield {
+                "event": "card",
+                "data": json.dumps(card),
+            }
 
-    # 9. Save assistant response
+    # 7. Save assistant response
     cards_json = json.dumps(cards) if cards else None
     await _save_message(
         db, session.id, user_id, MessageRole.assistant, full_response, cards_json
     )
 
-    # 10. Done event with detected intent
+    # 8. Done event with detected intent
     yield {
         "event": "done",
         "data": json.dumps({"intent": intent, "session_id": session_id}),
