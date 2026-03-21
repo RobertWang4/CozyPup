@@ -22,6 +22,7 @@ enum Tokens {
     static let drawerOverlay = Color(hex: "3D2C1E").opacity(0.3)
     static let switchBg = Color(hex: "E0D5C8")
     static let switchActive = Color(hex: "7BAE7F")
+    static let waveform = Color(hex: "E8835C")
     static let bubbleUser = Color(hex: "E8835C")
     static let bubbleAi = Color.white
     static let fontBody = Font.system(.body, design: .default)
