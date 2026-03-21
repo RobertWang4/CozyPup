@@ -27,12 +27,21 @@ struct ChatView: View {
             ScrollViewReader { proxy in
                 ScrollView {
                     if chatStore.messages.isEmpty {
-                        EmptyStateView(
-                            icon: "bubble.left.and.bubble.right",
-                            title: "Ask Cozy Pup anything",
-                            subtitle: "Health questions, record keeping, vet recommendations..."
-                        )
-                        .frame(minHeight: 400)
+                        if petStore.pets.isEmpty {
+                            EmptyStateView(
+                                icon: "pawprint.fill",
+                                title: L.welcomeTitle,
+                                subtitle: L.welcomeSubtitle
+                            )
+                            .frame(minHeight: 400)
+                        } else {
+                            EmptyStateView(
+                                icon: "bubble.left.and.bubble.right",
+                                title: L.askAnything,
+                                subtitle: L.askSubtitle
+                            )
+                            .frame(minHeight: 400)
+                        }
                     }
                     LazyVStack(spacing: 10) {
                         ForEach(chatStore.messages) { msg in
@@ -58,7 +67,7 @@ struct ChatView: View {
                 }
             }
 
-            Text("AI suggestions are for reference only. In emergencies, see a vet.")
+            Text(L.aiDisclaimer)
                 .font(.system(size: 11))
                 .foregroundColor(Tokens.textSecondary)
                 .padding(.vertical, 6)
@@ -68,7 +77,9 @@ struct ChatView: View {
                 isStreaming: isStreaming,
                 isListening: speech.isListening,
                 onSend: sendMessage,
-                onMicToggle: toggleMic
+                onMicDown: startVoice,
+                onMicUp: releaseVoice,
+                onMicCancel: cancelVoice
             )
         }
         .background(Tokens.bg.ignoresSafeArea())
@@ -108,8 +119,15 @@ struct ChatView: View {
                     .transition(.move(edge: .trailing))
             }
         }
-        .onChange(of: speech.transcript) {
-            if speech.isListening { inputText = speech.transcript }
+        .overlay {
+            if speech.isListening {
+                VoiceInputOverlay(
+                    transcript: speech.transcript,
+                    audioLevel: speech.audioLevel,
+                    isCancelling: false
+                )
+                .transition(.opacity)
+            }
         }
         .onAppear {
             Task {
@@ -173,6 +191,20 @@ struct ChatView: View {
             MapCard(items: data.items)
         case .email(let data):
             EmailCard(subject: data.subject, emailBody: data.body)
+        case .petCreated(let data):
+            ActionCard(
+                icon: "pawprint.fill", iconColor: Tokens.green,
+                label: L.petAdded,
+                title: data.pet_name,
+                subtitle: "\(data.breed ?? data.species)"
+            )
+        case .reminder(let data):
+            ActionCard(
+                icon: "bell.fill", iconColor: Tokens.accent,
+                label: L.reminderSet,
+                title: "\(data.pet_name) · \(data.title)",
+                subtitle: data.trigger_at
+            )
         }
     }
 
@@ -205,6 +237,10 @@ struct ChatView: View {
                         chatStore.messages[idx].content += t
                     case .card(let c):
                         chatStore.messages[idx].cards.append(c)
+                        // Refresh pet store if a new pet was created via chat
+                        if case .petCreated = c {
+                            Task { await petStore.fetchFromAPI() }
+                        }
                     case .emergency(let e):
                         emergency = e
                     case .done(_, let sid):
@@ -214,7 +250,7 @@ struct ChatView: View {
             } catch {
                 if let idx = chatStore.messages.indices.last,
                    chatStore.messages[idx].content.isEmpty {
-                    chatStore.messages[idx].content = "Sorry, something went wrong. Please try again."
+                    chatStore.messages[idx].content = L.errorMessage
                 }
             }
             chatStore.save()
@@ -222,14 +258,29 @@ struct ChatView: View {
         }
     }
 
-    private func toggleMic() {
-        if speech.isListening {
-            speech.stopListening()
-        } else {
-            Task {
-                let granted = await speech.requestPermission()
-                if granted { speech.startListening() }
+    private func startVoice() {
+        guard !speech.isListening else { return }
+        Task {
+            let granted = await speech.requestPermission()
+            if granted {
+                speech.startListening()
+                Haptics.medium()
             }
         }
+    }
+
+    private func releaseVoice() {
+        guard speech.isListening else { return }
+        Haptics.light()
+        let text = speech.transcript.trimmingCharacters(in: .whitespaces)
+        speech.stopListening()
+        if !text.isEmpty {
+            inputText = text
+            sendMessage()
+        }
+    }
+
+    private func cancelVoice() {
+        speech.cancel()
     }
 }

@@ -5,12 +5,18 @@ struct ChatInputBar: View {
     var isStreaming: Bool
     var isListening: Bool
     var onSend: () -> Void
-    var onMicToggle: () -> Void
+    var onMicDown: () -> Void
+    var onMicUp: () -> Void
+    var onMicCancel: () -> Void
+
+    @State private var dragOffset: CGFloat = 0
+    @State private var micPressed = false  // Synchronous guard to prevent multiple onMicDown calls
 
     private var hasText: Bool { !text.trimmingCharacters(in: .whitespaces).isEmpty }
+    private let cancelThreshold: CGFloat = -80
 
     var body: some View {
-        HStack(spacing: 8) {
+        HStack(alignment: .bottom, spacing: 8) {
             Button { } label: {
                 Image(systemName: "plus")
                     .font(.system(size: 20, weight: .medium))
@@ -19,49 +25,78 @@ struct ChatInputBar: View {
                     .overlay(Circle().stroke(Tokens.border))
             }
 
-            HStack(spacing: 4) {
-                TextField("Talk to Cozy Pup...", text: $text)
+            HStack(alignment: .bottom, spacing: 0) {
+                TextField(L.chatPlaceholder, text: $text, axis: .vertical)
+                    .lineLimit(1...5)
                     .font(.system(size: 16))
                     .foregroundColor(Tokens.text)
                     .disabled(isStreaming)
                     .onSubmit { if hasText { onSend() } }
+                    .padding(.vertical, 12)
+                    .padding(.leading, 16)
+                    .padding(.trailing, 8)
 
-                if hasText {
-                    Button {
-                        Haptics.light()
-                        onSend()
-                    } label: {
-                        Image(systemName: "arrow.up")
-                            .font(.system(size: 16, weight: .semibold))
-                            .foregroundColor(.white)
-                            .frame(width: 40, height: 40)
-                            .background(Tokens.accent)
-                            .clipShape(Circle())
-                    }
-                    .disabled(isStreaming)
-                } else {
-                    Button {
-                        onMicToggle()
-                    } label: {
-                        Image(systemName: "mic")
-                            .font(.system(size: 18, weight: .medium))
-                            .foregroundColor(isListening ? Tokens.red : Tokens.textSecondary)
-                            .frame(width: 40, height: 40)
-                            .opacity(isListening ? 0.5 : 1)
-                            .animation(.easeInOut(duration: 0.75).repeatForever(autoreverses: true), value: isListening)
+                Group {
+                    if hasText {
+                        Button {
+                            Haptics.light()
+                            onSend()
+                        } label: {
+                            Image(systemName: "arrow.up")
+                                .font(.system(size: 16, weight: .semibold))
+                                .foregroundColor(.white)
+                                .frame(width: 36, height: 36)
+                                .background(Tokens.accent)
+                                .clipShape(Circle())
+                        }
+                        .disabled(isStreaming)
+                    } else {
+                        micButton
                     }
                 }
+                .padding(.trailing, 6)
+                .padding(.bottom, 4)
             }
-            .padding(.leading, 16)
-            .padding(.trailing, 4)
-            .frame(height: 48)
             .background(Tokens.surface)
-            .cornerRadius(24)
+            .clipShape(RoundedRectangle(cornerRadius: 24))
             .overlay(RoundedRectangle(cornerRadius: 24).stroke(Tokens.border))
         }
         .padding(.horizontal, 12)
         .padding(.top, 8)
         .padding(.bottom, 4)
         .background(Tokens.bg)
+    }
+
+    private var micButton: some View {
+        Image(systemName: "mic")
+            .font(.system(size: 18, weight: .medium))
+            .foregroundColor(isListening ? .white : Tokens.textSecondary)
+            .frame(width: 36, height: 36)
+            .background(isListening ? Tokens.accent : Color.clear)
+            .clipShape(Circle())
+            .scaleEffect(isListening ? 1.15 : 1.0)
+            .animation(.easeInOut(duration: 0.15), value: isListening)
+            .gesture(
+                DragGesture(minimumDistance: 0)
+                    .onChanged { value in
+                        if !micPressed {
+                            micPressed = true
+                            Haptics.medium()
+                            onMicDown()
+                        }
+                        dragOffset = value.translation.height
+                    }
+                    .onEnded { _ in
+                        micPressed = false
+                        if dragOffset < cancelThreshold {
+                            Haptics.medium()
+                            onMicCancel()
+                        } else {
+                            onMicUp()
+                        }
+                        dragOffset = 0
+                    }
+            )
+            .disabled(isStreaming)
     }
 }
