@@ -137,6 +137,7 @@ class CalendarEvent(Base):
     raw_text: Mapped[str] = mapped_column(Text, default="")
     source: Mapped[EventSource] = mapped_column(Enum(EventSource), nullable=False, default=EventSource.manual)
     edited: Mapped[bool] = mapped_column(Boolean, default=False)
+    photos: Mapped[list] = mapped_column(JSON, default=list, server_default="[]")
     reminder_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("reminders.id", ondelete="SET NULL"))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
