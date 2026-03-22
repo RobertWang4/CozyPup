@@ -6,16 +6,16 @@ struct VoiceInputOverlay: View {
     let isCancelling: Bool
 
     var body: some View {
-        VStack(spacing: 24) {
+        VStack(spacing: Tokens.spacing.lg) {
             Spacer()
 
             // Live transcript
             if !transcript.isEmpty {
                 Text(transcript)
-                    .font(.system(size: 18))
+                    .font(Tokens.fontHeadline)
                     .foregroundColor(Tokens.text)
                     .multilineTextAlignment(.center)
-                    .padding(.horizontal, 32)
+                    .padding(.horizontal, Tokens.spacing.xl)
                     .transition(.opacity)
             }
 
@@ -34,17 +34,17 @@ struct VoiceInputOverlay: View {
 
                 Circle()
                     .fill(isCancelling ? Tokens.red : Tokens.accent)
-                    .frame(width: 80, height: 80)
+                    .frame(width: Tokens.size.avatarLarge, height: Tokens.size.avatarLarge)
                     .shadow(color: (isCancelling ? Tokens.red : Tokens.accent).opacity(0.3), radius: 12)
 
                 Image(systemName: isCancelling ? "xmark" : "mic.fill")
-                    .font(.system(size: 32, weight: .medium))
-                    .foregroundColor(.white)
+                    .font(Tokens.fontLargeTitle.weight(.medium))
+                    .foregroundColor(Tokens.white)
             }
 
             // Hint text
             Text(isCancelling ? L.voiceReleaseCancel : L.voiceSwipeCancel)
-                .font(.system(size: 13))
+                .font(Tokens.fontSubheadline)
                 .foregroundColor(isCancelling ? Tokens.red : Tokens.textSecondary)
 
             Spacer()

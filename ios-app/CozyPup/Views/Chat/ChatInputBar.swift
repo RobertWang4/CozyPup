@@ -16,25 +16,25 @@ struct ChatInputBar: View {
     private let cancelThreshold: CGFloat = -80
 
     var body: some View {
-        HStack(alignment: .bottom, spacing: 8) {
+        HStack(alignment: .bottom, spacing: Tokens.spacing.sm) {
             Button { } label: {
                 Image(systemName: "plus")
-                    .font(.system(size: 20, weight: .medium))
+                    .font(Tokens.fontTitle.weight(.medium))
                     .foregroundColor(Tokens.textSecondary)
-                    .frame(width: 44, height: 44)
+                    .frame(width: Tokens.size.buttonMedium, height: Tokens.size.buttonMedium)
                     .overlay(Circle().stroke(Tokens.border))
             }
 
             HStack(alignment: .bottom, spacing: 0) {
                 TextField(L.chatPlaceholder, text: $text, axis: .vertical)
                     .lineLimit(1...5)
-                    .font(.system(size: 16))
+                    .font(Tokens.fontCallout)
                     .foregroundColor(Tokens.text)
                     .disabled(isStreaming)
                     .onSubmit { if hasText { onSend() } }
                     .padding(.vertical, 12)
-                    .padding(.leading, 16)
-                    .padding(.trailing, 8)
+                    .padding(.leading, Tokens.spacing.md)
+                    .padding(.trailing, Tokens.spacing.sm)
 
                 Group {
                     if hasText {
@@ -43,9 +43,9 @@ struct ChatInputBar: View {
                             onSend()
                         } label: {
                             Image(systemName: "arrow.up")
-                                .font(.system(size: 16, weight: .semibold))
-                                .foregroundColor(.white)
-                                .frame(width: 36, height: 36)
+                                .font(Tokens.fontCallout.weight(.semibold))
+                                .foregroundColor(Tokens.white)
+                                .frame(width: Tokens.size.buttonSmall, height: Tokens.size.buttonSmall)
                                 .background(Tokens.accent)
                                 .clipShape(Circle())
                         }
@@ -55,23 +55,23 @@ struct ChatInputBar: View {
                     }
                 }
                 .padding(.trailing, 6)
-                .padding(.bottom, 4)
+                .padding(.bottom, Tokens.spacing.xs)
             }
             .background(Tokens.surface)
             .clipShape(RoundedRectangle(cornerRadius: 24))
             .overlay(RoundedRectangle(cornerRadius: 24).stroke(Tokens.border))
         }
         .padding(.horizontal, 12)
-        .padding(.top, 8)
-        .padding(.bottom, 4)
+        .padding(.top, Tokens.spacing.sm)
+        .padding(.bottom, Tokens.spacing.xs)
         .background(Tokens.bg)
     }
 
     private var micButton: some View {
         Image(systemName: "mic")
-            .font(.system(size: 18, weight: .medium))
-            .foregroundColor(isListening ? .white : Tokens.textSecondary)
-            .frame(width: 36, height: 36)
+            .font(Tokens.fontHeadline.weight(.medium))
+            .foregroundColor(isListening ? Tokens.white : Tokens.textSecondary)
+            .frame(width: Tokens.size.buttonSmall, height: Tokens.size.buttonSmall)
             .background(isListening ? Tokens.accent : Color.clear)
             .clipShape(Circle())
             .scaleEffect(isListening ? 1.15 : 1.0)

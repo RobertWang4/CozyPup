@@ -7,25 +7,25 @@ struct EmergencyBanner: View {
     var body: some View {
         HStack(spacing: 10) {
             Image(systemName: "exclamationmark.triangle.fill")
-                .foregroundColor(.white)
+                .foregroundColor(Tokens.white)
                 .padding(6)
                 .background(Tokens.red)
                 .cornerRadius(8)
 
             VStack(alignment: .leading, spacing: 2) {
                 Text("Possible emergency detected")
-                    .font(.system(size: 13, weight: .semibold))
+                    .font(Tokens.fontSubheadline.weight(.semibold))
                     .foregroundColor(Tokens.text)
                 Text("Find a nearby 24h pet ER?")
-                    .font(.system(size: 12))
+                    .font(Tokens.fontCaption)
                     .foregroundColor(Tokens.textSecondary)
             }
 
             Spacer()
 
             Button("Find") { onFind() }
-                .font(.system(size: 13, weight: .semibold))
-                .foregroundColor(.white)
+                .font(Tokens.fontSubheadline.weight(.semibold))
+                .foregroundColor(Tokens.white)
                 .padding(.horizontal, 14)
                 .padding(.vertical, 8)
                 .background(Tokens.red)
@@ -33,14 +33,14 @@ struct EmergencyBanner: View {
 
             Button { onDismiss() } label: {
                 Image(systemName: "xmark")
-                    .font(.system(size: 12, weight: .semibold))
+                    .font(Tokens.fontCaption.weight(.semibold))
                     .foregroundColor(Tokens.textSecondary)
             }
         }
         .padding(12)
         .background(Tokens.redSoft)
         .cornerRadius(14)
-        .overlay(RoundedRectangle(cornerRadius: 14).stroke(Color(hex: "F5C4B5")))
+        .overlay(RoundedRectangle(cornerRadius: 14).stroke(Tokens.redSoft))
         .padding(.horizontal, 12)
     }
 }

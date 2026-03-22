@@ -5,10 +5,10 @@ struct OnboardingView: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: 24) {
-                VStack(spacing: 8) {
+            VStack(spacing: Tokens.spacing.lg) {
+                VStack(spacing: Tokens.spacing.sm) {
                     Text("Welcome to Cozy Pup!")
-                        .font(.system(.title, design: .serif))
+                        .font(Tokens.fontTitle)
                         .fontWeight(.semibold)
                         .foregroundColor(Tokens.text)
                     Text("Let's set up your first pet")
@@ -23,7 +23,7 @@ struct OnboardingView: View {
                                            birthday: birthday, weight: weight)
                     }
                 }
-                .padding(.horizontal, 24)
+                .padding(.horizontal, Tokens.spacing.lg)
             }
         }
         .background(Tokens.bg.ignoresSafeArea())
