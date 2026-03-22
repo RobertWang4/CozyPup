@@ -1,11 +1,14 @@
 import logging
 import uuid
 from datetime import date, time
+from pathlib import Path
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile
+from fastapi.responses import FileResponse
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
+from sqlalchemy.orm.attributes import flag_modified
 
 from app.auth import get_current_user_id
 from app.database import get_db
@@ -18,6 +21,12 @@ from app.schemas.calendar import (
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1/calendar", tags=["calendar"])
+
+PHOTO_DIR = Path(__file__).resolve().parent.parent / "uploads" / "photos"
+PHOTO_DIR.mkdir(parents=True, exist_ok=True)
+ALLOWED_TYPES = {"image/jpeg", "image/png", "image/webp"}
+MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
+MAX_PHOTOS = 4
 
 
 def _event_to_response(event: CalendarEvent) -> CalendarEventResponse:
@@ -34,6 +43,7 @@ def _event_to_response(event: CalendarEvent) -> CalendarEventResponse:
         raw_text=event.raw_text,
         source=event.source,
         edited=event.edited,
+        photos=event.photos or [],
         created_at=event.created_at.isoformat(),
     )
 
@@ -101,6 +111,16 @@ async def list_events(
     return [_event_to_response(e) for e in result.scalars().unique().all()]
 
 
+@router.get("/photos/{filename}")
+async def get_photo(filename: str):
+    path = PHOTO_DIR / filename
+    if not path.exists():
+        raise HTTPException(status_code=404, detail="Photo not found")
+    ext = filename.rsplit(".", 1)[-1]
+    media_type = f"image/{'jpeg' if ext == 'jpg' else ext}"
+    return FileResponse(path, media_type=media_type)
+
+
 @router.get("/{event_id}", response_model=CalendarEventResponse)
 async def get_event(
     event_id: uuid.UUID,
@@ -166,3 +186,50 @@ async def delete_event(
 
     await db.delete(event)
     await db.commit()
+
+
+@router.post("/{event_id}/photos", response_model=CalendarEventResponse)
+async def upload_event_photo(
+    event_id: uuid.UUID,
+    file: UploadFile = File(...),
+    user_id: uuid.UUID = Depends(get_current_user_id),
+    db: AsyncSession = Depends(get_db),
+):
+    # 1. Get event + verify ownership
+    result = await db.execute(
+        select(CalendarEvent)
+        .options(joinedload(CalendarEvent.pet))
+        .where(CalendarEvent.id == event_id, CalendarEvent.user_id == user_id)
+    )
+    event = result.scalar_one_or_none()
+    if not event:
+        raise HTTPException(status_code=404, detail="Event not found")
+
+    # 2. Check photo count
+    current_photos = event.photos or []
+    if len(current_photos) >= MAX_PHOTOS:
+        raise HTTPException(status_code=400, detail=f"Maximum {MAX_PHOTOS} photos per event")
+
+    # 3. Validate MIME type
+    if file.content_type not in ALLOWED_TYPES:
+        raise HTTPException(status_code=400, detail="Only JPEG, PNG, and WebP images are allowed")
+
+    # 4. Read + validate size
+    content = await file.read()
+    if len(content) > MAX_FILE_SIZE:
+        raise HTTPException(status_code=400, detail="Image must be under 5MB")
+
+    # 5. Save file
+    ext = file.content_type.split("/")[-1].replace("jpeg", "jpg")
+    filename = f"{uuid.uuid4()}.{ext}"
+    (PHOTO_DIR / filename).write_bytes(content)
+
+    # 6. Append URL to photos
+    photo_url = f"/api/v1/calendar/photos/{filename}"
+    current_photos.append(photo_url)
+    event.photos = current_photos
+    flag_modified(event, "photos")
+
+    await db.commit()
+    await db.refresh(event)
+    return _event_to_response(event)
