@@ -9,6 +9,7 @@ import litellm
 from app.agents.base import BaseAgent
 from app.agents.prompts import CHAT_SYSTEM_PROMPT
 from app.agents.tools import TOOL_DEFINITIONS, execute_tool
+from app.agents.validation import validate_tool_args
 from app.config import settings
 
 logger = logging.getLogger(__name__)
@@ -78,18 +79,42 @@ class ChatAgent(BaseAgent):
 
             for tc in tool_calls:
                 fn_name = tc["function"]["name"]
-                fn_args = json.loads(tc["function"]["arguments"])
+                try:
+                    fn_args = json.loads(tc["function"]["arguments"])
+                except json.JSONDecodeError as exc:
+                    logger.warning("tool_args_json_error", extra={"tool": fn_name, "error": str(exc)[:200]})
+                    result = {"error": f"Invalid JSON in arguments: {exc}"}
+                    messages.append({
+                        "role": "tool",
+                        "tool_call_id": tc["id"],
+                        "content": json.dumps(result),
+                    })
+                    continue
 
                 logger.info(
                     "chat_agent_tool_call",
                     extra={"tool": fn_name, "round": _round},
                 )
 
+                # Schema validation — errors go back to LLM for retry
+                validation_errors = validate_tool_args(fn_name, fn_args)
+                if validation_errors:
+                    logger.warning(
+                        "tool_validation_failed",
+                        extra={"tool": fn_name, "errors": validation_errors},
+                    )
+                    result = {"error": "Validation failed: " + "; ".join(validation_errors)}
+                    messages.append({
+                        "role": "tool",
+                        "tool_call_id": tc["id"],
+                        "content": json.dumps(result),
+                    })
+                    continue
+
                 try:
                     result = await execute_tool(fn_name, fn_args, db, user_id)
 
-                    # If it's a create event, emit a card
-                    if fn_name == "create_calendar_event" and "card" in result:
+                    if "card" in result:
                         card = result["card"]
                         cards.append(card)
                         if on_card:
@@ -102,7 +127,6 @@ class ChatAgent(BaseAgent):
                     )
                     result = {"error": str(exc)}
 
-                # Add tool result to conversation
                 messages.append({
                     "role": "tool",
                     "tool_call_id": tc["id"],
@@ -130,8 +154,9 @@ class ChatAgent(BaseAgent):
             model=settings.strong_model,
             messages=messages,
             tools=TOOL_DEFINITIONS,
+            tool_choice="auto",
             stream=True,
-            temperature=0.7,
+            temperature=0.3,
         )
 
         text_parts: list[str] = []
