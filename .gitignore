@@ -25,8 +25,13 @@ backend/logs/error_snapshots/*.json
 .env
 .env.local
 
-# Xcode build
+# Xcode
 ios-app/build/
+*.xcuserstate
+xcuserdata/
 
 # Server logs
 backend/server.log
+
+# Superpowers plans/specs (Claude Code working docs)
+docs/superpowers/
