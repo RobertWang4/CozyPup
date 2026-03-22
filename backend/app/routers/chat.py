@@ -18,6 +18,7 @@ from app.agents.prompts import CHAT_SYSTEM_PROMPT
 from app.auth import get_current_user_id
 from app.database import get_db
 from app.models import Chat, ChatSession, MessageRole, Pet
+from app.rag import assemble_rag_context, needs_retrieval, write_chat_turn
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1", tags=["chat"])
@@ -25,6 +26,16 @@ router = APIRouter(prefix="/api/v1", tags=["chat"])
 MAX_CONTEXT_MESSAGES = 20
 
 _chat_agent = ChatAgent()
+
+# Background task tracking — prevents garbage collection of fire-and-forget tasks
+_bg_tasks: set[asyncio.Task] = set()
+
+
+def _track_task(coro):
+    """Create a tracked background task."""
+    task = asyncio.create_task(coro)
+    _bg_tasks.add(task)
+    task.add_done_callback(_bg_tasks.discard)
 
 
 class ChatRequest(BaseModel):
@@ -135,8 +146,22 @@ async def _run_chat_agent_to_queue(
 ):
     """Run ChatAgent, pushing SSE events into the queue."""
     pet_context = await _build_pet_context(pets)
+
+    # RAG context injection
+    rag_context = ""
+    if needs_retrieval(request.message):
+        try:
+            rag_context = await assemble_rag_context(
+                message=request.message,
+                user_id=user_id,
+            )
+        except Exception as exc:
+            logger.warning("rag_assembly_error", extra={"error": str(exc)[:200]})
+
     system_msg = CHAT_SYSTEM_PROMPT.format(
-        pet_context=pet_context, today_date=date.today().isoformat()
+        pet_context=pet_context,
+        today_date=date.today().isoformat(),
+        rag_context=rag_context,
     )
 
     async def on_token(text):
@@ -227,6 +252,15 @@ async def _event_generator(
     await _save_message(
         db, session.id, user_id, MessageRole.assistant, full_response, cards_json
     )
+
+    # Background: embed this conversation turn
+    _track_task(write_chat_turn(
+        user_id=user_id,
+        session_id=session.id,
+        user_msg=request.message,
+        assistant_msg=full_response,
+        session_date=date.today(),
+    ))
 
     # 7. Done event
     yield {

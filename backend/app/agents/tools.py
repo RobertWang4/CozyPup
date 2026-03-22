@@ -1,5 +1,6 @@
 """LiteLLM-compatible tool definitions and execution logic for the Chat Agent."""
 
+import asyncio
 import json
 import logging
 import uuid
@@ -12,8 +13,12 @@ from app.models import (
     CalendarEvent, EventCategory, EventSource, EventType,
     Pet, Reminder, Species,
 )
+from app.rag.writer import write_calendar_event as _rag_write_event
 
 logger = logging.getLogger(__name__)
+
+# Background task tracking — prevents garbage collection of fire-and-forget tasks
+_bg_tasks: set[asyncio.Task] = set()
 
 # ---------- Tool Definitions (OpenAI function calling format) ----------
 
@@ -90,6 +95,44 @@ TOOL_DEFINITIONS = [
                     },
                 },
                 "required": [],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "update_calendar_event",
+            "description": (
+                "Update an existing calendar event. Use this when the user wants to change "
+                "the date, time, title, or category of a previously recorded event. "
+                "You MUST first call query_calendar_events to find the event_id."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "event_id": {
+                        "type": "string",
+                        "description": "UUID of the event to update (from query_calendar_events results).",
+                    },
+                    "event_date": {
+                        "type": "string",
+                        "description": "New date in YYYY-MM-DD format.",
+                    },
+                    "event_time": {
+                        "type": "string",
+                        "description": "New time in HH:MM format.",
+                    },
+                    "title": {
+                        "type": "string",
+                        "description": "New title/description.",
+                    },
+                    "category": {
+                        "type": "string",
+                        "enum": ["diet", "excretion", "abnormal", "vaccine", "deworming", "medical", "daily"],
+                        "description": "New category.",
+                    },
+                },
+                "required": ["event_id"],
             },
         },
     },
@@ -298,6 +341,19 @@ async def _create_calendar_event(
     db.add(event)
     await db.flush()
 
+    # Background: embed this event for RAG retrieval
+    task = asyncio.create_task(_rag_write_event(
+        user_id=user_id,
+        pet_id=pet_id,
+        event_id=event.id,
+        event_date=event_date,
+        category=arguments["category"],
+        title=title,
+        raw_text=raw_text,
+    ))
+    _bg_tasks.add(task)
+    task.add_done_callback(_bg_tasks.discard)
+
     card = {
         "type": "record",
         "pet_name": pet.name,
@@ -352,6 +408,57 @@ async def _query_calendar_events(
             for e in events
         ],
         "count": len(events),
+    }
+
+
+async def _update_calendar_event(
+    arguments: dict,
+    db: AsyncSession,
+    user_id: uuid.UUID,
+) -> dict:
+    """Update an existing CalendarEvent."""
+    event_id = uuid.UUID(arguments["event_id"])
+
+    result = await db.execute(
+        select(CalendarEvent).where(
+            CalendarEvent.id == event_id, CalendarEvent.user_id == user_id
+        )
+    )
+    event = result.scalar_one_or_none()
+    if not event:
+        return {"success": False, "error": "Event not found"}
+
+    if "event_date" in arguments:
+        event.event_date = date.fromisoformat(arguments["event_date"])
+    if "event_time" in arguments:
+        parts = arguments["event_time"].split(":")
+        event.event_time = time(int(parts[0]), int(parts[1]))
+    if "title" in arguments:
+        event.title = arguments["title"]
+    if "category" in arguments:
+        event.category = EventCategory(arguments["category"])
+
+    event.edited = True
+    await db.flush()
+
+    # Load pet name for card
+    pet_result = await db.execute(select(Pet).where(Pet.id == event.pet_id))
+    pet = pet_result.scalar_one_or_none()
+
+    card = {
+        "type": "record",
+        "pet_name": pet.name if pet else "Unknown",
+        "date": event.event_date.isoformat(),
+        "category": event.category.value,
+        "title": event.title,
+    }
+
+    return {
+        "success": True,
+        "event_id": str(event.id),
+        "title": event.title,
+        "event_date": event.event_date.isoformat(),
+        "card": card,
     }
 
 
@@ -455,11 +562,18 @@ async def _update_pet_profile(
 
     await db.flush()
 
+    card = {
+        "type": "pet_updated",
+        "pet_name": pet.name,
+        "saved_keys": list(info.keys()),
+    }
+
     return {
         "success": True,
         "pet_id": str(pet.id),
         "pet_name": pet.name,
         "saved_keys": list(info.keys()),
+        "card": card,
     }
 
 
@@ -611,6 +725,7 @@ async def _draft_email(
 _TOOL_HANDLERS = {
     "create_calendar_event": _create_calendar_event,
     "query_calendar_events": _query_calendar_events,
+    "update_calendar_event": _update_calendar_event,
     "create_pet": _create_pet,
     "update_pet_profile": _update_pet_profile,
     "list_pets": _list_pets,
