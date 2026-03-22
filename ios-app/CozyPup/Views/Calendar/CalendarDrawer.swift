@@ -1,5 +1,9 @@
 import SwiftUI
 
+enum CalendarMode {
+    case calendar, timeline, singleDay
+}
+
 struct CalendarDrawer: View {
     @EnvironmentObject var calendarStore: CalendarStore
     @EnvironmentObject var petStore: PetStore
@@ -9,6 +13,8 @@ struct CalendarDrawer: View {
     @State private var month: Int
     @State private var selectedDate: String?
     @State private var filterPetId: String?
+    @State private var mode: CalendarMode = .calendar
+    @State private var singleDayDate: String?
 
     init(isPresented: Binding<Bool>) {
         _isPresented = isPresented
@@ -59,33 +65,82 @@ struct CalendarDrawer: View {
                     .padding(.top, 70)
                     .padding(.bottom, 0) // No bottom padding so triangle touches card
 
-                    // Calendar Card
-                    calendarCard
-                        .padding(.horizontal, Tokens.spacing.md)
-                        .padding(.bottom, Tokens.spacing.md)
-                        .shadow(color: .black.opacity(0.03), radius: 8, y: 2)
-
-                    // Events List
-                    if selectedDate != nil {
-                        eventsList
+                    switch mode {
+                    case .calendar:
+                        // Calendar Card
+                        calendarCard
                             .padding(.horizontal, Tokens.spacing.md)
-                            .padding(.bottom, 30)
-                    } else {
-                        Spacer().frame(height: 30)
+                            .padding(.bottom, Tokens.spacing.md)
+                            .shadow(color: .black.opacity(0.03), radius: 8, y: 2)
+
+                        // Events List
+                        if selectedDate != nil {
+                            eventsList
+                                .padding(.horizontal, Tokens.spacing.md)
+                                .padding(.bottom, 30)
+                        } else {
+                            Spacer().frame(height: 30)
+                        }
+
+                    case .timeline:
+                        // Placeholder - will be replaced by MultiDayTimelineView in Feature 6
+                        VStack(spacing: Tokens.spacing.sm) {
+                            Text(L.timeline)
+                                .font(Tokens.fontTitle)
+                                .foregroundColor(Tokens.text)
+                            Text("Coming soon")
+                                .font(Tokens.fontCaption)
+                                .foregroundColor(Tokens.textTertiary)
+                        }
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
+
+                    case .singleDay:
+                        if let date = singleDayDate {
+                            // Placeholder - will be replaced by SingleDayTimelineView in Feature 8
+                            VStack(spacing: Tokens.spacing.sm) {
+                                Text(date)
+                                    .font(Tokens.fontTitle)
+                                    .foregroundColor(Tokens.text)
+                                Button(L.back) {
+                                    withAnimation(.easeInOut(duration: 0.3)) { mode = .timeline }
+                                }
+                                .foregroundColor(Tokens.accent)
+                            }
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
+                        }
                     }
                 }
             }
             
-            // Close button
-            Button {
-                withAnimation(.easeInOut(duration: 0.3)) { isPresented = false }
-            } label: {
-                Image(systemName: "xmark")
-                    .font(Tokens.fontSubheadline.weight(.medium))
-                    .foregroundColor(Tokens.textSecondary)
-                    .frame(width: Tokens.size.buttonSmall, height: Tokens.size.buttonSmall)
-                    .background(Tokens.surface)
-                    .clipShape(Circle())
+            // Top bar buttons
+            HStack(spacing: Tokens.spacing.sm) {
+                // Mode toggle
+                Button {
+                    withAnimation(.easeInOut(duration: 0.3)) {
+                        mode = (mode == .calendar) ? .timeline : .calendar
+                    }
+                } label: {
+                    Image(systemName: mode == .calendar ? "list.bullet" : "calendar")
+                        .font(Tokens.fontSubheadline)
+                        .foregroundColor(mode == .timeline ? Tokens.white : Tokens.textSecondary)
+                        .frame(width: Tokens.size.iconSmall, height: Tokens.size.iconSmall)
+                        .background(mode == .timeline ? Tokens.accent : Tokens.surface)
+                        .clipShape(Circle())
+                }
+
+                // Close button
+                Button {
+                    withAnimation(.easeInOut(duration: 0.3)) { isPresented = false }
+                } label: {
+                    Image(systemName: "xmark")
+                        .font(Tokens.fontSubheadline.weight(.medium))
+                        .foregroundColor(Tokens.textSecondary)
+                        .frame(width: Tokens.size.buttonSmall, height: Tokens.size.buttonSmall)
+                        .background(Tokens.surface)
+                        .clipShape(Circle())
+                }
             }
             .padding(.trailing, Tokens.spacing.md)
             .padding(.top, Tokens.spacing.md)
