@@ -34,4 +34,5 @@ class CalendarEventResponse(BaseModel):
     raw_text: str
     source: EventSource
     edited: bool
+    photos: list[str] = []
     created_at: str
