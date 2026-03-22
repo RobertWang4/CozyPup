@@ -135,6 +135,27 @@ class CalendarStore: ObservableObject {
         }
     }
 
+    // MARK: - Photo upload
+
+    func uploadEventPhoto(eventId: String, imageData: Data) async {
+        do {
+            let data = try await APIClient.shared.uploadMultipart(
+                "/calendar/\(eventId)/photos",
+                fileData: imageData,
+                fileName: "photo.jpg",
+                mimeType: "image/jpeg"
+            )
+            if let updated = try? JSONDecoder().decode(CalendarEvent.self, from: data) {
+                if let idx = events.firstIndex(where: { $0.id == eventId }) {
+                    events[idx].photos = updated.photos
+                    saveLocal()
+                }
+            }
+        } catch {
+            print("CalendarStore.uploadEventPhoto failed: \(error)")
+        }
+    }
+
     // MARK: - Local filtering (unchanged)
 
     func eventsForDate(_ date: String) -> [CalendarEvent] {

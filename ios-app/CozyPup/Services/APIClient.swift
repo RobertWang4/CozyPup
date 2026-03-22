@@ -134,6 +134,47 @@ actor APIClient {
         return true
     }
 
+    // MARK: - Multipart upload
+
+    func uploadMultipart(
+        _ path: String,
+        fileData: Data,
+        fileName: String,
+        mimeType: String
+    ) async throws -> Data {
+        guard let token = accessToken else { throw APIError.notAuthenticated }
+
+        let url = URL(string: "\(baseURL)\(path)")!
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        let boundary = UUID().uuidString
+        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+
+        var body = Data()
+        body.append("--\(boundary)\r\n".data(using: .utf8)!)
+        body.append("Content-Disposition: form-data; name=\"file\"; filename=\"\(fileName)\"\r\n".data(using: .utf8)!)
+        body.append("Content-Type: \(mimeType)\r\n\r\n".data(using: .utf8)!)
+        body.append(fileData)
+        body.append("\r\n--\(boundary)--\r\n".data(using: .utf8)!)
+        request.httpBody = body
+
+        let (data, response) = try await URLSession.shared.data(for: request)
+        let status = (response as? HTTPURLResponse)?.statusCode ?? 0
+
+        if status == 401 {
+            if try await attemptRefresh() {
+                return try await uploadMultipart(path, fileData: fileData, fileName: fileName, mimeType: mimeType)
+            }
+            throw APIError.notAuthenticated
+        }
+
+        guard (200...299).contains(status) else {
+            throw APIError.badStatus(status)
+        }
+        return data
+    }
+
     // MARK: - SSE streaming with auth
 
     func streamRequest(_ path: String, body: some Encodable) -> AsyncThrowingStream<(String, Data), Error> {
