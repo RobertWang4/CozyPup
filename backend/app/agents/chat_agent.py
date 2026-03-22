@@ -2,6 +2,7 @@
 
 import json
 import logging
+import re
 from typing import Callable, Optional
 
 import litellm
@@ -16,6 +17,19 @@ logger = logging.getLogger(__name__)
 
 # Maximum rounds of tool calls before forcing a text response
 MAX_TOOL_ROUNDS = 5
+
+# Patterns that indicate the LLM claimed to perform an action without actually
+# calling a tool, OR asked "which pet?" instead of acting.
+_SHOULD_HAVE_ACTED = re.compile(
+    # Claimed action without tool call
+    r"已记录|已更新|已保存|已添加|已设置|记住了|帮你记|帮你添加|帮你设"
+    r"|I'?ve recorded|I'?ve updated|I'?ve saved|I'?ve added|I'?ve set"
+    r"|I recorded|I updated|I saved|I added|I created"
+    r"|recorded it|saved it|added it|updated it|created it"
+    # Asked "which pet?" instead of acting
+    r"|哪只狗|哪只猫|哪只宠物|带哪只|哪个宠物|which pet|which dog|which cat",
+    re.IGNORECASE,
+)
 
 
 class ChatAgent(BaseAgent):
@@ -66,6 +80,7 @@ class ChatAgent(BaseAgent):
 
         full_response = ""
         cards: list[dict] = []
+        any_tool_called = False
 
         for _round in range(MAX_TOOL_ROUNDS):
             # Stream the LLM response
@@ -78,6 +93,8 @@ class ChatAgent(BaseAgent):
             if not tool_calls:
                 # No tool calls — we're done
                 break
+
+            any_tool_called = True
 
             # Process tool calls
             # Add assistant message with tool calls to conversation
@@ -140,17 +157,99 @@ class ChatAgent(BaseAgent):
                     "content": json.dumps(result),
                 })
 
+        # --- Post-check: detect hallucinated actions or "which pet?" ---
+        if not any_tool_called and _SHOULD_HAVE_ACTED.search(full_response):
+            logger.warning(
+                "should_have_acted_detected",
+                extra={"response_snippet": full_response[:200]},
+            )
+            retry_text, retry_cards = await self._retry_with_forced_tool(
+                messages, model=model, db=db, user_id=user_id,
+                location=location, on_token=on_token, on_card=on_card,
+            )
+            if retry_cards:
+                full_response = retry_text
+                cards = retry_cards
+
         return {
             "response": full_response,
             "intent": "chat",
             "cards": cards,
         }
 
+    async def _retry_with_forced_tool(
+        self,
+        messages: list[dict],
+        model: str,
+        db,
+        user_id,
+        location=None,
+        on_token: Optional[Callable] = None,
+        on_card: Optional[Callable] = None,
+    ) -> tuple[str, list[dict]]:
+        """Retry with tool_choice=required when post-check detects the LLM
+        claimed an action or asked "which pet?" without calling a tool."""
+        retry_messages = list(messages) + [
+            {
+                "role": "user",
+                "content": (
+                    "You MUST call a tool NOW. Do NOT ask which pet — "
+                    "if unsure, call the tool once for EACH pet. Act immediately."
+                ),
+            }
+        ]
+
+        response_text, tool_calls = await self._stream_completion(
+            retry_messages, model=model, on_token=on_token, tool_choice="required",
+        )
+
+        cards: list[dict] = []
+        if not tool_calls:
+            return response_text, cards
+
+        assistant_msg = {"role": "assistant", "content": response_text or None, "tool_calls": tool_calls}
+        retry_messages.append(assistant_msg)
+
+        for tc in tool_calls:
+            fn_name = tc["function"]["name"]
+            try:
+                fn_args = json.loads(tc["function"]["arguments"])
+            except json.JSONDecodeError:
+                continue
+
+            validation_errors = validate_tool_args(fn_name, fn_args)
+            if validation_errors:
+                continue
+
+            try:
+                result = await execute_tool(fn_name, fn_args, db, user_id, location=location)
+                if "card" in result:
+                    cards.append(result["card"])
+                    if on_card:
+                        await _maybe_await(on_card, result["card"])
+            except Exception as exc:
+                logger.error("retry_tool_error", extra={"tool": fn_name, "error": str(exc)[:200]})
+
+        if cards:
+            for tc in tool_calls:
+                retry_messages.append({
+                    "role": "tool",
+                    "tool_call_id": tc["id"],
+                    "content": json.dumps({"success": True}),
+                })
+            final_text, _ = await self._stream_completion(
+                retry_messages, model=model, on_token=on_token,
+            )
+            return final_text, cards
+
+        return response_text, cards
+
     async def _stream_completion(
         self,
         messages: list[dict],
         model: str | None = None,
         on_token: Optional[Callable] = None,
+        tool_choice: str = "auto",
     ) -> tuple[str, list[dict]]:
         """Call LiteLLM with streaming and collect text + tool calls.
 
@@ -165,7 +264,7 @@ class ChatAgent(BaseAgent):
             model=model,
             messages=messages,
             tools=TOOL_DEFINITIONS,
-            tool_choice="auto",
+            tool_choice=tool_choice,
             stream=True,
             temperature=0.3,
         )
