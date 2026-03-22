@@ -135,6 +135,12 @@ class ChatAgent(BaseAgent):
                 try:
                     result = await execute_tool(fn_name, fn_args, db, user_id, location=location)
 
+                    # Commit immediately so data is persisted before the card
+                    # is sent to the frontend. This ensures card display and
+                    # database write are always in sync — if the user sees a
+                    # card, the data is guaranteed to be in the database.
+                    await db.commit()
+
                     if "card" in result:
                         card = result["card"]
                         cards.append(card)
@@ -220,6 +226,7 @@ class ChatAgent(BaseAgent):
 
             try:
                 result = await execute_tool(fn_name, fn_args, db, user_id, location=location)
+                await db.commit()
                 if "card" in result:
                     cards.append(result["card"])
                     if on_card:
