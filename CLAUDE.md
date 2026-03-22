@@ -108,13 +108,13 @@ ios-app/CozyPup/
 - **Unified ChatAgent**: No intent router — single ChatAgent handles all interactions (chat, summaries, emails, map search) via one LLM call with function calling
 - **Constrained Agent framework**: Schema validation + ownership checks + feedback loop to minimize LLM errors without needing expensive models
 - **Orchestrator + Executor**: LLM decides what to do (function calling), pure code executes it (DB writes, API calls)
-- **Single model**: One LLM for everything (default: DeepSeek-V3.2), framework validation compensates for model limitations
+- **Dual-model routing**: Qwen3.5-Plus for daily chat (cheap), Kimi K2.5 for emergencies (accurate). Routed via emergency keyword detection in `agents/emergency.py`
 - **pet_logs merged into calendar_events**: Added category, raw_text, edited, source fields
 - **Dev auth**: `POST /api/v1/auth/dev` bypasses OAuth for simulator testing
 
 ## Environment
 
-Backend `.env` requires: `DATABASE_URL` (Neon PostgreSQL), `JWT_SECRET`, `DEEPSEEK_API_KEY`. See `.env.example`.
+Backend `.env` requires: `DATABASE_URL` (Neon PostgreSQL), `JWT_SECRET`, `MODEL_API_BASE`, `MODEL_API_KEY`. See `.env.example`.
 
 Pet color palette (shared between backend and iOS): `["E8835C", "6BA3BE", "7BAE7F", "9B7ED8", "E8A33C"]`
 

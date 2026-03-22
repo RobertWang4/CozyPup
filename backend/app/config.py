@@ -3,8 +3,10 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     database_url: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/cozypup"
-    strong_model: str = "deepseek/deepseek-chat"
-    cheap_model: str = "qwen/qwen-turbo"
+    default_model: str = "openai/qwen3.5-plus-2026-02-15"
+    emergency_model: str = "openai/kimi-k2.5"
+    model_api_base: str = ""   # Proxy base URL (e.g. https://api.shubiaobiao.cn/v1)
+    model_api_key: str = ""    # Proxy API key
     google_places_api_key: str = ""
     jwt_secret: str = "change-me-in-production"
     jwt_access_expire_minutes: int = 60

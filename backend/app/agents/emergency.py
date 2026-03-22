@@ -6,6 +6,7 @@ import re
 logger = logging.getLogger(__name__)
 
 EMERGENCY_KEYWORDS: list[str] = [
+    # English
     "seizure",
     "poison",
     "choking",
@@ -29,6 +30,38 @@ EMERGENCY_KEYWORDS: list[str] = [
     "snake bite",
     "bee sting",
     "allergic reaction",
+    # Chinese
+    "抽搐",
+    "中毒",
+    "窒息",
+    "出血",
+    "大出血",
+    "呼吸困难",
+    "不呼吸",
+    "昏迷",
+    "晕倒",
+    "被车撞",
+    "误食",
+    "吞了",
+    "有毒",
+    "痉挛",
+    "瘫痪",
+    "腹胀",
+    "胃扭转",
+    "中暑",
+    "冻伤",
+    "溺水",
+    "触电",
+    "蛇咬",
+    "蜜蜂蛰",
+    "过敏性休克",
+    "翻白眼",
+    "口吐白沫",
+    "站不起来",
+    "急救",
+    "快死了",
+    "不动了",
+    "没有意识",
 ]
 
 # Build a single compiled regex for efficient matching.

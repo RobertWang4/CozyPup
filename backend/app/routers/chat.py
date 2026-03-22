@@ -131,6 +131,7 @@ async def _run_chat_agent_to_queue(
     db: AsyncSession,
     pets: list[Pet],
     context_messages: list[dict],
+    is_emergency: bool = False,
 ):
     """Run ChatAgent, pushing SSE events into the queue."""
     pet_context = await _build_pet_context(pets)
@@ -154,6 +155,7 @@ async def _run_chat_agent_to_queue(
                 "user_id": user_id,
                 "session_id": session.id,
                 "location": request.location,
+                "is_emergency": is_emergency,
             },
             on_token=on_token,
             on_card=on_card,
@@ -182,7 +184,8 @@ async def _event_generator(
     await _save_message(db, session.id, user_id, MessageRole.user, request.message)
 
     # 3. Emergency detection (non-blocking — emitted before chat response)
-    if detect_emergency(request.message):
+    is_emergency = detect_emergency(request.message)
+    if is_emergency:
         logger.info("emergency_detected", extra={
             "session_id": session_id,
             "user_id": str(user_id),
@@ -200,7 +203,8 @@ async def _event_generator(
     queue: asyncio.Queue = asyncio.Queue()
     task = asyncio.create_task(
         _run_chat_agent_to_queue(
-            queue, request, session, user_id, db, pets, context_messages
+            queue, request, session, user_id, db, pets, context_messages,
+            is_emergency=is_emergency,
         )
     )
 

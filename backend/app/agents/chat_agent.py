@@ -39,6 +39,7 @@ class ChatAgent(BaseAgent):
                 - db (AsyncSession): Database session for tool execution.
                 - user_id (UUID): Authenticated user ID.
                 - session_id (UUID): Current chat session ID.
+                - is_emergency (bool): Whether emergency keywords were detected.
             on_token: Callback for streaming text tokens — on_token(text: str).
             on_card: Callback for card events — on_card(card_data: dict).
 
@@ -49,6 +50,11 @@ class ChatAgent(BaseAgent):
         user_id = context["user_id"]
         location = context.get("location")
         system_prompt = context.get("system_prompt", CHAT_SYSTEM_PROMPT)
+
+        # Model routing: emergency → Kimi K2.5, normal → Qwen
+        is_emergency = context.get("is_emergency", False)
+        model = settings.emergency_model if is_emergency else settings.default_model
+        logger.info("model_selected", extra={"model": model, "is_emergency": is_emergency})
 
         # Build message history
         context_messages = context.get("context_messages", [])
@@ -64,7 +70,7 @@ class ChatAgent(BaseAgent):
         for _round in range(MAX_TOOL_ROUNDS):
             # Stream the LLM response
             response_text, tool_calls = await self._stream_completion(
-                messages, on_token=on_token
+                messages, model=model, on_token=on_token
             )
 
             full_response += response_text
@@ -143,6 +149,7 @@ class ChatAgent(BaseAgent):
     async def _stream_completion(
         self,
         messages: list[dict],
+        model: str | None = None,
         on_token: Optional[Callable] = None,
     ) -> tuple[str, list[dict]]:
         """Call LiteLLM with streaming and collect text + tool calls.
@@ -151,14 +158,29 @@ class ChatAgent(BaseAgent):
             (response_text, tool_calls) where tool_calls is a list of
             OpenAI-format tool call dicts.
         """
-        response = await litellm.acompletion(
-            model=settings.strong_model,
+        model = model or settings.default_model
+
+        # Build LiteLLM call kwargs
+        completion_kwargs: dict = dict(
+            model=model,
             messages=messages,
             tools=TOOL_DEFINITIONS,
             tool_choice="auto",
             stream=True,
             temperature=0.3,
         )
+
+        # Proxy credentials
+        if settings.model_api_base:
+            completion_kwargs["api_base"] = settings.model_api_base
+        if settings.model_api_key:
+            completion_kwargs["api_key"] = settings.model_api_key
+
+        # Disable thinking/reasoning output for Qwen models
+        if "qwen" in model.lower():
+            completion_kwargs["extra_body"] = {"enable_thinking": False}
+
+        response = await litellm.acompletion(**completion_kwargs)
 
         text_parts: list[str] = []
         tool_calls_map: dict[int, dict] = {}  # index -> tool call accumulator
