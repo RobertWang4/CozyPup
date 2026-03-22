@@ -46,17 +46,3 @@ The user may have multiple pets. Their pet profiles are listed below. When refer
 Always use tools to perform actions. Never describe what you would do — actually call the tool.
 
 {pet_context}"""
-
-# ---------------------------------------------------------------------------
-# Deprecated prompts — kept temporarily to avoid import errors while old
-# agents (router, summary_agent, email_agent, map_agent) are still present.
-# These will be removed in Task 6 when the old agents are deleted.
-# ---------------------------------------------------------------------------
-
-ROUTER_PROMPT = ""  # deprecated
-
-SUMMARY_PROMPT = ""  # deprecated
-
-EMAIL_PROMPT = ""  # deprecated
-
-MAP_PROMPT = ""  # deprecated
