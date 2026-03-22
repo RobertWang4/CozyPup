@@ -275,12 +275,13 @@ async def _create_calendar_event(
         parts = event_time_str.split(":")
         event_time = time(int(parts[0]), int(parts[1]))
 
-    # Look up pet name for card data
+    # Verify pet belongs to user
     pet_result = await db.execute(
         select(Pet).where(Pet.id == pet_id, Pet.user_id == user_id)
     )
     pet = pet_result.scalar_one_or_none()
-    pet_name = pet.name if pet else "Unknown"
+    if not pet:
+        return {"success": False, "error": "Pet not found"}
 
     event = CalendarEvent(
         user_id=user_id,
@@ -299,7 +300,7 @@ async def _create_calendar_event(
 
     card = {
         "type": "record",
-        "pet_name": pet_name,
+        "pet_name": pet.name,
         "date": arguments["event_date"],
         "category": arguments["category"],
         "title": title,
@@ -590,7 +591,6 @@ async def _draft_email(
     arguments: dict,
     db: AsyncSession,
     user_id: uuid.UUID,
-    **_kwargs,
 ) -> dict:
     """Wrap an email draft into a card for the frontend."""
     subject = arguments["subject"]
