@@ -192,12 +192,18 @@ class ChatAgent(BaseAgent):
         """Call LiteLLM with streaming and collect text + tool calls."""
         model = model or settings.default_model
 
+        # Qwen streaming bug: enable_thinking=False is ignored in streaming mode,
+        # so tool_choice=required fails. Workaround: when forcing tool calls on Qwen,
+        # use a non-streaming call to extract tool calls, then stream the follow-up.
+        is_qwen = "qwen" in (model or "").lower()
+        force_non_stream = is_qwen and tool_choice == "required"
+
         completion_kwargs: dict = dict(
             model=model,
             messages=messages,
             tools=TOOL_DEFINITIONS,
             tool_choice=tool_choice,
-            stream=True,
+            stream=not force_non_stream,
             temperature=0.3,
         )
 
@@ -206,11 +212,30 @@ class ChatAgent(BaseAgent):
         if settings.model_api_key:
             completion_kwargs["api_key"] = settings.model_api_key
 
-        if "qwen" in model.lower():
-            # Must be top-level param (not extra_body) for the proxy to forward it
-            completion_kwargs["enable_thinking"] = False
+        if is_qwen:
+            completion_kwargs["extra_body"] = {"enable_thinking": False}
 
         response = await litellm.acompletion(**completion_kwargs)
+
+        # Non-streaming path for Qwen + tool_choice=required
+        if force_non_stream:
+            msg = response.choices[0].message
+            text = msg.content or ""
+            tool_calls = []
+            if msg.tool_calls:
+                for tc in msg.tool_calls:
+                    tc_dict = tc if isinstance(tc, dict) else {
+                        "id": tc.id,
+                        "type": "function",
+                        "function": {
+                            "name": tc.function.name,
+                            "arguments": tc.function.arguments,
+                        },
+                    }
+                    tool_calls.append(tc_dict)
+            if text and on_token:
+                await _maybe_await(on_token, text)
+            return text, tool_calls
 
         text_parts: list[str] = []
         tool_calls_map: dict[int, dict] = {}
