@@ -60,6 +60,11 @@ TOOL_DEFINITIONS = [
                         "type": "string",
                         "description": "Optional original user text that triggered this record.",
                     },
+                    "photo_urls": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "description": "URLs of photos to attach to this event (if user sent images)",
+                    },
                 },
                 "required": ["pet_id", "event_date", "title", "category"],
             },
@@ -338,6 +343,12 @@ async def _create_calendar_event(
         source=EventSource.chat,
         edited=False,
     )
+
+    # Attach photos if provided
+    photo_urls = arguments.get("photo_urls", [])
+    if photo_urls:
+        event.photos = photo_urls
+
     db.add(event)
     await db.flush()
 
