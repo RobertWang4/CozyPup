@@ -12,6 +12,7 @@ struct ChatBubble: View {
             Text(content)
                 .font(Tokens.fontBody)
                 .foregroundColor(isUser ? Tokens.white : Tokens.text)
+                .textSelection(.enabled)
                 .padding(.horizontal, Tokens.spacing.md)
                 .padding(.vertical, 10)
                 .background(isUser ? Tokens.bubbleUser : Tokens.bubbleAi)
