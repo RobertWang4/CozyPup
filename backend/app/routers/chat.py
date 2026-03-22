@@ -13,14 +13,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sse_starlette.sse import EventSourceResponse
 
 from app.agents.chat_agent import ChatAgent
-from app.agents.email_agent import EmailAgent
 from app.agents.emergency import detect_emergency
-from app.agents.map_agent import MapAgent
 from app.agents.prompts import CHAT_SYSTEM_PROMPT
-from app.agents.router import route_intent
-from app.agents.summary_agent import SummaryAgent
 from app.auth import get_current_user_id
-from app.config import settings
 from app.database import get_db
 from app.models import Chat, ChatSession, MessageRole, Pet
 
@@ -29,17 +24,14 @@ router = APIRouter(prefix="/api/v1", tags=["chat"])
 
 MAX_CONTEXT_MESSAGES = 20
 
-# Singleton agent instances
 _chat_agent = ChatAgent()
-_summary_agent = SummaryAgent()
-_map_agent = MapAgent()
-_email_agent = EmailAgent()
 
 
 class ChatRequest(BaseModel):
     message: str
     session_id: str | None = None
     location: dict | None = None  # {"lat": float, "lng": float}
+    language: str | None = None   # "zh", "en", or None (auto-detect from message)
 
 
 async def _get_or_create_session(
@@ -79,14 +71,17 @@ async def _build_pet_context(pets: list[Pet]) -> str:
 
     lines = ["The user's pets:"]
     for p in pets:
-        parts = [f"- {p.name} (id: {p.id}): {p.species.value}"]
+        info = [f"- {p.name} (id: {p.id}): {p.species.value}"]
         if p.breed:
-            parts.append(f", breed: {p.breed}")
+            info.append(f"breed={p.breed}")
         if p.weight:
-            parts.append(f", weight: {p.weight}kg")
+            info.append(f"weight={p.weight}kg")
         if p.birthday:
-            parts.append(f", birthday: {p.birthday.isoformat()}")
-        lines.append("".join(parts))
+            info.append(f"birthday={p.birthday.isoformat()}")
+        lines.append(", ".join(info))
+        if p.profile:
+            profile_str = json.dumps(p.profile, ensure_ascii=False)
+            lines.append(f"  Profile: {profile_str}")
     return "\n".join(lines)
 
 
@@ -125,21 +120,23 @@ async def _save_message(
     return msg
 
 
-_SENTINEL = object()  # Marks end of streaming queue
+_SENTINEL = object()
 
 
 async def _run_chat_agent_to_queue(
     queue: asyncio.Queue,
-    request,
-    session,
-    user_id,
-    db,
-    pets,
-    context_messages,
+    request: ChatRequest,
+    session: ChatSession,
+    user_id: uuid.UUID,
+    db: AsyncSession,
+    pets: list[Pet],
+    context_messages: list[dict],
 ):
-    """Run ChatAgent, pushing SSE events into the queue as they arrive."""
+    """Run ChatAgent, pushing SSE events into the queue."""
     pet_context = await _build_pet_context(pets)
-    system_msg = CHAT_SYSTEM_PROMPT.format(pet_context=pet_context)
+    system_msg = CHAT_SYSTEM_PROMPT.format(
+        pet_context=pet_context, today_date=date.today().isoformat()
+    )
 
     async def on_token(text):
         await queue.put({"event": "token", "data": json.dumps({"text": text})})
@@ -156,11 +153,11 @@ async def _run_chat_agent_to_queue(
                 "db": db,
                 "user_id": user_id,
                 "session_id": session.id,
+                "location": request.location,
             },
             on_token=on_token,
             on_card=on_card,
         )
-        # Stash the final result for the caller to save
         await queue.put(("_result", result))
     except Exception as e:
         logger.error("chat_agent_error", extra={
@@ -174,63 +171,6 @@ async def _run_chat_agent_to_queue(
         await queue.put(_SENTINEL)
 
 
-async def _handle_summary(request, session, user_id, db, pets):
-    """Handle intent=summarize via SummaryAgent."""
-    try:
-        result = await _summary_agent.execute(
-            request.message,
-            {
-                "db": db,
-                "user_id": user_id,
-                "session_id": session.id,
-                "pets": pets,
-            },
-        )
-        return result.get("summary_text", ""), result.get("cards", [])
-    except Exception as e:
-        logger.error("summary_agent_error", extra={"error": str(e)[:500]})
-        return "Sorry, I couldn't summarize the conversation right now.", []
-
-
-async def _handle_map(request, user_id, pets):
-    """Handle intent=map via MapAgent."""
-    try:
-        result = await _map_agent.execute(
-            request.message,
-            {
-                "location": request.location,
-                "pets": pets,
-            },
-        )
-        response_text = result.get("response", "")
-        card = result.get("card")
-        return response_text, [card] if card else []
-    except Exception as e:
-        logger.error("map_agent_error", extra={"error": str(e)[:500]})
-        return "Sorry, I couldn't search for locations right now.", []
-
-
-async def _handle_email(request, user_id, db, session, pets, context_messages):
-    """Handle intent=email via EmailAgent."""
-    try:
-        result = await _email_agent.execute(
-            request.message,
-            {
-                "db": db,
-                "user_id": user_id,
-                "session_id": session.id,
-                "pets": pets,
-                "context_messages": context_messages,
-            },
-        )
-        response_text = result.get("response", "")
-        card = result.get("card")
-        return response_text, [card] if card else []
-    except Exception as e:
-        logger.error("email_agent_error", extra={"error": str(e)[:500]})
-        return "Sorry, I couldn't generate the email right now.", []
-
-
 async def _event_generator(
     request: ChatRequest, user_id: uuid.UUID, db: AsyncSession
 ):
@@ -242,87 +182,52 @@ async def _event_generator(
     await _save_message(db, session.id, user_id, MessageRole.user, request.message)
 
     # 3. Emergency detection (non-blocking — emitted before chat response)
-    is_emergency = detect_emergency(request.message)
-    if is_emergency:
+    if detect_emergency(request.message):
         logger.info("emergency_detected", extra={
             "session_id": session_id,
             "user_id": str(user_id),
-            "message_preview": request.message[:100],
         })
         yield {
             "event": "emergency",
             "data": json.dumps({"message": "Possible emergency detected", "action": "find_er"}),
         }
 
-    # 4. Load shared context
+    # 4. Load context
     pets = await _get_pets(db, user_id)
     context_messages = await _get_context_messages(db, session.id)
 
-    # 5. Route intent
-    intent = await route_intent(request.message, context_messages)
-    logger.info("intent_routed", extra={"session_id": session_id, "intent": intent})
-
-    # 6. Dispatch to the appropriate agent
-    if intent == "chat":
-        # Stream tokens in real-time via queue
-        queue: asyncio.Queue = asyncio.Queue()
-        task = asyncio.create_task(
-            _run_chat_agent_to_queue(
-                queue, request, session, user_id, db, pets, context_messages
-            )
+    # 5. Stream ChatAgent response
+    queue: asyncio.Queue = asyncio.Queue()
+    task = asyncio.create_task(
+        _run_chat_agent_to_queue(
+            queue, request, session, user_id, db, pets, context_messages
         )
+    )
 
-        result = {"response": "", "cards": []}
-        while True:
-            item = await queue.get()
-            if item is _SENTINEL:
-                break
-            if isinstance(item, tuple) and item[0] == "_result":
-                result = item[1]
-                continue
-            # item is an SSE event dict
-            yield item
+    result = {"response": "", "cards": []}
+    while True:
+        item = await queue.get()
+        if item is _SENTINEL:
+            break
+        if isinstance(item, tuple) and item[0] == "_result":
+            result = item[1]
+            continue
+        yield item
 
-        await task  # ensure task exceptions propagate
-        full_response = result.get("response", "")
-        cards = result.get("cards", [])
-    else:
-        # Non-streaming agents: summarize, map, email
-        if intent == "summarize":
-            full_response, cards = await _handle_summary(
-                request, session, user_id, db, pets
-            )
-        elif intent == "map":
-            full_response, cards = await _handle_map(request, user_id, pets)
-        elif intent == "email":
-            full_response, cards = await _handle_email(
-                request, user_id, db, session, pets, context_messages
-            )
-        else:
-            full_response = "I'm not sure how to handle that. Could you rephrase?"
-            cards = []
+    await task
+    full_response = result.get("response", "")
+    cards = result.get("cards", [])
 
-        # Emit full response as single token + cards
-        yield {
-            "event": "token",
-            "data": json.dumps({"text": full_response}),
-        }
-        for card in cards:
-            yield {
-                "event": "card",
-                "data": json.dumps(card),
-            }
-
-    # 7. Save assistant response
+    # 6. Save assistant response
     cards_json = json.dumps(cards) if cards else None
     await _save_message(
         db, session.id, user_id, MessageRole.assistant, full_response, cards_json
     )
 
-    # 8. Done event with detected intent
+    # 7. Done event
     yield {
         "event": "done",
-        "data": json.dumps({"intent": intent, "session_id": session_id}),
+        "data": json.dumps({"intent": "chat", "session_id": session_id}),
     }
 
 
