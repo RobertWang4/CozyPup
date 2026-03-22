@@ -83,31 +83,17 @@ struct CalendarDrawer: View {
                         }
 
                     case .timeline:
-                        // Placeholder - will be replaced by MultiDayTimelineView in Feature 6
-                        VStack(spacing: Tokens.spacing.sm) {
-                            Text(L.timeline)
-                                .font(Tokens.fontTitle)
-                                .foregroundColor(Tokens.text)
-                            Text("Coming soon")
-                                .font(Tokens.fontCaption)
-                                .foregroundColor(Tokens.textTertiary)
+                        MultiDayTimelineView(filterPetId: $filterPetId) { date in
+                            singleDayDate = date
+                            withAnimation(.easeInOut(duration: 0.3)) { mode = .singleDay }
                         }
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
 
                     case .singleDay:
                         if let date = singleDayDate {
-                            // Placeholder - will be replaced by SingleDayTimelineView in Feature 8
-                            VStack(spacing: Tokens.spacing.sm) {
-                                Text(date)
-                                    .font(Tokens.fontTitle)
-                                    .foregroundColor(Tokens.text)
-                                Button(L.back) {
-                                    withAnimation(.easeInOut(duration: 0.3)) { mode = .timeline }
-                                }
-                                .foregroundColor(Tokens.accent)
+                            SingleDayTimelineView(date: date, filterPetId: filterPetId) {
+                                withAnimation(.easeInOut(duration: 0.3)) { mode = .timeline }
                             }
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
                             .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
                         }
                     }
@@ -201,7 +187,13 @@ struct CalendarDrawer: View {
                 events: monthEvents,
                 pets: petStore.pets,
                 selectedDate: $selectedDate,
-                filterPetId: filterPetId
+                filterPetId: filterPetId,
+                onDoubleTap: { date in
+                    singleDayDate = date
+                    withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+                        mode = .singleDay
+                    }
+                }
             )
             .padding(.horizontal, 12)
             .padding(.bottom, 20)

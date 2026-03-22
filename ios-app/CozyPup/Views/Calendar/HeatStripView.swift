@@ -54,12 +54,12 @@ struct HeatStripView: View {
         let parts = time.split(separator: ":")
         guard parts.count >= 2,
               let hour = Int(parts[0]),
-              let min = Int(parts[1]) else { return nil }
-        let totalMin = CGFloat(hour * 60 + min)
+              let minute = Int(parts[1]) else { return nil }
+        let totalMin = CGFloat(hour * 60 + minute)
         let start: CGFloat = 360   // 6:00am
         let end: CGFloat = 1260    // 9:00pm
         let pct = (totalMin - start) / (end - start)
-        return max(0, min(pct, 1.0))
+        return Swift.max(0, Swift.min(pct, 1.0))
     }
 
     /// Resolve pet color: prefer the event's embedded petColorHex, then the Pet model, then accent fallback.

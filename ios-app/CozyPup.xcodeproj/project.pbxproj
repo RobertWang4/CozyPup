@@ -44,6 +44,10 @@
 		FA82C6590ACDC7D49CF14998 /* EventRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6D276B8E4BE99D3CA63F74F /* EventRow.swift */; };
 		FC5BC1932B70E128C7F1B81B /* EmergencyBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88BD4E3CC91B5ED73B8A2AB6 /* EmergencyBanner.swift */; };
 		FF279B03D7AC13828EE65FF4 /* PetFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 080771DF5730E9583B536DC5 /* PetFormView.swift */; };
+		A1B2C3D400000001A0000001 /* HeatStripView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D400000002A0000001 /* HeatStripView.swift */; };
+		A1B2C3D400000001A0000002 /* MultiDayTimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D400000002A0000002 /* MultiDayTimelineView.swift */; };
+		A1B2C3D400000001A0000003 /* SingleDayTimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D400000002A0000003 /* SingleDayTimelineView.swift */; };
+		A1B2C3D400000001A0000004 /* TimelineEventCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D400000002A0000004 /* TimelineEventCard.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -85,6 +89,10 @@
 		F3C84CB01CEA1113052604FF /* SpeechService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechService.swift; sourceTree = "<group>"; };
 		F9D034942C1B826D36D5E8D4 /* LegalPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegalPageView.swift; sourceTree = "<group>"; };
 		FBECB417FFCC3D48F84654B5 /* MonthGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonthGrid.swift; sourceTree = "<group>"; };
+		A1B2C3D400000002A0000001 /* HeatStripView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeatStripView.swift; sourceTree = "<group>"; };
+		A1B2C3D400000002A0000002 /* MultiDayTimelineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiDayTimelineView.swift; sourceTree = "<group>"; };
+		A1B2C3D400000002A0000003 /* SingleDayTimelineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleDayTimelineView.swift; sourceTree = "<group>"; };
+		A1B2C3D400000002A0000004 /* TimelineEventCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineEventCard.swift; sourceTree = "<group>"; };
 		FFCDE79E9D9654B2E99B6A3E /* RecordCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordCard.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -165,7 +173,11 @@
 			children = (
 				F142E2AF757CA909CA959BD8 /* CalendarDrawer.swift */,
 				E6D276B8E4BE99D3CA63F74F /* EventRow.swift */,
+				A1B2C3D400000002A0000001 /* HeatStripView.swift */,
 				FBECB417FFCC3D48F84654B5 /* MonthGrid.swift */,
+				A1B2C3D400000002A0000002 /* MultiDayTimelineView.swift */,
+				A1B2C3D400000002A0000003 /* SingleDayTimelineView.swift */,
+				A1B2C3D400000002A0000004 /* TimelineEventCard.swift */,
 			);
 			path = Calendar;
 			sourceTree = "<group>";
@@ -334,7 +346,11 @@
 				DBF96E2B35FB712BC97A1C27 /* LocationService.swift in Sources */,
 				51487E55A5465BDA994D245C /* LoginView.swift in Sources */,
 				DDE0B95A2BBD3D6913475404 /* MapCard.swift in Sources */,
+				A1B2C3D400000001A0000001 /* HeatStripView.swift in Sources */,
 				7731ABF813BF951F3E213A76 /* MonthGrid.swift in Sources */,
+				A1B2C3D400000001A0000002 /* MultiDayTimelineView.swift in Sources */,
+				A1B2C3D400000001A0000003 /* SingleDayTimelineView.swift in Sources */,
+				A1B2C3D400000001A0000004 /* TimelineEventCard.swift in Sources */,
 				6C6DBA9BDCB701B90E25D163 /* OnboardingView.swift in Sources */,
 				D7EF6BD5206BF3B30C294354 /* Pet.swift in Sources */,
 				FF279B03D7AC13828EE65FF4 /* PetFormView.swift in Sources */,
