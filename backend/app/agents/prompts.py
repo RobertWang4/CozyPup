@@ -46,4 +46,6 @@ The user's pets are listed below.
 
 {pet_context}
 
-{rag_context}"""
+{rag_context}
+
+{pre_analyzed_actions}"""

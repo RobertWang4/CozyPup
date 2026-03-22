@@ -162,6 +162,7 @@ async def _run_chat_agent_to_queue(
         pet_context=pet_context,
         today_date=date.today().isoformat(),
         rag_context=rag_context,
+        pre_analyzed_actions="{pre_analyzed_actions}",  # Replaced by ChatAgent
     )
 
     async def on_token(text):
@@ -181,6 +182,7 @@ async def _run_chat_agent_to_queue(
                 "session_id": session.id,
                 "location": request.location,
                 "is_emergency": is_emergency,
+                "pets": pets,
             },
             on_token=on_token,
             on_card=on_card,

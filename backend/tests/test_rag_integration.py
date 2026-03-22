@@ -54,6 +54,7 @@ class TestRagIntegration:
             pet_context="Test pet context",
             today_date="2026-03-22",
             rag_context="",
+            pre_analyzed_actions="",
         )
         assert "Test pet context" in formatted
         assert "{rag_context}" not in formatted
@@ -68,6 +69,7 @@ class TestRagIntegration:
             pet_context="Test pet context",
             today_date="2026-03-22",
             rag_context=rag,
+            pre_analyzed_actions="",
         )
         assert "Relevant History" in formatted
         assert "Doudu ate 200g" in formatted
