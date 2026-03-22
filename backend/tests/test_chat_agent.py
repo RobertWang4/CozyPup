@@ -72,7 +72,16 @@ async def test_pet(db: AsyncSession, test_user):
 class TestToolDefinitions:
     def test_definitions_are_list(self):
         assert isinstance(TOOL_DEFINITIONS, list)
-        assert len(TOOL_DEFINITIONS) == 2
+        assert len(TOOL_DEFINITIONS) == 8
+
+    def test_all_tool_names(self):
+        names = [t["function"]["name"] for t in TOOL_DEFINITIONS]
+        expected = [
+            "create_calendar_event", "query_calendar_events",
+            "create_pet", "update_pet_profile", "list_pets",
+            "create_reminder", "search_places", "draft_email",
+        ]
+        assert names == expected
 
     def test_create_event_definition_structure(self):
         create_tool = TOOL_DEFINITIONS[0]
@@ -459,3 +468,52 @@ class TestCreatePetTool:
         assert pet.profile["coat_color"] == "white"
         assert pet.birthday == date(2024, 6, 15)
         assert pet.weight == 25.0
+
+
+class TestSearchPlacesTool:
+    @pytest.mark.asyncio
+    async def test_search_places_no_location(self, db, user_id, test_user):
+        result = await execute_tool(
+            "search_places",
+            {"query": "vet clinic"},
+            db,
+            user_id,
+            location=None,
+        )
+        assert result["success"] is False
+        assert "location" in result["error"].lower()
+
+    @pytest.mark.asyncio
+    async def test_search_places_with_location(self, db, user_id, test_user):
+        mock_places = [
+            {"name": "Happy Vet", "address": "123 Main St", "rating": 4.5, "lat": 31.23, "lng": 121.47, "place_id": "abc", "open_now": True},
+        ]
+        with patch("app.services.places.places_service") as mock_svc:
+            mock_svc.search_nearby = AsyncMock(return_value=mock_places)
+            result = await execute_tool(
+                "search_places",
+                {"query": "veterinary clinic"},
+                db,
+                user_id,
+                location={"lat": 31.23, "lng": 121.47},
+            )
+        assert result["success"] is True
+        assert result["card"]["type"] == "map"
+        assert len(result["card"]["places"]) == 1
+
+
+class TestDraftEmailTool:
+    @pytest.mark.asyncio
+    async def test_draft_email(self, db, user_id, test_user):
+        result = await execute_tool(
+            "draft_email",
+            {
+                "subject": "Appointment for Buddy",
+                "body": "Dear Dr. Smith,\n\nI would like to book an appointment...",
+            },
+            db,
+            user_id,
+        )
+        assert result["success"] is True
+        assert result["card"]["type"] == "email"
+        assert result["card"]["subject"] == "Appointment for Buddy"

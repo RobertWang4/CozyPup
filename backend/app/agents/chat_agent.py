@@ -47,6 +47,7 @@ class ChatAgent(BaseAgent):
         """
         db = context["db"]
         user_id = context["user_id"]
+        location = context.get("location")
         system_prompt = context.get("system_prompt", CHAT_SYSTEM_PROMPT)
 
         # Build message history
@@ -112,7 +113,7 @@ class ChatAgent(BaseAgent):
                     continue
 
                 try:
-                    result = await execute_tool(fn_name, fn_args, db, user_id)
+                    result = await execute_tool(fn_name, fn_args, db, user_id, location=location)
 
                     if "card" in result:
                         card = result["card"]

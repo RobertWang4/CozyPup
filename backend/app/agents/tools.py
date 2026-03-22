@@ -202,6 +202,55 @@ TOOL_DEFINITIONS = [
             },
         },
     },
+    {
+        "type": "function",
+        "function": {
+            "name": "search_places",
+            "description": (
+                "Search for nearby pet-related places like veterinary clinics, pet stores, "
+                "dog parks, groomers, or emergency animal hospitals. Use when the user asks "
+                "to find a location or asks 'where can I...'."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "query": {
+                        "type": "string",
+                        "description": (
+                            "Search query for Google Places, e.g. 'veterinary clinic', "
+                            "'dog park', '24 hour emergency vet'."
+                        ),
+                    },
+                },
+                "required": ["query"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "draft_email",
+            "description": (
+                "Present a draft email as a card for the user to review and send. "
+                "Use when the user asks to compose an email to a vet or pet professional. "
+                "YOU write the email content based on conversation context, then call this tool."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "subject": {
+                        "type": "string",
+                        "description": "Email subject line.",
+                    },
+                    "body": {
+                        "type": "string",
+                        "description": "Full email body text.",
+                    },
+                },
+                "required": ["subject", "body"],
+            },
+        },
+    },
 ]
 
 
@@ -433,6 +482,7 @@ async def _list_pets(
                 "breed": p.breed,
                 "birthday": p.birthday.isoformat() if p.birthday else None,
                 "weight": p.weight,
+                "profile": p.profile or {},
             }
             for p in pets
         ],
@@ -485,6 +535,79 @@ async def _create_reminder(
     }
 
 
+async def _search_places(
+    arguments: dict,
+    db: AsyncSession,
+    user_id: uuid.UUID,
+    location: dict | None = None,
+    **_kwargs,
+) -> dict:
+    """Search for nearby places via Google Places API."""
+    if not location or "lat" not in location or "lng" not in location:
+        return {
+            "success": False,
+            "error": "No location available. Ask the user to share their location.",
+        }
+
+    from app.services.places import places_service  # lazy import
+
+    query = arguments["query"]
+    places = await places_service.search_nearby(
+        lat=location["lat"], lng=location["lng"], query=query
+    )
+
+    if not places:
+        return {
+            "success": True,
+            "places": [],
+            "message": f"No results found for '{query}' nearby.",
+        }
+
+    card = {
+        "type": "map",
+        "query": query,
+        "places": [
+            {
+                "name": p["name"],
+                "address": p["address"],
+                "rating": p.get("rating"),
+                "lat": p["lat"],
+                "lng": p["lng"],
+            }
+            for p in places
+        ],
+    }
+
+    return {
+        "success": True,
+        "places_count": len(places),
+        "top_results": [f"{p['name']} — {p['address']}" for p in places[:5]],
+        "card": card,
+    }
+
+
+async def _draft_email(
+    arguments: dict,
+    db: AsyncSession,
+    user_id: uuid.UUID,
+    **_kwargs,
+) -> dict:
+    """Wrap an email draft into a card for the frontend."""
+    subject = arguments["subject"]
+    body = arguments["body"]
+
+    card = {
+        "type": "email",
+        "subject": subject,
+        "body": body,
+    }
+
+    return {
+        "success": True,
+        "card": card,
+    }
+
+
 _TOOL_HANDLERS = {
     "create_calendar_event": _create_calendar_event,
     "query_calendar_events": _query_calendar_events,
@@ -492,7 +615,12 @@ _TOOL_HANDLERS = {
     "update_pet_profile": _update_pet_profile,
     "list_pets": _list_pets,
     "create_reminder": _create_reminder,
+    "search_places": _search_places,
+    "draft_email": _draft_email,
 }
+
+# Tools that accept extra kwargs (e.g., location)
+_TOOLS_WITH_KWARGS = {"search_places"}
 
 
 async def execute_tool(
@@ -500,6 +628,7 @@ async def execute_tool(
     arguments: dict,
     db: AsyncSession,
     user_id: uuid.UUID,
+    **kwargs,
 ) -> dict:
     """Dispatch a tool call to the appropriate handler.
 
@@ -508,6 +637,7 @@ async def execute_tool(
         arguments: The parsed arguments dict from the LLM.
         db: An async database session.
         user_id: The authenticated user's UUID.
+        **kwargs: Extra keyword arguments forwarded only to tools in _TOOLS_WITH_KWARGS.
 
     Returns:
         A dict with the tool execution result.
@@ -521,7 +651,10 @@ async def execute_tool(
 
     logger.info("tool_execute", extra={"tool": name, "arguments_keys": list(arguments.keys())})
     try:
-        result = await handler(arguments, db, user_id)
+        if name in _TOOLS_WITH_KWARGS:
+            result = await handler(arguments, db, user_id, **kwargs)
+        else:
+            result = await handler(arguments, db, user_id)
         logger.info("tool_success", extra={"tool": name})
         return result
     except Exception as exc:

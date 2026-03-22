@@ -132,6 +132,16 @@ def _validate_create_reminder(args: dict) -> list[str]:
     return errors
 
 
+@_register("search_places")
+def _validate_search_places(args: dict) -> list[str]:
+    return _check_required(args, ["query"])
+
+
+@_register("draft_email")
+def _validate_draft_email(args: dict) -> list[str]:
+    return _check_required(args, ["subject", "body"])
+
+
 def validate_tool_args(tool_name: str, arguments: dict) -> list[str]:
     """Validate tool arguments against the schema.
 
