@@ -74,15 +74,9 @@ class ChatAgent(BaseAgent):
             "suggested_actions": len(suggested_actions),
         })
 
-        # If high-confidence actions exist, force tool calling.
-        # Qwen models don't support tool_choice=required in thinking mode,
-        # so fall back to "auto" for them (the pre-analyzed prompt injection
-        # and post-processor fallback still ensure execution).
+        # If high-confidence actions exist, force tool calling
         has_high_confidence = any(a.confidence >= 0.8 for a in suggested_actions)
-        if has_high_confidence and "qwen" not in model.lower():
-            tool_choice = "required"
-        else:
-            tool_choice = "auto"
+        tool_choice = "required" if has_high_confidence else "auto"
 
         # Build message history
         context_messages = context.get("context_messages", [])
@@ -213,7 +207,8 @@ class ChatAgent(BaseAgent):
             completion_kwargs["api_key"] = settings.model_api_key
 
         if "qwen" in model.lower():
-            completion_kwargs["extra_body"] = {"enable_thinking": False}
+            # Must be top-level param (not extra_body) for the proxy to forward it
+            completion_kwargs["enable_thinking"] = False
 
         response = await litellm.acompletion(**completion_kwargs)
 
