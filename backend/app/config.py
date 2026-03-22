@@ -20,7 +20,7 @@ class Settings(BaseSettings):
     apns_use_sandbox: bool = True  # True for dev, False for production
 
     # RAG settings
-    embedding_model: str = "text-embedding-v3"
+    embedding_model: str = "text-embedding-3-small"
     embedding_api_base: str = ""       # Separate proxy URL for embeddings
     embedding_api_key: str = ""        # Separate API key for embeddings
     embedding_dimensions: int = 1536
