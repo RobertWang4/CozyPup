@@ -10,6 +10,13 @@ class Settings(BaseSettings):
     jwt_access_expire_minutes: int = 60
     jwt_refresh_expire_days: int = 30
 
+    # APNs push notifications
+    apns_key_path: str = ""        # Path to .p8 key file
+    apns_key_id: str = ""          # 10-char Key ID from Apple Developer
+    apns_team_id: str = ""         # Apple Developer Team ID
+    apns_bundle_id: str = "com.cozypup.app"
+    apns_use_sandbox: bool = True  # True for dev, False for production
+
     class Config:
         env_file = ".env"
         extra = "ignore"

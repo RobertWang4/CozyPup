@@ -7,15 +7,42 @@ struct PetFormView: View {
 
     @State private var name = ""
     @State private var species: Species = .dog
+    @State private var customSpecies = ""
     @State private var breed = ""
     @State private var birthday = ""
     @State private var weight = ""
+    @FocusState private var customSpeciesFocused: Bool
+
+    private func speciesLabel(_ s: Species) -> String {
+        if s == .other && !customSpecies.isEmpty { return customSpecies }
+        switch s {
+        case .dog: return L.dog
+        case .cat: return L.cat
+        case .other: return L.other
+        }
+    }
+
+    private var avatarColor: Color {
+        if let pet = editingPet { return pet.color }
+        return petColors[0]
+    }
 
     var body: some View {
         VStack(spacing: 16) {
+            // Avatar
+            ZStack {
+                Circle()
+                    .fill(avatarColor.opacity(0.15))
+                    .frame(width: 80, height: 80)
+                Image(systemName: species == .cat ? "cat.fill" : "dog.fill")
+                    .font(.system(size: 34))
+                    .foregroundColor(avatarColor)
+            }
+            .padding(.bottom, 4)
+
             VStack(alignment: .leading, spacing: 6) {
-                Text("Name").font(.system(size: 13, weight: .medium)).foregroundColor(Tokens.textSecondary)
-                TextField("e.g. Buddy", text: $name)
+                Text(L.name).font(.system(size: 13, weight: .medium)).foregroundColor(Tokens.textSecondary)
+                TextField(L.namePlaceholder, text: $name)
                     .textFieldStyle(.plain)
                     .padding(12)
                     .background(Tokens.surface)
@@ -24,13 +51,14 @@ struct PetFormView: View {
             }
 
             VStack(alignment: .leading, spacing: 6) {
-                Text("Species").font(.system(size: 13, weight: .medium)).foregroundColor(Tokens.textSecondary)
+                Text(L.species).font(.system(size: 13, weight: .medium)).foregroundColor(Tokens.textSecondary)
                 HStack(spacing: 10) {
                     ForEach(Species.allCases, id: \.self) { s in
                         Button {
                             species = s
+                            if s == .other { customSpeciesFocused = true }
                         } label: {
-                            Text(s.rawValue.capitalized)
+                            Text(speciesLabel(s))
                                 .font(.system(size: 14, weight: .medium))
                                 .padding(.horizontal, 16)
                                 .padding(.vertical, 8)
@@ -44,11 +72,21 @@ struct PetFormView: View {
                         }
                     }
                 }
+                if species == .other {
+                    TextField(Lang.shared.isZh ? "输入宠物类型，如：兔子、仓鼠" : "e.g. Rabbit, Hamster", text: $customSpecies)
+                        .focused($customSpeciesFocused)
+                        .textFieldStyle(.plain)
+                        .font(.system(size: 14))
+                        .padding(10)
+                        .background(Tokens.surface)
+                        .cornerRadius(10)
+                        .overlay(RoundedRectangle(cornerRadius: 10).stroke(Tokens.border))
+                }
             }
 
             VStack(alignment: .leading, spacing: 6) {
-                Text("Breed").font(.system(size: 13, weight: .medium)).foregroundColor(Tokens.textSecondary)
-                TextField("e.g. Golden Retriever", text: $breed)
+                Text(L.breed).font(.system(size: 13, weight: .medium)).foregroundColor(Tokens.textSecondary)
+                TextField(L.breedPlaceholder, text: $breed)
                     .textFieldStyle(.plain)
                     .padding(12)
                     .background(Tokens.surface)
@@ -58,7 +96,7 @@ struct PetFormView: View {
 
             HStack(spacing: 12) {
                 VStack(alignment: .leading, spacing: 6) {
-                    Text("Birthday").font(.system(size: 13, weight: .medium)).foregroundColor(Tokens.textSecondary)
+                    Text(L.birthday).font(.system(size: 13, weight: .medium)).foregroundColor(Tokens.textSecondary)
                     TextField("YYYY-MM-DD", text: $birthday)
                         .textFieldStyle(.plain)
                         .padding(12)
@@ -67,7 +105,7 @@ struct PetFormView: View {
                         .overlay(RoundedRectangle(cornerRadius: 12).stroke(Tokens.border))
                 }
                 VStack(alignment: .leading, spacing: 6) {
-                    Text("Weight (kg)").font(.system(size: 13, weight: .medium)).foregroundColor(Tokens.textSecondary)
+                    Text(L.weightKg).font(.system(size: 13, weight: .medium)).foregroundColor(Tokens.textSecondary)
                     TextField("0.0", text: $weight)
                         .keyboardType(.decimalPad)
                         .textFieldStyle(.plain)
@@ -84,7 +122,7 @@ struct PetFormView: View {
                 let w = Double(weight)
                 onSave(name, species, breed, bday, w)
             } label: {
-                Text(editingPet != nil ? "Save Changes" : "Add Pet")
+                Text(editingPet != nil ? L.saveChanges : L.addPet)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 14)
                     .background(name.isEmpty ? Tokens.border : Tokens.accent)
@@ -95,7 +133,7 @@ struct PetFormView: View {
             .disabled(name.isEmpty)
 
             if let onCancel {
-                Button("Cancel") { onCancel() }
+                Button(L.cancel) { onCancel() }
                     .foregroundColor(Tokens.textSecondary)
             }
         }

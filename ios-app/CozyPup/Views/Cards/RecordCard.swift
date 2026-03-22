@@ -17,7 +17,7 @@ struct RecordCard: View {
                     VStack(alignment: .leading, spacing: 2) {
                         HStack(spacing: 6) {
                             Circle().fill(Tokens.accent).frame(width: 6, height: 6)
-                            Text("Recorded to Calendar")
+                            Text(L.recordedToCalendar)
                                 .font(.system(size: 11, weight: .medium))
                                 .foregroundColor(Tokens.textSecondary)
                         }

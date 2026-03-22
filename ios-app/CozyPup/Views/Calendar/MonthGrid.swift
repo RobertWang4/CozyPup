@@ -10,69 +10,49 @@ struct MonthGrid: View {
     private let columns = Array(repeating: GridItem(.flexible()), count: 7)
 
     var body: some View {
-        VStack(spacing: 0) {
-            LazyVGrid(columns: columns) {
-                ForEach(CalendarHelper.weekdays, id: \.self) { day in
-                    Text(day)
-                        .font(.system(size: 11, weight: .semibold))
-                        .foregroundColor(Tokens.textTertiary)
-                }
-            }
-            .padding(.horizontal, 16)
-            .padding(.bottom, 4)
+        LazyVGrid(columns: columns, spacing: 4) {
+            ForEach(days) { day in
+                let dateStr = CalendarHelper.dateString(year: day.year, month: day.month, day: day.date)
+                let dayEvents = filteredEvents(for: dateStr)
+                let isSelected = selectedDate == dateStr
+                let hasEvents = !dayEvents.isEmpty
 
-            LazyVGrid(columns: columns, spacing: 2) {
-                ForEach(days) { day in
-                    let dateStr = CalendarHelper.dateString(year: day.year, month: day.month, day: day.date)
-                    let dayEvents = filteredEvents(for: dateStr)
-                    let isSelected = selectedDate == dateStr
-
-                    Button {
-                        selectedDate = dateStr
-                    } label: {
-                        VStack(spacing: 3) {
-                            Text("\(day.date)")
-                                .font(.system(size: 14, weight: day.isToday ? .bold : .medium))
-                                .foregroundColor(
-                                    day.isToday ? .white :
-                                    day.isCurrentMonth ? Tokens.text : Tokens.textTertiary
-                                )
-                                .frame(width: 30, height: 30)
-                                .background(day.isToday ? Tokens.accent : Color.clear)
-                                .clipShape(Circle())
-
-                            HStack(spacing: 3) {
-                                ForEach(uniquePetColors(dayEvents).prefix(2), id: \.self) { color in
-                                    Circle().fill(color).frame(width: 5, height: 5)
+                Button {
+                    selectedDate = dateStr
+                } label: {
+                    VStack(spacing: 4) {
+                        Text("\(day.date)")
+                            .font(.system(size: 15, weight: isSelected ? .semibold : .regular))
+                            .foregroundColor(
+                                isSelected ? .white : (day.isCurrentMonth ? Tokens.text : Tokens.textTertiary)
+                            )
+                            .frame(width: 36, height: 36)
+                            .background(
+                                Group {
+                                    if isSelected {
+                                        Circle().fill(Tokens.accent.opacity(0.85))
+                                    } else if day.isToday {
+                                        Circle().fill(Tokens.accent.opacity(0.15))
+                                    }
                                 }
-                            }
-                            .frame(height: 5)
-                        }
-                        .padding(.vertical, 6)
-                        .background(isSelected ? Tokens.accentSoft : Color.clear)
-                        .cornerRadius(10)
+                            )
+
+                        // Event dot
+                        Circle()
+                            .fill(hasEvents ? Tokens.accent.opacity(0.6) : Color.clear)
+                            .frame(width: 5, height: 5)
                     }
-                    .buttonStyle(.plain)
+                    .padding(.vertical, 4)
                 }
+                .buttonStyle(.plain)
             }
-            .padding(.horizontal, 16)
         }
+        .padding(.horizontal, 4)
     }
 
     private func filteredEvents(for date: String) -> [CalendarEvent] {
         events.filter { e in
             e.eventDate == date && (filterPetId == nil || e.petId == filterPetId)
         }
-    }
-
-    private func uniquePetColors(_ evts: [CalendarEvent]) -> [Color] {
-        var seen = Set<String>()
-        var colors: [Color] = []
-        for e in evts {
-            if seen.insert(e.petId).inserted, let pet = pets.first(where: { $0.id == e.petId }) {
-                colors.append(pet.color)
-            }
-        }
-        return colors
     }
 }

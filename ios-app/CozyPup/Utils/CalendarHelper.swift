@@ -10,11 +10,21 @@ struct CalendarDay: Identifiable {
 }
 
 enum CalendarHelper {
-    static let monthNames = [
-        "January", "February", "March", "April", "May", "June",
-        "July", "August", "September", "October", "November", "December",
-    ]
-    static let weekdays = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"]
+    private static var isZh: Bool {
+        (UserDefaults.standard.string(forKey: "cozypup_language") ?? "zh") == "zh"
+    }
+    static var monthNames: [String] {
+        isZh
+            ? ["一月", "二月", "三月", "四月", "五月", "六月",
+               "七月", "八月", "九月", "十月", "十一月", "十二月"]
+            : ["January", "February", "March", "April", "May", "June",
+               "July", "August", "September", "October", "November", "December"]
+    }
+    static var weekdays: [String] {
+        isZh
+            ? ["日", "一", "二", "三", "四", "五", "六"]
+            : ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"]
+    }
 
     static func getCalendarDays(year: Int, month: Int) -> [CalendarDay] {
         let cal = Calendar.current

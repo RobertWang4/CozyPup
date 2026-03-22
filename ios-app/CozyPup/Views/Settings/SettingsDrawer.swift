@@ -8,13 +8,59 @@ struct SettingsDrawer: View {
     @State private var notifications = true
     @State private var medReminders = true
     @State private var weeklyInsights = false
-    @State private var editingPet: Pet?
+    @ObservedObject private var lang = Lang.shared
+    @State private var editingPetId: String?
     @State private var showAddPet = false
     @State private var showDeleteConfirm: Pet?
 
     private let prefsKey = "cozypup_notification_prefs"
 
+    private enum Page { case list, editPet, addPet }
+    private var currentPage: Page {
+        if editingPetId != nil { return .editPet }
+        if showAddPet { return .addPet }
+        return .list
+    }
+
     var body: some View {
+        ZStack {
+            Tokens.bg.ignoresSafeArea()
+
+            switch currentPage {
+            case .list:
+                settingsListView
+                    .transition(.move(edge: .leading))
+            case .editPet:
+                if let pet = petStore.pets.first(where: { $0.id == editingPetId }) {
+                    petFormPage(pet: pet, title: L.editPet)
+                        .transition(.move(edge: .trailing))
+                }
+            case .addPet:
+                petFormPage(pet: nil, title: L.addPet)
+                    .transition(.move(edge: .trailing))
+            }
+        }
+        .animation(.easeInOut(duration: 0.25), value: currentPage == .list)
+        .onAppear { loadPrefs() }
+        .onChange(of: notifications) { savePrefs() }
+        .onChange(of: medReminders) { savePrefs() }
+        .onChange(of: weeklyInsights) { savePrefs() }
+        .alert(L.deletePet, isPresented: Binding(
+            get: { showDeleteConfirm != nil },
+            set: { if !$0 { showDeleteConfirm = nil } }
+        )) {
+            Button(L.delete, role: .destructive) {
+                if let pet = showDeleteConfirm {
+                    Task { await petStore.remove(pet.id) }
+                }
+            }
+            Button(L.cancel, role: .cancel) { }
+        }
+    }
+
+    // MARK: - Settings List
+
+    private var settingsListView: some View {
         NavigationStack {
             List {
                 Section {
@@ -39,54 +85,93 @@ struct SettingsDrawer: View {
                     .listRowBackground(Tokens.surface)
                 }
 
-                Section("My Pets") {
+                Section(L.myPets) {
                     ForEach(petStore.pets) { pet in
                         HStack(spacing: 12) {
                             Image(systemName: pet.species == .cat ? "cat" : "dog")
+                                .font(.system(size: 20))
                                 .foregroundColor(pet.color)
-                            VStack(alignment: .leading) {
-                                Text(pet.name).font(.system(size: 15, weight: .medium))
-                                Text(pet.breed).font(.system(size: 12)).foregroundColor(Tokens.textSecondary)
+                                .frame(width: 32)
+                            VStack(alignment: .leading, spacing: 3) {
+                                HStack(spacing: 6) {
+                                    Text(pet.name).font(.system(size: 15, weight: .medium))
+                                    if !pet.breed.isEmpty {
+                                        Text(pet.breed)
+                                            .font(.system(size: 12))
+                                            .foregroundColor(Tokens.textSecondary)
+                                    }
+                                }
+                                HStack(spacing: 8) {
+                                    if let birthday = pet.birthday {
+                                        Label(petAge(birthday), systemImage: "birthday.cake")
+                                            .font(.system(size: 11))
+                                            .foregroundColor(Tokens.textTertiary)
+                                    }
+                                    if let weight = pet.weight {
+                                        Label(String(format: "%.1fkg", weight), systemImage: "scalemass")
+                                            .font(.system(size: 11))
+                                            .foregroundColor(Tokens.textTertiary)
+                                    }
+                                }
                             }
                             Spacer()
-                            Button { editingPet = pet } label: {
+                            Button {
+                                withAnimation { editingPetId = pet.id }
+                            } label: {
                                 Image(systemName: "pencil")
                                     .font(.system(size: 13))
                                     .foregroundColor(Tokens.textSecondary)
+                                    .frame(width: 32, height: 32)
                             }
-                            Button { showDeleteConfirm = pet } label: {
+                            .buttonStyle(.borderless)
+                            Button {
+                                showDeleteConfirm = pet
+                            } label: {
                                 Image(systemName: "trash")
                                     .font(.system(size: 13))
                                     .foregroundColor(Tokens.red)
+                                    .frame(width: 32, height: 32)
                             }
+                            .buttonStyle(.borderless)
                         }
                         .listRowBackground(Tokens.surface)
                     }
-                    Button { showAddPet = true } label: {
-                        Label("Add Pet", systemImage: "plus")
+                    Button {
+                        withAnimation { showAddPet = true }
+                    } label: {
+                        Label(L.addPet, systemImage: "plus")
                             .font(.system(size: 14, weight: .medium))
                             .foregroundColor(Tokens.accent)
                     }
                     .listRowBackground(Tokens.surface)
                 }
 
-                Section("Notifications") {
-                    Toggle("Push Notifications", isOn: $notifications)
-                    Toggle("Medication Reminders", isOn: $medReminders)
-                    Toggle("Weekly Insights", isOn: $weeklyInsights)
+                Section(L.language) {
+                    Picker(L.responseLang, selection: $lang.code) {
+                        Text("中文").tag("zh")
+                        Text("English").tag("en")
+                    }
+                    .tint(Tokens.textSecondary)
+                }
+                .listRowBackground(Tokens.surface)
+
+                Section(L.notifications) {
+                    Toggle(L.pushNotifications, isOn: $notifications)
+                    Toggle(L.medReminders, isOn: $medReminders)
+                    Toggle(L.weeklyInsights, isOn: $weeklyInsights)
                 }
                 .tint(Tokens.green)
                 .listRowBackground(Tokens.surface)
 
                 Section {
-                    NavigationLink { LegalPageView(title: "Privacy Policy", content: privacyText) } label: {
-                        Label("Privacy Policy", systemImage: "shield")
+                    NavigationLink { LegalPageView(title: L.privacyPolicy, content: privacyText) } label: {
+                        Label(L.privacyPolicy, systemImage: "shield")
                     }
-                    NavigationLink { LegalPageView(title: "Disclaimer", content: disclaimerText) } label: {
-                        Label("Disclaimer", systemImage: "doc.text")
+                    NavigationLink { LegalPageView(title: L.disclaimer, content: disclaimerText) } label: {
+                        Label(L.disclaimer, systemImage: "doc.text")
                     }
-                    NavigationLink { LegalPageView(title: "About", content: aboutText) } label: {
-                        Label("About", systemImage: "info.circle")
+                    NavigationLink { LegalPageView(title: L.about, content: aboutText) } label: {
+                        Label(L.about, systemImage: "info.circle")
                     }
                 }
                 .listRowBackground(Tokens.surface)
@@ -97,84 +182,78 @@ struct SettingsDrawer: View {
                         auth.logout()
                         withAnimation(.easeInOut(duration: 0.3)) { isPresented = false }
                     } label: {
-                        Label("Log Out", systemImage: "rectangle.portrait.and.arrow.right")
+                        Label(L.logOut, systemImage: "rectangle.portrait.and.arrow.right")
                     }
                     .listRowBackground(Tokens.surface)
                 }
             }
             .scrollContentBackground(.hidden)
             .background(Tokens.bg)
-            .navigationTitle("Settings")
+            .foregroundColor(Tokens.text)
+            .navigationTitle(L.settings)
             .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button { withAnimation(.easeInOut(duration: 0.3)) { isPresented = false } } label: {
-                        Image(systemName: "xmark")
-                            .font(.system(size: 14, weight: .semibold))
-                            .foregroundColor(Tokens.textSecondary)
-                            .frame(width: 32, height: 32)
-                            .background(Tokens.surface)
-                            .cornerRadius(10)
-                            .overlay(RoundedRectangle(cornerRadius: 10).stroke(Tokens.border))
-                    }
-                }
-            }
-            .sheet(item: $editingPet) { pet in
-                NavigationStack {
-                    PetFormView(editingPet: pet) { name, species, breed, birthday, weight in
-                        Task {
+            .toolbarColorScheme(.light, for: .navigationBar)
+        }
+    }
+
+    // MARK: - Pet Form Page
+
+    private func petFormPage(pet: Pet?, title: String) -> some View {
+        NavigationStack {
+            ScrollView {
+                Spacer().frame(height: 40)
+                PetFormView(editingPet: pet) { name, species, breed, birthday, weight in
+                    Task {
+                        if let pet = pet {
                             await petStore.update(pet.id, name: name, species: species, breed: breed,
                                                   birthday: birthday, weight: weight)
-                        }
-                        editingPet = nil
-                    } onCancel: {
-                        editingPet = nil
-                    }
-                    .padding(20)
-                    .navigationTitle("Edit Pet")
-                    .navigationBarTitleDisplayMode(.inline)
-                }
-            }
-            .sheet(isPresented: $showAddPet) {
-                NavigationStack {
-                    PetFormView { name, species, breed, birthday, weight in
-                        Task {
+                        } else {
                             await petStore.add(name: name, species: species, breed: breed,
                                                birthday: birthday, weight: weight)
                         }
-                        showAddPet = false
-                    } onCancel: {
+                    }
+                    withAnimation {
+                        editingPetId = nil
                         showAddPet = false
                     }
-                    .padding(20)
-                    .navigationTitle("Add Pet")
-                    .navigationBarTitleDisplayMode(.inline)
+                } onCancel: {
+                    withAnimation {
+                        editingPetId = nil
+                        showAddPet = false
+                    }
                 }
+                .padding(20)
             }
-            .alert("Delete Pet?", isPresented: Binding(
-                get: { showDeleteConfirm != nil },
-                set: { if !$0 { showDeleteConfirm = nil } }
-            )) {
-                Button("Delete", role: .destructive) {
-                    if let pet = showDeleteConfirm {
-                        Task { await petStore.remove(pet.id) }
+            .background(Tokens.bg)
+            .navigationTitle(title)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbarColorScheme(.light, for: .navigationBar)
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button {
+                        withAnimation {
+                            editingPetId = nil
+                            showAddPet = false
+                        }
+                    } label: {
+                        Image(systemName: "chevron.left")
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundColor(Tokens.textSecondary)
                     }
                 }
-                Button("Cancel", role: .cancel) { }
             }
         }
-        .onAppear { loadPrefs() }
-        .onChange(of: notifications) { savePrefs() }
-        .onChange(of: medReminders) { savePrefs() }
-        .onChange(of: weeklyInsights) { savePrefs() }
     }
 
+    // MARK: - Helpers
+
     private func loadPrefs() {
-        guard let data = UserDefaults.standard.data(forKey: prefsKey),
-              let prefs = try? JSONDecoder().decode([String: Bool].self, from: data) else { return }
-        notifications = prefs["notifications"] ?? true
-        medReminders = prefs["medReminders"] ?? true
-        weeklyInsights = prefs["weeklyInsights"] ?? false
+        if let data = UserDefaults.standard.data(forKey: prefsKey),
+           let prefs = try? JSONDecoder().decode([String: Bool].self, from: data) {
+            notifications = prefs["notifications"] ?? true
+            medReminders = prefs["medReminders"] ?? true
+            weeklyInsights = prefs["weeklyInsights"] ?? false
+        }
     }
 
     private func savePrefs() {
@@ -182,6 +261,19 @@ struct SettingsDrawer: View {
         if let data = try? JSONEncoder().encode(prefs) {
             UserDefaults.standard.set(data, forKey: prefsKey)
         }
+    }
+
+    private func petAge(_ birthday: String) -> String {
+        let f = DateFormatter()
+        f.dateFormat = "yyyy-MM-dd"
+        guard let born = f.date(from: birthday) else { return birthday }
+        let months = Calendar.current.dateComponents([.month], from: born, to: Date()).month ?? 0
+        if months < 12 {
+            return "\(months)mo"
+        }
+        let years = months / 12
+        let rem = months % 12
+        return rem > 0 ? "\(years)y\(rem)mo" : "\(years)y"
     }
 
     private let privacyText = "CozyPup values your privacy. We only collect data necessary to provide personalized pet health suggestions. Your data is stored locally on your device and is not shared with third parties."

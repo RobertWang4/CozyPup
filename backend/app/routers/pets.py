@@ -1,8 +1,10 @@
 import logging
 import uuid
 from datetime import date
+from pathlib import Path
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
+from fastapi.responses import FileResponse
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -10,6 +12,9 @@ from app.auth import get_current_user_id
 from app.database import get_db
 from app.models import Pet
 from app.schemas.pets import PetCreate, PetResponse, PetUpdate
+
+UPLOAD_DIR = Path(__file__).resolve().parent.parent / "uploads" / "avatars"
+UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1/pets", tags=["pets"])
@@ -134,3 +139,59 @@ async def delete_pet(
     logger.info("pet_deleted", extra={"pet_id": str(pet.id), "pet_name": pet.name})
     await db.delete(pet)
     await db.commit()
+
+
+@router.post("/{pet_id}/avatar", response_model=PetResponse)
+async def upload_avatar(
+    pet_id: uuid.UUID,
+    file: UploadFile = File(...),
+    user_id: uuid.UUID = Depends(get_current_user_id),
+    db: AsyncSession = Depends(get_db),
+):
+    result = await db.execute(
+        select(Pet).where(Pet.id == pet_id, Pet.user_id == user_id)
+    )
+    pet = result.scalar_one_or_none()
+    if not pet:
+        raise HTTPException(status_code=404, detail="Pet not found")
+
+    if file.content_type not in ("image/jpeg", "image/png", "image/webp"):
+        raise HTTPException(status_code=400, detail="Only JPEG, PNG, and WebP images are allowed")
+
+    ext = file.content_type.split("/")[-1].replace("jpeg", "jpg")
+    filename = f"{pet_id}.{ext}"
+    filepath = UPLOAD_DIR / filename
+
+    content = await file.read()
+    if len(content) > 5 * 1024 * 1024:
+        raise HTTPException(status_code=400, detail="Image must be under 5MB")
+
+    filepath.write_bytes(content)
+
+    pet.avatar_url = f"/api/v1/pets/{pet_id}/avatar"
+    await db.commit()
+    await db.refresh(pet)
+    logger.info("avatar_uploaded", extra={"pet_id": str(pet.id)})
+    return _pet_to_response(pet)
+
+
+@router.get("/{pet_id}/avatar")
+async def get_avatar(
+    pet_id: uuid.UUID,
+    user_id: uuid.UUID = Depends(get_current_user_id),
+    db: AsyncSession = Depends(get_db),
+):
+    result = await db.execute(
+        select(Pet).where(Pet.id == pet_id, Pet.user_id == user_id)
+    )
+    pet = result.scalar_one_or_none()
+    if not pet:
+        raise HTTPException(status_code=404, detail="Pet not found")
+
+    for ext in ("jpg", "png", "webp"):
+        filepath = UPLOAD_DIR / f"{pet_id}.{ext}"
+        if filepath.exists():
+            media_type = f"image/{'jpeg' if ext == 'jpg' else ext}"
+            return FileResponse(filepath, media_type=media_type)
+
+    raise HTTPException(status_code=404, detail="No avatar uploaded")

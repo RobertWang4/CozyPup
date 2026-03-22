@@ -6,7 +6,7 @@ actor APIClient {
     #if targetEnvironment(simulator)
     private let baseURL = "http://localhost:8000/api/v1"
     #else
-    private let baseURL = "http://localhost:8000/api/v1" // TODO: change for production
+    private let baseURL = "http://168.138.75.153:8000/api/v1" // TODO: change for production
     #endif
 
     private var accessToken: String?
@@ -160,7 +160,6 @@ actor APIClient {
 
                     let (bytes, response) = try await URLSession.shared.bytes(for: request)
                     let status = (response as? HTTPURLResponse)?.statusCode ?? 0
-
                     guard status == 200 else {
                         throw APIError.badStatus(status)
                     }

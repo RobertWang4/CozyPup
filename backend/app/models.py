@@ -1,7 +1,7 @@
 import uuid
 from datetime import date, datetime, time
 
-from sqlalchemy import Boolean, Date, DateTime, Enum, Float, ForeignKey, String, Text, Time
+from sqlalchemy import Boolean, Date, DateTime, Enum, Float, ForeignKey, JSON, String, Text, Time
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
@@ -17,6 +17,8 @@ class Species(str, enum.Enum):
     dog = "dog"
     cat = "cat"
     other = "other"
+
+
 
 
 class EventType(str, enum.Enum):
@@ -74,6 +76,11 @@ class Pet(Base):
     weight: Mapped[float | None] = mapped_column(Float)
     avatar_url: Mapped[str] = mapped_column(String(500), default="")
     color_hex: Mapped[str] = mapped_column(String(6), nullable=False)
+
+    # Flexible profile — AI gradually fills this JSON with any pet info learned from conversation
+    # e.g. {"gender": "male", "allergies": ["chicken"], "vet": "瑞鹏宠物医院", "temperament": "friendly"}
+    profile: Mapped[dict | None] = mapped_column(JSON)
+
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 

@@ -22,8 +22,46 @@ class AuthStore: ObservableObject {
            let saved = try? JSONDecoder().decode(UserInfo.self, from: data) {
             user = saved
             isAuthenticated = true
+            // Validate token on launch — re-auth if expired
+            Task { await validateSession() }
         }
         hasAcknowledgedDisclaimer = UserDefaults.standard.bool(forKey: disclaimerKey)
+    }
+
+    /// Check that the stored token still works; if not, silently re-authenticate.
+    private func validateSession() async {
+        struct UserResp: Decodable { let id: String }
+
+        do {
+            let _: UserResp = try await APIClient.shared.request("GET", "/auth/me")
+            // Token is valid — nothing to do
+        } catch {
+            // Token expired or missing — try silent re-login with stored user info
+            guard let user else {
+                isAuthenticated = false
+                return
+            }
+            await silentReauth(user: user)
+        }
+    }
+
+    /// Re-authenticate using dev auth with existing user info.
+    private func silentReauth(user info: UserInfo) async {
+        struct DevAuthBody: Encodable { let name: String; let email: String }
+        struct AuthResp: Decodable { let access_token: String; let refresh_token: String }
+
+        do {
+            let resp: AuthResp = try await APIClient.shared.authRequest(
+                "/auth/dev", body: DevAuthBody(name: info.name, email: info.email)
+            )
+            await APIClient.shared.setTokens(access: resp.access_token, refresh: resp.refresh_token)
+        } catch {
+            // Re-auth failed — force user to login screen
+            isAuthenticated = false
+            self.user = nil
+            UserDefaults.standard.removeObject(forKey: authKey)
+            Task { await APIClient.shared.clearTokens() }
+        }
     }
 
     func login(provider: String) {

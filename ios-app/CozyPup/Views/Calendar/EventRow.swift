@@ -3,6 +3,7 @@ import SwiftUI
 struct EventRow: View {
     let event: CalendarEvent
     let petColor: Color
+    var pet: Pet?
     var onUpdate: (String, EventCategory, String, String?) -> Void
     var onDelete: () -> Void
 
@@ -20,65 +21,77 @@ struct EventRow: View {
         }
     }
 
+    // MARK: - Display
+
     private var displayView: some View {
-        HStack(spacing: 12) {
-            RoundedRectangle(cornerRadius: 2)
+        HStack(spacing: 0) {
+            // Left color bar
+            Capsule()
                 .fill(petColor)
-                .frame(width: 4, height: 36)
+                .frame(width: 5, height: 44)
 
-            VStack(alignment: .leading, spacing: 2) {
-                Text(event.title)
-                    .font(.system(size: 14, weight: .medium))
-                    .foregroundColor(Tokens.text)
-                Text([event.eventTime, event.category.label].compactMap { $0 }.joined(separator: " · "))
-                    .font(.system(size: 12))
-                    .foregroundColor(Tokens.textSecondary)
+            // Event text with pet name in parentheses
+            Text(eventLabel)
+                .font(.system(size: 14, weight: .regular))
+                .foregroundColor(Tokens.text)
+                .lineLimit(2)
+                .padding(.leading, 12)
+
+            Spacer(minLength: 8)
+
+            // Paw icon
+            Image(systemName: "pawprint.fill")
+                .font(.system(size: 16))
+                .foregroundColor(Tokens.accent.opacity(0.5))
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 14)
+        .background(Tokens.surface)
+        .cornerRadius(12)
+        .contextMenu {
+            Button { startEdit() } label: {
+                Label(Lang.shared.isZh ? "编辑" : "Edit", systemImage: "pencil")
             }
-
-            Spacer()
-
-            HStack(spacing: 4) {
-                Button { startEdit() } label: {
-                    Image(systemName: "pencil")
-                        .font(.system(size: 12))
-                        .foregroundColor(Tokens.textSecondary)
-                        .frame(width: 28, height: 28)
-                        .overlay(RoundedRectangle(cornerRadius: 8).stroke(Tokens.border))
-                }
-                Button { Haptics.medium(); onDelete() } label: {
-                    Image(systemName: "trash")
-                        .font(.system(size: 12))
-                        .foregroundColor(Tokens.red)
-                        .frame(width: 28, height: 28)
-                        .overlay(RoundedRectangle(cornerRadius: 8).stroke(Tokens.border))
-                }
+            Button(role: .destructive) { Haptics.medium(); onDelete() } label: {
+                Label(L.delete, systemImage: "trash")
             }
         }
-        .padding(12)
-        .background(Tokens.surface)
-        .cornerRadius(Tokens.radiusSmall)
-        .overlay(RoundedRectangle(cornerRadius: Tokens.radiusSmall).stroke(Tokens.border))
     }
+
+    private var eventLabel: String {
+        var text = ""
+        if let time = event.eventTime, !time.isEmpty {
+            text = "\(time) - \(event.title)"
+        } else {
+            text = event.title
+        }
+        if let name = pet?.name {
+            text += "\n(\(name))"
+        }
+        return text
+    }
+
+    // MARK: - Edit
 
     private var editView: some View {
         VStack(spacing: 6) {
-            TextField("Title", text: $editTitle)
+            TextField(L.title, text: $editTitle)
                 .padding(8).background(Tokens.bg).cornerRadius(8)
                 .overlay(RoundedRectangle(cornerRadius: 8).stroke(Tokens.border))
                 .font(.system(size: 13))
 
             HStack(spacing: 6) {
-                TextField("Date", text: $editDate)
+                TextField(L.date, text: $editDate)
                     .padding(8).background(Tokens.bg).cornerRadius(8)
                     .overlay(RoundedRectangle(cornerRadius: 8).stroke(Tokens.border))
                     .font(.system(size: 13))
-                TextField("Time", text: $editTime)
+                TextField(L.time, text: $editTime)
                     .padding(8).background(Tokens.bg).cornerRadius(8)
                     .overlay(RoundedRectangle(cornerRadius: 8).stroke(Tokens.border))
                     .font(.system(size: 13))
             }
 
-            Picker("Category", selection: $editCategory) {
+            Picker(Lang.shared.isZh ? "分类" : "Category", selection: $editCategory) {
                 ForEach(EventCategory.allCases, id: \.self) { c in
                     Text(c.label).tag(c)
                 }
@@ -90,14 +103,14 @@ struct EventRow: View {
                     onUpdate(editTitle, editCategory, editDate, editTime.isEmpty ? nil : editTime)
                     editing = false
                 } label: {
-                    Label("Save", systemImage: "checkmark")
+                    Label(L.save, systemImage: "checkmark")
                         .font(.system(size: 12, weight: .medium))
                         .foregroundColor(.white)
                         .padding(.horizontal, 12).padding(.vertical, 6)
                         .background(Tokens.accent).cornerRadius(8)
                 }
                 Button { editing = false } label: {
-                    Text("Cancel")
+                    Text(L.cancel)
                         .font(.system(size: 12, weight: .medium))
                         .foregroundColor(Tokens.textSecondary)
                         .padding(.horizontal, 12).padding(.vertical, 6)
@@ -107,8 +120,7 @@ struct EventRow: View {
         }
         .padding(12)
         .background(Tokens.surface)
-        .cornerRadius(Tokens.radiusSmall)
-        .overlay(RoundedRectangle(cornerRadius: Tokens.radiusSmall).stroke(Tokens.border))
+        .cornerRadius(14)
     }
 
     private func startEdit() {

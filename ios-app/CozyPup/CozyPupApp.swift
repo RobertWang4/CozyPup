@@ -6,7 +6,6 @@ struct CozyPupApp: App {
     @StateObject private var petStore = PetStore()
     @StateObject private var calendarStore = CalendarStore()
     @StateObject private var chatStore = ChatStore()
-
     var body: some Scene {
         WindowGroup {
             Group {
@@ -14,8 +13,6 @@ struct CozyPupApp: App {
                     LoginView()
                 } else if !auth.hasAcknowledgedDisclaimer {
                     DisclaimerView()
-                } else if petStore.pets.isEmpty {
-                    OnboardingView()
                 } else {
                     ChatView()
                 }
@@ -24,6 +21,7 @@ struct CozyPupApp: App {
             .environmentObject(petStore)
             .environmentObject(calendarStore)
             .environmentObject(chatStore)
+            .environmentObject(Lang.shared)
         }
     }
 }

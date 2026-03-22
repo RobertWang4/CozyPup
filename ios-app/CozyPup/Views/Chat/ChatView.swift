@@ -12,114 +12,108 @@ struct ChatView: View {
     @State private var emergency: EmergencyData?
     @State private var showCalendar = false
     @State private var showSettings = false
+    @State private var calendarDrag: CGFloat = 0
+    @State private var settingsDrag: CGFloat = 0
+
+    private var drawerWidth: CGFloat { UIScreen.main.bounds.width * 0.85 }
+
+    // Calendar: -drawerWidth (hidden) to 0 (open)
+    private var calendarX: CGFloat {
+        let base: CGFloat = showCalendar ? 0 : -drawerWidth
+        return min(0, max(-drawerWidth, base + calendarDrag))
+    }
+
+    // Settings: 0 (open) to drawerWidth (hidden)
+    private var settingsX: CGFloat {
+        let base: CGFloat = showSettings ? 0 : drawerWidth
+        return max(0, min(drawerWidth, base + settingsDrag))
+    }
+
+    // 0 = all closed, 1 = fully open
+    private var drawerProgress: CGFloat {
+        let calP = (calendarX + drawerWidth) / drawerWidth
+        let setP = (drawerWidth - settingsX) / drawerWidth
+        return max(calP, setP)
+    }
 
     var body: some View {
-        VStack(spacing: 0) {
-            header
+        ZStack {
+            // Main content
+            VStack(spacing: 0) {
+                header
 
-            if let emergency {
-                EmergencyBanner(
-                    onFind: { self.emergency = nil },
-                    onDismiss: { self.emergency = nil }
-                )
-            }
+                if let emergency {
+                    EmergencyBanner(
+                        onFind: { self.emergency = nil },
+                        onDismiss: { self.emergency = nil }
+                    )
+                }
 
-            ScrollViewReader { proxy in
-                ScrollView {
-                    if chatStore.messages.isEmpty {
-                        if petStore.pets.isEmpty {
-                            EmptyStateView(
-                                icon: "pawprint.fill",
-                                title: L.welcomeTitle,
-                                subtitle: L.welcomeSubtitle
-                            )
-                            .frame(minHeight: 400)
-                        } else {
-                            EmptyStateView(
-                                icon: "bubble.left.and.bubble.right",
-                                title: L.askAnything,
-                                subtitle: L.askSubtitle
-                            )
-                            .frame(minHeight: 400)
-                        }
-                    }
-                    LazyVStack(spacing: 10) {
-                        ForEach(chatStore.messages) { msg in
-                            VStack(spacing: 8) {
-                                if !msg.content.isEmpty {
-                                    ChatBubble(role: msg.role, content: msg.content)
-                                }
-                                ForEach(Array(msg.cards.enumerated()), id: \.offset) { _, card in
-                                    cardView(card)
-                                }
+                ScrollViewReader { proxy in
+                    ScrollView {
+                        if chatStore.messages.isEmpty {
+                            if petStore.pets.isEmpty {
+                                EmptyStateView(
+                                    icon: "pawprint.fill",
+                                    title: L.welcomeTitle,
+                                    subtitle: L.welcomeSubtitle
+                                )
+                                .frame(minHeight: 400)
+                            } else {
+                                EmptyStateView(
+                                    icon: "bubble.left.and.bubble.right",
+                                    title: L.askAnything,
+                                    subtitle: L.askSubtitle
+                                )
+                                .frame(minHeight: 400)
                             }
                         }
-                        if isStreaming, let last = chatStore.messages.last, last.content.isEmpty {
-                            TypingIndicator()
+                        LazyVStack(spacing: 10) {
+                            ForEach(chatStore.messages) { msg in
+                                VStack(spacing: 8) {
+                                    if !msg.content.isEmpty {
+                                        ChatBubble(role: msg.role, content: msg.content)
+                                    }
+                                    ForEach(Array(msg.cards.enumerated()), id: \.offset) { _, card in
+                                        cardView(card)
+                                    }
+                                }
+                            }
+                            if isStreaming, let last = chatStore.messages.last, last.content.isEmpty {
+                                TypingIndicator()
+                            }
                         }
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 12)
+                        Color.clear.frame(height: 1).id("bottom")
                     }
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 12)
-                    Color.clear.frame(height: 1).id("bottom")
-                }
-                .onChange(of: chatStore.messages.count) {
-                    withAnimation { proxy.scrollTo("bottom") }
-                }
-            }
-
-            Text(L.aiDisclaimer)
-                .font(.system(size: 11))
-                .foregroundColor(Tokens.textSecondary)
-                .padding(.vertical, 6)
-
-            ChatInputBar(
-                text: $inputText,
-                isStreaming: isStreaming,
-                isListening: speech.isListening,
-                onSend: sendMessage,
-                onMicDown: startVoice,
-                onMicUp: releaseVoice,
-                onMicCancel: cancelVoice
-            )
-        }
-        .background(Tokens.bg.ignoresSafeArea())
-        .overlay {
-            if showCalendar || showSettings {
-                Color.black.opacity(0.3)
-                    .ignoresSafeArea()
+                    .scrollDismissesKeyboard(.interactively)
                     .onTapGesture {
-                        withAnimation(.easeInOut(duration: 0.3)) {
-                            showCalendar = false
-                            showSettings = false
-                        }
+                        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
                     }
+                    .onChange(of: chatStore.messages.count) {
+                        withAnimation { proxy.scrollTo("bottom") }
+                    }
+                }
+
+                Text(L.aiDisclaimer)
+                    .font(.system(size: 11))
+                    .foregroundColor(Tokens.textSecondary)
+                    .padding(.vertical, 6)
+
+                ChatInputBar(
+                    text: $inputText,
+                    isStreaming: isStreaming,
+                    isListening: speech.isListening,
+                    onSend: sendMessage,
+                    onMicDown: startVoice,
+                    onMicUp: releaseVoice,
+                    onMicCancel: cancelVoice
+                )
             }
-        }
-        .overlay(alignment: .leading) {
-            if showCalendar {
-                CalendarDrawer(isPresented: $showCalendar)
-                    .frame(width: UIScreen.main.bounds.width * 0.85)
-                    .frame(maxHeight: .infinity)
-                    .background(Tokens.bg)
-                    .clipShape(UnevenRoundedRectangle(bottomTrailingRadius: 20, topTrailingRadius: 20))
-                    .shadow(color: .black.opacity(0.15), radius: 10, x: 2)
-                    .ignoresSafeArea()
-                    .transition(.move(edge: .leading))
-            }
-        }
-        .overlay(alignment: .trailing) {
-            if showSettings {
-                SettingsDrawer(isPresented: $showSettings)
-                    .frame(width: UIScreen.main.bounds.width * 0.85)
-                    .frame(maxHeight: .infinity)
-                    .background(Tokens.bg)
-                    .clipShape(UnevenRoundedRectangle(topLeadingRadius: 20, bottomLeadingRadius: 20))
-                    .shadow(color: .black.opacity(0.15), radius: 10, x: -2)
-                    .ignoresSafeArea()
-                    .transition(.move(edge: .trailing))
-            }
-        }
-        .overlay {
+            .background(Tokens.bg.ignoresSafeArea())
+
+            // Voice overlay
             if speech.isListening {
                 VoiceInputOverlay(
                     transcript: speech.transcript,
@@ -129,6 +123,55 @@ struct ChatView: View {
                 .transition(.opacity)
             }
         }
+        // 1. Edge swipe areas (always rendered, below dimming overlay)
+        .overlay {
+            HStack(spacing: 0) {
+                Color.clear.frame(width: 28)
+                    .contentShape(Rectangle())
+                    .gesture(edgeOpenGesture(isCalendar: true))
+                Spacer()
+                Color.clear.frame(width: 28)
+                    .contentShape(Rectangle())
+                    .gesture(edgeOpenGesture(isCalendar: false))
+            }
+            .ignoresSafeArea()
+        }
+        // 2. Dimming overlay (covers edge areas when drawer is open)
+        .overlay {
+            Color.black.opacity(Double(drawerProgress) * 0.3)
+                .ignoresSafeArea()
+                .allowsHitTesting(showCalendar || showSettings)
+                .onTapGesture { closeDrawers() }
+                .gesture(overlayCloseDrag)
+        }
+        // 3. Calendar drawer
+        .overlay(alignment: .leading) {
+            CalendarDrawer(isPresented: $showCalendar)
+                .frame(width: drawerWidth)
+                .frame(maxHeight: .infinity)
+                .background(Tokens.bg)
+                .clipShape(UnevenRoundedRectangle(bottomTrailingRadius: 20, topTrailingRadius: 20))
+                .shadow(color: .black.opacity(drawerProgress > 0.01 ? 0.15 : 0), radius: 10, x: 2)
+                .offset(x: calendarX)
+                .ignoresSafeArea()
+        }
+        // 4. Settings drawer
+        .overlay(alignment: .trailing) {
+            SettingsDrawer(isPresented: $showSettings)
+                .frame(width: drawerWidth)
+                .frame(maxHeight: .infinity)
+                .background(Tokens.bg)
+                .clipShape(UnevenRoundedRectangle(topLeadingRadius: 20, bottomLeadingRadius: 20))
+                .shadow(color: .black.opacity(drawerProgress > 0.01 ? 0.15 : 0), radius: 10, x: -2)
+                .offset(x: settingsX)
+                .ignoresSafeArea()
+        }
+        .onChange(of: showCalendar) { _, val in
+            if !val { calendarDrag = 0 }
+        }
+        .onChange(of: showSettings) { _, val in
+            if !val { settingsDrag = 0 }
+        }
         .onAppear {
             Task {
                 await petStore.fetchFromAPI()
@@ -137,9 +180,99 @@ struct ChatView: View {
         }
     }
 
+    // MARK: - Drawer Gestures
+
+    /// Edge swipe to open a drawer
+    private func edgeOpenGesture(isCalendar: Bool) -> some Gesture {
+        DragGesture(minimumDistance: 10)
+            .onChanged { value in
+                dismissKeyboard()
+                if isCalendar {
+                    calendarDrag = max(0, value.translation.width)
+                } else {
+                    settingsDrag = min(0, value.translation.width)
+                }
+            }
+            .onEnded { value in
+                let threshold = drawerWidth * 0.3
+                if isCalendar {
+                    if value.translation.width > threshold ||
+                       value.predictedEndTranslation.width > drawerWidth * 0.5 {
+                        withAnimation(.easeOut(duration: 0.25)) {
+                            showCalendar = true; calendarDrag = 0
+                        }
+                    } else {
+                        withAnimation(.easeOut(duration: 0.2)) { calendarDrag = 0 }
+                    }
+                } else {
+                    if value.translation.width < -threshold ||
+                       value.predictedEndTranslation.width < -drawerWidth * 0.5 {
+                        withAnimation(.easeOut(duration: 0.25)) {
+                            showSettings = true; settingsDrag = 0
+                        }
+                    } else {
+                        withAnimation(.easeOut(duration: 0.2)) { settingsDrag = 0 }
+                    }
+                }
+            }
+    }
+
+    /// Drag on the dimming overlay to close open drawer
+    private var overlayCloseDrag: some Gesture {
+        DragGesture(minimumDistance: 20)
+            .onChanged { value in
+                if showCalendar {
+                    calendarDrag = min(0, value.translation.width)
+                } else if showSettings {
+                    settingsDrag = max(0, value.translation.width)
+                }
+            }
+            .onEnded { value in
+                let threshold = drawerWidth * 0.3
+                if showCalendar {
+                    if value.translation.width < -threshold ||
+                       value.predictedEndTranslation.width < -drawerWidth * 0.5 {
+                        withAnimation(.easeOut(duration: 0.25)) {
+                            showCalendar = false; calendarDrag = 0
+                        }
+                    } else {
+                        withAnimation(.spring(response: 0.3)) { calendarDrag = 0 }
+                    }
+                } else if showSettings {
+                    if value.translation.width > threshold ||
+                       value.predictedEndTranslation.width > drawerWidth * 0.5 {
+                        withAnimation(.easeOut(duration: 0.25)) {
+                            showSettings = false; settingsDrag = 0
+                        }
+                    } else {
+                        withAnimation(.spring(response: 0.3)) { settingsDrag = 0 }
+                    }
+                }
+            }
+    }
+
+    private func closeDrawers() {
+        withAnimation(.easeOut(duration: 0.25)) {
+            showCalendar = false
+            showSettings = false
+            calendarDrag = 0
+            settingsDrag = 0
+        }
+    }
+
+    private func dismissKeyboard() {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+    }
+
+    // MARK: - Header
+
     private var header: some View {
         HStack {
-            Button { Haptics.light(); withAnimation(.easeInOut(duration: 0.3)) { showCalendar = true } } label: {
+            Button {
+                Haptics.light()
+                dismissKeyboard()
+                withAnimation(.easeOut(duration: 0.3)) { showCalendar = true }
+            } label: {
                 Image(systemName: "calendar")
                     .font(.system(size: 18))
                     .foregroundColor(Tokens.text)
@@ -165,7 +298,11 @@ struct ChatView: View {
 
             Spacer()
 
-            Button { Haptics.light(); withAnimation(.easeInOut(duration: 0.3)) { showSettings = true } } label: {
+            Button {
+                Haptics.light()
+                dismissKeyboard()
+                withAnimation(.easeOut(duration: 0.3)) { showSettings = true }
+            } label: {
                 Image(systemName: "gearshape")
                     .font(.system(size: 18))
                     .foregroundColor(Tokens.text)
@@ -180,12 +317,14 @@ struct ChatView: View {
         .padding(.vertical, 12)
     }
 
+    // MARK: - Cards
+
     @ViewBuilder
     private func cardView(_ card: CardData) -> some View {
         switch card {
         case .record(let data):
             RecordCard(petName: data.pet_name, date: data.date, category: data.category) {
-                withAnimation(.easeInOut(duration: 0.3)) { showCalendar = true }
+                withAnimation(.easeOut(duration: 0.3)) { showCalendar = true }
             }
         case .map(let data):
             MapCard(items: data.items)
@@ -207,6 +346,8 @@ struct ChatView: View {
             )
         }
     }
+
+    // MARK: - Chat
 
     private func sendMessage() {
         let text = inputText.trimmingCharacters(in: .whitespaces)
@@ -237,9 +378,11 @@ struct ChatView: View {
                         chatStore.messages[idx].content += t
                     case .card(let c):
                         chatStore.messages[idx].cards.append(c)
-                        // Refresh pet store if a new pet was created via chat
                         if case .petCreated = c {
                             Task { await petStore.fetchFromAPI() }
+                        }
+                        if case .record(let r) = c, let comps = parseYearMonth(r.date) {
+                            Task { await calendarStore.fetchMonth(year: comps.0, month: comps.1) }
                         }
                     case .emergency(let e):
                         emergency = e
@@ -256,6 +399,12 @@ struct ChatView: View {
             chatStore.save()
             isStreaming = false
         }
+    }
+
+    private func parseYearMonth(_ dateStr: String) -> (Int, Int)? {
+        let parts = dateStr.split(separator: "-")
+        guard parts.count >= 2, let y = Int(parts[0]), let m = Int(parts[1]) else { return nil }
+        return (y, m)
     }
 
     private func startVoice() {

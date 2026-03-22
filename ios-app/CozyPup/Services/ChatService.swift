@@ -4,6 +4,7 @@ struct ChatRequest: Encodable {
     let message: String
     let session_id: String?
     let location: LocationCoord?
+    let language: String?
 
     struct LocationCoord: Encodable {
         let lat: Double
@@ -21,12 +22,14 @@ enum SSEEvent {
 class ChatService {
     static func streamChat(message: String, sessionId: String?,
                            location: (lat: Double, lng: Double)?) -> AsyncThrowingStream<SSEEvent, Error> {
-        AsyncThrowingStream { continuation in
+        let lang = UserDefaults.standard.string(forKey: "cozypup_language") ?? "zh"
+        return AsyncThrowingStream { continuation in
             Task {
                 let body = ChatRequest(
                     message: message,
                     session_id: sessionId,
-                    location: location.map { .init(lat: $0.lat, lng: $0.lng) }
+                    location: location.map { .init(lat: $0.lat, lng: $0.lng) },
+                    language: lang
                 )
 
                 let stream = await APIClient.shared.streamRequest("/chat", body: body)

@@ -6,6 +6,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 CozyPup is an AI-powered pet health assistant. Native SwiftUI iOS app + FastAPI Python backend with PostgreSQL (Neon cloud). Chat uses SSE streaming via LiteLLM (DeepSeek).
 
+**Design Philosophy**: Interaction should be minimalist — everything AI can do, the user should NOT have to do manually. No forms, no onboarding wizards. Users talk to the AI, and the AI handles creating pet profiles, recording events, setting reminders, etc. through natural conversation.
+
 ## Build & Run
 
 ### Backend
@@ -60,7 +62,7 @@ backend/app/
 ├── models.py         # All SQLAlchemy models (User, Pet, ChatSession, Chat, CalendarEvent, Reminder, DeviceToken)
 ├── routers/          # One file per resource, all use get_current_user_id for auth
 ├── schemas/          # Pydantic request/response models per router
-├── agents/           # AI agent implementations (Phase 3, not yet built)
+├── agents/           # Constrained Agent framework: unified ChatAgent + validation + executor
 ├── middleware/        # rate_limit.py (30 msgs/hr on POST /chat)
 └── debug/            # Structured JSON logging, error snapshots, CLI tools
 ```
@@ -103,10 +105,11 @@ ios-app/CozyPup/
 ## Key Design Decisions
 
 - **Daily sessions**: One chat session per calendar day, auto-created on first message
-- **Intent routing**: LLM router returns intent only (chat | summarize | map | email), no entity extraction
-- **Chat Agent scope**: Handles auto-recording to calendar and calendar queries via function calling
+- **Unified ChatAgent**: No intent router — single ChatAgent handles all interactions (chat, summaries, emails, map search) via one LLM call with function calling
+- **Constrained Agent framework**: Schema validation + ownership checks + feedback loop to minimize LLM errors without needing expensive models
+- **Orchestrator + Executor**: LLM decides what to do (function calling), pure code executes it (DB writes, API calls)
+- **Single model**: One LLM for everything (default: DeepSeek-V3.2), framework validation compensates for model limitations
 - **pet_logs merged into calendar_events**: Added category, raw_text, edited, source fields
-- **LiteLLM abstraction**: `strong_model` (deepseek/deepseek-chat) for chat, `cheap_model` (qwen/qwen-turbo) for routing
 - **Dev auth**: `POST /api/v1/auth/dev` bypasses OAuth for simulator testing
 
 ## Environment
@@ -117,6 +120,7 @@ Pet color palette (shared between backend and iOS): `["E8835C", "6BA3BE", "7BAE7
 
 ## Implementation Status
 
-- **Done**: All REST APIs (auth, pets, calendar, reminders, chat SSE, chat history, devices, rate limiting), database models, frontend-backend integration
-- **Not done**: Phase 3 AI agents (emergency detection, intent router, function calling, summary/map/email agents), Phase 4 push notifications
-- **Plans**: `docs/superpowers/plans/2026-03-19-backend.md` has the full task breakdown
+- **Done**: All REST APIs, database models, iOS SwiftUI frontend, frontend-backend integration, Phase 3 agents (v1 — router + multi-agent pattern)
+- **In progress**: Refactoring to Constrained Agent architecture (unified ChatAgent, validation layers, remove router + sub-agents)
+- **Not done**: Phase 4 push notifications, RAG knowledge base
+- **Spec**: `docs/superpowers/specs/2026-03-17-petcare-agent-design.md` has the full architecture
