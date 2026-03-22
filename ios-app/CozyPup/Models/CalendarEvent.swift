@@ -27,12 +27,14 @@ struct CalendarEvent: Identifiable, Codable, Equatable {
     var edited: Bool
     let createdAt: String
 
+    var photos: [String]
+
     // Extra fields from API (optional, not used for local creation)
     var petName: String?
     var petColorHex: String?
 
     enum CodingKeys: String, CodingKey {
-        case id, title, type, category, source, edited
+        case id, title, type, category, source, edited, photos
         case petId = "pet_id"
         case eventDate = "event_date"
         case eventTime = "event_time"
@@ -40,6 +42,24 @@ struct CalendarEvent: Identifiable, Codable, Equatable {
         case createdAt = "created_at"
         case petName = "pet_name"
         case petColorHex = "pet_color_hex"
+    }
+
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        id = try c.decode(String.self, forKey: .id)
+        petId = try c.decode(String.self, forKey: .petId)
+        eventDate = try c.decode(String.self, forKey: .eventDate)
+        eventTime = try c.decodeIfPresent(String.self, forKey: .eventTime)
+        title = try c.decode(String.self, forKey: .title)
+        type = try c.decode(EventType.self, forKey: .type)
+        category = try c.decode(EventCategory.self, forKey: .category)
+        rawText = try c.decode(String.self, forKey: .rawText)
+        source = try c.decode(EventSource.self, forKey: .source)
+        edited = try c.decode(Bool.self, forKey: .edited)
+        createdAt = try c.decode(String.self, forKey: .createdAt)
+        photos = try c.decodeIfPresent([String].self, forKey: .photos) ?? []
+        petName = try c.decodeIfPresent(String.self, forKey: .petName)
+        petColorHex = try c.decodeIfPresent(String.self, forKey: .petColorHex)
     }
 
     init(petId: String, eventDate: String, eventTime: String?, title: String,
@@ -56,6 +76,7 @@ struct CalendarEvent: Identifiable, Codable, Equatable {
         self.source = source
         self.edited = edited
         self.createdAt = ISO8601DateFormatter().string(from: Date())
+        self.photos = []
         self.petName = nil
         self.petColorHex = nil
     }
