@@ -12,12 +12,12 @@ struct ChatBubble: View {
             Text(content)
                 .font(Tokens.fontBody)
                 .foregroundColor(isUser ? Tokens.white : Tokens.text)
-                .textSelection(.enabled)
                 .padding(.horizontal, Tokens.spacing.md)
                 .padding(.vertical, 10)
                 .background(isUser ? Tokens.bubbleUser : Tokens.bubbleAi)
                 .cornerRadius(Tokens.radius)
                 .shadow(color: isUser ? .clear : Tokens.dimOverlay.opacity(0.06), radius: 8, y: 2)
+                .textSelection(.enabled)
             if !isUser { Spacer(minLength: 60) }
         }
     }
