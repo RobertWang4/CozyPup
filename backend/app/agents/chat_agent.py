@@ -19,15 +19,12 @@ logger = logging.getLogger(__name__)
 MAX_TOOL_ROUNDS = 5
 
 # Patterns that indicate the LLM claimed to perform an action without actually
-# calling a tool, OR asked "which pet?" instead of acting.
+# calling a tool.
 _SHOULD_HAVE_ACTED = re.compile(
-    # Claimed action without tool call
     r"已记录|已更新|已保存|已添加|已设置|记住了|帮你记|帮你添加|帮你设"
     r"|I'?ve recorded|I'?ve updated|I'?ve saved|I'?ve added|I'?ve set"
     r"|I recorded|I updated|I saved|I added|I created"
-    r"|recorded it|saved it|added it|updated it|created it"
-    # Asked "which pet?" instead of acting
-    r"|哪只狗|哪只猫|哪只宠物|带哪只|哪个宠物|which pet|which dog|which cat",
+    r"|recorded it|saved it|added it|updated it|created it",
     re.IGNORECASE,
 )
 
