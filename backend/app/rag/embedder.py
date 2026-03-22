@@ -40,7 +40,8 @@ class EmbeddingService:
                 litellm.aembedding(**kwargs),
                 timeout=self.timeout,
             )
-            return response.data[0].embedding
+            item = response.data[0]
+            return item["embedding"] if isinstance(item, dict) else item.embedding
         except Exception as exc:
             logger.warning("embedding_error", extra={"error": str(exc)[:200]})
             return None
