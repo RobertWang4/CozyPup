@@ -12,25 +12,25 @@ struct RecordCard: View {
                 HStack(spacing: 12) {
                     RoundedRectangle(cornerRadius: 2)
                         .fill(Tokens.accent)
-                        .frame(width: 4, height: 36)
+                        .frame(width: 4, height: Tokens.size.buttonSmall)
 
                     VStack(alignment: .leading, spacing: 2) {
                         HStack(spacing: 6) {
                             Circle().fill(Tokens.accent).frame(width: 6, height: 6)
                             Text(L.recordedToCalendar)
-                                .font(.system(size: 11, weight: .medium))
+                                .font(Tokens.fontCaption.weight(.medium))
                                 .foregroundColor(Tokens.textSecondary)
                         }
-                        HStack(spacing: 4) {
+                        HStack(spacing: Tokens.spacing.xs) {
                             Image(systemName: "checkmark.circle")
-                                .font(.system(size: 14))
+                                .font(Tokens.fontSubheadline)
                                 .foregroundColor(Tokens.green)
                             VStack(alignment: .leading, spacing: 1) {
                                 Text("\(petName) · \(category)")
-                                    .font(.system(size: 14, weight: .medium))
+                                    .font(Tokens.fontSubheadline.weight(.medium))
                                     .foregroundColor(Tokens.text)
                                 Text(date)
-                                    .font(.system(size: 12))
+                                    .font(Tokens.fontCaption)
                                     .foregroundColor(Tokens.textSecondary)
                             }
                         }

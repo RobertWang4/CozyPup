@@ -28,20 +28,20 @@ struct PetFormView: View {
     }
 
     var body: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: Tokens.spacing.md) {
             // Avatar
             ZStack {
                 Circle()
                     .fill(avatarColor.opacity(0.15))
-                    .frame(width: 80, height: 80)
+                    .frame(width: Tokens.size.avatarLarge, height: Tokens.size.avatarLarge)
                 Image(systemName: species == .cat ? "cat.fill" : "dog.fill")
                     .font(.system(size: 34))
                     .foregroundColor(avatarColor)
             }
-            .padding(.bottom, 4)
+            .padding(.bottom, Tokens.spacing.xs)
 
             VStack(alignment: .leading, spacing: 6) {
-                Text(L.name).font(.system(size: 13, weight: .medium)).foregroundColor(Tokens.textSecondary)
+                Text(L.name).font(Tokens.fontSubheadline.weight(.medium)).foregroundColor(Tokens.textSecondary)
                 TextField(L.namePlaceholder, text: $name)
                     .textFieldStyle(.plain)
                     .padding(12)
@@ -51,7 +51,7 @@ struct PetFormView: View {
             }
 
             VStack(alignment: .leading, spacing: 6) {
-                Text(L.species).font(.system(size: 13, weight: .medium)).foregroundColor(Tokens.textSecondary)
+                Text(L.species).font(Tokens.fontSubheadline.weight(.medium)).foregroundColor(Tokens.textSecondary)
                 HStack(spacing: 10) {
                     ForEach(Species.allCases, id: \.self) { s in
                         Button {
@@ -59,11 +59,11 @@ struct PetFormView: View {
                             if s == .other { customSpeciesFocused = true }
                         } label: {
                             Text(speciesLabel(s))
-                                .font(.system(size: 14, weight: .medium))
-                                .padding(.horizontal, 16)
-                                .padding(.vertical, 8)
+                                .font(Tokens.fontSubheadline.weight(.medium))
+                                .padding(.horizontal, Tokens.spacing.md)
+                                .padding(.vertical, Tokens.spacing.sm)
                                 .background(species == s ? Tokens.accent : Tokens.surface)
-                                .foregroundColor(species == s ? .white : Tokens.text)
+                                .foregroundColor(species == s ? Tokens.white : Tokens.text)
                                 .cornerRadius(20)
                                 .overlay(
                                     RoundedRectangle(cornerRadius: 20)
@@ -76,7 +76,7 @@ struct PetFormView: View {
                     TextField(Lang.shared.isZh ? "输入宠物类型，如：兔子、仓鼠" : "e.g. Rabbit, Hamster", text: $customSpecies)
                         .focused($customSpeciesFocused)
                         .textFieldStyle(.plain)
-                        .font(.system(size: 14))
+                        .font(Tokens.fontSubheadline)
                         .padding(10)
                         .background(Tokens.surface)
                         .cornerRadius(10)
@@ -85,7 +85,7 @@ struct PetFormView: View {
             }
 
             VStack(alignment: .leading, spacing: 6) {
-                Text(L.breed).font(.system(size: 13, weight: .medium)).foregroundColor(Tokens.textSecondary)
+                Text(L.breed).font(Tokens.fontSubheadline.weight(.medium)).foregroundColor(Tokens.textSecondary)
                 TextField(L.breedPlaceholder, text: $breed)
                     .textFieldStyle(.plain)
                     .padding(12)
@@ -96,7 +96,7 @@ struct PetFormView: View {
 
             HStack(spacing: 12) {
                 VStack(alignment: .leading, spacing: 6) {
-                    Text(L.birthday).font(.system(size: 13, weight: .medium)).foregroundColor(Tokens.textSecondary)
+                    Text(L.birthday).font(Tokens.fontSubheadline.weight(.medium)).foregroundColor(Tokens.textSecondary)
                     TextField("YYYY-MM-DD", text: $birthday)
                         .textFieldStyle(.plain)
                         .padding(12)
@@ -105,7 +105,7 @@ struct PetFormView: View {
                         .overlay(RoundedRectangle(cornerRadius: 12).stroke(Tokens.border))
                 }
                 VStack(alignment: .leading, spacing: 6) {
-                    Text(L.weightKg).font(.system(size: 13, weight: .medium)).foregroundColor(Tokens.textSecondary)
+                    Text(L.weightKg).font(Tokens.fontSubheadline.weight(.medium)).foregroundColor(Tokens.textSecondary)
                     TextField("0.0", text: $weight)
                         .keyboardType(.decimalPad)
                         .textFieldStyle(.plain)
@@ -126,9 +126,9 @@ struct PetFormView: View {
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 14)
                     .background(name.isEmpty ? Tokens.border : Tokens.accent)
-                    .foregroundColor(.white)
+                    .foregroundColor(Tokens.white)
                     .cornerRadius(14)
-                    .font(.system(size: 16, weight: .semibold))
+                    .font(Tokens.fontCallout.weight(.semibold))
             }
             .disabled(name.isEmpty)
 

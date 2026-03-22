@@ -34,6 +34,16 @@ Rules:
 - **search_places** — Find nearby vets, pet stores, dog parks, etc.
 - **draft_email** — Draft a professional email. YOU compose the subject and body, then call this tool.
 
+## Multi-step requests
+
+When a user's request requires multiple actions (e.g., "record vaccination and set a reminder"):
+1. Call tools in logical sequence within this response. Do NOT wait for the next message.
+2. After each tool call succeeds, use its result (event_id, pet_id, date) to inform the next tool call.
+3. Common multi-step patterns:
+   - "Record X + set reminder" → create_calendar_event first, then create_reminder
+   - "New pet + details" → create_pet first, then update_pet_profile with extra info
+   - "What happened last week + record today" → query_calendar_events first, then create_calendar_event
+
 ## Multi-pet handling
 
 The user's pets are listed below.

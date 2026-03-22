@@ -28,23 +28,23 @@ struct EventRow: View {
             // Left color bar
             Capsule()
                 .fill(petColor)
-                .frame(width: 5, height: 44)
+                .frame(width: 5, height: Tokens.size.avatarMedium)
 
             // Event text with pet name in parentheses
             Text(eventLabel)
-                .font(.system(size: 14, weight: .regular))
+                .font(Tokens.fontSubheadline)
                 .foregroundColor(Tokens.text)
                 .lineLimit(2)
                 .padding(.leading, 12)
 
-            Spacer(minLength: 8)
+            Spacer(minLength: Tokens.spacing.sm)
 
             // Paw icon
             Image(systemName: "pawprint.fill")
-                .font(.system(size: 16))
+                .font(Tokens.fontCallout)
                 .foregroundColor(Tokens.accent.opacity(0.5))
         }
-        .padding(.horizontal, 16)
+        .padding(.horizontal, Tokens.spacing.md)
         .padding(.vertical, 14)
         .background(Tokens.surface)
         .cornerRadius(12)
@@ -76,19 +76,19 @@ struct EventRow: View {
     private var editView: some View {
         VStack(spacing: 6) {
             TextField(L.title, text: $editTitle)
-                .padding(8).background(Tokens.bg).cornerRadius(8)
-                .overlay(RoundedRectangle(cornerRadius: 8).stroke(Tokens.border))
-                .font(.system(size: 13))
+                .padding(Tokens.spacing.sm).background(Tokens.bg).cornerRadius(Tokens.spacing.sm)
+                .overlay(RoundedRectangle(cornerRadius: Tokens.spacing.sm).stroke(Tokens.border))
+                .font(Tokens.fontSubheadline)
 
             HStack(spacing: 6) {
                 TextField(L.date, text: $editDate)
-                    .padding(8).background(Tokens.bg).cornerRadius(8)
-                    .overlay(RoundedRectangle(cornerRadius: 8).stroke(Tokens.border))
-                    .font(.system(size: 13))
+                    .padding(Tokens.spacing.sm).background(Tokens.bg).cornerRadius(Tokens.spacing.sm)
+                    .overlay(RoundedRectangle(cornerRadius: Tokens.spacing.sm).stroke(Tokens.border))
+                    .font(Tokens.fontSubheadline)
                 TextField(L.time, text: $editTime)
-                    .padding(8).background(Tokens.bg).cornerRadius(8)
-                    .overlay(RoundedRectangle(cornerRadius: 8).stroke(Tokens.border))
-                    .font(.system(size: 13))
+                    .padding(Tokens.spacing.sm).background(Tokens.bg).cornerRadius(Tokens.spacing.sm)
+                    .overlay(RoundedRectangle(cornerRadius: Tokens.spacing.sm).stroke(Tokens.border))
+                    .font(Tokens.fontSubheadline)
             }
 
             Picker(Lang.shared.isZh ? "分类" : "Category", selection: $editCategory) {
@@ -104,14 +104,14 @@ struct EventRow: View {
                     editing = false
                 } label: {
                     Label(L.save, systemImage: "checkmark")
-                        .font(.system(size: 12, weight: .medium))
-                        .foregroundColor(.white)
+                        .font(Tokens.fontCaption.weight(.medium))
+                        .foregroundColor(Tokens.white)
                         .padding(.horizontal, 12).padding(.vertical, 6)
                         .background(Tokens.accent).cornerRadius(8)
                 }
                 Button { editing = false } label: {
                     Text(L.cancel)
-                        .font(.system(size: 12, weight: .medium))
+                        .font(Tokens.fontCaption.weight(.medium))
                         .foregroundColor(Tokens.textSecondary)
                         .padding(.horizontal, 12).padding(.vertical, 6)
                         .overlay(RoundedRectangle(cornerRadius: 8).stroke(Tokens.border))

@@ -10,7 +10,7 @@ struct MonthGrid: View {
     private let columns = Array(repeating: GridItem(.flexible()), count: 7)
 
     var body: some View {
-        LazyVGrid(columns: columns, spacing: 4) {
+        LazyVGrid(columns: columns, spacing: Tokens.spacing.xs) {
             ForEach(days) { day in
                 let dateStr = CalendarHelper.dateString(year: day.year, month: day.month, day: day.date)
                 let dayEvents = filteredEvents(for: dateStr)
@@ -20,13 +20,13 @@ struct MonthGrid: View {
                 Button {
                     selectedDate = dateStr
                 } label: {
-                    VStack(spacing: 4) {
+                    VStack(spacing: Tokens.spacing.xs) {
                         Text("\(day.date)")
-                            .font(.system(size: 15, weight: isSelected ? .semibold : .regular))
+                            .font(isSelected ? Tokens.fontBody.weight(.semibold) : Tokens.fontBody)
                             .foregroundColor(
-                                isSelected ? .white : (day.isCurrentMonth ? Tokens.text : Tokens.textTertiary)
+                                isSelected ? Tokens.white : (day.isCurrentMonth ? Tokens.text : Tokens.textTertiary)
                             )
-                            .frame(width: 36, height: 36)
+                            .frame(width: Tokens.size.buttonSmall, height: Tokens.size.buttonSmall)
                             .background(
                                 Group {
                                     if isSelected {
@@ -42,12 +42,12 @@ struct MonthGrid: View {
                             .fill(hasEvents ? Tokens.accent.opacity(0.6) : Color.clear)
                             .frame(width: 5, height: 5)
                     }
-                    .padding(.vertical, 4)
+                    .padding(.vertical, Tokens.spacing.xs)
                 }
                 .buttonStyle(.plain)
             }
         }
-        .padding(.horizontal, 4)
+        .padding(.horizontal, Tokens.spacing.xs)
     }
 
     private func filteredEvents(for date: String) -> [CalendarEvent] {

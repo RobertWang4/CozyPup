@@ -37,7 +37,7 @@ struct CalendarDrawer: View {
                 VStack(spacing: 0) {
                     
                     // Pet avatars
-                    HStack(spacing: 16) {
+                    HStack(spacing: Tokens.spacing.md) {
                         ForEach(petStore.pets) { pet in
                             Button {
                                 withAnimation(.easeInOut(duration: 0.2)) {
@@ -55,20 +55,20 @@ struct CalendarDrawer: View {
                         }
                         Spacer()
                     }
-                    .padding(.horizontal, 24)
+                    .padding(.horizontal, Tokens.spacing.lg)
                     .padding(.top, 70)
                     .padding(.bottom, 0) // No bottom padding so triangle touches card
 
                     // Calendar Card
                     calendarCard
-                        .padding(.horizontal, 16)
-                        .padding(.bottom, 16)
+                        .padding(.horizontal, Tokens.spacing.md)
+                        .padding(.bottom, Tokens.spacing.md)
                         .shadow(color: .black.opacity(0.03), radius: 8, y: 2)
 
                     // Events List
                     if selectedDate != nil {
                         eventsList
-                            .padding(.horizontal, 16)
+                            .padding(.horizontal, Tokens.spacing.md)
                             .padding(.bottom, 30)
                     } else {
                         Spacer().frame(height: 30)
@@ -81,14 +81,14 @@ struct CalendarDrawer: View {
                 withAnimation(.easeInOut(duration: 0.3)) { isPresented = false }
             } label: {
                 Image(systemName: "xmark")
-                    .font(.system(size: 14, weight: .medium))
+                    .font(Tokens.fontSubheadline.weight(.medium))
                     .foregroundColor(Tokens.textSecondary)
-                    .frame(width: 36, height: 36)
+                    .frame(width: Tokens.size.buttonSmall, height: Tokens.size.buttonSmall)
                     .background(Tokens.surface)
                     .clipShape(Circle())
             }
-            .padding(.trailing, 16)
-            .padding(.top, 16)
+            .padding(.trailing, Tokens.spacing.md)
+            .padding(.top, Tokens.spacing.md)
         }
         .task { await calendarStore.fetchMonth(year: year, month: month + 1) }
         .onChange(of: month) { Task { await calendarStore.fetchMonth(year: year, month: month + 1) } }
@@ -105,7 +105,7 @@ struct CalendarDrawer: View {
             HStack {
                 Button { prevMonth() } label: {
                     Image(systemName: "chevron.left")
-                        .font(.system(size: 14, weight: .medium))
+                        .font(Tokens.fontSubheadline.weight(.medium))
                         .foregroundColor(Tokens.textSecondary)
                 }
                 .buttonStyle(.plain)
@@ -113,32 +113,32 @@ struct CalendarDrawer: View {
                 Spacer()
                 
                 Text("\(CalendarHelper.monthNames[month]) \(String(year))")
-                    .font(.system(size: 18, weight: .medium))
+                    .font(Tokens.fontHeadline.weight(.medium))
                     .foregroundColor(Tokens.text)
                 
                 Spacer()
                 
                 Button { nextMonth() } label: {
                     Image(systemName: "chevron.right")
-                        .font(.system(size: 14, weight: .medium))
+                        .font(Tokens.fontSubheadline.weight(.medium))
                         .foregroundColor(Tokens.textSecondary)
                 }
                 .buttonStyle(.plain)
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, Tokens.spacing.md)
             .padding(.top, 20)
-            .padding(.bottom, 16)
+            .padding(.bottom, Tokens.spacing.md)
 
             // Weekday headers
             LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7)) {
                 ForEach(["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"], id: \.self) { day in
                     Text(day)
-                        .font(.system(size: 13, weight: .medium))
+                        .font(Tokens.fontSubheadline.weight(.medium))
                         .foregroundColor(Tokens.textSecondary)
                 }
             }
             .padding(.horizontal, 12)
-            .padding(.bottom, 8)
+            .padding(.bottom, Tokens.spacing.sm)
 
             // Month grid
             MonthGrid(
@@ -161,10 +161,10 @@ struct CalendarDrawer: View {
         VStack(spacing: 12) {
             if selectedEvents.isEmpty {
                 Text(Lang.shared.isZh ? "该日期没有事件" : "No events for this date")
-                    .font(.system(size: 14))
+                    .font(Tokens.fontSubheadline)
                     .foregroundColor(Tokens.textSecondary)
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 16)
+                    .padding(.vertical, Tokens.spacing.md)
             } else {
                 ForEach(selectedEvents) { evt in
                     let pet = petStore.getById(evt.petId)
@@ -197,7 +197,7 @@ struct PetAvatarCircle: View {
     var isDimmed: Bool = false
 
     var body: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: Tokens.spacing.sm) {
             ZStack {
                 Circle()
                     .fill(Tokens.surface)
@@ -207,7 +207,7 @@ struct PetAvatarCircle: View {
                     AsyncImage(url: URL(string: pet.avatarUrl)) { image in
                         image.resizable().scaledToFill()
                     } placeholder: {
-                        Color.gray.opacity(0.2)
+                        Tokens.placeholderBg
                     }
                     .frame(width: size - 4, height: size - 4)
                     .clipShape(Circle())
@@ -227,9 +227,9 @@ struct PetAvatarCircle: View {
             if isActiveFilter {
                 UpTriangle()
                     .fill(Tokens.surface)
-                    .frame(width: 16, height: 8)
+                    .frame(width: Tokens.spacing.md, height: Tokens.spacing.sm)
             } else {
-                Spacer().frame(height: 8)
+                Spacer().frame(height: Tokens.spacing.sm)
             }
         }
         .opacity(isDimmed ? 0.6 : 1.0)

@@ -7,7 +7,7 @@ struct LegalPageView: View {
     var body: some View {
         ScrollView {
             Text(content)
-                .font(.system(size: 14))
+                .font(Tokens.fontSubheadline)
                 .foregroundColor(Tokens.textSecondary)
                 .padding(20)
         }

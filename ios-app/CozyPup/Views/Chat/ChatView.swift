@@ -70,7 +70,7 @@ struct ChatView: View {
                         }
                         LazyVStack(spacing: 10) {
                             ForEach(chatStore.messages) { msg in
-                                VStack(spacing: 8) {
+                                VStack(spacing: Tokens.spacing.sm) {
                                     if !msg.content.isEmpty {
                                         ChatBubble(role: msg.role, content: msg.content)
                                     }
@@ -97,7 +97,7 @@ struct ChatView: View {
                 }
 
                 Text(L.aiDisclaimer)
-                    .font(.system(size: 11))
+                    .font(Tokens.fontCaption2)
                     .foregroundColor(Tokens.textSecondary)
                     .padding(.vertical, 6)
 
@@ -126,11 +126,11 @@ struct ChatView: View {
         // 1. Edge swipe areas (always rendered, below dimming overlay)
         .overlay {
             HStack(spacing: 0) {
-                Color.clear.frame(width: 28)
+                Color.clear.frame(width: Tokens.size.iconSmall)
                     .contentShape(Rectangle())
                     .gesture(edgeOpenGesture(isCalendar: true))
                 Spacer()
-                Color.clear.frame(width: 28)
+                Color.clear.frame(width: Tokens.size.iconSmall)
                     .contentShape(Rectangle())
                     .gesture(edgeOpenGesture(isCalendar: false))
             }
@@ -138,7 +138,7 @@ struct ChatView: View {
         }
         // 2. Dimming overlay (covers edge areas when drawer is open)
         .overlay {
-            Color.black.opacity(Double(drawerProgress) * 0.3)
+            Tokens.dimOverlay.opacity(Double(drawerProgress) * 0.3)
                 .ignoresSafeArea()
                 .allowsHitTesting(showCalendar || showSettings)
                 .onTapGesture { closeDrawers() }
@@ -151,7 +151,7 @@ struct ChatView: View {
                 .frame(maxHeight: .infinity)
                 .background(Tokens.bg)
                 .clipShape(UnevenRoundedRectangle(bottomTrailingRadius: 20, topTrailingRadius: 20))
-                .shadow(color: .black.opacity(drawerProgress > 0.01 ? 0.15 : 0), radius: 10, x: 2)
+                .shadow(color: Tokens.dimOverlay.opacity(drawerProgress > 0.01 ? 0.15 : 0), radius: 10, x: 2)
                 .offset(x: calendarX)
                 .ignoresSafeArea()
         }
@@ -162,7 +162,7 @@ struct ChatView: View {
                 .frame(maxHeight: .infinity)
                 .background(Tokens.bg)
                 .clipShape(UnevenRoundedRectangle(topLeadingRadius: 20, bottomLeadingRadius: 20))
-                .shadow(color: .black.opacity(drawerProgress > 0.01 ? 0.15 : 0), radius: 10, x: -2)
+                .shadow(color: Tokens.dimOverlay.opacity(drawerProgress > 0.01 ? 0.15 : 0), radius: 10, x: -2)
                 .offset(x: settingsX)
                 .ignoresSafeArea()
         }
@@ -172,11 +172,9 @@ struct ChatView: View {
         .onChange(of: showSettings) { _, val in
             if !val { settingsDrag = 0 }
         }
-        .onAppear {
-            Task {
-                await petStore.fetchFromAPI()
-                await location.requestLocation()
-            }
+        .task {
+            await petStore.fetchFromAPI()
+            await location.requestLocation()
         }
     }
 
@@ -274,24 +272,24 @@ struct ChatView: View {
                 withAnimation(.easeOut(duration: 0.3)) { showCalendar = true }
             } label: {
                 Image(systemName: "calendar")
-                    .font(.system(size: 18))
+                    .font(Tokens.fontHeadline)
                     .foregroundColor(Tokens.text)
-                    .frame(width: 40, height: 40)
+                    .frame(width: Tokens.size.iconMedium, height: Tokens.size.iconMedium)
                     .background(Tokens.surface)
                     .cornerRadius(Tokens.radiusIcon)
                     .overlay(RoundedRectangle(cornerRadius: Tokens.radiusIcon).stroke(Tokens.border))
-                    .shadow(color: .black.opacity(0.06), radius: 8, y: 2)
+                    .shadow(color: Tokens.dimOverlay.opacity(0.06), radius: 8, y: 2)
             }
 
             Spacer()
 
-            HStack(spacing: 8) {
+            HStack(spacing: Tokens.spacing.sm) {
                 Image("logo")
                     .resizable()
-                    .frame(width: 28, height: 28)
-                    .cornerRadius(8)
+                    .frame(width: Tokens.size.iconSmall, height: Tokens.size.iconSmall)
+                    .cornerRadius(Tokens.spacing.sm)
                 Text("Cozy Pup")
-                    .font(.system(.title3, design: .serif))
+                    .font(Tokens.fontTitle)
                     .fontWeight(.medium)
                     .foregroundColor(Tokens.accent)
             }
@@ -304,16 +302,16 @@ struct ChatView: View {
                 withAnimation(.easeOut(duration: 0.3)) { showSettings = true }
             } label: {
                 Image(systemName: "gearshape")
-                    .font(.system(size: 18))
+                    .font(Tokens.fontHeadline)
                     .foregroundColor(Tokens.text)
-                    .frame(width: 40, height: 40)
+                    .frame(width: Tokens.size.iconMedium, height: Tokens.size.iconMedium)
                     .background(Tokens.surface)
                     .cornerRadius(Tokens.radiusIcon)
                     .overlay(RoundedRectangle(cornerRadius: Tokens.radiusIcon).stroke(Tokens.border))
-                    .shadow(color: .black.opacity(0.06), radius: 8, y: 2)
+                    .shadow(color: Tokens.dimOverlay.opacity(0.06), radius: 8, y: 2)
             }
         }
-        .padding(.horizontal, 24)
+        .padding(.horizontal, Tokens.spacing.lg)
         .padding(.vertical, 12)
     }
 

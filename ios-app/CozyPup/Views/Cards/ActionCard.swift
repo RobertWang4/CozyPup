@@ -12,25 +12,25 @@ struct ActionCard: View {
             HStack(spacing: 12) {
                 RoundedRectangle(cornerRadius: 2)
                     .fill(iconColor)
-                    .frame(width: 4, height: 36)
+                    .frame(width: 4, height: Tokens.size.buttonSmall)
 
                 VStack(alignment: .leading, spacing: 2) {
                     HStack(spacing: 6) {
                         Circle().fill(iconColor).frame(width: 6, height: 6)
                         Text(label)
-                            .font(.system(size: 11, weight: .medium))
+                            .font(Tokens.fontCaption.weight(.medium))
                             .foregroundColor(Tokens.textSecondary)
                     }
-                    HStack(spacing: 4) {
+                    HStack(spacing: Tokens.spacing.xs) {
                         Image(systemName: icon)
-                            .font(.system(size: 14))
+                            .font(Tokens.fontSubheadline)
                             .foregroundColor(iconColor)
                         VStack(alignment: .leading, spacing: 1) {
                             Text(title)
-                                .font(.system(size: 14, weight: .medium))
+                                .font(Tokens.fontSubheadline.weight(.medium))
                                 .foregroundColor(Tokens.text)
                             Text(subtitle)
-                                .font(.system(size: 12))
+                                .font(Tokens.fontCaption)
                                 .foregroundColor(Tokens.textSecondary)
                         }
                     }

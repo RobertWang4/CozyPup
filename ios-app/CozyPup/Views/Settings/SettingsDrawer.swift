@@ -67,18 +67,18 @@ struct SettingsDrawer: View {
                     HStack(spacing: 12) {
                         Circle()
                             .fill(Tokens.accent)
-                            .frame(width: 44, height: 44)
+                            .frame(width: Tokens.size.avatarMedium, height: Tokens.size.avatarMedium)
                             .overlay(
                                 Text(String(auth.user?.name.prefix(1) ?? "U"))
-                                    .foregroundColor(.white)
-                                    .font(.system(size: 18, weight: .semibold))
+                                    .foregroundColor(Tokens.white)
+                                    .font(Tokens.fontHeadline.weight(.semibold))
                             )
-                        VStack(alignment: .leading, spacing: 2) {
+                        VStack(alignment: .leading, spacing: Tokens.spacing.xxs) {
                             Text(auth.user?.name ?? "User")
-                                .font(.system(size: 16, weight: .medium))
+                                .font(Tokens.fontCallout.weight(.medium))
                                 .foregroundColor(Tokens.text)
                             Text(auth.user?.email ?? "")
-                                .font(.system(size: 13))
+                                .font(Tokens.fontSubheadline)
                                 .foregroundColor(Tokens.textSecondary)
                         }
                     }
@@ -89,27 +89,27 @@ struct SettingsDrawer: View {
                     ForEach(petStore.pets) { pet in
                         HStack(spacing: 12) {
                             Image(systemName: pet.species == .cat ? "cat" : "dog")
-                                .font(.system(size: 20))
+                                .font(Tokens.fontTitle)
                                 .foregroundColor(pet.color)
-                                .frame(width: 32)
+                                .frame(width: Tokens.size.avatarSmall)
                             VStack(alignment: .leading, spacing: 3) {
                                 HStack(spacing: 6) {
-                                    Text(pet.name).font(.system(size: 15, weight: .medium))
+                                    Text(pet.name).font(Tokens.fontBody.weight(.medium))
                                     if !pet.breed.isEmpty {
                                         Text(pet.breed)
-                                            .font(.system(size: 12))
+                                            .font(Tokens.fontCaption)
                                             .foregroundColor(Tokens.textSecondary)
                                     }
                                 }
-                                HStack(spacing: 8) {
+                                HStack(spacing: Tokens.spacing.sm) {
                                     if let birthday = pet.birthday {
                                         Label(petAge(birthday), systemImage: "birthday.cake")
-                                            .font(.system(size: 11))
+                                            .font(Tokens.fontCaption)
                                             .foregroundColor(Tokens.textTertiary)
                                     }
                                     if let weight = pet.weight {
                                         Label(String(format: "%.1fkg", weight), systemImage: "scalemass")
-                                            .font(.system(size: 11))
+                                            .font(Tokens.fontCaption)
                                             .foregroundColor(Tokens.textTertiary)
                                     }
                                 }
@@ -119,18 +119,18 @@ struct SettingsDrawer: View {
                                 withAnimation { editingPetId = pet.id }
                             } label: {
                                 Image(systemName: "pencil")
-                                    .font(.system(size: 13))
+                                    .font(Tokens.fontSubheadline)
                                     .foregroundColor(Tokens.textSecondary)
-                                    .frame(width: 32, height: 32)
+                                    .frame(width: Tokens.size.avatarSmall, height: Tokens.size.avatarSmall)
                             }
                             .buttonStyle(.borderless)
                             Button {
                                 showDeleteConfirm = pet
                             } label: {
                                 Image(systemName: "trash")
-                                    .font(.system(size: 13))
+                                    .font(Tokens.fontSubheadline)
                                     .foregroundColor(Tokens.red)
-                                    .frame(width: 32, height: 32)
+                                    .frame(width: Tokens.size.avatarSmall, height: Tokens.size.avatarSmall)
                             }
                             .buttonStyle(.borderless)
                         }
@@ -140,7 +140,7 @@ struct SettingsDrawer: View {
                         withAnimation { showAddPet = true }
                     } label: {
                         Label(L.addPet, systemImage: "plus")
-                            .font(.system(size: 14, weight: .medium))
+                            .font(Tokens.fontSubheadline.weight(.medium))
                             .foregroundColor(Tokens.accent)
                     }
                     .listRowBackground(Tokens.surface)
@@ -237,7 +237,7 @@ struct SettingsDrawer: View {
                         }
                     } label: {
                         Image(systemName: "chevron.left")
-                            .font(.system(size: 14, weight: .semibold))
+                            .font(Tokens.fontSubheadline.weight(.semibold))
                             .foregroundColor(Tokens.textSecondary)
                     }
                 }

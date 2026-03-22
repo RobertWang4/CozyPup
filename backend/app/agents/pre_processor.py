@@ -153,7 +153,8 @@ def pre_process(
                         },
                         confidence=confidence,
                     ))
-                break  # Only match first category
+                # No break — continue matching so multiple intents are detected
+                # (e.g., "vaccination + deworming" → two create_calendar_event calls)
 
     # --- Create pet ---
     if _CREATE_PET_PATTERN.search(message):
@@ -202,5 +203,8 @@ def format_actions_for_prompt(actions: list[SuggestedAction]) -> str:
         lines.append(f"{i}. {action.tool_name}({args_str})")
 
     lines.append("")
+    if len(high_confidence) > 1:
+        lines.append("Execute these actions in the order listed. After each tool call, use the result to inform the next one.")
+        lines.append("")
     lines.append("After calling the tool(s), give a brief warm confirmation to the user.")
     return "\n".join(lines)

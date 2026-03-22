@@ -9,12 +9,12 @@ struct DisclaimerView: View {
 
             VStack(spacing: 20) {
                 Text("Before We Begin")
-                    .font(.system(.title2, design: .serif))
+                    .font(Tokens.fontTitle)
                     .fontWeight(.semibold)
                     .foregroundColor(Tokens.text)
 
                 Text("AI suggestions are for reference only and do not constitute veterinary advice. In emergencies, please contact a veterinarian immediately. By continuing, you acknowledge these limitations.")
-                    .font(.system(size: 15))
+                    .font(Tokens.fontBody)
                     .foregroundColor(Tokens.textSecondary)
                     .multilineTextAlignment(.center)
 
@@ -26,16 +26,16 @@ struct DisclaimerView: View {
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 14)
                         .background(Tokens.accent)
-                        .foregroundColor(.white)
+                        .foregroundColor(Tokens.white)
                         .cornerRadius(14)
-                        .font(.system(size: 16, weight: .semibold))
+                        .font(Tokens.fontCallout.weight(.semibold))
                 }
             }
             .padding(28)
             .background(Tokens.surface)
             .cornerRadius(24)
-            .shadow(color: .black.opacity(0.1), radius: 20)
-            .padding(.horizontal, 32)
+            .shadow(color: Tokens.dimOverlay, radius: 20)
+            .padding(.horizontal, Tokens.spacing.xl)
         }
         .background(Tokens.bg.ignoresSafeArea())
     }

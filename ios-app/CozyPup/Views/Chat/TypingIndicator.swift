@@ -4,11 +4,11 @@ struct TypingIndicator: View {
     var body: some View {
         HStack {
             dotRow
-                .padding(.horizontal, 16)
+                .padding(.horizontal, Tokens.spacing.md)
                 .padding(.vertical, 14)
                 .background(Tokens.bubbleAi)
                 .cornerRadius(Tokens.radius)
-                .shadow(color: .black.opacity(0.06), radius: 8, y: 2)
+                .shadow(color: Tokens.dimOverlay.opacity(0.06), radius: 8, y: 2)
             Spacer()
         }
     }
@@ -27,7 +27,7 @@ struct TypingIndicator: View {
     private func dot(phase: Double, index: Int) -> some View {
         Circle()
             .fill(Tokens.typingDot)
-            .frame(width: 8, height: 8)
+            .frame(width: Tokens.spacing.sm, height: Tokens.spacing.sm)
             .offset(y: sin(phase + Double(index) * .pi / 1.5) * 4)
     }
 }

@@ -25,12 +25,46 @@ enum Tokens {
     static let waveform = Color(hex: "E8835C")
     static let bubbleUser = Color(hex: "E8835C")
     static let bubbleAi = Color(hex: "FBF6F1")         // was pure white — match surface
-    static let fontBody = Font.system(.body, design: .default)
+    static let white = Color.white                       // semantic: text on accent/dark backgrounds
+    static let dimOverlay = Color.black                  // use with .opacity() for overlays
+    static let placeholderBg = Color.gray.opacity(0.2)   // AsyncImage placeholder, skeleton
+
+    // Typography system
+    static let fontLargeTitle = Font.system(.largeTitle, design: .serif)
+    static let fontTitle = Font.system(.title2, design: .serif)
     static let fontDisplay = Font.system(.title2, design: .serif)
+    static let fontHeadline = Font.system(.headline, design: .default)
+    static let fontBody = Font.system(.body, design: .default)
+    static let fontCallout = Font.system(.callout, design: .default)
+    static let fontSubheadline = Font.system(.subheadline, design: .default)
     static let fontCaption = Font.system(.caption, design: .default)
+    static let fontCaption2 = Font.system(.caption2, design: .default)
+
+    // Radius system
     static let radius: CGFloat = 20
     static let radiusSmall: CGFloat = 12
     static let radiusIcon: CGFloat = 14
+
+    // Spacing system
+    enum spacing {
+        static let xxs: CGFloat = 2
+        static let xs: CGFloat = 4
+        static let sm: CGFloat = 8
+        static let md: CGFloat = 16
+        static let lg: CGFloat = 24
+        static let xl: CGFloat = 32
+    }
+
+    // Component sizes
+    enum size {
+        static let buttonSmall: CGFloat = 36
+        static let buttonMedium: CGFloat = 44
+        static let avatarSmall: CGFloat = 32
+        static let avatarMedium: CGFloat = 44
+        static let avatarLarge: CGFloat = 80
+        static let iconSmall: CGFloat = 28
+        static let iconMedium: CGFloat = 40
+    }
 }
 
 extension Color {
