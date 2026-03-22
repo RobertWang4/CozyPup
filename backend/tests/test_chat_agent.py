@@ -17,6 +17,7 @@ from app.database import Base
 from app.models import CalendarEvent, EventCategory, EventSource, EventType, Pet, User
 
 
+
 # ---------- DB fixtures (in-memory SQLite) ----------
 
 @pytest_asyncio.fixture
@@ -415,3 +416,46 @@ class TestChatAgent:
             call_kwargs = mock_litellm.acompletion.call_args
             assert call_kwargs.kwargs["tools"] == TOOL_DEFINITIONS
             assert call_kwargs.kwargs["stream"] is True
+
+
+# ---------- CreatePet tool tests ----------
+
+
+class TestCreatePetTool:
+    @pytest.mark.asyncio
+    async def test_create_pet_basic(self, db, test_user, user_id):
+        result = await execute_tool(
+            "create_pet",
+            {"name": "Luna", "species": "cat", "breed": "Persian"},
+            db,
+            user_id,
+        )
+        assert result["success"] is True
+        assert result["pet_name"] == "Luna"
+        assert result["card"]["type"] == "pet_created"
+
+    @pytest.mark.asyncio
+    async def test_create_pet_with_gender_and_extras(self, db, test_user, user_id):
+        result = await execute_tool(
+            "create_pet",
+            {
+                "name": "Max",
+                "species": "dog",
+                "breed": "Husky",
+                "gender": "male",
+                "neutered": True,
+                "coat_color": "white",
+                "birthday": "2024-06-15",
+                "weight": 25.0,
+            },
+            db,
+            user_id,
+        )
+        assert result["success"] is True
+        pet_id = uuid.UUID(result["pet_id"])
+        pet = await db.get(Pet, pet_id)
+        assert pet.profile["gender"] == "male"
+        assert pet.profile["neutered"] is True
+        assert pet.profile["coat_color"] == "white"
+        assert pet.birthday == date(2024, 6, 15)
+        assert pet.weight == 25.0

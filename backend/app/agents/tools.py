@@ -3,12 +3,15 @@
 import json
 import logging
 import uuid
-from datetime import date, time
+from datetime import date, datetime, time
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models import CalendarEvent, EventCategory, EventSource, EventType, Pet
+from app.models import (
+    CalendarEvent, EventCategory, EventSource, EventType,
+    Pet, Reminder, Species,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -87,6 +90,115 @@ TOOL_DEFINITIONS = [
                     },
                 },
                 "required": [],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "create_pet",
+            "description": (
+                "Create a new pet profile for the user. Use this when the user says they "
+                "have a new pet and wants to add it to their account."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "name": {"type": "string", "description": "The pet's name."},
+                    "species": {"type": "string", "enum": ["dog", "cat", "other"], "description": "The type of animal."},
+                    "breed": {"type": "string", "description": "Breed, e.g. 'Golden Retriever'. Empty string if unknown."},
+                    "birthday": {"type": "string", "description": "Optional birthday in YYYY-MM-DD format."},
+                    "weight": {"type": "number", "description": "Optional weight in kg."},
+                    "gender": {"type": "string", "enum": ["male", "female", "unknown"], "description": "Optional gender."},
+                    "neutered": {"type": "boolean", "description": "Optional neutered/spayed status."},
+                    "coat_color": {"type": "string", "description": "Optional coat color."},
+                },
+                "required": ["name", "species"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "update_pet_profile",
+            "description": (
+                "Save any information about a pet to its profile. Use this whenever the user "
+                "mentions ANY detail about their pet — gender, diet, allergies, vet, weight, "
+                "temperament, medical history, etc. The info is stored as flexible key-value pairs. "
+                "Call this proactively to build up the pet's profile over time."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "pet_id": {
+                        "type": "string",
+                        "description": "UUID of the pet.",
+                    },
+                    "info": {
+                        "type": "object",
+                        "description": (
+                            "Key-value pairs of pet info to save. Any keys are allowed. "
+                            "Examples: {\"gender\": \"male\", \"weight_kg\": 5.2, \"allergies\": [\"chicken\"], "
+                            "\"diet\": \"Royal Canin 200g 2x/day\", \"neutered\": true, \"vet\": \"瑞鹏医院\", "
+                            "\"temperament\": \"friendly but anxious\", \"coat_color\": \"golden\"}"
+                        ),
+                    },
+                },
+                "required": ["pet_id", "info"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "list_pets",
+            "description": (
+                "List all of the user's registered pets with their profiles. "
+                "Use this when the user asks about their pets, wants to see all pets, "
+                "or you need to look up pet IDs."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {},
+                "required": [],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "create_reminder",
+            "description": (
+                "Create a reminder that will send a push notification at the specified time. "
+                "Use this when the user asks to be reminded about something — medication, "
+                "vet appointments, feeding schedules, etc."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "pet_id": {
+                        "type": "string",
+                        "description": "UUID of the pet this reminder is for.",
+                    },
+                    "type": {
+                        "type": "string",
+                        "enum": ["medication", "vaccine", "checkup", "feeding", "grooming", "other"],
+                        "description": "Type of reminder.",
+                    },
+                    "title": {
+                        "type": "string",
+                        "description": "Short reminder title, e.g. 'Give heartworm medication'.",
+                    },
+                    "body": {
+                        "type": "string",
+                        "description": "Optional detailed description.",
+                    },
+                    "trigger_at": {
+                        "type": "string",
+                        "description": "When to send the reminder, in ISO 8601 format (YYYY-MM-DDTHH:MM:SS).",
+                    },
+                },
+                "required": ["pet_id", "type", "title", "trigger_at"],
             },
         },
     },
@@ -193,9 +305,193 @@ async def _query_calendar_events(
     }
 
 
+PET_COLORS = ["E8835C", "6BA3BE", "7BAE7F", "9B7ED8", "E8A33C"]
+
+
+async def _create_pet(
+    arguments: dict,
+    db: AsyncSession,
+    user_id: uuid.UUID,
+) -> dict:
+    """Create a new pet profile."""
+    name = arguments["name"]
+    species = Species(arguments["species"])
+    breed = arguments.get("breed", "")
+    birthday_str = arguments.get("birthday")
+    weight = arguments.get("weight")
+
+    # Auto-assign color
+    count_result = await db.execute(
+        select(func.count()).where(Pet.user_id == user_id)
+    )
+    count = count_result.scalar() or 0
+    color = PET_COLORS[count % len(PET_COLORS)]
+
+    pet = Pet(
+        id=uuid.uuid4(),
+        user_id=user_id,
+        name=name,
+        species=species,
+        breed=breed,
+        birthday=date.fromisoformat(birthday_str) if birthday_str else None,
+        weight=weight,
+        color_hex=color,
+    )
+
+    # Store optional fields in flexible profile JSON
+    profile = {}
+    for key in ("gender", "neutered", "coat_color"):
+        if key in arguments:
+            profile[key] = arguments[key]
+    if profile:
+        pet.profile = profile
+
+    db.add(pet)
+    await db.flush()
+
+    card = {
+        "type": "pet_created",
+        "pet_name": name,
+        "species": arguments["species"],
+        "breed": breed,
+    }
+
+    return {
+        "success": True,
+        "pet_id": str(pet.id),
+        "pet_name": name,
+        "species": arguments["species"],
+        "card": card,
+    }
+
+
+async def _update_pet_profile(
+    arguments: dict,
+    db: AsyncSession,
+    user_id: uuid.UUID,
+) -> dict:
+    """Merge new info into the pet's flexible JSON profile."""
+    pet_id = uuid.UUID(arguments["pet_id"])
+    info = arguments.get("info", {})
+    if not info:
+        return {"success": False, "error": "No info provided"}
+
+    result = await db.execute(
+        select(Pet).where(Pet.id == pet_id, Pet.user_id == user_id)
+    )
+    pet = result.scalar_one_or_none()
+    if not pet:
+        return {"success": False, "error": "Pet not found"}
+
+    # Also update real columns if matching keys are provided
+    if "birthday" in info:
+        try:
+            pet.birthday = date.fromisoformat(str(info["birthday"]))
+        except (ValueError, TypeError):
+            pass
+    if "weight" in info or "weight_kg" in info:
+        w = info.get("weight") or info.get("weight_kg")
+        if isinstance(w, (int, float)):
+            pet.weight = float(w)
+    if "name" in info:
+        pet.name = str(info["name"])
+    if "breed" in info:
+        pet.breed = str(info["breed"])
+
+    # Merge into flexible JSON profile
+    existing = dict(pet.profile) if pet.profile else {}
+    existing.update(info)
+    pet.profile = existing
+
+    await db.flush()
+
+    return {
+        "success": True,
+        "pet_id": str(pet.id),
+        "pet_name": pet.name,
+        "saved_keys": list(info.keys()),
+    }
+
+
+async def _list_pets(
+    arguments: dict,
+    db: AsyncSession,
+    user_id: uuid.UUID,
+) -> dict:
+    """List all pets for the user."""
+    result = await db.execute(
+        select(Pet).where(Pet.user_id == user_id).order_by(Pet.created_at)
+    )
+    pets = result.scalars().all()
+
+    return {
+        "pets": [
+            {
+                "id": str(p.id),
+                "name": p.name,
+                "species": p.species.value,
+                "breed": p.breed,
+                "birthday": p.birthday.isoformat() if p.birthday else None,
+                "weight": p.weight,
+            }
+            for p in pets
+        ],
+        "count": len(pets),
+    }
+
+
+async def _create_reminder(
+    arguments: dict,
+    db: AsyncSession,
+    user_id: uuid.UUID,
+) -> dict:
+    """Create a reminder for push notification."""
+    pet_id = uuid.UUID(arguments["pet_id"])
+
+    # Verify pet belongs to user
+    pet_result = await db.execute(
+        select(Pet).where(Pet.id == pet_id, Pet.user_id == user_id)
+    )
+    pet = pet_result.scalar_one_or_none()
+    if not pet:
+        return {"success": False, "error": "Pet not found"}
+
+    reminder = Reminder(
+        id=uuid.uuid4(),
+        user_id=user_id,
+        pet_id=pet_id,
+        type=arguments["type"],
+        title=arguments["title"],
+        body=arguments.get("body", ""),
+        trigger_at=datetime.fromisoformat(arguments["trigger_at"]),
+    )
+    db.add(reminder)
+    await db.flush()
+
+    card = {
+        "type": "reminder",
+        "pet_name": pet.name,
+        "title": arguments["title"],
+        "trigger_at": arguments["trigger_at"],
+        "reminder_type": arguments["type"],
+    }
+
+    return {
+        "success": True,
+        "reminder_id": str(reminder.id),
+        "title": arguments["title"],
+        "trigger_at": arguments["trigger_at"],
+        "card": card,
+    }
+
+
 _TOOL_HANDLERS = {
     "create_calendar_event": _create_calendar_event,
     "query_calendar_events": _query_calendar_events,
+    "create_pet": _create_pet,
+    "update_pet_profile": _update_pet_profile,
+    "list_pets": _list_pets,
+    "create_reminder": _create_reminder,
 }
 
 
