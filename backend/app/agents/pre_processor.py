@@ -221,30 +221,58 @@ def pre_process(
             if pattern.search(message):
                 event_date = _resolve_date(message, today)
                 resolved_pets = _resolve_pets(message, pets)
-                # If multiple pets and none mentioned by name, lower confidence
-                # so LLM decides (it should ask which pet)
-                actual_confidence = confidence
-                if len(resolved_pets) > 1 and len(pets) > 1:
-                    mentioned_names = [p.name if hasattr(p, "name") else p.get("name", "")
-                                       for p in pets
-                                       if (p.name if hasattr(p, "name") else p.get("name", "")).lower() in message.lower()]
-                    if not mentioned_names:
-                        actual_confidence = 0.5  # below 0.8 threshold, won't be injected
-                for pet_id, pet_name in resolved_pets:
+
+                # Check if a specific pet was mentioned by name
+                mentioned_names = [
+                    p.name if hasattr(p, "name") else p.get("name", "")
+                    for p in pets
+                    if (p.name if hasattr(p, "name") else p.get("name", "")).lower() in message.lower()
+                ]
+
+                if mentioned_names:
+                    # Specific pet(s) mentioned → one event per mentioned pet
+                    for pet_id, pet_name in resolved_pets:
+                        if pet_name in mentioned_names:
+                            actions.append(SuggestedAction(
+                                tool_name="create_calendar_event",
+                                arguments={
+                                    "pet_id": pet_id,
+                                    "event_date": event_date.isoformat(),
+                                    "title": message[:100],
+                                    "category": category,
+                                    "raw_text": message,
+                                },
+                                confidence=confidence,
+                                confirm_description=f"为{pet_name}记录 {category}（{event_date.isoformat()}）",
+                            ))
+                elif len(pets) == 1:
+                    # Only one pet → assign to that pet
+                    pet_id, pet_name = resolved_pets[0]
                     actions.append(SuggestedAction(
                         tool_name="create_calendar_event",
                         arguments={
                             "pet_id": pet_id,
                             "event_date": event_date.isoformat(),
-                            "title": message[:100],  # LLM will refine this
+                            "title": message[:100],
                             "category": category,
                             "raw_text": message,
                         },
-                        confidence=actual_confidence,
-                        confirm_description=f"为{pet_name}记录 {category} 事件（{event_date.isoformat()}）",
+                        confidence=confidence,
+                        confirm_description=f"为{pet_name}记录 {category}（{event_date.isoformat()}）",
                     ))
-                # No break — continue matching so multiple intents are detected
-                # (e.g., "vaccination + deworming" → two create_calendar_event calls)
+                else:
+                    # Multiple pets, none mentioned → ONE shared event, no pet_id
+                    actions.append(SuggestedAction(
+                        tool_name="create_calendar_event",
+                        arguments={
+                            "event_date": event_date.isoformat(),
+                            "title": message[:100],
+                            "category": category,
+                            "raw_text": message,
+                        },
+                        confidence=confidence,
+                        confirm_description=f"记录 {category}（{event_date.isoformat()}）",
+                    ))
 
     # --- Create pet ---
     if _CREATE_PET_PATTERN.search(message):

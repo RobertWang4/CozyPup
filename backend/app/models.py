@@ -130,7 +130,7 @@ class CalendarEvent(Base):
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
-    pet_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("pets.id", ondelete="CASCADE"), nullable=False)
+    pet_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("pets.id", ondelete="CASCADE"))
     event_date: Mapped[date] = mapped_column(Date, nullable=False)
     event_time: Mapped[time | None] = mapped_column(Time)
     title: Mapped[str] = mapped_column(String(500), nullable=False)

@@ -36,16 +36,18 @@ TOOL_DEFINITIONS = [
         "function": {
             "name": "create_calendar_event",
             "description": (
-                "Record a pet health event to the calendar. Use this when the user mentions "
-                "feeding, symptoms, medications, vaccinations, deworming, vet visits, or any "
-                "daily care activity that should be logged."
+                "Record an event to the calendar. Use for pet health events, daily care, "
+                "or shared owner activities (buying supplies, vet appointments, etc.). "
+                "For SHARED events that apply to all pets or the owner (e.g. buying dog food, "
+                "visiting pet store), call this ONCE with pet_id omitted. "
+                "Do NOT create duplicate events for each pet."
             ),
             "parameters": {
                 "type": "object",
                 "properties": {
                     "pet_id": {
                         "type": "string",
-                        "description": "UUID of the pet this event is for.",
+                        "description": "UUID of the pet. OMIT for shared/owner events like buying supplies.",
                     },
                     "event_date": {
                         "type": "string",
@@ -74,7 +76,7 @@ TOOL_DEFINITIONS = [
                         "description": "URLs of photos to attach to this event (if user sent images)",
                     },
                 },
-                "required": ["pet_id", "event_date", "title", "category"],
+                "required": ["event_date", "title", "category"],
             },
         },
     },
@@ -499,7 +501,8 @@ async def _create_calendar_event(
     user_id: uuid.UUID,
 ) -> dict:
     """Create a CalendarEvent record in the database."""
-    pet_id = uuid.UUID(arguments["pet_id"])
+    pet_id_str = arguments.get("pet_id")
+    pet_id = uuid.UUID(pet_id_str) if pet_id_str else None
     event_date = date.fromisoformat(arguments["event_date"])
     title = arguments["title"]
     category = EventCategory(arguments["category"])
@@ -511,13 +514,15 @@ async def _create_calendar_event(
         parts = event_time_str.split(":")
         event_time = time(int(parts[0]), int(parts[1]))
 
-    # Verify pet belongs to user
-    pet_result = await db.execute(
-        select(Pet).where(Pet.id == pet_id, Pet.user_id == user_id)
-    )
-    pet = pet_result.scalar_one_or_none()
-    if not pet:
-        return {"success": False, "error": "Pet not found"}
+    # Verify pet belongs to user (if pet specified)
+    pet = None
+    if pet_id:
+        pet_result = await db.execute(
+            select(Pet).where(Pet.id == pet_id, Pet.user_id == user_id)
+        )
+        pet = pet_result.scalar_one_or_none()
+        if not pet:
+            return {"success": False, "error": "Pet not found"}
 
     event = CalendarEvent(
         user_id=user_id,
@@ -555,7 +560,7 @@ async def _create_calendar_event(
 
     card = {
         "type": "record",
-        "pet_name": pet.name,
+        "pet_name": pet.name if pet else "",
         "date": arguments["event_date"],
         "category": arguments["category"],
         "title": title,
