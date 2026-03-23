@@ -19,8 +19,6 @@ class Settings(BaseSettings):
     apns_bundle_id: str = "com.cozypup.app"
     apns_use_sandbox: bool = True  # True for dev, False for production
 
-    firebase_project_id: str = "cozypup-39487"
-
     # Server public URL (for constructing image URLs for LLM vision)
     server_public_url: str = "http://168.138.75.153:8000"
 

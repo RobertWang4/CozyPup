@@ -1,20 +1,12 @@
 import uuid
 from datetime import datetime, timedelta, timezone
 
-import bcrypt
 import httpx
 import jwt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-from firebase_admin import auth as firebase_auth, credentials, initialize_app
 
 from app.config import settings
-
-# Initialize Firebase Admin (just needs project ID for token verification)
-try:
-    initialize_app(options={"projectId": settings.firebase_project_id})
-except ValueError:
-    pass  # Already initialized
 
 security = HTTPBearer()
 
@@ -120,37 +112,6 @@ async def verify_google_token(id_token: str) -> dict:
         "email": data.get("email", ""),
         "name": data.get("name"),
     }
-
-
-async def verify_firebase_token(id_token: str) -> dict:
-    """Verify a Firebase ID token and return {email, name, phone_number, provider}."""
-    try:
-        decoded = firebase_auth.verify_id_token(id_token)
-    except Exception as e:
-        raise HTTPException(status_code=401, detail=f"Firebase token invalid: {e}")
-
-    provider = decoded.get("firebase", {}).get("sign_in_provider", "unknown")
-    provider_map = {
-        "google.com": "google",
-        "apple.com": "apple",
-        "password": "email",
-    }
-
-    return {
-        "email": decoded.get("email", ""),
-        "name": decoded.get("name"),
-        "phone_number": decoded.get("phone_number"),
-        "provider": provider_map.get(provider, provider),
-        "firebase_uid": decoded.get("uid"),
-    }
-
-
-def hash_password(password: str) -> str:
-    return bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
-
-
-def verify_password(password: str, hashed: str) -> bool:
-    return bcrypt.checkpw(password.encode(), hashed.encode())
 
 
 # ---------- FastAPI dependency ----------

@@ -1,7 +1,6 @@
 import SwiftUI
-import FirebaseAuth
 import GoogleSignIn
-import FirebaseCore
+import AuthenticationServices
 
 struct UserInfo: Codable, Equatable {
     let name: String
@@ -16,15 +15,6 @@ class AuthStore: ObservableObject {
     @Published var hasAcknowledgedDisclaimer = false
     @Published var isLoading = false
     @Published var errorMessage: String?
-
-    // Registration flow state
-    @Published var pendingRegistration: PendingRegistration?
-
-    struct PendingRegistration {
-        let email: String
-        let password: String
-        let name: String?
-    }
 
     private let authKey = "cozypup_auth"
     private let disclaimerKey = "cozypup_disclaimer"
@@ -46,11 +36,7 @@ class AuthStore: ObservableObject {
         do {
             let _: UserResp = try await APIClient.shared.request("GET", "/auth/me")
         } catch {
-            if let firebaseUser = Auth.auth().currentUser {
-                await loginWithFirebaseUser(firebaseUser)
-            } else {
-                isAuthenticated = false
-            }
+            isAuthenticated = false
         }
     }
 
@@ -59,15 +45,6 @@ class AuthStore: ObservableObject {
     func loginWithGoogle() {
         isLoading = true
         errorMessage = nil
-
-        guard let clientID = FirebaseApp.app()?.options.clientID else {
-            errorMessage = "Firebase not configured"
-            isLoading = false
-            return
-        }
-
-        let config = GIDConfiguration(clientID: clientID)
-        GIDSignIn.sharedInstance.configuration = config
 
         guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
               let rootVC = windowScene.windows.first?.rootViewController else {
@@ -84,39 +61,15 @@ class AuthStore: ObservableObject {
                     isLoading = false
                     return
                 }
-                let credential = GoogleAuthProvider.credential(
-                    withIDToken: idToken,
-                    accessToken: result.user.accessToken.tokenString
-                )
-                let authResult = try await Auth.auth().signIn(with: credential)
-                await loginWithFirebaseUser(authResult.user)
-            } catch {
-                errorMessage = error.localizedDescription
-                isLoading = false
-            }
-        }
-    }
 
-    // MARK: - Email + Password
-
-    func loginWithEmail(email: String, password: String) {
-        isLoading = true
-        errorMessage = nil
-
-        Task {
-            do {
-                struct LoginBody: Encodable { let email: String; let password: String }
+                struct AuthBody: Encodable { let id_token: String }
                 struct AuthResp: Decodable { let access_token: String; let refresh_token: String; let user_id: String }
 
                 let resp: AuthResp = try await APIClient.shared.authRequest(
-                    "/auth/email/login",
-                    body: LoginBody(email: email, password: password)
+                    "/auth/google", body: AuthBody(id_token: idToken)
                 )
                 await APIClient.shared.setTokens(access: resp.access_token, refresh: resp.refresh_token)
-                await fetchAndSaveUser(provider: "email")
-            } catch APIError.badStatus(401) {
-                errorMessage = "邮箱或密码错误"
-                isLoading = false
+                await fetchAndSaveUser(provider: "google")
             } catch {
                 errorMessage = error.localizedDescription
                 isLoading = false
@@ -124,83 +77,44 @@ class AuthStore: ObservableObject {
         }
     }
 
-    func registerWithEmail(email: String, password: String, name: String?) {
-        pendingRegistration = PendingRegistration(email: email, password: password, name: name)
-    }
+    // MARK: - Apple Sign-In
 
-    func completeRegistration(phoneNumber: String) {
-        guard let reg = pendingRegistration else { return }
+    func handleAppleSignIn(result: Result<ASAuthorization, Error>) {
         isLoading = true
         errorMessage = nil
 
-        Task {
-            do {
-                struct RegisterBody: Encodable {
-                    let email: String; let password: String
-                    let name: String?; let phone_number: String
-                }
-                struct AuthResp: Decodable { let access_token: String; let refresh_token: String; let user_id: String }
+        switch result {
+        case .success(let auth):
+            guard let credential = auth.credential as? ASAuthorizationAppleIDCredential,
+                  let tokenData = credential.identityToken,
+                  let idToken = String(data: tokenData, encoding: .utf8) else {
+                errorMessage = "Failed to get Apple ID token"
+                isLoading = false
+                return
+            }
 
-                let resp: AuthResp = try await APIClient.shared.authRequest(
-                    "/auth/email/register",
-                    body: RegisterBody(
-                        email: reg.email, password: reg.password,
-                        name: reg.name, phone_number: phoneNumber
+            Task {
+                do {
+                    struct AuthBody: Encodable { let id_token: String }
+                    struct AuthResp: Decodable { let access_token: String; let refresh_token: String; let user_id: String }
+
+                    let resp: AuthResp = try await APIClient.shared.authRequest(
+                        "/auth/apple", body: AuthBody(id_token: idToken)
                     )
-                )
-                await APIClient.shared.setTokens(access: resp.access_token, refresh: resp.refresh_token)
-                pendingRegistration = nil
-                await fetchAndSaveUser(provider: "email")
-            } catch APIError.badStatus(409) {
-                errorMessage = "该邮箱已注册"
-                isLoading = false
-            } catch {
-                errorMessage = error.localizedDescription
-                isLoading = false
+                    await APIClient.shared.setTokens(access: resp.access_token, refresh: resp.refresh_token)
+                    await fetchAndSaveUser(provider: "apple")
+                } catch {
+                    errorMessage = error.localizedDescription
+                    isLoading = false
+                }
             }
-        }
-    }
 
-    // MARK: - Firebase token → backend
-
-    private func loginWithFirebaseUser(_ firebaseUser: FirebaseAuth.User) async {
-        do {
-            let idToken = try await firebaseUser.getIDToken()
-
-            struct FirebaseBody: Encodable { let id_token: String }
-            struct AuthResp: Decodable { let access_token: String; let refresh_token: String; let user_id: String }
-
-            let resp: AuthResp = try await APIClient.shared.authRequest(
-                "/auth/firebase", body: FirebaseBody(id_token: idToken)
-            )
-            await APIClient.shared.setTokens(access: resp.access_token, refresh: resp.refresh_token)
-            await fetchAndSaveUser(provider: firebaseUser.providerData.first?.providerID ?? "firebase")
-        } catch {
-            errorMessage = error.localizedDescription
+        case .failure(let error):
+            if (error as NSError).code != ASAuthorizationError.canceled.rawValue {
+                errorMessage = error.localizedDescription
+            }
             isLoading = false
         }
-    }
-
-    private func fetchAndSaveUser(provider: String) async {
-        struct UserResp: Decodable { let id: String; let email: String; let name: String?; let auth_provider: String }
-        do {
-            let me: UserResp = try await APIClient.shared.request("GET", "/auth/me")
-            let userInfo = UserInfo(name: me.name ?? "User", email: me.email, provider: me.auth_provider)
-            self.user = userInfo
-            self.isAuthenticated = true
-            if let data = try? JSONEncoder().encode(userInfo) {
-                UserDefaults.standard.set(data, forKey: authKey)
-            }
-        } catch {
-            errorMessage = "Failed to fetch user info"
-        }
-        isLoading = false
-    }
-
-    // MARK: - Apple Sign-In (placeholder)
-
-    func loginWithApple() {
-        errorMessage = "Apple Sign-In requires an Apple Developer account. Coming soon!"
     }
 
     // MARK: - Dev auth (simulator only)
@@ -226,10 +140,27 @@ class AuthStore: ObservableObject {
     }
     #endif
 
+    // MARK: - Helpers
+
+    private func fetchAndSaveUser(provider: String) async {
+        struct UserResp: Decodable { let id: String; let email: String; let name: String?; let auth_provider: String }
+        do {
+            let me: UserResp = try await APIClient.shared.request("GET", "/auth/me")
+            let userInfo = UserInfo(name: me.name ?? "User", email: me.email, provider: me.auth_provider)
+            self.user = userInfo
+            self.isAuthenticated = true
+            if let data = try? JSONEncoder().encode(userInfo) {
+                UserDefaults.standard.set(data, forKey: authKey)
+            }
+        } catch {
+            errorMessage = "Failed to fetch user info"
+        }
+        isLoading = false
+    }
+
     // MARK: - Logout
 
     func logout() {
-        try? Auth.auth().signOut()
         GIDSignIn.sharedInstance.signOut()
         isAuthenticated = false
         user = nil

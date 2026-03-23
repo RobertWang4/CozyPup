@@ -11,10 +11,7 @@ from app.auth import (
     get_current_user_id,
     verify_apple_token,
     verify_google_token,
-    verify_firebase_token,
     verify_token,
-    hash_password,
-    verify_password,
 )
 from app.database import get_db
 from app.models import User
@@ -22,9 +19,6 @@ from app.schemas.auth import (
     AuthRequest,
     AuthResponse,
     DevAuthRequest,
-    EmailRegisterRequest,
-    EmailLoginRequest,
-    FirebaseAuthRequest,
     RefreshRequest,
     RefreshResponse,
     UserResponse,
@@ -84,50 +78,6 @@ async def login_apple(req: AuthRequest, db: AsyncSession = Depends(get_db)):
 async def login_google(req: AuthRequest, db: AsyncSession = Depends(get_db)):
     info = await verify_google_token(req.id_token)
     user = await _find_or_create_user(db, info["email"], info.get("name"), "google")
-    return _make_tokens(user)
-
-
-@router.post("/firebase", response_model=AuthResponse)
-async def login_firebase(req: FirebaseAuthRequest, db: AsyncSession = Depends(get_db)):
-    """Unified Firebase login — works for Google, Apple, and any Firebase provider."""
-    info = await verify_firebase_token(req.id_token)
-    user = await _find_or_create_user(db, info["email"], info.get("name"), info["provider"])
-    if info.get("phone_number") and not user.phone_number:
-        user.phone_number = info["phone_number"]
-        await db.commit()
-    return _make_tokens(user)
-
-
-@router.post("/email/register", response_model=AuthResponse)
-async def register_email(req: EmailRegisterRequest, db: AsyncSession = Depends(get_db)):
-    """Register with email + password. Requires phone_number."""
-    result = await db.execute(select(User).where(User.email == req.email))
-    if result.scalar_one_or_none():
-        raise HTTPException(status_code=409, detail="Email already registered")
-
-    user = User(
-        id=uuid.uuid4(),
-        email=req.email,
-        name=req.name,
-        auth_provider="email",
-        password_hash=hash_password(req.password),
-        phone_number=req.phone_number,
-    )
-    db.add(user)
-    await db.commit()
-    await db.refresh(user)
-    return _make_tokens(user)
-
-
-@router.post("/email/login", response_model=AuthResponse)
-async def login_email(req: EmailLoginRequest, db: AsyncSession = Depends(get_db)):
-    """Login with email + password."""
-    result = await db.execute(select(User).where(User.email == req.email))
-    user = result.scalar_one_or_none()
-    if not user or not user.password_hash:
-        raise HTTPException(status_code=401, detail="Invalid email or password")
-    if not verify_password(req.password, user.password_hash):
-        raise HTTPException(status_code=401, detail="Invalid email or password")
     return _make_tokens(user)
 
 

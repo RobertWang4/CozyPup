@@ -1,8 +1,8 @@
 import SwiftUI
+import AuthenticationServices
 
 struct LoginView: View {
     @EnvironmentObject var auth: AuthStore
-    @State private var showEmailAuth = false
 
     var body: some View {
         VStack(spacing: 40) {
@@ -22,21 +22,16 @@ struct LoginView: View {
             }
 
             VStack(spacing: 14) {
-                Button {
+                SignInWithAppleButton(.signIn) { request in
+                    request.requestedScopes = [.fullName, .email]
+                } onCompletion: { result in
                     Haptics.light()
-                    auth.loginWithApple()
-                } label: {
-                    HStack(spacing: Tokens.spacing.sm) {
-                        Image(systemName: "apple.logo")
-                        Text("Sign in with Apple")
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, Tokens.spacing.md)
-                    .background(Tokens.text)
-                    .foregroundColor(Tokens.white)
-                    .cornerRadius(Tokens.spacing.md)
-                    .font(Tokens.fontCallout.weight(.semibold))
+                    auth.handleAppleSignIn(result: result)
                 }
+                .signInWithAppleButtonStyle(.black)
+                .frame(maxWidth: .infinity)
+                .frame(height: 50)
+                .cornerRadius(Tokens.spacing.md)
 
                 Button {
                     Haptics.light()
@@ -45,23 +40,6 @@ struct LoginView: View {
                     HStack(spacing: Tokens.spacing.sm) {
                         Image(systemName: "g.circle.fill")
                         Text("Sign in with Google")
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, Tokens.spacing.md)
-                    .background(Tokens.surface)
-                    .foregroundColor(Tokens.text)
-                    .overlay(RoundedRectangle(cornerRadius: Tokens.spacing.md).stroke(Tokens.border, lineWidth: 1))
-                    .cornerRadius(Tokens.spacing.md)
-                    .font(Tokens.fontCallout.weight(.semibold))
-                }
-
-                Button {
-                    Haptics.light()
-                    showEmailAuth = true
-                } label: {
-                    HStack(spacing: Tokens.spacing.sm) {
-                        Image(systemName: "envelope.fill")
-                        Text("Sign in with Email")
                     }
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, Tokens.spacing.md)
@@ -101,10 +79,6 @@ struct LoginView: View {
                 Tokens.dimOverlay.ignoresSafeArea()
                 ProgressView()
             }
-        }
-        .sheet(isPresented: $showEmailAuth) {
-            EmailAuthView()
-                .environmentObject(auth)
         }
     }
 }

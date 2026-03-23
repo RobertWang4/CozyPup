@@ -18,8 +18,6 @@ dependencies = [
     "litellm>=1.50.0",
     "python-multipart>=0.0.9",
     "pgvector>=0.3.0",
-    "firebase-admin>=7.0.0",
-    "bcrypt>=4.0.0",
 ]
 
 [project.scripts]
