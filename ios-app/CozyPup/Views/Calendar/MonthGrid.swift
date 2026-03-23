@@ -50,12 +50,16 @@ struct MonthGrid: View {
                 }
                 .padding(.vertical, Tokens.spacing.xs)
                 .contentShape(Rectangle())
-                .onTapGesture {
-                    selectedDate = dateStr
-                }
-                .onLongPressGesture(minimumDuration: 0.4) {
-                    onDoubleTap?(dateStr)
-                }
+                .simultaneousGesture(
+                    TapGesture(count: 2).onEnded {
+                        onDoubleTap?(dateStr)
+                    }
+                )
+                .simultaneousGesture(
+                    TapGesture(count: 1).onEnded {
+                        selectedDate = dateStr
+                    }
+                )
             }
         }
         .padding(.horizontal, Tokens.spacing.xs)
