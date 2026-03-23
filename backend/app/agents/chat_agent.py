@@ -155,7 +155,7 @@ class ChatAgent(BaseAgent):
                     continue
 
                 try:
-                    result = await execute_tool(fn_name, fn_args, db, user_id, location=location)
+                    result = await execute_tool(fn_name, fn_args, db, user_id, location=location, images=images)
                     await db.commit()
 
                     if "card" in result:

@@ -427,9 +427,9 @@ TOOL_DEFINITIONS = [
         "function": {
             "name": "upload_event_photo",
             "description": (
-                "Attach a photo to a calendar event from the user's message images. "
-                "Use when the user sends a photo and asks to add it to a specific "
-                "event record."
+                "Attach the user's photo to a calendar event. "
+                "The photo is automatically taken from the user's attached image. "
+                "Use when the user sends a photo and asks to add it to a specific event record."
             ),
             "parameters": {
                 "type": "object",
@@ -438,12 +438,8 @@ TOOL_DEFINITIONS = [
                         "type": "string",
                         "description": "UUID of the event to attach the photo to.",
                     },
-                    "image_base64": {
-                        "type": "string",
-                        "description": "Base64-encoded JPEG image data.",
-                    },
                 },
-                "required": ["event_id", "image_base64"],
+                "required": ["event_id"],
             },
         },
     },
@@ -473,7 +469,8 @@ TOOL_DEFINITIONS = [
         "function": {
             "name": "set_pet_avatar",
             "description": (
-                "Set a pet's avatar/profile photo from the user's message images. "
+                "Set a pet's avatar/profile photo from the user's attached image. "
+                "The photo is automatically taken from the user's message. "
                 "Use when the user sends a photo and says to use it as a pet's avatar."
             ),
             "parameters": {
@@ -483,12 +480,8 @@ TOOL_DEFINITIONS = [
                         "type": "string",
                         "description": "UUID of the pet.",
                     },
-                    "image_base64": {
-                        "type": "string",
-                        "description": "Base64-encoded JPEG image data.",
-                    },
                 },
-                "required": ["pet_id", "image_base64"],
+                "required": ["pet_id"],
             },
         },
     },
@@ -1090,6 +1083,7 @@ async def _upload_event_photo(
     arguments: dict,
     db: AsyncSession,
     user_id: uuid.UUID,
+    images: list[str] | None = None,
     **_kwargs,
 ) -> dict:
     """Attach a photo to a calendar event."""
@@ -1104,7 +1098,11 @@ async def _upload_event_photo(
     if not event:
         return {"success": False, "error": "Event not found"}
 
-    image_data = base64.b64decode(arguments["image_base64"])
+    # Prefer image from user's attached photos, fall back to arguments
+    img_b64 = (images[0] if images else None) or arguments.get("image_base64")
+    if not img_b64:
+        return {"success": False, "error": "No image provided. Ask the user to attach a photo."}
+    image_data = base64.b64decode(img_b64)
     if len(image_data) > 5 * 1024 * 1024:
         return {"success": False, "error": "Image must be under 5MB"}
 
@@ -1150,6 +1148,7 @@ async def _set_pet_avatar(
     arguments: dict,
     db: AsyncSession,
     user_id: uuid.UUID,
+    images: list[str] | None = None,
     **_kwargs,
 ) -> dict:
     """Set a pet's avatar from a base64 image."""
@@ -1162,7 +1161,11 @@ async def _set_pet_avatar(
     if not pet:
         return {"success": False, "error": "Pet not found"}
 
-    image_data = base64.b64decode(arguments["image_base64"])
+    # Prefer image from user's attached photos, fall back to arguments
+    img_b64 = (images[0] if images else None) or arguments.get("image_base64")
+    if not img_b64:
+        return {"success": False, "error": "No image provided. Ask the user to attach a photo."}
+    image_data = base64.b64decode(img_b64)
     if len(image_data) > 5 * 1024 * 1024:
         return {"success": False, "error": "Image must be under 5MB"}
 

@@ -149,7 +149,7 @@ struct ChatInputBar: View {
                 .padding(.trailing, Tokens.spacing.sm)
 
             Group {
-                if hasContent {
+                if hasText {
                     Button {
                         Haptics.light()
                         onSend()
@@ -163,16 +163,35 @@ struct ChatInputBar: View {
                     }
                     .disabled(isStreaming)
                 } else {
-                    Button {
-                        Haptics.light()
-                        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-                            voiceMode = true
+                    HStack(spacing: 4) {
+                        // Mic button (always available when no text)
+                        Button {
+                            Haptics.light()
+                            withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                                voiceMode = true
+                            }
+                        } label: {
+                            Image(systemName: "mic")
+                                .font(Tokens.fontHeadline.weight(.medium))
+                                .foregroundColor(Tokens.textSecondary)
+                                .frame(width: Tokens.size.buttonSmall, height: Tokens.size.buttonSmall)
                         }
-                    } label: {
-                        Image(systemName: "mic")
-                            .font(Tokens.fontHeadline.weight(.medium))
-                            .foregroundColor(Tokens.textSecondary)
-                            .frame(width: Tokens.size.buttonSmall, height: Tokens.size.buttonSmall)
+
+                        // Send button when photos pending (no text yet)
+                        if !pendingPhotos.isEmpty {
+                            Button {
+                                Haptics.light()
+                                onSend()
+                            } label: {
+                                Image(systemName: "arrow.up")
+                                    .font(Tokens.fontCallout.weight(.semibold))
+                                    .foregroundColor(Tokens.white)
+                                    .frame(width: Tokens.size.buttonSmall, height: Tokens.size.buttonSmall)
+                                    .background(Tokens.accent)
+                                    .clipShape(Circle())
+                            }
+                            .disabled(isStreaming)
+                        }
                     }
                 }
             }
