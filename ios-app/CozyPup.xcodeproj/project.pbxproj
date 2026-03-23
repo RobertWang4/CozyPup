@@ -44,6 +44,8 @@
 		DBF96E2B35FB712BC97A1C27 /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2586D01E7C42221ABD72995 /* LocationService.swift */; };
 		DDE0B95A2BBD3D6913475404 /* MapCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = E722C9266BF5B0325E6B52A6 /* MapCard.swift */; };
 		E1E3233C2F71A84B00C5A46D /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = E1E3233B2F71A84B00C5A46D /* GoogleService-Info.plist */; };
+		E1E323402F71CDB200C5A46D /* EmailAuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1E3233E2F71CDB200C5A46D /* EmailAuthView.swift */; };
+		E1E323412F71CDB200C5A46D /* PhoneVerifyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1E3233F2F71CDB200C5A46D /* PhoneVerifyView.swift */; };
 		E4CE679EF88093851EBC91E0 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE52D72C580AA7D599BDCEAC /* ChatView.swift */; };
 		E61F15752A4C4AFCADD9DBE5 /* ActionCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6BFEAAE726D42EB903C43E3 /* ActionCard.swift */; };
 		EA6F86AD25C72F589A001B9F /* EmailCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FDC9E1441AC78B6C6632FD0 /* EmailCard.swift */; };
@@ -92,6 +94,8 @@
 		D437A3D3656001306737E784 /* CozyPupApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CozyPupApp.swift; sourceTree = "<group>"; };
 		D6BFEAAE726D42EB903C43E3 /* ActionCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionCard.swift; sourceTree = "<group>"; };
 		E1E3233B2F71A84B00C5A46D /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		E1E3233E2F71CDB200C5A46D /* EmailAuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailAuthView.swift; sourceTree = "<group>"; };
+		E1E3233F2F71CDB200C5A46D /* PhoneVerifyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneVerifyView.swift; sourceTree = "<group>"; };
 		E59EDD63ED4B5127A8B5D2DC /* CalendarEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarEvent.swift; sourceTree = "<group>"; };
 		E6D276B8E4BE99D3CA63F74F /* EventRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventRow.swift; sourceTree = "<group>"; };
 		E722C9266BF5B0325E6B52A6 /* MapCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapCard.swift; sourceTree = "<group>"; };
@@ -251,6 +255,8 @@
 		C2CFDD7B809868977673F24C /* Auth */ = {
 			isa = PBXGroup;
 			children = (
+				E1E3233E2F71CDB200C5A46D /* EmailAuthView.swift */,
+				E1E3233F2F71CDB200C5A46D /* PhoneVerifyView.swift */,
 				A1FDA644076F4501C37D7F50 /* DisclaimerView.swift */,
 				87A40B2ABFFB48FFD078FDD5 /* LoginView.swift */,
 				A8DFA987EA363F0C2645FD64 /* OnboardingView.swift */,
@@ -286,6 +292,8 @@
 			);
 			name = CozyPup;
 			packageProductDependencies = (
+				E1E323432F71CF9000C5A46D /* GoogleSignIn */,
+				E1E323442F71CF9000C5A46D /* GoogleSignInSwift */,
 			);
 			productName = CozyPup;
 			productReference = C689DAF84CC613060400869F /* CozyPup.app */;
@@ -311,6 +319,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				E1E3233D2F71A88900C5A46D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				E1E323422F71CF9000C5A46D /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 09A95F131FB66BBBB810306C /* Products */;
@@ -344,6 +353,8 @@
 				7E98B4FE09F40D553F3312A0 /* CalendarEvent.swift in Sources */,
 				2F5D335026C770BA140207DE /* CalendarHelper.swift in Sources */,
 				604E94A9BD650ECFDA40A1B7 /* CalendarStore.swift in Sources */,
+				E1E323402F71CDB200C5A46D /* EmailAuthView.swift in Sources */,
+				E1E323412F71CDB200C5A46D /* PhoneVerifyView.swift in Sources */,
 				02D15CD57C05B41B9D6E12A3 /* ChatBubble.swift in Sources */,
 				3063EC602BF64B2CF4A89883 /* ChatInputBar.swift in Sources */,
 				D5FA653E9B82083C5D63B0D2 /* ChatMessage.swift in Sources */,
@@ -601,7 +612,28 @@
 				minimumVersion = 12.11.0;
 			};
 		};
+		E1E323422F71CF9000C5A46D /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/google/GoogleSignIn-iOS";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 9.1.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		E1E323432F71CF9000C5A46D /* GoogleSignIn */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E1E323422F71CF9000C5A46D /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignIn;
+		};
+		E1E323442F71CF9000C5A46D /* GoogleSignInSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E1E323422F71CF9000C5A46D /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignInSwift;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = F6068C4AE77726ECB1F92DA0 /* Project object */;
 }

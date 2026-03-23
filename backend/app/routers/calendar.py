@@ -17,6 +17,7 @@ from app.schemas.calendar import (
     CalendarEventCreate,
     CalendarEventResponse,
     CalendarEventUpdate,
+    PetTag,
 )
 
 logger = logging.getLogger(__name__)
@@ -29,12 +30,32 @@ MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
 MAX_PHOTOS = 4
 
 
-def _event_to_response(event: CalendarEvent) -> CalendarEventResponse:
+def _event_to_response(event: CalendarEvent, pets_by_id: dict | None = None) -> CalendarEventResponse:
+    """Convert a CalendarEvent to API response, resolving pet names."""
+    pets_by_id = pets_by_id or {}
+
+    # Build pet tags from pet_ids
+    pet_tags: list[PetTag] = []
+    pet_id_list = event.pet_ids or []
+    if pet_id_list:
+        for pid in pet_id_list:
+            pet = pets_by_id.get(pid)
+            if pet:
+                pet_tags.append(PetTag(id=str(pet.id), name=pet.name, color_hex=pet.color_hex))
+    elif event.pet_id:
+        pet = pets_by_id.get(str(event.pet_id))
+        if pet:
+            pet_tags.append(PetTag(id=str(pet.id), name=pet.name, color_hex=pet.color_hex))
+
+    # Backward compat: primary pet
+    primary_pet = pets_by_id.get(str(event.pet_id)) if event.pet_id else None
+
     return CalendarEventResponse(
         id=str(event.id),
-        pet_id=str(event.pet_id),
-        pet_name=event.pet.name,
-        pet_color_hex=event.pet.color_hex,
+        pet_id=str(event.pet_id) if event.pet_id else None,
+        pet_name=primary_pet.name if primary_pet else "",
+        pet_color_hex=primary_pet.color_hex if primary_pet else "",
+        pet_tags=pet_tags,
         event_date=event.event_date.isoformat(),
         event_time=event.event_time.strftime("%H:%M") if event.event_time else None,
         title=event.title,
@@ -108,7 +129,13 @@ async def list_events(
         stmt = stmt.where(CalendarEvent.pet_id == uuid.UUID(pet_id))
 
     result = await db.execute(stmt)
-    return [_event_to_response(e) for e in result.scalars().unique().all()]
+    events = result.scalars().unique().all()
+
+    # Load all user's pets for name resolution
+    pets_result = await db.execute(select(Pet).where(Pet.user_id == user_id))
+    pets_by_id = {str(p.id): p for p in pets_result.scalars().all()}
+
+    return [_event_to_response(e, pets_by_id) for e in events]
 
 
 @router.get("/photos/{filename}")

@@ -21,11 +21,18 @@ class CalendarEventUpdate(BaseModel):
     event_time: str | None = None
 
 
+class PetTag(BaseModel):
+    id: str
+    name: str
+    color_hex: str
+
+
 class CalendarEventResponse(BaseModel):
     id: str
-    pet_id: str
-    pet_name: str
-    pet_color_hex: str
+    pet_id: str | None = None
+    pet_name: str = ""
+    pet_color_hex: str = ""
+    pet_tags: list[PetTag] = []  # multi-pet support
     event_date: str
     event_time: str | None
     title: str

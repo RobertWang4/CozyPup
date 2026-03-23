@@ -11,21 +11,47 @@ struct EventRow: View {
 
     var body: some View {
         HStack(spacing: 0) {
-            // Left color bar
+            // Left color bar — use first pet tag color, fallback to petColor
             Capsule()
-                .fill(petColor)
+                .fill(barColor)
                 .frame(width: 5, height: Tokens.size.avatarMedium)
 
-            // Event text with pet name in parentheses
-            Text(eventLabel)
-                .font(Tokens.fontSubheadline)
-                .foregroundColor(Tokens.text)
-                .lineLimit(2)
-                .padding(.leading, 12)
+            VStack(alignment: .leading, spacing: 2) {
+                // Title + optional time
+                Text(titleText)
+                    .font(Tokens.fontSubheadline.weight(.medium))
+                    .foregroundColor(Tokens.text)
+                    .lineLimit(2)
+
+                // Pet tags: colored dots with names
+                if !event.petTags.isEmpty {
+                    HStack(spacing: Tokens.spacing.xs) {
+                        ForEach(event.petTags, id: \.id) { tag in
+                            HStack(spacing: 3) {
+                                Circle()
+                                    .fill(Color(hex: tag.color_hex) ?? Tokens.accent)
+                                    .frame(width: 6, height: 6)
+                                Text(tag.name)
+                                    .font(Tokens.fontCaption)
+                                    .foregroundColor(Tokens.textSecondary)
+                            }
+                        }
+                    }
+                } else if let name = pet?.name ?? event.petName, !name.isEmpty {
+                    HStack(spacing: 3) {
+                        Circle()
+                            .fill(petColor)
+                            .frame(width: 6, height: 6)
+                        Text(name)
+                            .font(Tokens.fontCaption)
+                            .foregroundColor(Tokens.textSecondary)
+                    }
+                }
+            }
+            .padding(.leading, 12)
 
             Spacer(minLength: Tokens.spacing.sm)
 
-            // Paw icon
             Image(systemName: "pawprint.fill")
                 .font(Tokens.fontCallout)
                 .foregroundColor(Tokens.accent.opacity(0.5))
@@ -47,16 +73,17 @@ struct EventRow: View {
         }
     }
 
-    private var eventLabel: String {
-        var text = ""
+    private var titleText: String {
         if let time = event.eventTime, !time.isEmpty {
-            text = "\(time) - \(event.title)"
-        } else {
-            text = event.title
+            return "\(time) · \(event.title)"
         }
-        if let name = pet?.name {
-            text += "\n(\(name))"
+        return event.title
+    }
+
+    private var barColor: Color {
+        if let first = event.petTags.first {
+            return Color(hex: first.color_hex) ?? petColor
         }
-        return text
+        return petColor
     }
 }

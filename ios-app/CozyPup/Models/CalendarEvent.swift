@@ -14,9 +14,15 @@ enum EventSource: String, Codable {
     case chat, manual
 }
 
+struct PetTag: Codable, Equatable {
+    let id: String
+    let name: String
+    let color_hex: String
+}
+
 struct CalendarEvent: Identifiable, Codable, Equatable {
     let id: String
-    var petId: String
+    var petId: String?
     var eventDate: String
     var eventTime: String?
     var title: String
@@ -29,9 +35,10 @@ struct CalendarEvent: Identifiable, Codable, Equatable {
 
     var photos: [String]
 
-    // Extra fields from API (optional, not used for local creation)
+    // Extra fields from API
     var petName: String?
     var petColorHex: String?
+    var petTags: [PetTag]
 
     enum CodingKeys: String, CodingKey {
         case id, title, type, category, source, edited, photos
@@ -42,12 +49,13 @@ struct CalendarEvent: Identifiable, Codable, Equatable {
         case createdAt = "created_at"
         case petName = "pet_name"
         case petColorHex = "pet_color_hex"
+        case petTags = "pet_tags"
     }
 
     init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
         id = try c.decode(String.self, forKey: .id)
-        petId = try c.decode(String.self, forKey: .petId)
+        petId = try c.decodeIfPresent(String.self, forKey: .petId)
         eventDate = try c.decode(String.self, forKey: .eventDate)
         eventTime = try c.decodeIfPresent(String.self, forKey: .eventTime)
         title = try c.decode(String.self, forKey: .title)
@@ -60,9 +68,10 @@ struct CalendarEvent: Identifiable, Codable, Equatable {
         photos = try c.decodeIfPresent([String].self, forKey: .photos) ?? []
         petName = try c.decodeIfPresent(String.self, forKey: .petName)
         petColorHex = try c.decodeIfPresent(String.self, forKey: .petColorHex)
+        petTags = (try? c.decode([PetTag].self, forKey: .petTags)) ?? []
     }
 
-    init(petId: String, eventDate: String, eventTime: String?, title: String,
+    init(petId: String?, eventDate: String, eventTime: String?, title: String,
          type: EventType, category: EventCategory, rawText: String,
          source: EventSource, edited: Bool = false) {
         self.id = UUID().uuidString
@@ -79,5 +88,6 @@ struct CalendarEvent: Identifiable, Codable, Equatable {
         self.photos = []
         self.petName = nil
         self.petColorHex = nil
+        self.petTags = []
     }
 }

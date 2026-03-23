@@ -47,7 +47,16 @@ TOOL_DEFINITIONS = [
                 "properties": {
                     "pet_id": {
                         "type": "string",
-                        "description": "UUID of the pet. OMIT for shared/owner events like buying supplies.",
+                        "description": "UUID of a single pet. Use pet_ids for multi-pet events.",
+                    },
+                    "pet_ids": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "description": (
+                            "List of pet UUIDs this event applies to. Use for multi-pet events "
+                            "(e.g. both dogs went for a walk). OMIT for owner-only events. "
+                            "If only one pet, you can use pet_id instead."
+                        ),
                     },
                     "event_date": {
                         "type": "string",
@@ -501,8 +510,12 @@ async def _create_calendar_event(
     user_id: uuid.UUID,
 ) -> dict:
     """Create a CalendarEvent record in the database."""
-    pet_id_str = arguments.get("pet_id")
-    pet_id = uuid.UUID(pet_id_str) if pet_id_str else None
+    # Resolve pet(s): support both pet_id (single) and pet_ids (multi)
+    raw_pet_ids = arguments.get("pet_ids") or []
+    if not raw_pet_ids and arguments.get("pet_id"):
+        raw_pet_ids = [arguments["pet_id"]]
+    pet_ids_str = [str(pid) for pid in raw_pet_ids]
+
     event_date = date.fromisoformat(arguments["event_date"])
     title = arguments["title"]
     category = EventCategory(arguments["category"])
@@ -514,19 +527,23 @@ async def _create_calendar_event(
         parts = event_time_str.split(":")
         event_time = time(int(parts[0]), int(parts[1]))
 
-    # Verify pet belongs to user (if pet specified)
-    pet = None
-    if pet_id:
-        pet_result = await db.execute(
-            select(Pet).where(Pet.id == pet_id, Pet.user_id == user_id)
-        )
-        pet = pet_result.scalar_one_or_none()
-        if not pet:
-            return {"success": False, "error": "Pet not found"}
+    # Verify pets belong to user and collect names
+    pet_names: list[str] = []
+    first_pet_id = None
+    if pet_ids_str:
+        for pid_str in pet_ids_str:
+            pid = uuid.UUID(pid_str)
+            result = await db.execute(select(Pet).where(Pet.id == pid, Pet.user_id == user_id))
+            pet = result.scalar_one_or_none()
+            if pet:
+                pet_names.append(pet.name)
+                if first_pet_id is None:
+                    first_pet_id = pid
 
     event = CalendarEvent(
         user_id=user_id,
-        pet_id=pet_id,
+        pet_id=first_pet_id,  # backward compat
+        pet_ids=pet_ids_str,
         event_date=event_date,
         event_time=event_time,
         title=title,
@@ -548,7 +565,7 @@ async def _create_calendar_event(
     # Background: embed this event for RAG retrieval
     task = asyncio.create_task(_rag_write_event(
         user_id=user_id,
-        pet_id=pet_id,
+        pet_id=first_pet_id,
         event_id=event.id,
         event_date=event_date,
         category=arguments["category"],
@@ -560,7 +577,7 @@ async def _create_calendar_event(
 
     card = {
         "type": "record",
-        "pet_name": pet.name if pet else "",
+        "pet_name": ", ".join(pet_names) if pet_names else "",
         "date": arguments["event_date"],
         "category": arguments["category"],
         "title": title,
