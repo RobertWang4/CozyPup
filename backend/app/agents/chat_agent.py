@@ -23,8 +23,9 @@ logger = logging.getLogger(__name__)
 # Maximum rounds of tool calls before forcing a text response
 MAX_TOOL_ROUNDS = 5
 
-# Read-only tools — always auto-execute, never need confirmation
-READ_ONLY_TOOLS = {"list_pets", "query_calendar_events", "search_places", "list_reminders"}
+# Only destructive tools require user confirmation via confirm card.
+# Everything else the LLM decides to call executes immediately.
+CONFIRM_TOOLS = {"delete_pet", "delete_calendar_event", "delete_reminder"}
 
 
 def _describe_tool_call(fn_name: str, fn_args: dict) -> str:
@@ -208,20 +209,8 @@ class ChatAgent(BaseAgent):
                     })
                     continue
 
-                # --- Confirm gate ---
-                # Auto-execute if: read-only tool, OR pre-processor agreed (high confidence)
-                # Confirm card if: LLM decided alone (pre-processor didn't validate)
-                pre_validated = any(
-                    a.tool_name == fn_name and a.confidence >= 0.8
-                    for a in suggested_actions
-                )
-                needs_confirm = (
-                    fn_name not in READ_ONLY_TOOLS
-                    and not pre_validated
-                    and session_id
-                )
-
-                if needs_confirm:
+                # --- Confirm gate: only for destructive operations ---
+                if fn_name in CONFIRM_TOOLS and session_id:
                     description = _describe_tool_call(fn_name, fn_args)
                     action_id = store_action(
                         user_id=str(user_id),
