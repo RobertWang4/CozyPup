@@ -49,6 +49,7 @@
 		A1B2C3D400000001A0000003 /* SingleDayTimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D400000002A0000003 /* SingleDayTimelineView.swift */; };
 		A1B2C3D400000001A0000004 /* TimelineEventCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D400000002A0000004 /* TimelineEventCard.swift */; };
 		CA5E01A200000001B0000001 /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA5E01A200000002B0000001 /* CameraView.swift */; };
+		B3E4F5A600000001C0000001 /* EventEditSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3E4F5A600000002C0000001 /* EventEditSheet.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -96,6 +97,7 @@
 		A1B2C3D400000002A0000003 /* SingleDayTimelineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleDayTimelineView.swift; sourceTree = "<group>"; };
 		A1B2C3D400000002A0000004 /* TimelineEventCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineEventCard.swift; sourceTree = "<group>"; };
 		FFCDE79E9D9654B2E99B6A3E /* RecordCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordCard.swift; sourceTree = "<group>"; };
+		B3E4F5A600000002C0000001 /* EventEditSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventEditSheet.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -174,6 +176,7 @@
 			isa = PBXGroup;
 			children = (
 				F142E2AF757CA909CA959BD8 /* CalendarDrawer.swift */,
+				B3E4F5A600000002C0000001 /* EventEditSheet.swift */,
 				E6D276B8E4BE99D3CA63F74F /* EventRow.swift */,
 				A1B2C3D400000002A0000001 /* HeatStripView.swift */,
 				FBECB417FFCC3D48F84654B5 /* MonthGrid.swift */,
@@ -344,6 +347,7 @@
 				FC5BC1932B70E128C7F1B81B /* EmergencyBanner.swift in Sources */,
 				99852793A13EC2793BD1D09C /* EmptyStateView.swift in Sources */,
 				FA82C6590ACDC7D49CF14998 /* EventRow.swift in Sources */,
+				B3E4F5A600000001C0000001 /* EventEditSheet.swift in Sources */,
 				11DE02B8DAA886EB61A80137 /* HapticsHelper.swift in Sources */,
 				22BFF30BA8D291920198281D /* LegalPageView.swift in Sources */,
 				DBF96E2B35FB712BC97A1C27 /* LocationService.swift in Sources */,

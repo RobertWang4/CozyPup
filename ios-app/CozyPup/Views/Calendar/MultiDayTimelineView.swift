@@ -125,6 +125,8 @@ struct DayRow: View {
     var onUpdate: ((String, String, EventCategory, String, String?) -> Void)?
     var onDelete: ((String) -> Void)?
 
+    @State private var editingEvent: CalendarEvent?
+
     private var cal: Calendar { Calendar.current }
     private var dayNum: Int { cal.component(.day, from: date) }
     private var weekdayShort: String {
@@ -146,6 +148,13 @@ struct DayRow: View {
             eventContent
         }
         .padding(.horizontal, Tokens.spacing.md)
+        .sheet(item: $editingEvent) { evt in
+            if let onUpdate {
+                EventEditSheet(event: evt) { title, category, date, time in
+                    onUpdate(evt.id, title, category, date, time)
+                }
+            }
+        }
     }
 
     // MARK: - Date Column
@@ -275,9 +284,9 @@ struct DayRow: View {
             .background(Tokens.surface)
             .cornerRadius(Tokens.radiusSmall)
             .contextMenu {
-                if let onUpdate {
+                if onUpdate != nil {
                     Button {
-                        onUpdate(evt.id, evt.title, evt.category, evt.eventDate, evt.eventTime)
+                        editingEvent = evt
                     } label: {
                         Label(Lang.shared.isZh ? "编辑" : "Edit", systemImage: "pencil")
                     }

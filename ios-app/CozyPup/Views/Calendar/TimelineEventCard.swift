@@ -10,24 +10,10 @@ struct TimelineEventCard: View {
     var onDelete: (() -> Void)?
     var onPhotoUpload: ((Data) -> Void)?
 
-    @State private var editing = false
-    @State private var editTitle: String = ""
-    @State private var editCategory: EventCategory = .daily
-    @State private var editDate: String = ""
-    @State private var editTime: String = ""
+    @State private var showEditSheet = false
     @State private var selectedPhotoItem: PhotosPickerItem?
 
     var body: some View {
-        if editing {
-            editView
-        } else {
-            displayView
-        }
-    }
-
-    // MARK: - Display
-
-    private var displayView: some View {
         HStack(spacing: 0) {
             // Left accent bar
             RoundedRectangle(cornerRadius: 1.5)
@@ -56,12 +42,12 @@ struct TimelineEventCard: View {
                     .foregroundColor(Tokens.text)
                     .lineLimit(3)
 
-                // Photo grid (if photos exist)
+                // Photo grid
                 if !event.photos.isEmpty {
                     photoGrid
                 }
 
-                // Bottom row: pet name + add photo button
+                // Bottom row: pet name + add photo
                 HStack {
                     Text(petName)
                         .font(Tokens.fontCaption)
@@ -90,7 +76,9 @@ struct TimelineEventCard: View {
         .cornerRadius(14)
         .contextMenu {
             if onUpdate != nil {
-                Button { startEdit() } label: {
+                Button {
+                    showEditSheet = true
+                } label: {
                     Label(Lang.shared.isZh ? "编辑" : "Edit", systemImage: "pencil")
                 }
             }
@@ -98,6 +86,11 @@ struct TimelineEventCard: View {
                 Button(role: .destructive) { Haptics.medium(); onDelete() } label: {
                     Label(L.delete, systemImage: "trash")
                 }
+            }
+        }
+        .sheet(isPresented: $showEditSheet) {
+            if let onUpdate {
+                EventEditSheet(event: event, onSave: onUpdate)
             }
         }
         .onChange(of: selectedPhotoItem) { _, item in
@@ -132,77 +125,7 @@ struct TimelineEventCard: View {
 
     private func photoURL(_ path: String) -> URL? {
         if path.hasPrefix("http") { return URL(string: path) }
-        return APIClient.shared.avatarURL(path) // reuse same base URL helper
-    }
-
-    // MARK: - Edit
-
-    private var editView: some View {
-        VStack(spacing: 6) {
-            TextField(L.title, text: $editTitle)
-                .padding(Tokens.spacing.sm).background(Tokens.bg).cornerRadius(Tokens.spacing.sm)
-                .overlay(RoundedRectangle(cornerRadius: Tokens.spacing.sm).stroke(Tokens.border))
-                .font(Tokens.fontSubheadline)
-                .foregroundColor(Tokens.text)
-                .submitLabel(.done)
-
-            HStack(spacing: 6) {
-                TextField(L.date, text: $editDate)
-                    .padding(Tokens.spacing.sm).background(Tokens.bg).cornerRadius(Tokens.spacing.sm)
-                    .overlay(RoundedRectangle(cornerRadius: Tokens.spacing.sm).stroke(Tokens.border))
-                    .font(Tokens.fontSubheadline)
-                    .foregroundColor(Tokens.text)
-                    .submitLabel(.done)
-                TextField(L.time, text: $editTime)
-                    .padding(Tokens.spacing.sm).background(Tokens.bg).cornerRadius(Tokens.spacing.sm)
-                    .overlay(RoundedRectangle(cornerRadius: Tokens.spacing.sm).stroke(Tokens.border))
-                    .font(Tokens.fontSubheadline)
-                    .foregroundColor(Tokens.text)
-                    .submitLabel(.done)
-            }
-
-            Picker(Lang.shared.isZh ? "分类" : "Category", selection: $editCategory) {
-                ForEach(EventCategory.allCases, id: \.self) { c in
-                    Text(c.label).tag(c)
-                }
-            }
-            .pickerStyle(.menu)
-
-            HStack(spacing: 6) {
-                Button {
-                    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-                    onUpdate?(editTitle, editCategory, editDate, editTime.isEmpty ? nil : editTime)
-                    editing = false
-                } label: {
-                    Label(L.save, systemImage: "checkmark")
-                        .font(Tokens.fontCaption.weight(.medium))
-                        .foregroundColor(Tokens.white)
-                        .padding(.horizontal, 12).padding(.vertical, 6)
-                        .background(Tokens.accent).cornerRadius(8)
-                }
-                Button {
-                    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-                    editing = false
-                } label: {
-                    Text(L.cancel)
-                        .font(Tokens.fontCaption.weight(.medium))
-                        .foregroundColor(Tokens.textSecondary)
-                        .padding(.horizontal, 12).padding(.vertical, 6)
-                        .overlay(RoundedRectangle(cornerRadius: 8).stroke(Tokens.border))
-                }
-            }
-        }
-        .padding(12)
-        .background(Tokens.surface)
-        .cornerRadius(14)
-    }
-
-    private func startEdit() {
-        editTitle = event.title
-        editCategory = event.category
-        editDate = event.eventDate
-        editTime = event.eventTime ?? ""
-        editing = true
+        return APIClient.shared.avatarURL(path)
     }
 
     private var categoryColor: Color {
