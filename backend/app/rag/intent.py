@@ -19,18 +19,34 @@ _RECORDING_PATTERNS = re.compile(
 )
 
 
+_SKIP_PATTERNS = re.compile(
+    r"^(hi|hello|hey|你好|嗨|哈喽|谢谢|好的|ok|嗯|哦|行|是的|对|没事|没了|拜拜|再见)$",
+    re.IGNORECASE,
+)
+
+
 def needs_retrieval(message: str) -> bool:
     """Determine if a message needs RAG retrieval.
 
-    Returns False only for clear recording-only messages.
+    Returns False for short/simple messages and recording actions.
     Default: True (when unsure, always retrieve).
     """
+    text = message.strip()
+
+    # Very short messages — skip RAG
+    if len(text) <= 5 and not _QUESTION_PATTERNS.search(text):
+        return False
+
+    # Simple greetings / acknowledgments — skip
+    if _SKIP_PATTERNS.match(text):
+        return False
+
     # If any question indicator is present, always retrieve
-    if _QUESTION_PATTERNS.search(message):
+    if _QUESTION_PATTERNS.search(text):
         return True
 
     # If it looks like a pure recording action, skip retrieval
-    if _RECORDING_PATTERNS.search(message):
+    if _RECORDING_PATTERNS.search(text):
         return False
 
     # Default: retrieve
