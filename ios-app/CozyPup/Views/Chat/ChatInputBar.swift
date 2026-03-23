@@ -280,8 +280,8 @@ struct ChatInputBar: View {
     }
 
     private var barFillColor: Color {
-        if isCancelling { return Color(hex: "F5C4C4") } // More red to match dome
-        if isListening { return Color(hex: "F0DDD3") }
+        if isCancelling { return Tokens.redSoft }
+        if isListening { return Tokens.accentSoft }
         return Tokens.bg
     }
 
@@ -315,7 +315,7 @@ struct ChatInputBar: View {
     }
 }
 
-// MARK: - Voice Recording Overlay (dome + transcript)
+// MARK: - Voice Recording Overlay (half-circle + live transcript)
 
 struct VoiceRecordingOverlay: View {
     let transcript: String
@@ -324,32 +324,53 @@ struct VoiceRecordingOverlay: View {
     let cancelThreshold: CGFloat
 
     private var isCancelling: Bool { dragOffset < cancelThreshold }
-    private var screenW: CGFloat { UIScreen.main.bounds.width }
     private var pulse: CGFloat { CGFloat(audioLevel) * 20 }
-
-    // Warm cream palette
-    private var domeBase: Color { Color(hex: "E8D5C4") }
-    private var domeTop: Color { Color(hex: "F5ECE3") }
-    private var cancelBase: Color { Color(hex: "E8A0A0") } // More red
-    private var cancelTop: Color { Color(hex: "F5C4C4") } // More red
+    private let domeHeight: CGFloat = 240
 
     var body: some View {
         ZStack {
-            // Dim background (darker like WeChat)
-            Color.black.opacity(0.6)
+            // Background dims more when cancelling
+            Tokens.dimOverlay.opacity(isCancelling ? 0.45 : 0.25)
                 .ignoresSafeArea()
                 .allowsHitTesting(false)
 
-            VStack(spacing: 0) {
+            // Live transcript in screen center
+            VStack {
                 Spacer()
 
-                // Green Bubble with waveform
-                transcriptBubble
-                    .padding(.bottom, 40)
-                    .transition(.opacity.combined(with: .scale(scale: 0.9)))
+                if !transcript.isEmpty {
+                    Text(transcript)
+                        .font(Tokens.fontBody)
+                        .foregroundColor(Tokens.text)
+                        .multilineTextAlignment(.leading)
+                        .lineLimit(8)
+                        .padding(.horizontal, Tokens.spacing.md)
+                        .padding(.vertical, Tokens.spacing.sm + Tokens.spacing.xs)
+                        .background(Tokens.surface)
+                        .clipShape(RoundedRectangle(cornerRadius: Tokens.radius))
+                        .shadow(color: Tokens.dimOverlay.opacity(0.06), radius: 8, y: 2)
+                        .padding(.horizontal, Tokens.spacing.xl)
+                        .transition(.opacity)
+                        .animation(.easeOut(duration: 0.15), value: transcript)
+                } else {
+                    Text(Lang.shared.isZh ? "正在聆听…" : "Listening…")
+                        .font(Tokens.fontHeadline)
+                        .foregroundColor(Tokens.textSecondary)
+                }
 
-                // Dome
-                dome
+                Spacer()
+
+                // Cancel hint when dragging up
+                if isCancelling {
+                    Text(Lang.shared.isZh ? "松开取消" : "Release to cancel")
+                        .font(Tokens.fontSubheadline.weight(.medium))
+                        .foregroundColor(Tokens.red)
+                        .transition(.opacity)
+                        .padding(.bottom, Tokens.spacing.md)
+                }
+
+                // Half-circle dome at bottom
+                halfCircleDome
             }
             .ignoresSafeArea(edges: .bottom)
         }
@@ -357,147 +378,80 @@ struct VoiceRecordingOverlay: View {
         .animation(.easeOut(duration: 0.08), value: audioLevel)
     }
 
-    private var transcriptBubble: some View {
-        VStack(spacing: 0) {
-            // Green bubble like WeChat
-            HStack(spacing: 4) {
-                // Simple waveform inside bubble
-                ForEach(0..<15, id: \.self) { i in
-                    let h = CGFloat.random(in: 4...16) + CGFloat(audioLevel) * 10
-                    RoundedRectangle(cornerRadius: 1)
-                        .fill(Color.black.opacity(0.6))
-                        .frame(width: 2, height: h)
-                        .animation(.linear(duration: 0.1), value: audioLevel)
-                }
-            }
-            .frame(height: 40)
-            .padding(.horizontal, 24)
-            .padding(.vertical, 12)
-            .background(Color(hex: "58C877")) // WeChat green
-            .cornerRadius(12)
-            .shadow(color: .black.opacity(0.1), radius: 5, y: 2)
-
-            // Small triangle tail pointing down
-            BubbleTail()
-                .fill(Color(hex: "58C877"))
-                .frame(width: 16, height: 8)
-        }
-        .padding(.horizontal, Tokens.spacing.xl)
-        // Always show the green bubble when recording, ignore transcript text for now to match WeChat style
-    }
-
-    private var dome: some View {
-        let arcHeight: CGFloat = 200 + pulse * 0.5
-        let isCancelZone = dragOffset < -80 && dragOffset > -160 // Left zone for cancel
-        let isTextZone = dragOffset < -80 && dragOffset < -160 // Right zone for text (not implemented yet, but for UI)
-        
+    private var halfCircleDome: some View {
+        let h = domeHeight + pulse
         return ZStack(alignment: .bottom) {
-            // Main dome body - Dark gray like WeChat
-            DomeShape(arcHeight: arcHeight)
-                .fill(Color(white: 0.15))
-                .shadow(color: .black.opacity(0.3), radius: 10, y: -5)
+            // Pulse ring (outer glow)
+            DomeRectShape()
+                .fill(
+                    (isCancelling ? Tokens.red : Tokens.accent)
+                        .opacity(isCancelling ? 0.25 : 0.10 + Double(audioLevel) * 0.12)
+                )
+                .frame(height: h + 12)
 
-            // Content
-            VStack(spacing: 20) {
-                // Action buttons row
-                HStack(spacing: 60) {
-                    // Cancel Button
-                    VStack(spacing: 8) {
-                        ZStack {
-                            Circle()
-                                .fill(isCancelZone ? Color.white : Color(white: 0.25))
-                                .frame(width: isCancelZone ? 70 : 60, height: isCancelZone ? 70 : 60)
-                            
-                            Image(systemName: "xmark")
-                                .font(.system(size: 24, weight: .medium))
-                                .foregroundColor(isCancelZone ? .black : .white)
-                        }
-                        
-                        Text("Cancel")
-                            .font(.system(size: 14))
-                            .foregroundColor(.white)
-                            .opacity(isCancelZone ? 1 : 0.6)
-                    }
-                    .offset(y: isCancelZone ? -10 : 0)
-                    .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isCancelZone)
-                    
-                    // Convert to Text Button (Placeholder for UI)
-                    VStack(spacing: 8) {
-                        ZStack {
-                            Circle()
-                                .fill(Color(white: 0.25))
-                                .frame(width: 60, height: 60)
-                            
-                            Image(systemName: "text.quote")
-                                .font(.system(size: 24, weight: .medium))
-                                .foregroundColor(.white)
-                        }
-                        
-                        Text("Convert to Text")
-                            .font(.system(size: 14))
-                            .foregroundColor(.white)
-                            .opacity(0.6)
-                    }
-                }
+            // Main shape
+            DomeRectShape()
+                .fill(isCancelling ? Tokens.red.opacity(0.85) : Tokens.accentSoft)
+
+            // Waveform bars in the dome area
+            domeWaveform
+                .padding(.bottom, h * 0.4 + 20)
+
+            // Mic icon in the rect area
+            Image(systemName: isCancelling ? "xmark" : "mic.fill")
+                .font(Tokens.fontLargeTitle.weight(.bold))
+                .foregroundColor(isCancelling ? Tokens.white : Tokens.accent)
                 .padding(.bottom, 20)
-
-                // Release to send text
-                Text(isCancelZone ? "Release to cancel" : "Release to send")
-                    .font(.system(size: 15, weight: .medium))
-                    .foregroundColor(isCancelZone ? Tokens.red : .white.opacity(0.8))
-                    .padding(.bottom, 40)
-            }
-            .padding(.bottom, 20) // Extra padding for safe area
         }
-        .frame(height: arcHeight)
+        .frame(height: h)
     }
 
     private var domeWaveform: some View {
-        EmptyView() // Removed old waveform
+        TimelineView(.animation(minimumInterval: 0.05)) { context in
+            let phase = context.date.timeIntervalSinceReferenceDate
+            HStack(spacing: 3) {
+                ForEach(0..<24, id: \.self) { i in
+                    let center = 12.0
+                    let dist = abs(Double(i) - center) / center
+                    let envelope = CGFloat(1.0 - dist * 0.6)
+                    let voice = CGFloat(audioLevel) * 28 * envelope
+                    let wave = CGFloat(sin(phase * 5 + Double(i) * 0.5)) * CGFloat(audioLevel) * 8 * envelope
+                    let idle = CGFloat(sin(phase * 2.0 + Double(i) * 0.3)) * 1.5 + 3
+                    RoundedRectangle(cornerRadius: 1.5)
+                        .fill(isCancelling ? Tokens.white.opacity(0.7) : Tokens.accent.opacity(0.55))
+                        .frame(width: 2.5, height: max(3, idle + voice + wave))
+                }
+            }
+        }
     }
 }
 
 // MARK: - Shapes
 
-/// Pure semi-circle dome
-private struct DomeShape: Shape {
-    var arcHeight: CGFloat
+/// Rectangle base + fat semicircle on top, merged as one shape.
+/// The bottom portion is a full-width rectangle, the top is a semicircular arc.
+private struct DomeRectShape: Shape {
+    /// How much of the total height is the rectangular base (0–1).
+    var rectRatio: CGFloat = 0.4
 
     func path(in rect: CGRect) -> Path {
+        let rectH = rect.height * rectRatio
+        let arcTop = rect.maxY - rectH          // where the arc meets the rect
         var path = Path()
-        // Start bottom-left
-        path.move(to: CGPoint(x: rect.minX, y: rect.maxY))
-        // Arc from left to right (quad curve with control point at top-center)
-        path.addQuadCurve(
-            to: CGPoint(x: rect.maxX, y: rect.maxY),
-            control: CGPoint(x: rect.midX, y: rect.maxY - arcHeight)
+        // Bottom-right corner
+        path.move(to: CGPoint(x: rect.maxX, y: rect.maxY))
+        // Bottom-left corner
+        path.addLine(to: CGPoint(x: rect.minX, y: rect.maxY))
+        // Left edge up to arc join
+        path.addLine(to: CGPoint(x: rect.minX, y: arcTop))
+        // Fat semicircle across the top
+        path.addCurve(
+            to: CGPoint(x: rect.maxX, y: arcTop),
+            control1: CGPoint(x: rect.minX, y: rect.minY),
+            control2: CGPoint(x: rect.maxX, y: rect.minY)
         )
-        path.closeSubpath()
-        return path
-    }
-}
-
-/// Open path for the dome's top curve only.
-private struct DomeArcHighlightShape: Shape {
-    var arcHeight: CGFloat
-
-    func path(in rect: CGRect) -> Path {
-        var path = Path()
-        path.move(to: CGPoint(x: rect.minX, y: rect.maxY))
-        path.addQuadCurve(
-            to: CGPoint(x: rect.maxX, y: rect.maxY),
-            control: CGPoint(x: rect.midX, y: rect.maxY - arcHeight)
-        )
-        return path
-    }
-}
-
-private struct BubbleTail: Shape {
-    func path(in rect: CGRect) -> Path {
-        var path = Path()
-        path.move(to: CGPoint(x: rect.midX, y: rect.maxY))
-        path.addLine(to: CGPoint(x: rect.minX, y: rect.minY))
-        path.addLine(to: CGPoint(x: rect.maxX, y: rect.minY))
+        // Right edge back down
+        path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY))
         path.closeSubpath()
         return path
     }

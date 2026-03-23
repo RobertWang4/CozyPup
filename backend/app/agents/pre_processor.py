@@ -141,6 +141,15 @@ def pre_process(
             if pattern.search(message):
                 event_date = _resolve_date(message, today)
                 resolved_pets = _resolve_pets(message, pets)
+                # If multiple pets and none mentioned by name, lower confidence
+                # so LLM decides (it should ask which pet)
+                actual_confidence = confidence
+                if len(resolved_pets) > 1 and len(pets) > 1:
+                    mentioned_names = [p.name if hasattr(p, "name") else p.get("name", "")
+                                       for p in pets
+                                       if (p.name if hasattr(p, "name") else p.get("name", "")).lower() in message.lower()]
+                    if not mentioned_names:
+                        actual_confidence = 0.5  # below 0.8 threshold, won't be injected
                 for pet_id, pet_name in resolved_pets:
                     actions.append(SuggestedAction(
                         tool_name="create_calendar_event",
@@ -151,7 +160,7 @@ def pre_process(
                             "category": category,
                             "raw_text": message,
                         },
-                        confidence=confidence,
+                        confidence=actual_confidence,
                     ))
                 # No break — continue matching so multiple intents are detected
                 # (e.g., "vaccination + deworming" → two create_calendar_event calls)
@@ -194,7 +203,8 @@ def format_actions_for_prompt(actions: list[SuggestedAction]) -> str:
         "## Pre-analyzed actions (EXECUTE THESE)",
         "The following actions were detected from the user's message. "
         "You MUST call these tools with these arguments. "
-        "You may adjust the title to be more concise, but keep all other fields exactly as shown.",
+        "You MUST rewrite the title into a short 2-8 word summary (e.g. '学校公园散步', '喂了200克狗粮'). "
+        "NEVER use the user's raw sentence as the title. Keep all other fields exactly as shown.",
         "",
     ]
     for i, action in enumerate(high_confidence, 1):

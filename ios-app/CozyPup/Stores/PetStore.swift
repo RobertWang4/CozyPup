@@ -3,6 +3,7 @@ import SwiftUI
 @MainActor
 class PetStore: ObservableObject {
     @Published var pets: [Pet] = []
+    @Published var avatarRevision: Int = 0  // incremented on avatar upload to bust cache
 
     private let key = "cozypup_pets"
 
@@ -98,6 +99,25 @@ class PetStore: ObservableObject {
         }
         pets.removeAll { $0.id == id }
         saveLocal()
+    }
+
+    func uploadAvatar(_ petId: String, imageData: Data) async {
+        do {
+            let data = try await APIClient.shared.uploadMultipart(
+                "/pets/\(petId)/avatar",
+                fileData: imageData,
+                fileName: "avatar.jpg",
+                mimeType: "image/jpeg"
+            )
+            let updated = try JSONDecoder().decode(Pet.self, from: data)
+            if let idx = pets.firstIndex(where: { $0.id == petId }) {
+                pets[idx] = updated
+                saveLocal()
+            }
+            avatarRevision += 1
+        } catch {
+            print("PetStore.uploadAvatar failed: \(error)")
+        }
     }
 
     func getById(_ id: String) -> Pet? {

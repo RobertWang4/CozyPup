@@ -1,7 +1,9 @@
 import SwiftUI
+import PhotosUI
 
 struct PetFormView: View {
     var editingPet: Pet?
+    var petStore: PetStore?
     var onSave: (String, Species, String, String?, Double?) -> Void
     var onCancel: (() -> Void)?
 
@@ -11,7 +13,19 @@ struct PetFormView: View {
     @State private var breed = ""
     @State private var birthday = ""
     @State private var weight = ""
+    @State private var selectedPhoto: PhotosPickerItem?
+    @State private var avatarImage: UIImage?
+    @State private var isUploadingAvatar = false
+    @State private var avatarVersion = 0  // bust AsyncImage cache after upload
     @FocusState private var customSpeciesFocused: Bool
+
+    /// Live pet from store (updates after avatar upload)
+    private var currentPet: Pet? {
+        if let store = petStore, let id = editingPet?.id {
+            return store.getById(id)
+        }
+        return editingPet
+    }
 
     private func speciesLabel(_ s: Species) -> String {
         if s == .other && !customSpecies.isEmpty { return customSpecies }
@@ -30,13 +44,69 @@ struct PetFormView: View {
     var body: some View {
         VStack(spacing: Tokens.spacing.md) {
             // Avatar
-            ZStack {
-                Circle()
-                    .fill(avatarColor.opacity(0.15))
+            PhotosPicker(selection: $selectedPhoto, matching: .images) {
+                ZStack {
+                    if let avatarImage {
+                        Image(uiImage: avatarImage)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: Tokens.size.avatarLarge, height: Tokens.size.avatarLarge)
+                            .clipShape(Circle())
+                    } else if let pet = currentPet, !pet.avatarUrl.isEmpty,
+                              let baseURL = APIClient.shared.avatarURL(pet.avatarUrl) {
+                        // Append version to bust AsyncImage cache after upload
+                        let url = URL(string: "\(baseURL.absoluteString)?v=\(avatarVersion)")!
+                        AsyncImage(url: url) { image in
+                            image.resizable().scaledToFill()
+                        } placeholder: {
+                            Circle().fill(avatarColor.opacity(0.15))
+                        }
+                        .frame(width: Tokens.size.avatarLarge, height: Tokens.size.avatarLarge)
+                        .clipShape(Circle())
+                    } else {
+                        Circle()
+                            .fill(avatarColor.opacity(0.15))
+                            .frame(width: Tokens.size.avatarLarge, height: Tokens.size.avatarLarge)
+                        Image(systemName: species == .cat ? "cat.fill" : "dog.fill")
+                            .font(.system(size: 34))
+                            .foregroundColor(avatarColor)
+                    }
+
+                    // Camera badge
+                    VStack {
+                        Spacer()
+                        HStack {
+                            Spacer()
+                            ZStack {
+                                Circle()
+                                    .fill(Tokens.accent)
+                                    .frame(width: 24, height: 24)
+                                Image(systemName: isUploadingAvatar ? "arrow.triangle.2.circlepath" : "camera.fill")
+                                    .font(.system(size: 11))
+                                    .foregroundColor(Tokens.white)
+                            }
+                        }
+                    }
                     .frame(width: Tokens.size.avatarLarge, height: Tokens.size.avatarLarge)
-                Image(systemName: species == .cat ? "cat.fill" : "dog.fill")
-                    .font(.system(size: 34))
-                    .foregroundColor(avatarColor)
+                }
+            }
+            .onChange(of: selectedPhoto) { _, newItem in
+                guard let newItem else { return }
+                Task {
+                    if let data = try? await newItem.loadTransferable(type: Data.self),
+                       let uiImage = UIImage(data: data) {
+                        avatarImage = uiImage
+                        // Upload immediately if editing existing pet
+                        if let pet = editingPet, let store = petStore {
+                            if let jpegData = uiImage.jpegData(compressionQuality: 0.8) {
+                                isUploadingAvatar = true
+                                await store.uploadAvatar(pet.id, imageData: jpegData)
+                                isUploadingAvatar = false
+                                avatarVersion += 1
+                            }
+                        }
+                    }
+                }
             }
             .padding(.bottom, Tokens.spacing.xs)
 

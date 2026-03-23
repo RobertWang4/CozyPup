@@ -51,7 +51,8 @@ struct CalendarDrawer: View {
                             pet: pet,
                             size: 56,
                             isActiveFilter: filterPetId == pet.id,
-                            isDimmed: filterPetId != nil && filterPetId != pet.id
+                            isDimmed: filterPetId != nil && filterPetId != pet.id,
+                            avatarRevision: petStore.avatarRevision
                         )
                     }
                     .buttonStyle(.plain)
@@ -221,6 +222,7 @@ struct PetAvatarCircle: View {
     var size: CGFloat = 56
     var isActiveFilter: Bool
     var isDimmed: Bool = false
+    var avatarRevision: Int = 0
 
     var body: some View {
         VStack(spacing: Tokens.spacing.sm) {
@@ -229,8 +231,10 @@ struct PetAvatarCircle: View {
                     .fill(Tokens.surface)
                     .frame(width: size, height: size)
 
-                if !pet.avatarUrl.isEmpty {
-                    AsyncImage(url: URL(string: pet.avatarUrl)) { image in
+                if !pet.avatarUrl.isEmpty,
+                   let baseURL = APIClient.shared.avatarURL(pet.avatarUrl),
+                   let url = URL(string: "\(baseURL.absoluteString)?v=\(avatarRevision)") {
+                    AsyncImage(url: url) { image in
                         image.resizable().scaledToFill()
                     } placeholder: {
                         Tokens.placeholderBg

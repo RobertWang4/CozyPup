@@ -176,18 +176,8 @@ async def upload_avatar(
 
 
 @router.get("/{pet_id}/avatar")
-async def get_avatar(
-    pet_id: uuid.UUID,
-    user_id: uuid.UUID = Depends(get_current_user_id),
-    db: AsyncSession = Depends(get_db),
-):
-    result = await db.execute(
-        select(Pet).where(Pet.id == pet_id, Pet.user_id == user_id)
-    )
-    pet = result.scalar_one_or_none()
-    if not pet:
-        raise HTTPException(status_code=404, detail="Pet not found")
-
+async def get_avatar(pet_id: uuid.UUID):
+    """Serve pet avatar image (public, no auth required)."""
     for ext in ("jpg", "png", "webp"):
         filepath = UPLOAD_DIR / f"{pet_id}.{ext}"
         if filepath.exists():

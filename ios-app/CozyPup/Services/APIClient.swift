@@ -20,6 +20,15 @@ actor APIClient {
         refreshToken = UserDefaults.standard.string(forKey: refreshKey)
     }
 
+    // MARK: - URL helpers
+
+    nonisolated func avatarURL(_ path: String) -> URL? {
+        guard !path.isEmpty else { return nil }
+        // path is like "/api/v1/pets/{id}/avatar", baseURL already has "/api/v1"
+        let base = baseURL.replacingOccurrences(of: "/api/v1", with: "")
+        return URL(string: "\(base)\(path)")
+    }
+
     // MARK: - Token management
 
     func setTokens(access: String, refresh: String) {

@@ -88,10 +88,24 @@ struct SettingsDrawer: View {
                 Section(L.myPets) {
                     ForEach(petStore.pets) { pet in
                         HStack(spacing: 12) {
-                            Image(systemName: pet.species == .cat ? "cat" : "dog")
-                                .font(Tokens.fontTitle)
-                                .foregroundColor(pet.color)
-                                .frame(width: Tokens.size.avatarSmall)
+                            if !pet.avatarUrl.isEmpty,
+                               let baseURL = APIClient.shared.avatarURL(pet.avatarUrl),
+                               let url = URL(string: "\(baseURL.absoluteString)?v=\(petStore.avatarRevision)") {
+                                AsyncImage(url: url) { image in
+                                    image.resizable().scaledToFill()
+                                } placeholder: {
+                                    Image(systemName: pet.species == .cat ? "cat" : "dog")
+                                        .font(Tokens.fontTitle)
+                                        .foregroundColor(pet.color)
+                                }
+                                .frame(width: Tokens.size.avatarSmall, height: Tokens.size.avatarSmall)
+                                .clipShape(Circle())
+                            } else {
+                                Image(systemName: pet.species == .cat ? "cat" : "dog")
+                                    .font(Tokens.fontTitle)
+                                    .foregroundColor(pet.color)
+                                    .frame(width: Tokens.size.avatarSmall)
+                            }
                             VStack(alignment: .leading, spacing: 3) {
                                 HStack(spacing: 6) {
                                     Text(pet.name).font(Tokens.fontBody.weight(.medium))
@@ -202,7 +216,7 @@ struct SettingsDrawer: View {
         NavigationStack {
             ScrollView {
                 Spacer().frame(height: 40)
-                PetFormView(editingPet: pet) { name, species, breed, birthday, weight in
+                PetFormView(editingPet: pet, petStore: petStore, onSave: { name, species, breed, birthday, weight in
                     Task {
                         if let pet = pet {
                             await petStore.update(pet.id, name: name, species: species, breed: breed,
@@ -216,12 +230,12 @@ struct SettingsDrawer: View {
                         editingPetId = nil
                         showAddPet = false
                     }
-                } onCancel: {
+                }, onCancel: {
                     withAnimation {
                         editingPetId = nil
                         showAddPet = false
                     }
-                }
+                })
                 .padding(20)
             }
             .background(Tokens.bg)
