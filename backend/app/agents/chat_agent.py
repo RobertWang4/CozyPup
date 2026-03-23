@@ -20,9 +20,8 @@ logger = logging.getLogger(__name__)
 # Maximum rounds of tool calls before forcing a text response
 MAX_TOOL_ROUNDS = 5
 
-# Tools that modify data — LLM judges, but execution requires user confirmation.
-# Read-only and recording tools execute immediately.
-CONFIRM_TOOLS = {"update_pet_profile", "delete_pet"}
+# Read-only tools — always auto-execute, never need confirmation
+READ_ONLY_TOOLS = {"list_pets", "query_calendar_events", "search_places", "list_reminders"}
 
 
 def _describe_tool_call(fn_name: str, fn_args: dict) -> str:
@@ -33,9 +32,27 @@ def _describe_tool_call(fn_name: str, fn_args: dict) -> str:
             return f"把名字改为「{info['name']}」"
         keys = ", ".join(info.keys())
         return f"更新宠物信息: {keys}"
+    if fn_name == "create_pet":
+        return f"添加新宠物「{fn_args.get('name', '')}」"
     if fn_name == "delete_pet":
         return "删除宠物"
-    return f"执行 {fn_name}"
+    if fn_name == "create_calendar_event":
+        title = fn_args.get("title", "")
+        date = fn_args.get("event_date", "")
+        return f"记录「{title}」({date})"
+    if fn_name == "update_calendar_event":
+        return f"修改日历事件"
+    if fn_name == "delete_calendar_event":
+        return "删除日历事件"
+    if fn_name == "create_reminder":
+        return f"设置提醒: {fn_args.get('title', '')}"
+    if fn_name == "update_reminder":
+        return "修改提醒"
+    if fn_name == "delete_reminder":
+        return "删除提醒"
+    if fn_name == "draft_email":
+        return f"草拟邮件: {fn_args.get('subject', '')}"
+    return fn_name
 
 
 class ChatAgent(BaseAgent):
@@ -174,8 +191,20 @@ class ChatAgent(BaseAgent):
                     })
                     continue
 
-                # --- Confirm gate: intercept modifying tools ---
-                if fn_name in CONFIRM_TOOLS and session_id:
+                # --- Confirm gate ---
+                # Auto-execute if: read-only tool, OR pre-processor agreed (high confidence)
+                # Confirm card if: LLM decided alone (pre-processor didn't validate)
+                pre_validated = any(
+                    a.tool_name == fn_name and a.confidence >= 0.8
+                    for a in suggested_actions
+                )
+                needs_confirm = (
+                    fn_name not in READ_ONLY_TOOLS
+                    and not pre_validated
+                    and session_id
+                )
+
+                if needs_confirm:
                     description = _describe_tool_call(fn_name, fn_args)
                     action_id = store_action(
                         user_id=str(user_id),
