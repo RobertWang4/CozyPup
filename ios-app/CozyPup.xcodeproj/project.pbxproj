@@ -141,6 +141,7 @@
 			isa = PBXGroup;
 			children = (
 				58DE97E04745F620BC9758F7 /* CozyPup */,
+				E1E323452F71D06200C5A46D /* Frameworks */,
 				09A95F131FB66BBBB810306C /* Products */,
 			);
 			sourceTree = "<group>";
@@ -276,6 +277,13 @@
 			path = Cards;
 			sourceTree = "<group>";
 		};
+		E1E323452F71D06200C5A46D /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -294,6 +302,8 @@
 			packageProductDependencies = (
 				E1E323432F71CF9000C5A46D /* GoogleSignIn */,
 				E1E323442F71CF9000C5A46D /* GoogleSignInSwift */,
+				E158F7412F71D3FF0033B60C /* FirebaseAuth */,
+				E158F7422F71D3FF0033B60C /* FirebaseCore */,
 			);
 			productName = CozyPup;
 			productReference = C689DAF84CC613060400869F /* CozyPup.app */;
@@ -318,8 +328,9 @@
 			mainGroup = 3631CB4624679DF5D182599D;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				E1E3233D2F71A88900C5A46D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				E158F7402F71D3FF0033B60C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				E1E323422F71CF9000C5A46D /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
+				E158F7402F71D3FF0033B60C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 09A95F131FB66BBBB810306C /* Products */;
@@ -604,7 +615,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		E1E3233D2F71A88900C5A46D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+		E158F7402F71D3FF0033B60C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
 			requirement = {
@@ -623,6 +634,16 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		E158F7412F71D3FF0033B60C /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E158F7402F71D3FF0033B60C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		E158F7422F71D3FF0033B60C /* FirebaseCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E158F7402F71D3FF0033B60C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCore;
+		};
 		E1E323432F71CF9000C5A46D /* GoogleSignIn */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = E1E323422F71CF9000C5A46D /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;

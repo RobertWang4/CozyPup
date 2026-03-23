@@ -68,6 +68,8 @@ def _describe_tool_call(fn_name: str, fn_args: dict, pets: list | None = None) -
         return "删除提醒"
     if fn_name == "draft_email":
         return f"草拟邮件: {fn_args.get('subject', '')}"
+    if fn_name == "save_pet_profile_md":
+        return f"更新{label}个人档案"
     if fn_name == "set_pet_avatar":
         return f"设置{label}头像"
     if fn_name == "upload_event_photo":

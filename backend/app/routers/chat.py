@@ -20,7 +20,6 @@ from app.agents.tools import execute_tool
 from app.auth import get_current_user_id
 from app.database import get_db
 from app.models import Chat, ChatSession, MessageRole, Pet
-from app.rag import assemble_rag_context, needs_retrieval, write_chat_turn
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1", tags=["chat"])
@@ -97,7 +96,9 @@ async def _build_pet_context(pets: list[Pet]) -> str:
         if p.birthday:
             info.append(f"birthday={p.birthday.isoformat()}")
         lines.append(", ".join(info))
-        if p.profile:
+        if p.profile_md:
+            lines.append(f"\n### {p.name} 的档案\n{p.profile_md}")
+        elif p.profile:
             profile_str = json.dumps(p.profile, ensure_ascii=False)
             lines.append(f"  Profile: {profile_str}")
     return "\n".join(lines)
@@ -154,21 +155,9 @@ async def _run_chat_agent_to_queue(
     """Run ChatAgent, pushing SSE events into the queue."""
     pet_context = await _build_pet_context(pets)
 
-    # RAG context injection
-    rag_context = ""
-    if needs_retrieval(request.message):
-        try:
-            rag_context = await assemble_rag_context(
-                message=request.message,
-                user_id=user_id,
-            )
-        except Exception as exc:
-            logger.warning("rag_assembly_error", extra={"error": str(exc)[:200]})
-
     system_msg = CHAT_SYSTEM_PROMPT.format(
         pet_context=pet_context,
         today_date=date.today().isoformat(),
-        rag_context=rag_context,
         pre_analyzed_actions="{pre_analyzed_actions}",  # Replaced by ChatAgent
     )
 
@@ -261,15 +250,6 @@ async def _event_generator(
     await _save_message(
         db, session.id, user_id, MessageRole.assistant, full_response, cards_json
     )
-
-    # Background: embed this conversation turn
-    _track_task(write_chat_turn(
-        user_id=user_id,
-        session_id=session.id,
-        user_msg=request.message,
-        assistant_msg=full_response,
-        session_date=date.today(),
-    ))
 
     # 8. Done event
     yield {

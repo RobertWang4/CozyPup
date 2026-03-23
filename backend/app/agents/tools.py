@@ -21,7 +21,6 @@ UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
 PHOTO_DIR = Path(__file__).resolve().parent.parent / "uploads" / "photos"
 PHOTO_DIR.mkdir(parents=True, exist_ok=True)
-from app.rag.writer import write_calendar_event as _rag_write_event
 
 logger = logging.getLogger(__name__)
 
@@ -214,6 +213,37 @@ TOOL_DEFINITIONS = [
                     },
                 },
                 "required": ["pet_id", "info"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "save_pet_profile_md",
+            "description": (
+                "Save or update a pet's narrative profile document (markdown). "
+                "Call this SILENTLY whenever you learn new information about a pet "
+                "from conversation — personality, health history, routines, preferences. "
+                "You MUST pass the COMPLETE updated document (not a diff or append). "
+                "Keep it concise: under 500 words. Use markdown headers for sections. "
+                "Write in the same language the user uses."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "pet_id": {
+                        "type": "string",
+                        "description": "UUID of the pet.",
+                    },
+                    "profile_md": {
+                        "type": "string",
+                        "description": (
+                            "The FULL markdown profile document. Include all previously known info "
+                            "plus new info. Sections: basics, personality, health, daily routine."
+                        ),
+                    },
+                },
+                "required": ["pet_id", "profile_md"],
             },
         },
     },
@@ -562,19 +592,6 @@ async def _create_calendar_event(
     db.add(event)
     await db.flush()
 
-    # Background: embed this event for RAG retrieval
-    task = asyncio.create_task(_rag_write_event(
-        user_id=user_id,
-        pet_id=first_pet_id,
-        event_id=event.id,
-        event_date=event_date,
-        category=arguments["category"],
-        title=title,
-        raw_text=raw_text,
-    ))
-    _bg_tasks.add(task)
-    task.add_done_callback(_bg_tasks.discard)
-
     card = {
         "type": "record",
         "pet_name": ", ".join(pet_names) if pet_names else "",
@@ -796,6 +813,32 @@ async def _update_pet_profile(
         "saved_keys": list(info.keys()),
         "card": card,
     }
+
+
+async def _save_pet_profile_md(
+    arguments: dict,
+    db: AsyncSession,
+    user_id: uuid.UUID,
+) -> dict:
+    """Save the pet's narrative markdown profile."""
+    pet_id = uuid.UUID(arguments["pet_id"])
+    profile_md = arguments.get("profile_md", "").strip()
+    if not profile_md:
+        return {"success": False, "error": "Empty profile_md"}
+    if len(profile_md) > 3000:
+        return {"success": False, "error": "profile_md too long (max 3000 chars)"}
+
+    result = await db.execute(
+        select(Pet).where(Pet.id == pet_id, Pet.user_id == user_id)
+    )
+    pet = result.scalar_one_or_none()
+    if not pet:
+        return {"success": False, "error": "Pet not found"}
+
+    pet.profile_md = profile_md
+    await db.flush()
+
+    return {"success": True, "pet_id": str(pet.id), "pet_name": pet.name}
 
 
 async def _list_pets(
@@ -1214,6 +1257,7 @@ _TOOL_HANDLERS = {
     "update_calendar_event": _update_calendar_event,
     "create_pet": _create_pet,
     "update_pet_profile": _update_pet_profile,
+    "save_pet_profile_md": _save_pet_profile_md,
     "list_pets": _list_pets,
     "create_reminder": _create_reminder,
     "search_places": _search_places,

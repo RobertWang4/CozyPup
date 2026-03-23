@@ -24,16 +24,6 @@ class Settings(BaseSettings):
     # Server public URL (for constructing image URLs for LLM vision)
     server_public_url: str = "http://168.138.75.153:8000"
 
-    # RAG settings
-    embedding_model: str = "text-embedding-3-small"
-    embedding_api_base: str = ""       # Separate proxy URL for embeddings
-    embedding_api_key: str = ""        # Separate API key for embeddings
-    embedding_dimensions: int = 1536
-    rag_chat_token_budget: int = 1500
-    rag_calendar_token_budget: int = 1500
-    rag_retrieval_timeout: float = 2.0
-    rag_score_threshold: float = 0.3   # Min cosine similarity to include
-
     class Config:
         env_file = ".env"
         extra = "ignore"
