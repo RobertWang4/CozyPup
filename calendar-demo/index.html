@@ -1,0 +1,1719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CozyPup Calendar — Interactive Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   CSS CUSTOM PROPERTIES (Design Tokens)
+   ============================================================ */
+:root {
+  --bg: #F5EBE0;
+  --surface: #FBF6F1;
+  --surface2: #F5ECE3;
+  --text: #3D2C1E;
+  --text-secondary: #8B7355;
+  --text-tertiary: #B8A48E;
+  --accent: #E8835C;
+  --accent-soft: #F0DDD3;
+  --border: #E6D5C5;
+  --green: #7BAE7F;
+  --blue: #6BA3BE;
+  --red: #D35F5F;
+  --purple: #9B7ED8;
+  --orange: #E8A33C;
+
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  --transition-speed: 300ms;
+  --transition-ease: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --transition-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: #111;
+  font-family: var(--font-sans);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px 20px 48px;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ============================================================
+   PAGE TITLE & HINTS
+   ============================================================ */
+.page-title {
+  font-family: var(--font-sans);
+  font-weight: 300;
+  font-size: 22px;
+  color: #fff;
+  margin-bottom: 8px;
+  letter-spacing: -0.3px;
+}
+
+.page-subtitle {
+  color: #555;
+  font-size: 12px;
+  margin-bottom: 36px;
+  letter-spacing: 0.2px;
+}
+
+.keyboard-hint {
+  color: #444;
+  font-size: 11px;
+  margin-top: 24px;
+  text-align: center;
+  line-height: 1.6;
+  letter-spacing: 0.2px;
+}
+
+/* ============================================================
+   iPHONE FRAME
+   ============================================================ */
+/* Phone screen (behind the drawer) */
+.phone-screen {
+  width: 375px;
+  height: 812px;
+  background: #2a2a2a;
+  border-radius: 40px;
+  overflow: hidden;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05);
+  position: relative;
+  user-select: none;
+}
+
+/* Notch */
+.phone-screen::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 28px;
+  background: #111;
+  border-radius: 0 0 18px 18px;
+  z-index: 100;
+}
+
+/* Drawer (slides from left, ~85% width) */
+.phone-frame {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 85%;
+  height: 100%;
+  background: var(--bg);
+  border-radius: 0 24px 24px 0;
+  overflow: hidden;
+  box-shadow: 8px 0 30px rgba(0,0,0,0.2);
+  display: flex;
+  flex-direction: column;
+}
+
+/* ============================================================
+   VIEW CONTAINER (manages transitions between modes)
+   ============================================================ */
+.view-container {
+  width: 100%;
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.view {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  scrollbar-width: none;
+  display: none;
+}
+
+.view::-webkit-scrollbar { display: none; }
+
+.view.active {
+  display: block;
+  animation: viewFadeIn var(--transition-speed) var(--transition-ease);
+}
+
+.view.slide-from-right {
+  display: block;
+  animation: viewSlideFromRight var(--transition-speed) var(--transition-ease);
+}
+
+.view.slide-from-left {
+  display: block;
+  animation: viewSlideFromLeft var(--transition-speed) var(--transition-ease);
+}
+
+@keyframes viewFadeIn {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes viewSlideFromRight {
+  from { opacity: 0; transform: translateX(40px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes viewSlideFromLeft {
+  from { opacity: 0; transform: translateX(-40px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* ============================================================
+   TOP BAR (shared across calendar & timeline modes)
+   ============================================================ */
+.top-bar {
+  padding: 44px 16px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  flex-shrink: 0;
+}
+
+.pet-avatars {
+  display: flex;
+  gap: 8px;
+  flex: 1;
+}
+
+.pet-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 2.5px solid transparent;
+  position: relative;
+}
+
+.pet-avatar.active {
+  border-color: currentColor;
+  box-shadow: 0 0 0 2px rgba(255,255,255,0.3);
+}
+
+.pet-avatar.dimmed {
+  opacity: 0.4;
+}
+
+.mode-toggle {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.mode-toggle:hover {
+  background: var(--border);
+}
+
+.mode-toggle.active {
+  background: var(--accent);
+  color: #fff;
+}
+
+.close-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   MODE 1: CALENDAR VIEW
+   ============================================================ */
+.calendar-view {
+  padding-bottom: 20px;
+}
+
+/* Month navigation */
+.month-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 4px 20px 16px;
+}
+
+.month-nav-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--text-secondary);
+  border: none;
+  transition: background 0.15s;
+}
+
+.month-nav-btn:hover {
+  background: var(--border);
+}
+
+.month-title {
+  font-family: var(--font-serif);
+  font-size: 17px;
+  font-weight: 400;
+  color: var(--text);
+  min-width: 140px;
+  text-align: center;
+}
+
+/* Weekday headers */
+.weekday-headers {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  padding: 0 16px 8px;
+}
+
+.weekday-header {
+  text-align: center;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Day grid */
+.day-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  padding: 0 16px;
+  row-gap: 4px;
+}
+
+.day-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 4px 0;
+  cursor: pointer;
+  position: relative;
+  border-radius: 10px;
+  transition: background 0.15s;
+}
+
+.day-cell:hover {
+  background: var(--surface);
+}
+
+.day-number {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--text);
+  border-radius: 50%;
+  transition: all 0.15s;
+}
+
+.day-cell.other-month .day-number {
+  color: var(--text-tertiary);
+  opacity: 0.5;
+}
+
+.day-cell.today .day-number {
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.day-cell.selected .day-number {
+  background: var(--accent);
+  color: #fff;
+  font-weight: 500;
+}
+
+.day-cell.today.selected .day-number {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* Event dots under day number */
+.day-dots {
+  display: flex;
+  gap: 2px;
+  margin-top: 2px;
+  height: 5px;
+}
+
+.day-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+}
+
+/* Expanding animation for double-click */
+.day-cell.expanding .day-number {
+  animation: dayExpand 0.25s var(--transition-spring);
+}
+
+@keyframes dayExpand {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.6); }
+  100% { transform: scale(1); }
+}
+
+/* Selected day events */
+.selected-day-events {
+  padding: 12px 20px 0;
+}
+
+.selected-day-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+}
+
+.cal-event-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-top: 1px solid var(--border);
+}
+
+.cal-event-bar {
+  width: 3px;
+  height: 28px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.cal-event-info {
+  flex: 1;
+}
+
+.cal-event-title {
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.3;
+}
+
+.cal-event-meta {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  margin-top: 1px;
+}
+
+.no-events-msg {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  font-style: italic;
+  padding: 12px 0;
+}
+
+/* ============================================================
+   MODE 2: MULTI-DAY TIMELINE
+   ============================================================ */
+.timeline-view {
+  padding-bottom: 30px;
+}
+
+.multi-day-list {
+  padding: 0;
+}
+
+.day-row {
+  display: flex;
+  padding: 0 20px;
+}
+
+.day-left {
+  width: 64px;
+  flex-shrink: 0;
+  padding-top: 2px;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.day-left:hover {
+  opacity: 0.7;
+}
+
+.day-num {
+  font-family: var(--font-serif);
+  font-size: 32px;
+  color: var(--text);
+  line-height: 1;
+  font-weight: 400;
+  transition: color 0.15s;
+}
+
+.day-num.today { color: var(--accent); }
+.day-num.past-1 { color: #5C4A3A; font-size: 30px; }
+.day-num.past-2 { color: #8B7355; font-size: 28px; }
+.day-num.past-3 { color: #B8A48E; font-size: 26px; }
+.day-num.past-4 { color: #C4AE96; font-size: 24px; }
+
+.day-weekday {
+  font-size: 10px;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 2px;
+}
+
+.day-weekday.today { color: var(--accent); }
+
+.day-right {
+  flex: 1;
+  border-left: 1px solid var(--border);
+  padding-left: 16px;
+  padding-bottom: 20px;
+  min-height: 56px;
+}
+
+.day-right.last-day {
+  border-left-color: transparent;
+}
+
+.evt-entry {
+  padding: 8px 0;
+}
+
+.evt-entry + .evt-entry {
+  border-top: 1px solid #EDE3D8;
+}
+
+.evt-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.evt-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  margin-top: 5px;
+  flex-shrink: 0;
+}
+
+.evt-body { flex: 1; }
+
+.evt-title {
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.4;
+}
+
+.evt-meta {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  margin-top: 1px;
+}
+
+.empty-day-msg {
+  font-size: 12px;
+  color: #C4AE96;
+  font-style: italic;
+  padding: 8px 0;
+}
+
+/* Zoom label */
+.zoom-label {
+  text-align: center;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--text-tertiary);
+  padding: 4px 0 8px;
+  transition: opacity 0.3s;
+}
+
+/* ============================================================
+   ZOOM SYSTEM: All three detail levels exist in DOM simultaneously.
+   CSS transitions handle smooth scaling between zoom levels.
+   ============================================================ */
+
+/* Shared transition on everything that changes size */
+.day-row .day-left,
+.day-row .day-num,
+.day-row .day-weekday,
+.day-row .day-right,
+.day-row .detail-day,
+.day-row .detail-week,
+.day-row .detail-month {
+  transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Detail levels: show/hide with height + opacity animation */
+.detail-day, .detail-week, .detail-month {
+  overflow: hidden;
+  opacity: 0;
+  max-height: 0;
+  transition: max-height 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              opacity 0.25s ease;
+}
+
+/* ---- DAY ZOOM (default) ---- */
+.zoom-day .day-left { width: 64px; }
+.zoom-day .day-num { font-size: 32px; }
+.zoom-day .day-weekday { font-size: 10px; }
+.zoom-day .day-right { padding-bottom: 18px; padding-left: 16px; }
+
+.zoom-day .detail-day { opacity: 1; max-height: 500px; }
+.zoom-day .detail-week { opacity: 0; max-height: 0; }
+.zoom-day .detail-month { opacity: 0; max-height: 0; }
+.zoom-day .detail-year { opacity: 0; max-height: 0; }
+
+/* ---- WEEK ZOOM ---- */
+.zoom-week .day-left { width: 48px; }
+.zoom-week .day-num { font-size: 22px; }
+.zoom-week .day-weekday { font-size: 9px; }
+.zoom-week .day-right { padding-bottom: 8px; padding-left: 12px; }
+
+.zoom-week .detail-day { opacity: 0; max-height: 0; }
+.zoom-week .detail-week { opacity: 1; max-height: 300px; }
+.zoom-week .detail-month { opacity: 0; max-height: 0; }
+.zoom-week .detail-year { opacity: 0; max-height: 0; }
+
+/* Week compact event entry */
+.evt-entry-compact {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 0;
+}
+.evt-title-compact {
+  font-size: 12px;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---- MONTH ZOOM ---- */
+.zoom-month .day-left { width: 36px; }
+.zoom-month .day-num { font-size: 14px; }
+.zoom-month .day-weekday { font-size: 8px; }
+.zoom-month .day-right { padding-bottom: 2px; padding-left: 10px; min-height: 16px; }
+
+.zoom-month .detail-day { opacity: 0; max-height: 0; }
+.zoom-month .detail-week { opacity: 0; max-height: 0; }
+.zoom-month .detail-month { opacity: 1; max-height: 30px; }
+.zoom-month .detail-year { opacity: 0; max-height: 0; }
+
+.zoom-month .empty-day-msg { font-size: 0; padding: 0; max-height: 0; }
+
+/* ---- YEAR ZOOM ---- */
+.zoom-year .day-left { width: 24px; }
+.zoom-year .day-num { font-size: 10px; }
+.zoom-year .day-weekday { font-size: 0; opacity: 0; max-height: 0; }
+.zoom-year .day-right { padding-bottom: 0; padding-left: 8px; min-height: 10px; border-left-color: transparent; }
+
+.zoom-year .detail-day { opacity: 0; max-height: 0; }
+.zoom-year .detail-week { opacity: 0; max-height: 0; }
+.zoom-year .detail-month { opacity: 0; max-height: 0; }
+.zoom-year .detail-year { opacity: 1; max-height: 12px; }
+
+.zoom-year .day-row { padding: 0 16px; }
+.zoom-year .empty-day-msg { font-size: 0; padding: 0; max-height: 0; }
+
+/* Month dots */
+.detail-month {
+  display: flex;
+  gap: 3px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.evt-dot-month {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+/* Year bar */
+.detail-year {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  opacity: 0;
+  max-height: 0;
+  transition: max-height 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              opacity 0.25s ease;
+}
+
+.evt-bar-year {
+  height: 4px;
+  border-radius: 2px;
+  min-width: 3px;
+  transition: all 0.3s ease;
+}
+
+
+/* ============================================================
+   MODE 3: SINGLE-DAY TIMELINE
+   ============================================================ */
+.single-day-view {
+  padding-bottom: 30px;
+}
+
+.back-btn {
+  font-size: 22px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 2px 6px 2px 0;
+  transition: color 0.15s;
+  line-height: 1;
+}
+
+.back-btn:hover {
+  color: var(--accent);
+}
+
+.single-date-header {
+  padding: 0 20px;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.single-date-num {
+  font-family: var(--font-serif);
+  font-size: 40px;
+  color: var(--text);
+  font-weight: 400;
+  line-height: 1;
+}
+
+.single-date-month {
+  font-family: var(--font-serif);
+  font-size: 20px;
+  color: var(--text-secondary);
+}
+
+.single-weekday {
+  padding: 0 20px;
+  font-size: 13px;
+  color: var(--text-tertiary);
+  margin-bottom: 24px;
+}
+
+/* Heat strip */
+.heat-wrap {
+  padding: 0 20px;
+  margin-bottom: 28px;
+}
+
+.heat-bar-container {
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.heat-bar {
+  height: 28px;
+  background: #EDE3D8;
+  border-radius: 8px;
+  position: relative;
+  transition: transform 0.15s ease;
+  transform-origin: center;
+}
+
+.heat-block {
+  position: absolute;
+  top: 5px;
+  bottom: 5px;
+  border-radius: 4px;
+  transition: left 0.3s ease, width 0.3s ease;
+}
+
+.heat-times {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0 0;
+  font-size: 9px;
+  color: #C4AE96;
+}
+
+/* Event cards */
+.event-cards {
+  padding: 0;
+  position: relative;
+}
+
+.event-card {
+  margin: 0 20px 12px;
+  background: var(--surface);
+  border-radius: 14px;
+  padding: 14px 16px;
+  position: relative;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.event-card:active {
+  transform: scale(0.98);
+}
+
+.card-accent {
+  position: absolute;
+  left: 0;
+  top: 12px;
+  bottom: 12px;
+  width: 3px;
+  border-radius: 0 2px 2px 0;
+}
+
+.card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.card-category {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.card-time {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  font-variant-numeric: tabular-nums;
+}
+
+.card-title {
+  font-size: 14px;
+  color: var(--text);
+  line-height: 1.5;
+}
+
+.card-photos {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+  margin-top: 10px;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.photo-placeholder {
+  aspect-ratio: 4/3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  border-radius: 8px;
+}
+
+.card-pet {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  margin-top: 6px;
+}
+
+.no-events-single {
+  padding: 40px 20px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-tertiary);
+  font-style: italic;
+}
+
+/* Single-day slide animation for day change */
+.event-cards.slide-left-exit {
+  animation: slideLeftOut 200ms ease forwards;
+}
+.event-cards.slide-left-enter {
+  animation: slideLeftIn 200ms ease forwards;
+}
+.event-cards.slide-right-exit {
+  animation: slideRightOut 200ms ease forwards;
+}
+.event-cards.slide-right-enter {
+  animation: slideRightIn 200ms ease forwards;
+}
+
+@keyframes slideLeftOut {
+  from { transform: translateX(0); opacity: 1; }
+  to { transform: translateX(-60px); opacity: 0; }
+}
+@keyframes slideLeftIn {
+  from { transform: translateX(60px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+@keyframes slideRightOut {
+  from { transform: translateX(0); opacity: 1; }
+  to { transform: translateX(60px); opacity: 0; }
+}
+@keyframes slideRightIn {
+  from { transform: translateX(-60px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+</style>
+</head>
+<body>
+
+<h1 class="page-title">CozyPup Calendar &mdash; Interactive Demo</h1>
+<p class="page-subtitle">Timepage-inspired calendar with three view modes</p>
+
+<!-- ============================================================
+     iPHONE FRAME
+     ============================================================ -->
+<div class="phone-screen">
+<div class="phone-frame" id="phone" tabindex="0">
+
+  <!-- FIXED TOP BAR (stays during tab switch) -->
+  <div class="top-bar" id="mainTopBar">
+    <div class="pet-avatars" id="petAvatars"></div>
+    <div class="mode-toggle" id="modeToggle" title="Switch to Timeline">&#9776;</div>
+    <div class="close-btn">&#10005;</div>
+  </div>
+
+  <!-- SINGLE-DAY TOP BAR (only visible in single-day mode) -->
+  <div class="top-bar" id="singleTopBar" style="display:none;">
+    <div class="back-btn" id="backBtn">&#8249;</div>
+    <div style="flex:1;"></div>
+    <div class="close-btn">&#10005;</div>
+  </div>
+
+  <div class="view-container" id="viewContainer">
+
+    <!-- MODE 1: CALENDAR VIEW -->
+    <div class="view active" id="calendarView">
+      <div class="month-nav">
+        <div class="month-nav-btn" id="prevMonth">&#8249;</div>
+        <div class="month-title" id="monthTitle"></div>
+        <div class="month-nav-btn" id="nextMonth">&#8250;</div>
+      </div>
+      <div class="weekday-headers">
+        <div class="weekday-header">Su</div>
+        <div class="weekday-header">Mo</div>
+        <div class="weekday-header">Tu</div>
+        <div class="weekday-header">We</div>
+        <div class="weekday-header">Th</div>
+        <div class="weekday-header">Fr</div>
+        <div class="weekday-header">Sa</div>
+      </div>
+      <div class="day-grid" id="dayGrid"></div>
+      <div class="selected-day-events" id="selectedDayEvents"></div>
+    </div>
+
+    <!-- MODE 2: MULTI-DAY TIMELINE -->
+    <div class="view" id="timelineView">
+      <div class="multi-day-list" id="multiDayList"></div>
+    </div>
+
+    <!-- MODE 3: SINGLE-DAY TIMELINE -->
+    <div class="view" id="singleDayView">
+      <div class="single-date-header">
+        <div class="single-date-num" id="singleDateNum"></div>
+        <div class="single-date-month" id="singleDateMonth"></div>
+      </div>
+      <div class="single-weekday" id="singleWeekday"></div>
+      <div class="heat-wrap">
+        <div class="heat-bar-container">
+          <div class="heat-bar" id="heatBar"></div>
+        </div>
+        <div class="heat-times">
+          <span>6am</span><span>9</span><span>12pm</span><span>3</span><span>6pm</span><span>9pm</span>
+        </div>
+      </div>
+      <div class="event-cards" id="eventCards"></div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<div class="keyboard-hint">
+  Double-click date to enter day view &middot; Arrow keys to navigate days &middot; Pinch/Ctrl+scroll on timeline to zoom (Day ↔ Week ↔ Month)
+</div>
+
+<!-- ============================================================
+     JAVASCRIPT
+     ============================================================ -->
+<script>
+/* ============================================================
+   DATA
+   ============================================================ */
+const PETS = [
+  { id: 'doudu', name: 'Doudu', species: 'dog', color: '#E8835C', initial: 'D' },
+  { id: 'mimi', name: 'Mimi', species: 'cat', color: '#6BA3BE', initial: 'M' }
+];
+
+const CATEGORIES = {
+  diet:     { label: 'Diet',     color: '#7BAE7F' },
+  daily:    { label: 'Daily',    color: '#E8835C' },
+  medical:  { label: 'Medical',  color: '#6BA3BE' },
+  abnormal: { label: 'Abnormal', color: '#D35F5F' },
+  vaccine:  { label: 'Vaccine',  color: '#9B7ED8' }
+};
+
+const TODAY = new Date(2026, 2, 22); // March 22, 2026 (Sunday)
+
+function makeDate(month, day) {
+  return new Date(2026, month - 1, day);
+}
+
+function dateKey(d) {
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+// Generate events. Key is "YYYY-MM-DD"
+const EVENTS = {};
+
+function addEvent(month, day, time, category, title, petId, photos) {
+  const k = dateKey(makeDate(month, day));
+  if (!EVENTS[k]) EVENTS[k] = [];
+  EVENTS[k].push({ time, category, title, petId, photos: photos || null });
+}
+
+// Today: March 22 — 5 events for both pets
+addEvent(3, 22, '8:30',  'diet',    'Morning kibble 200g + fish oil', 'doudu');
+addEvent(3, 22, '10:00', 'daily',   'Park walk — played fetch by the lake for 30 min', 'doudu', ['photo1.jpg', 'photo2.jpg']);
+addEvent(3, 22, '11:30', 'diet',    'Wet food 100g + vitamin supplement', 'mimi');
+addEvent(3, 22, '15:00', 'vaccine', 'Rabies vaccine booster at Dr. Wang\'s clinic', 'mimi');
+addEvent(3, 22, '18:00', 'diet',    'Evening meal — chicken treat + kibble', 'doudu');
+
+// Yesterday: March 21 — 3 events
+addEvent(3, 21, '8:00',  'diet',    'Morning meal 180g', 'doudu');
+addEvent(3, 21, '14:00', 'daily',   'Grooming bath + nail trim', 'doudu', ['photo1.jpg', 'photo2.jpg']);
+addEvent(3, 21, '17:30', 'diet',    'Evening meal + dental chew', 'mimi');
+
+// March 20 — 2 events
+addEvent(3, 20, '11:00', 'abnormal', 'Vomited twice after eating grass', 'doudu');
+addEvent(3, 20, '16:00', 'medical',  'Called vet — advised monitoring for 24h', 'doudu');
+
+// March 19 — empty (no events)
+
+// March 18 — 2 events
+addEvent(3, 18, '9:00',  'diet',   'Morning kibble + egg', 'doudu');
+addEvent(3, 18, '20:00', 'daily',  'Evening walk around neighborhood', 'mimi');
+
+// March 17 — 1 event
+addEvent(3, 17, '10:00', 'medical', 'Annual checkup — all clear', 'mimi');
+
+// March 16 — empty
+
+// March 15 — 3 events
+addEvent(3, 15, '8:30',  'diet',    'Morning meal', 'doudu');
+addEvent(3, 15, '12:00', 'vaccine', 'DHPP vaccine — 2nd dose', 'doudu');
+addEvent(3, 15, '19:00', 'diet',    'Evening meal with pumpkin', 'mimi');
+
+// March 14 — 1 event
+addEvent(3, 14, '16:00', 'daily', 'Played with feather toy for 20 min', 'mimi');
+
+// March 13 — empty
+
+// March 12 — 2 events
+addEvent(3, 12, '9:30',  'diet',     'Morning meal + probiotic', 'doudu');
+addEvent(3, 12, '15:00', 'abnormal', 'Scratching ear frequently', 'mimi');
+
+// March 11 — 1 event
+addEvent(3, 11, '11:00', 'daily', 'Doggy daycare drop-off', 'doudu');
+
+// March 10 — empty
+
+// March 9 — 2 events
+addEvent(3, 9, '8:00',  'diet',    'Morning kibble', 'doudu');
+addEvent(3, 9, '17:00', 'medical', 'Ear drops administered', 'mimi');
+
+// Sort events by time within each day
+Object.values(EVENTS).forEach(evts => {
+  evts.sort((a, b) => {
+    const parseTime = t => {
+      const [h, m] = t.split(':').map(Number);
+      return h * 60 + (m || 0);
+    };
+    return parseTime(a.time) - parseTime(b.time);
+  });
+});
+
+/* ============================================================
+   STATE
+   ============================================================ */
+let currentMode = 'calendar'; // 'calendar' | 'timeline' | 'single'
+let previousMode = 'calendar';
+let selectedDate = new Date(TODAY);
+let viewMonth = TODAY.getMonth();
+let viewYear = TODAY.getFullYear();
+let singleDayDate = new Date(TODAY);
+let activePetFilter = null; // null = all, 'doudu' or 'mimi'
+let heatZoomLevel = 1;
+
+/* ============================================================
+   HELPER FUNCTIONS
+   ============================================================ */
+const WEEKDAY_SHORT = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const WEEKDAY_FULL = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June',
+                     'July', 'August', 'September', 'October', 'November', 'December'];
+
+function sameDay(a, b) {
+  return a.getFullYear() === b.getFullYear() &&
+         a.getMonth() === b.getMonth() &&
+         a.getDate() === b.getDate();
+}
+
+function daysAgo(d) {
+  const diff = Math.floor((TODAY - d) / (1000 * 60 * 60 * 24));
+  return diff;
+}
+
+function getFilteredEvents(key) {
+  const evts = EVENTS[key] || [];
+  if (!activePetFilter) return evts;
+  return evts.filter(e => e.petId === activePetFilter);
+}
+
+function getPetById(id) {
+  return PETS.find(p => p.id === id);
+}
+
+function formatTimeAMPM(timeStr) {
+  const [h, m] = timeStr.split(':').map(Number);
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  const hour12 = h % 12 || 12;
+  return `${hour12}:${String(m || 0).padStart(2, '0')} ${ampm}`;
+}
+
+function timeToPercent(timeStr) {
+  const [h, m] = timeStr.split(':').map(Number);
+  const totalMinutes = h * 60 + (m || 0);
+  // 6am = 360min = 0%, 9pm = 1260min = 100%
+  const range = 1260 - 360;
+  return Math.max(0, Math.min(100, ((totalMinutes - 360) / range) * 100));
+}
+
+// Photo placeholder gradients and emojis
+const PHOTO_STYLES = [
+  { bg: 'linear-gradient(145deg, #E8D5C4, #D9C4B0)', emoji: '🌳' },
+  { bg: 'linear-gradient(145deg, #D4E5D6, #B8D4BC)', emoji: '🐕' },
+  { bg: 'linear-gradient(145deg, #D5DEE8, #B8C8D9)', emoji: '🐱' },
+  { bg: 'linear-gradient(145deg, #E8DED4, #D9CCBA)', emoji: '☀️' }
+];
+
+/* ============================================================
+   RENDER: PET AVATARS
+   ============================================================ */
+function renderPetAvatars(container) {
+  container.innerHTML = '';
+  PETS.forEach(pet => {
+    const el = document.createElement('div');
+    el.className = 'pet-avatar';
+    if (activePetFilter === pet.id) {
+      el.classList.add('active');
+    } else if (activePetFilter && activePetFilter !== pet.id) {
+      el.classList.add('dimmed');
+    }
+    el.style.background = pet.color;
+    el.style.color = pet.color;
+    el.textContent = pet.initial;
+    el.style.setProperty('color', '#fff');
+    if (activePetFilter === pet.id) {
+      el.style.borderColor = pet.color;
+    }
+    el.addEventListener('click', () => {
+      if (activePetFilter === pet.id) {
+        activePetFilter = null;
+      } else {
+        activePetFilter = pet.id;
+      }
+      renderAll();
+    });
+    container.appendChild(el);
+  });
+}
+
+/* ============================================================
+   RENDER: CALENDAR VIEW (Mode 1)
+   ============================================================ */
+function renderCalendar() {
+  // Month title
+  document.getElementById('monthTitle').textContent = `${MONTH_NAMES[viewMonth]} ${viewYear}`;
+
+  // Pet avatars (shared top bar)
+  renderPetAvatars(document.getElementById('petAvatars'));
+
+  // Build day grid
+  const grid = document.getElementById('dayGrid');
+  grid.innerHTML = '';
+
+  const firstDay = new Date(viewYear, viewMonth, 1);
+  const lastDay = new Date(viewYear, viewMonth + 1, 0);
+  const startDow = firstDay.getDay(); // 0=Sun
+
+  // Days from previous month
+  const prevMonthLast = new Date(viewYear, viewMonth, 0);
+  for (let i = startDow - 1; i >= 0; i--) {
+    const d = new Date(viewYear, viewMonth, -i);
+    grid.appendChild(createDayCell(d, true));
+  }
+
+  // Current month days
+  for (let day = 1; day <= lastDay.getDate(); day++) {
+    const d = new Date(viewYear, viewMonth, day);
+    grid.appendChild(createDayCell(d, false));
+  }
+
+  // Fill remaining cells
+  const totalCells = grid.children.length;
+  const remaining = (Math.ceil(totalCells / 7) * 7) - totalCells;
+  for (let i = 1; i <= remaining; i++) {
+    const d = new Date(viewYear, viewMonth + 1, i);
+    grid.appendChild(createDayCell(d, true));
+  }
+
+  // Render selected day events
+  renderSelectedDayEvents();
+}
+
+function createDayCell(date, isOtherMonth) {
+  const cell = document.createElement('div');
+  cell.className = 'day-cell';
+  if (isOtherMonth) cell.classList.add('other-month');
+  if (sameDay(date, TODAY)) cell.classList.add('today');
+  if (sameDay(date, selectedDate)) cell.classList.add('selected');
+
+  const num = document.createElement('div');
+  num.className = 'day-number';
+  num.textContent = date.getDate();
+  cell.appendChild(num);
+
+  // Pet dots — show one dot per pet that has events on this day (using pet color)
+  const key = dateKey(date);
+  const evts = getFilteredEvents(key);
+  if (evts.length > 0) {
+    const dots = document.createElement('div');
+    dots.className = 'day-dots';
+    // Unique pets with events on this day, in consistent order
+    const petIds = [...new Set(evts.map(e => e.petId))];
+    const petDots = PETS.filter(p => petIds.includes(p.id)).slice(0, 3);
+    petDots.forEach(pet => {
+      const dot = document.createElement('div');
+      dot.className = 'day-dot';
+      dot.style.background = pet.color;
+      dots.appendChild(dot);
+    });
+    cell.appendChild(dots);
+  } else {
+    // Spacer to keep alignment
+    const spacer = document.createElement('div');
+    spacer.className = 'day-dots';
+    cell.appendChild(spacer);
+  }
+
+  // Single click: select
+  let clickTimer = null;
+  cell.addEventListener('click', (e) => {
+    if (clickTimer) {
+      clearTimeout(clickTimer);
+      clickTimer = null;
+      // Double click
+      cell.classList.add('expanding');
+      setTimeout(() => cell.classList.remove('expanding'), 300);
+      selectedDate = new Date(date);
+      singleDayDate = new Date(date);
+      previousMode = currentMode;
+      setTimeout(() => switchMode('single'), 150);
+      return;
+    }
+    clickTimer = setTimeout(() => {
+      clickTimer = null;
+      selectedDate = new Date(date);
+      renderCalendar();
+    }, 250);
+  });
+
+  return cell;
+}
+
+function renderSelectedDayEvents() {
+  const container = document.getElementById('selectedDayEvents');
+  const key = dateKey(selectedDate);
+  const evts = getFilteredEvents(key);
+
+  if (evts.length === 0) {
+    const dayNum = selectedDate.getDate();
+    const monthName = MONTH_NAMES[selectedDate.getMonth()];
+    container.innerHTML = `
+      <div class="selected-day-label">${monthName} ${dayNum}</div>
+      <div class="no-events-msg">No events</div>
+    `;
+    return;
+  }
+
+  const dayNum = selectedDate.getDate();
+  const monthName = MONTH_NAMES[selectedDate.getMonth()];
+  let html = `<div class="selected-day-label">${monthName} ${dayNum}</div>`;
+
+  evts.forEach(evt => {
+    const cat = CATEGORIES[evt.category];
+    const pet = getPetById(evt.petId);
+    html += `
+      <div class="cal-event-row">
+        <div class="cal-event-bar" style="background:${cat.color};"></div>
+        <div class="cal-event-info">
+          <div class="cal-event-title">${evt.title}</div>
+          <div class="cal-event-meta">${formatTimeAMPM(evt.time)} · ${pet.name}</div>
+        </div>
+      </div>
+    `;
+  });
+
+  container.innerHTML = html;
+}
+
+/* ============================================================
+   RENDER: MULTI-DAY TIMELINE (Mode 2)
+   ============================================================ */
+// Timeline zoom: 'day' (default), 'week', 'month'
+// Strategy: render ALL 90 days once with ALL detail levels present.
+// CSS classes show/hide and resize — no DOM rebuild, pure CSS transition.
+let timelineZoom = 'day';
+let timelineBuilt = false;
+
+function renderTimeline() {
+  const list = document.getElementById('multiDayList');
+
+  if (!timelineBuilt || list.dataset.filterKey !== (activePetFilter || 'all')) {
+    buildTimelineDom(list);
+    timelineBuilt = true;
+    list.dataset.filterKey = activePetFilter || 'all';
+  }
+
+  // Apply zoom class to the container — CSS handles everything
+  list.className = 'multi-day-list zoom-' + timelineZoom;
+}
+
+function buildTimelineDom(list) {
+  list.innerHTML = '';
+
+  // Zoom label (updates via CSS content, but we'll use JS)
+  const label = document.createElement('div');
+  label.className = 'zoom-label';
+  label.id = 'zoomLabel';
+  list.appendChild(label);
+  updateZoomLabel();
+
+  for (let i = 0; i < 365; i++) {
+    const d = new Date(TODAY);
+    d.setDate(d.getDate() - i);
+    const key = dateKey(d);
+    const evts = getFilteredEvents(key);
+    const isToday = dateKey(d) === dateKey(TODAY);
+
+    const row = document.createElement('div');
+    row.className = 'day-row';
+    row.dataset.dayIndex = i;
+
+    // ---- LEFT COLUMN ----
+    const left = document.createElement('div');
+    left.className = 'day-left';
+
+    const numEl = document.createElement('div');
+    numEl.className = 'day-num';
+    if (isToday) numEl.classList.add('today');
+    else if (i <= 1) numEl.classList.add('past-1');
+    else if (i <= 3) numEl.classList.add('past-2');
+    else if (i <= 7) numEl.classList.add('past-3');
+    else numEl.classList.add('past-4');
+    numEl.textContent = d.getDate();
+
+    const wdEl = document.createElement('div');
+    wdEl.className = 'day-weekday';
+    if (isToday) wdEl.classList.add('today');
+    wdEl.textContent = WEEKDAY_SHORT[d.getDay()];
+
+    left.appendChild(numEl);
+    left.appendChild(wdEl);
+
+    const dateRef = new Date(d);
+    left.style.cursor = 'pointer';
+    left.addEventListener('click', () => {
+      singleDayDate = dateRef;
+      previousMode = 'timeline';
+      switchMode('single');
+    });
+
+    // ---- RIGHT COLUMN: contains ALL three detail levels ----
+    const right = document.createElement('div');
+    right.className = 'day-right';
+
+    // Level: day (full detail)
+    const dayDetail = document.createElement('div');
+    dayDetail.className = 'detail-day';
+
+    // Level: week (compact titles)
+    const weekDetail = document.createElement('div');
+    weekDetail.className = 'detail-week';
+
+    // Level: month (dots only)
+    const monthDetail = document.createElement('div');
+    monthDetail.className = 'detail-month';
+
+    // Level: year (single color bar)
+    const yearDetail = document.createElement('div');
+    yearDetail.className = 'detail-year';
+
+    if (evts.length === 0) {
+      dayDetail.innerHTML = '<div class="empty-day-msg">No events</div>';
+      // week and month stay empty for no-event days
+    } else {
+      // Day level
+      evts.forEach(evt => {
+        const pet = getPetById(evt.petId);
+        const entry = document.createElement('div');
+        entry.className = 'evt-entry';
+        entry.innerHTML = `
+          <div class="evt-row">
+            <div class="evt-dot" style="background:${pet.color};"></div>
+            <div class="evt-body">
+              <div class="evt-title">${evt.title}</div>
+              <div class="evt-meta">${evt.time} · ${pet.name}</div>
+            </div>
+          </div>
+        `;
+        dayDetail.appendChild(entry);
+      });
+
+      // Week level
+      evts.forEach(evt => {
+        const pet = getPetById(evt.petId);
+        const entry = document.createElement('div');
+        entry.className = 'evt-entry-compact';
+        entry.innerHTML = `
+          <div class="evt-dot" style="background:${pet.color};"></div>
+          <span class="evt-title-compact">${evt.title}</span>
+        `;
+        weekDetail.appendChild(entry);
+      });
+
+      // Month level
+      const petIds = [...new Set(evts.map(e => e.petId))];
+      PETS.filter(p => petIds.includes(p.id)).forEach(pet => {
+        const count = evts.filter(e => e.petId === pet.id).length;
+        for (let c = 0; c < Math.min(count, 4); c++) {
+          const dot = document.createElement('div');
+          dot.className = 'evt-dot-month';
+          dot.style.background = pet.color;
+          monthDetail.appendChild(dot);
+        }
+      });
+
+      // Year level — single thin bar colored by most active pet
+      const topPet = PETS.filter(p => petIds.includes(p.id))
+        .sort((a, b) => evts.filter(e => e.petId === b.id).length - evts.filter(e => e.petId === a.id).length)[0];
+      if (topPet) {
+        const bar = document.createElement('div');
+        bar.className = 'evt-bar-year';
+        bar.style.background = topPet.color;
+        bar.style.width = `${Math.min(evts.length * 15, 80)}%`;
+        yearDetail.appendChild(bar);
+      }
+    }
+
+    right.appendChild(dayDetail);
+    right.appendChild(weekDetail);
+    right.appendChild(monthDetail);
+    right.appendChild(yearDetail);
+
+    row.appendChild(left);
+    row.appendChild(right);
+    list.appendChild(row);
+  }
+}
+
+function updateZoomLabel() {
+  const el = document.getElementById('zoomLabel');
+  if (el) {
+    const labels = { day: 'Day View', week: 'Week View', month: 'Month View', year: 'Year View' };
+    el.textContent = labels[timelineZoom];
+  }
+}
+
+/* ============================================================
+   RENDER: SINGLE-DAY TIMELINE (Mode 3)
+   ============================================================ */
+function renderSingleDay() {
+  const d = singleDayDate;
+
+  // Header
+  document.getElementById('singleDateNum').textContent = d.getDate();
+  document.getElementById('singleDateMonth').textContent = MONTH_NAMES[d.getMonth()];
+  document.getElementById('singleWeekday').textContent = WEEKDAY_FULL[d.getDay()];
+
+  // Heat strip
+  const heatBar = document.getElementById('heatBar');
+  heatBar.innerHTML = '';
+  const key = dateKey(d);
+  const evts = getFilteredEvents(key);
+
+  evts.forEach(evt => {
+    const cat = CATEGORIES[evt.category];
+    const pct = timeToPercent(evt.time);
+    const block = document.createElement('div');
+    block.className = 'heat-block';
+    block.style.background = cat.color;
+    block.style.left = pct + '%';
+    block.style.width = '3.5%';
+    heatBar.appendChild(block);
+  });
+
+  // Reset zoom
+  heatZoomLevel = 1;
+  heatBar.style.transform = `scaleX(1)`;
+
+  // Event cards
+  const cards = document.getElementById('eventCards');
+  cards.innerHTML = '';
+
+  if (evts.length === 0) {
+    cards.innerHTML = '<div class="no-events-single">No events recorded</div>';
+    return;
+  }
+
+  evts.forEach((evt, idx) => {
+    const cat = CATEGORIES[evt.category];
+    const pet = getPetById(evt.petId);
+
+    const card = document.createElement('div');
+    card.className = 'event-card';
+
+    let photosHtml = '';
+    if (evt.photos && evt.photos.length > 0) {
+      const photoItems = evt.photos.map((_, pi) => {
+        const style = PHOTO_STYLES[pi % PHOTO_STYLES.length];
+        return `<div class="photo-placeholder" style="background:${style.bg};">${style.emoji}</div>`;
+      }).join('');
+      photosHtml = `<div class="card-photos">${photoItems}</div>`;
+    }
+
+    card.innerHTML = `
+      <div class="card-accent" style="background:${cat.color};"></div>
+      <div class="card-top">
+        <div class="card-category" style="color:${cat.color};">${cat.label}</div>
+        <div class="card-time">${formatTimeAMPM(evt.time)}</div>
+      </div>
+      <div class="card-title">${evt.title}</div>
+      ${photosHtml}
+      <div class="card-pet">${pet.name}</div>
+    `;
+
+    cards.appendChild(card);
+  });
+}
+
+/* ============================================================
+   MODE SWITCHING
+   ============================================================ */
+function switchMode(newMode) {
+  const calView = document.getElementById('calendarView');
+  const tlView = document.getElementById('timelineView');
+  const sdView = document.getElementById('singleDayView');
+  const mainTopBar = document.getElementById('mainTopBar');
+  const singleTopBar = document.getElementById('singleTopBar');
+
+  const views = { calendar: calView, timeline: tlView, single: sdView };
+  const order = { calendar: 0, timeline: 1, single: 2 };
+
+  const oldMode = currentMode;
+  const goingForward = order[newMode] > order[oldMode];
+
+  // Toggle top bars: main for calendar/timeline, single for single-day
+  if (newMode === 'single') {
+    mainTopBar.style.display = 'none';
+    singleTopBar.style.display = 'flex';
+  } else {
+    mainTopBar.style.display = 'flex';
+    singleTopBar.style.display = 'none';
+  }
+
+  // Update toggle button state
+  const modeToggle = document.getElementById('modeToggle');
+  const isTimeline = (newMode === 'timeline' || newMode === 'single');
+  modeToggle.classList.toggle('active', isTimeline);
+  modeToggle.innerHTML = isTimeline ? '&#9783;' : '&#9776;';
+  modeToggle.title = isTimeline ? 'Switch to Calendar' : 'Switch to Timeline';
+
+  // Hide ALL views first
+  Object.values(views).forEach(v => v.className = 'view');
+
+  // Render the new view
+  if (newMode === 'calendar') renderCalendar();
+  else if (newMode === 'timeline') renderTimeline();
+  else if (newMode === 'single') renderSingleDay();
+
+  // Show new view with appropriate animation
+  const animClass = goingForward ? 'slide-from-right' : 'slide-from-left';
+  views[newMode].className = 'view active ' + animClass;
+  views[newMode].scrollTop = 0;
+
+  // Remove animation class after it finishes (so re-triggering works)
+  setTimeout(() => {
+    if (views[newMode]) views[newMode].className = 'view active';
+  }, 320);
+
+  previousMode = oldMode;
+  currentMode = newMode;
+}
+
+/* ============================================================
+   RENDER ALL (used when pet filter changes)
+   ============================================================ */
+function renderAll() {
+  timelineBuilt = false; // Force rebuild with new filter
+  if (currentMode === 'calendar') renderCalendar();
+  else if (currentMode === 'timeline') renderTimeline();
+  else if (currentMode === 'single') renderSingleDay();
+}
+
+/* ============================================================
+   EVENT HANDLERS
+   ============================================================ */
+
+// Mode toggle button (single button switches between calendar and timeline)
+document.getElementById('modeToggle').addEventListener('click', () => {
+  if (currentMode === 'calendar') {
+    switchMode('timeline');
+  } else {
+    switchMode('calendar');
+  }
+});
+
+// Month navigation
+document.getElementById('prevMonth').addEventListener('click', () => {
+  viewMonth--;
+  if (viewMonth < 0) { viewMonth = 11; viewYear--; }
+  renderCalendar();
+});
+
+document.getElementById('nextMonth').addEventListener('click', () => {
+  viewMonth++;
+  if (viewMonth > 11) { viewMonth = 0; viewYear++; }
+  renderCalendar();
+});
+
+// Back button in single-day view
+document.getElementById('backBtn').addEventListener('click', () => {
+  switchMode(previousMode || 'calendar');
+});
+
+// Timeline zoom via Ctrl+scroll / trackpad pinch
+// NO DOM rebuild — just swap CSS class on the container
+let zoomDebounce = null;
+document.getElementById('timelineView').addEventListener('wheel', (e) => {
+  if (currentMode !== 'timeline') return;
+  if (!e.ctrlKey && !e.shiftKey) return;
+  e.preventDefault();
+
+  clearTimeout(zoomDebounce);
+  zoomDebounce = setTimeout(() => {
+    const zoomLevels = ['day', 'week', 'month', 'year'];
+    const currentIdx = zoomLevels.indexOf(timelineZoom);
+    let newIdx = currentIdx;
+
+    if (e.deltaY > 0 && currentIdx < 2) newIdx = currentIdx + 1;
+    else if (e.deltaY < 0 && currentIdx > 0) newIdx = currentIdx - 1;
+
+    if (newIdx !== currentIdx) {
+      timelineZoom = zoomLevels[newIdx];
+      // Just swap the class — CSS transitions handle the animation
+      const list = document.getElementById('multiDayList');
+      list.className = 'multi-day-list zoom-' + timelineZoom;
+      updateZoomLabel();
+    }
+  }, 60);
+}, { passive: false });
+
+// Keyboard navigation
+document.getElementById('phone').addEventListener('keydown', (e) => {
+  if (currentMode !== 'single') return;
+
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+    e.preventDefault();
+    const direction = e.key === 'ArrowLeft' ? 1 : -1; // Left = previous day (older), Right = next day (newer)
+    const cards = document.getElementById('eventCards');
+    const exitClass = direction > 0 ? 'slide-right-exit' : 'slide-left-exit';
+    const enterClass = direction > 0 ? 'slide-right-enter' : 'slide-left-enter';
+
+    cards.classList.add(exitClass);
+    setTimeout(() => {
+      singleDayDate = new Date(singleDayDate);
+      singleDayDate.setDate(singleDayDate.getDate() - direction);
+      renderSingleDay();
+      const newCards = document.getElementById('eventCards');
+      newCards.classList.add(enterClass);
+      setTimeout(() => newCards.classList.remove(enterClass), 250);
+    }, 200);
+  }
+});
+
+// Heat strip zoom (mouse wheel)
+document.getElementById('heatBar').addEventListener('wheel', (e) => {
+  e.preventDefault();
+  const delta = e.deltaY > 0 ? -0.15 : 0.15;
+  heatZoomLevel = Math.max(1, Math.min(3, heatZoomLevel + delta));
+  document.getElementById('heatBar').style.transform = `scaleX(${heatZoomLevel})`;
+}, { passive: false });
+
+// Focus the phone on page load for keyboard events
+document.getElementById('phone').focus();
+
+// Refocus phone on click
+document.getElementById('phone').addEventListener('click', () => {
+  document.getElementById('phone').focus();
+});
+
+/* ============================================================
+   INITIAL RENDER
+   ============================================================ */
+renderCalendar();
+</script>
+
+</body>
+</html>

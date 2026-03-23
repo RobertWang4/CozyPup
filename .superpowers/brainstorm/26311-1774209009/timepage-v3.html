@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CozyPup Calendar — v3</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=Inter:wght@300;400;500&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #111;
+    color: #e0e0e0;
+    font-family: 'Inter', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+  }
+
+  h1 { font-weight: 300; font-size: 24px; color: #fff; margin-bottom: 6px; }
+  .subtitle { color: #666; font-size: 13px; margin-bottom: 48px; }
+
+  .phones { display: flex; gap: 40px; flex-wrap: wrap; justify-content: center; }
+
+  .phone-wrap { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+  .phone-label { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: #555; }
+
+  .phone {
+    width: 340px;
+    height: 700px;
+    background: #F5EBE0;
+    border-radius: 40px;
+    overflow: hidden;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.5);
+    position: relative;
+  }
+
+  .scroll {
+    padding-top: 52px;
+    height: 100%;
+    overflow-y: auto;
+    scrollbar-width: none;
+  }
+  .scroll::-webkit-scrollbar { display: none; }
+
+  /* Shared top bar */
+  .topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    margin-bottom: 24px;
+  }
+
+  .tab-pill {
+    display: flex;
+    background: #E6D5C5;
+    border-radius: 16px;
+    padding: 2px;
+  }
+  .tab-pill span {
+    padding: 4px 12px;
+    font-size: 11px;
+    color: #8B7355;
+    border-radius: 14px;
+    transition: all 0.2s;
+  }
+  .tab-pill span.active {
+    background: #FBF6F1;
+    color: #3D2C1E;
+    font-weight: 500;
+  }
+
+  .close-btn {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    background: #FBF6F1;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; color: #8B7355;
+  }
+
+  /* ========================================
+     MULTI-DAY: Date on LEFT, events on RIGHT
+     Timepage-inspired vertical layout
+     ======================================== */
+
+  .multi-day {
+    padding: 0 0 0 0;
+  }
+
+  .day-row {
+    display: flex;
+    padding: 0 20px;
+    gap: 0;
+    margin-bottom: 0;
+  }
+
+  /* Left: date column */
+  .day-left {
+    width: 64px;
+    flex-shrink: 0;
+    padding-top: 2px;
+    position: relative;
+  }
+
+  .day-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    color: #3D2C1E;
+    line-height: 1;
+    font-weight: 400;
+  }
+
+  .day-num.today {
+    color: #E8835C;
+  }
+
+  .day-num.past {
+    color: #B8A48E;
+    font-size: 28px;
+  }
+
+  .day-name {
+    font-size: 10px;
+    color: #B8A48E;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 2px;
+  }
+
+  .day-name.today {
+    color: #E8835C;
+  }
+
+  /* Right: events column */
+  .day-right {
+    flex: 1;
+    border-left: 1px solid #E6D5C5;
+    padding-left: 16px;
+    padding-bottom: 24px;
+    min-height: 60px;
+  }
+
+  .day-right.last {
+    border-left-color: transparent;
+  }
+
+  .evt {
+    padding: 8px 0;
+  }
+
+  .evt + .evt {
+    border-top: 1px solid #EDE3D8;
+  }
+
+  .evt-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .evt-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    margin-top: 5px;
+    flex-shrink: 0;
+  }
+
+  .evt-body { flex: 1; }
+
+  .evt-title {
+    font-size: 13px;
+    color: #3D2C1E;
+    line-height: 1.4;
+  }
+
+  .evt-meta {
+    font-size: 11px;
+    color: #B8A48E;
+    margin-top: 1px;
+  }
+
+  .empty-day {
+    font-size: 12px;
+    color: #C4AE96;
+    font-style: italic;
+    padding: 8px 0;
+  }
+
+  /* ========================================
+     SINGLE-DAY: Full detail view
+     ======================================== */
+
+  .single-top {
+    padding: 0 20px;
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 6px;
+  }
+
+  .back { font-size: 20px; color: #8B7355; cursor: pointer; }
+
+  .single-date-big {
+    font-family: 'Playfair Display', serif;
+    font-size: 36px;
+    color: #3D2C1E;
+    font-weight: 400;
+  }
+
+  .single-weekday {
+    font-size: 13px;
+    color: #B8A48E;
+    padding: 0 20px;
+    margin-bottom: 20px;
+  }
+
+  /* Heat strip */
+  .heat-wrap { padding: 0 20px; margin-bottom: 28px; }
+
+  .heat-bar {
+    height: 28px;
+    background: #EDE3D8;
+    border-radius: 8px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hb {
+    position: absolute;
+    top: 5px; bottom: 5px;
+    border-radius: 4px;
+  }
+
+  .heat-times {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0 0;
+    font-size: 9px;
+    color: #C4AE96;
+  }
+
+  /* Event cards — generous whitespace, left accent only */
+  .ecard {
+    margin: 0 20px 12px;
+    background: #FBF6F1;
+    border-radius: 14px;
+    padding: 14px 16px;
+    position: relative;
+  }
+
+  .ecard-accent {
+    position: absolute;
+    left: 0; top: 12px; bottom: 12px;
+    width: 3px;
+    border-radius: 0 2px 2px 0;
+  }
+
+  .ecard-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+  }
+
+  .ecard-cat {
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+  }
+
+  .ecard-time {
+    font-size: 11px;
+    color: #B8A48E;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .ecard-title {
+    font-size: 14px;
+    color: #3D2C1E;
+    line-height: 1.5;
+  }
+
+  .ecard-pet {
+    font-size: 11px;
+    color: #B8A48E;
+    margin-top: 3px;
+  }
+
+  /* Photo grid */
+  .photos {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5px;
+    margin-top: 10px;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .photo-ph {
+    aspect-ratio: 4/3;
+    background: linear-gradient(145deg, #E8D5C4, #D9C4B0);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+  }
+
+  .hint {
+    text-align: center;
+    font-size: 10px;
+    color: #C4AE96;
+    padding: 20px;
+    letter-spacing: 0.3px;
+  }
+
+  /* Flow */
+  .flow {
+    margin-top: 48px;
+    max-width: 680px;
+    width: 100%;
+  }
+  .flow h2 { font-weight: 300; font-size: 16px; color: #fff; margin-bottom: 12px; }
+  .flow-box {
+    background: #1a1a2e;
+    border-radius: 10px;
+    padding: 20px;
+    font-family: monospace;
+    font-size: 12px;
+    line-height: 2.2;
+  }
+  .g { color: #7BAE7F; } .b { color: #6BA3BE; } .o { color: #E8835C; } .d { color: #555; }
+</style>
+</head>
+<body>
+
+<h1>CozyPup Calendar — Timepage Style</h1>
+<p class="subtitle">Date on left, events on right. Generous whitespace. Serif dates. Minimal chrome.</p>
+
+<div class="phones">
+
+  <!-- ============ MULTI-DAY ============ -->
+  <div class="phone-wrap">
+    <div class="phone-label">Multi-day Timeline</div>
+    <div class="phone">
+      <div class="scroll">
+
+        <div class="topbar">
+          <div class="tab-pill">
+            <span>Calendar</span>
+            <span class="active">Timeline</span>
+          </div>
+          <div class="close-btn">✕</div>
+        </div>
+
+        <div class="multi-day">
+
+          <!-- Today -->
+          <div class="day-row">
+            <div class="day-left">
+              <div class="day-num today">22</div>
+              <div class="day-name today">Sat</div>
+            </div>
+            <div class="day-right">
+              <div class="evt">
+                <div class="evt-row">
+                  <div class="evt-dot" style="background:#7BAE7F;"></div>
+                  <div class="evt-body">
+                    <div class="evt-title">Fed 200g Royal Canin</div>
+                    <div class="evt-meta">9:00 · Doudu</div>
+                  </div>
+                </div>
+              </div>
+              <div class="evt">
+                <div class="evt-row">
+                  <div class="evt-dot" style="background:#E8835C;"></div>
+                  <div class="evt-body">
+                    <div class="evt-title">Park walk — played fetch 30 min</div>
+                    <div class="evt-meta">10:30 · Doudu</div>
+                  </div>
+                </div>
+              </div>
+              <div class="evt">
+                <div class="evt-row">
+                  <div class="evt-dot" style="background:#6BA3BE;"></div>
+                  <div class="evt-body">
+                    <div class="evt-title">Rabies vaccine booster</div>
+                    <div class="evt-meta">15:00 · Mimi</div>
+                  </div>
+                </div>
+              </div>
+              <div class="evt">
+                <div class="evt-row">
+                  <div class="evt-dot" style="background:#7BAE7F;"></div>
+                  <div class="evt-body">
+                    <div class="evt-title">Evening meal + chicken treat</div>
+                    <div class="evt-meta">18:00 · Doudu</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Yesterday -->
+          <div class="day-row">
+            <div class="day-left">
+              <div class="day-num past">21</div>
+              <div class="day-name">Fri</div>
+            </div>
+            <div class="day-right">
+              <div class="evt">
+                <div class="evt-row">
+                  <div class="evt-dot" style="background:#7BAE7F;"></div>
+                  <div class="evt-body">
+                    <div class="evt-title">Morning meal</div>
+                    <div class="evt-meta">8:30 · Doudu</div>
+                  </div>
+                </div>
+              </div>
+              <div class="evt">
+                <div class="evt-row">
+                  <div class="evt-dot" style="background:#9B7ED8;"></div>
+                  <div class="evt-body">
+                    <div class="evt-title">Grooming bath</div>
+                    <div class="evt-meta">14:00 · Doudu</div>
+                  </div>
+                </div>
+              </div>
+              <div class="evt">
+                <div class="evt-row">
+                  <div class="evt-dot" style="background:#7BAE7F;"></div>
+                  <div class="evt-body">
+                    <div class="evt-title">Evening meal 180g</div>
+                    <div class="evt-meta">17:30 · Doudu</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mar 20 -->
+          <div class="day-row">
+            <div class="day-left">
+              <div class="day-num past">20</div>
+              <div class="day-name">Thu</div>
+            </div>
+            <div class="day-right">
+              <div class="evt">
+                <div class="evt-row">
+                  <div class="evt-dot" style="background:#D35F5F;"></div>
+                  <div class="evt-body">
+                    <div class="evt-title">Vomited twice after eating</div>
+                    <div class="evt-meta">11:00 · Doudu</div>
+                  </div>
+                </div>
+              </div>
+              <div class="evt">
+                <div class="evt-row">
+                  <div class="evt-dot" style="background:#6BA3BE;"></div>
+                  <div class="evt-body">
+                    <div class="evt-title">Called vet — advised monitoring</div>
+                    <div class="evt-meta">16:00 · Doudu</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mar 19 -->
+          <div class="day-row">
+            <div class="day-left">
+              <div class="day-num past">19</div>
+              <div class="day-name">Wed</div>
+            </div>
+            <div class="day-right last">
+              <div class="empty-day">No events</div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="hint">scroll for older days · tap date to see full day</div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SINGLE-DAY ============ -->
+  <div class="phone-wrap">
+    <div class="phone-label">Single-day Timeline</div>
+    <div class="phone">
+      <div class="scroll">
+
+        <div class="topbar">
+          <div class="back">‹</div>
+          <div style="flex:1;"></div>
+          <div class="close-btn">✕</div>
+        </div>
+
+        <div class="single-top">
+          <div class="single-date-big">22</div>
+          <div style="font-family: 'Playfair Display', serif; font-size: 20px; color: #8B7355;">March</div>
+        </div>
+        <div class="single-weekday">Saturday</div>
+
+        <!-- Heat strip -->
+        <div class="heat-wrap">
+          <div class="heat-bar">
+            <div class="hb" style="left:18%; width:3.5%; background:#7BAE7F;"></div>
+            <div class="hb" style="left:27%; width:6%; background:#E8835C;"></div>
+            <div class="hb" style="left:55%; width:3.5%; background:#6BA3BE;"></div>
+            <div class="hb" style="left:73%; width:3.5%; background:#7BAE7F;"></div>
+          </div>
+          <div class="heat-times">
+            <span>6am</span><span>9</span><span>12pm</span><span>3</span><span>6pm</span><span>9pm</span>
+          </div>
+        </div>
+
+        <!-- Cards -->
+        <div class="ecard">
+          <div class="ecard-accent" style="background:#7BAE7F;"></div>
+          <div class="ecard-top">
+            <div class="ecard-cat" style="color:#7BAE7F;">Diet</div>
+            <div class="ecard-time">9:00 AM</div>
+          </div>
+          <div class="ecard-title">Fed 200g Royal Canin</div>
+          <div class="ecard-pet">Doudu</div>
+        </div>
+
+        <div class="ecard">
+          <div class="ecard-accent" style="background:#E8835C;"></div>
+          <div class="ecard-top">
+            <div class="ecard-cat" style="color:#E8835C;">Daily</div>
+            <div class="ecard-time">10:30 AM</div>
+          </div>
+          <div class="ecard-title">Went to the park! Played fetch and chased squirrels by the lake.</div>
+          <div class="photos">
+            <div class="photo-ph">🌳</div>
+            <div class="photo-ph">🐕</div>
+          </div>
+          <div class="ecard-pet">Doudu</div>
+        </div>
+
+        <div class="ecard">
+          <div class="ecard-accent" style="background:#6BA3BE;"></div>
+          <div class="ecard-top">
+            <div class="ecard-cat" style="color:#6BA3BE;">Medical</div>
+            <div class="ecard-time">3:00 PM</div>
+          </div>
+          <div class="ecard-title">Vaccination — Rabies booster at Dr. Wang's clinic</div>
+          <div class="ecard-pet">Mimi</div>
+        </div>
+
+        <div class="ecard">
+          <div class="ecard-accent" style="background:#7BAE7F;"></div>
+          <div class="ecard-top">
+            <div class="ecard-cat" style="color:#7BAE7F;">Diet</div>
+            <div class="ecard-time">6:00 PM</div>
+          </div>
+          <div class="ecard-title">Evening meal — 180g kibble + chicken treat</div>
+          <div class="ecard-pet">Doudu</div>
+        </div>
+
+        <div class="hint">pinch to zoom time strip · swipe left/right for adjacent days</div>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Flow -->
+<div class="flow">
+  <h2>Navigation</h2>
+  <div class="flow-box">
+    <span class="g">Calendar</span> <span class="d">── tab pill ────────▸</span> <span class="b">Multi-day</span> <span class="d">(date left, events right)</span><br>
+    <span class="g">Calendar</span> <span class="d">── double tap date ──▸</span> <span class="o">Single-day</span> <span class="d">(expand animation)</span><br>
+    <span class="b">Multi-day</span> <span class="d">── tap date number ──▸</span> <span class="o">Single-day</span><br>
+    <span class="o">Single-day</span> <span class="d">── ‹ back ────────────▸</span> <span class="d">previous view</span>
+  </div>
+</div>
+
+</body>
+</html>

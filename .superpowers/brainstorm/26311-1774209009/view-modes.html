@@ -1,0 +1,203 @@
+<h2>Three View Modes</h2>
+<p class="subtitle">Calendar Drawer has 3 modes: current month grid, multi-day timeline (tab switch), single-day timeline (double-tap)</p>
+
+<div style="display: flex; flex-direction: column; gap: 32px; max-width: 400px; margin: 0 auto;">
+
+  <!-- Mode 1: Current Calendar -->
+  <div>
+    <div class="label" style="margin-bottom: 8px;">Mode 1: Calendar (current, default)</div>
+    <div style="background: #F5EBE0; border-radius: 20px; padding: 16px; border: 2px solid #E6D5C5;">
+      <!-- Pet avatars -->
+      <div style="display: flex; gap: 12px; margin-bottom: 12px;">
+        <div style="width: 40px; height: 40px; border-radius: 50%; background: #E8835C33; border: 2px solid #E8835C; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #E8835C;">D</div>
+        <div style="width: 40px; height: 40px; border-radius: 50%; background: #6BA3BE33; border: 2px solid #6BA3BE55; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #6BA3BE;">M</div>
+      </div>
+
+      <!-- Tab toggle -->
+      <div style="display: flex; background: #E6D5C5; border-radius: 8px; padding: 2px; margin-bottom: 12px;">
+        <div style="flex: 1; text-align: center; padding: 6px 0; background: #FBF6F1; border-radius: 6px; font-size: 13px; color: #3D2C1E; font-weight: 500;">Calendar</div>
+        <div style="flex: 1; text-align: center; padding: 6px 0; font-size: 13px; color: #8B7355;">Timeline</div>
+      </div>
+
+      <!-- Month header -->
+      <div style="display: flex; justify-content: space-between; align-items: center; padding: 0 4px; margin-bottom: 8px;">
+        <span style="color: #8B7355; font-size: 13px;">&lt;</span>
+        <span style="font-family: serif; font-size: 16px; color: #3D2C1E;">March 2026</span>
+        <span style="color: #8B7355; font-size: 13px;">&gt;</span>
+      </div>
+
+      <!-- Calendar grid (mini) -->
+      <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center; font-size: 11px; margin-bottom: 4px;">
+        <div style="color: #B8A48E;">Su</div><div style="color: #B8A48E;">Mo</div><div style="color: #B8A48E;">Tu</div><div style="color: #B8A48E;">We</div><div style="color: #B8A48E;">Th</div><div style="color: #B8A48E;">Fr</div><div style="color: #B8A48E;">Sa</div>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center; font-size: 12px; color: #3D2C1E;">
+        <div style="padding: 6px 0; color: #B8A48E;">23</div><div style="padding: 6px 0; color: #B8A48E;">24</div><div style="padding: 6px 0; color: #B8A48E;">25</div><div style="padding: 6px 0; color: #B8A48E;">26</div><div style="padding: 6px 0; color: #B8A48E;">27</div><div style="padding: 6px 0; color: #B8A48E;">28</div><div style="padding: 6px 0;">1</div>
+        <div style="padding: 6px 0;">2</div><div style="padding: 6px 0;">3</div><div style="padding: 6px 0;">4</div><div style="padding: 6px 0;">5</div><div style="padding: 6px 0;">6</div><div style="padding: 6px 0;">7</div><div style="padding: 6px 0;">8</div>
+        <div style="padding: 6px 0;">9</div><div style="padding: 6px 0;">10</div><div style="padding: 6px 0;">11</div><div style="padding: 6px 0;">12</div><div style="padding: 6px 0;">13</div><div style="padding: 6px 0;">14</div><div style="padding: 6px 0;">15</div>
+        <div style="padding: 6px 0;">16</div><div style="padding: 6px 0;">17</div><div style="padding: 6px 0;">18</div><div style="padding: 6px 0;">19</div><div style="padding: 6px 0;">20</div><div style="padding: 6px 0;">21</div><div style="padding: 6px 0; background: #E8835C22; border-radius: 50%;">22</div>
+        <div style="padding: 6px 0;">23</div><div style="padding: 6px 0;">24</div><div style="padding: 6px 0;">25</div><div style="padding: 6px 0;">26</div><div style="padding: 6px 0;">27</div><div style="padding: 6px 0;">28</div><div style="padding: 6px 0;">29</div>
+      </div>
+
+      <!-- Events below -->
+      <div style="margin-top: 12px; background: #FBF6F1; border-radius: 12px; padding: 10px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <div style="width: 3px; height: 28px; background: #7BAE7F; border-radius: 2px;"></div>
+          <div style="font-size: 13px; color: #3D2C1E;">Fed 200g Royal Canin</div>
+        </div>
+      </div>
+
+      <div style="text-align: center; font-size: 11px; color: #B8A48E; margin-top: 8px;">Single tap = show events &nbsp;|&nbsp; Double tap = enter day timeline</div>
+    </div>
+  </div>
+
+  <!-- Mode 2: Multi-day Timeline -->
+  <div>
+    <div class="label" style="margin-bottom: 8px;">Mode 2: Multi-day Timeline (tab switch to "Timeline")</div>
+    <div style="background: #F5EBE0; border-radius: 20px; padding: 16px; border: 2px solid #E6D5C5;">
+      <!-- Tab toggle -->
+      <div style="display: flex; background: #E6D5C5; border-radius: 8px; padding: 2px; margin-bottom: 16px;">
+        <div style="flex: 1; text-align: center; padding: 6px 0; font-size: 13px; color: #8B7355;">Calendar</div>
+        <div style="flex: 1; text-align: center; padding: 6px 0; background: #FBF6F1; border-radius: 6px; font-size: 13px; color: #3D2C1E; font-weight: 500;">Timeline</div>
+      </div>
+
+      <!-- Day sections -->
+      <div style="font-family: serif; font-size: 18px; color: #3D2C1E; margin-bottom: 4px;">Today, Mar 22</div>
+      <div style="font-size: 12px; color: #B8A48E; margin-bottom: 12px;">Saturday</div>
+
+      <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px;">
+        <div style="display: flex; gap: 10px; align-items: flex-start;">
+          <div style="font-size: 11px; color: #B8A48E; width: 36px; padding-top: 2px; text-align: right;">9:00</div>
+          <div style="width: 6px; height: 6px; border-radius: 50%; background: #7BAE7F; margin-top: 5px; flex-shrink: 0;"></div>
+          <div style="font-size: 13px; color: #3D2C1E; flex: 1;">Fed 200g Royal Canin <span style="color: #B8A48E;">· Doudu</span></div>
+        </div>
+        <div style="display: flex; gap: 10px; align-items: flex-start;">
+          <div style="font-size: 11px; color: #B8A48E; width: 36px; padding-top: 2px; text-align: right;">10:30</div>
+          <div style="width: 6px; height: 6px; border-radius: 50%; background: #E8835C; margin-top: 5px; flex-shrink: 0;"></div>
+          <div style="font-size: 13px; color: #3D2C1E; flex: 1;">Park walk <span style="color: #B8A48E;">· Doudu</span></div>
+        </div>
+        <div style="display: flex; gap: 10px; align-items: flex-start;">
+          <div style="font-size: 11px; color: #B8A48E; width: 36px; padding-top: 2px; text-align: right;">15:00</div>
+          <div style="width: 6px; height: 6px; border-radius: 50%; background: #6BA3BE; margin-top: 5px; flex-shrink: 0;"></div>
+          <div style="font-size: 13px; color: #3D2C1E; flex: 1;">Rabies vaccine <span style="color: #B8A48E;">· Mimi</span></div>
+        </div>
+      </div>
+
+      <div style="height: 1px; background: #E6D5C5; margin-bottom: 16px;"></div>
+
+      <div style="font-family: serif; font-size: 18px; color: #3D2C1E; margin-bottom: 4px;">Yesterday, Mar 21</div>
+      <div style="font-size: 12px; color: #B8A48E; margin-bottom: 12px;">Friday</div>
+
+      <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px;">
+        <div style="display: flex; gap: 10px; align-items: flex-start;">
+          <div style="font-size: 11px; color: #B8A48E; width: 36px; padding-top: 2px; text-align: right;">8:30</div>
+          <div style="width: 6px; height: 6px; border-radius: 50%; background: #7BAE7F; margin-top: 5px; flex-shrink: 0;"></div>
+          <div style="font-size: 13px; color: #3D2C1E; flex: 1;">Morning meal <span style="color: #B8A48E;">· Doudu</span></div>
+        </div>
+        <div style="display: flex; gap: 10px; align-items: flex-start;">
+          <div style="font-size: 11px; color: #B8A48E; width: 36px; padding-top: 2px; text-align: right;">14:00</div>
+          <div style="width: 6px; height: 6px; border-radius: 50%; background: #9B7ED8; margin-top: 5px; flex-shrink: 0;"></div>
+          <div style="font-size: 13px; color: #3D2C1E; flex: 1;">Grooming bath <span style="color: #B8A48E;">· Doudu</span></div>
+        </div>
+      </div>
+
+      <div style="height: 1px; background: #E6D5C5; margin-bottom: 16px;"></div>
+
+      <div style="font-family: serif; font-size: 18px; color: #8B7355; margin-bottom: 4px;">Mar 20</div>
+      <div style="font-size: 12px; color: #B8A48E; margin-bottom: 12px;">Thursday</div>
+      <div style="display: flex; gap: 10px; align-items: flex-start;">
+        <div style="font-size: 11px; color: #B8A48E; width: 36px; padding-top: 2px; text-align: right;">11:00</div>
+        <div style="width: 6px; height: 6px; border-radius: 50%; background: #D35F5F; margin-top: 5px; flex-shrink: 0;"></div>
+        <div style="font-size: 13px; color: #3D2C1E; flex: 1;">Vomited twice <span style="color: #B8A48E;">· Doudu</span></div>
+      </div>
+
+      <div style="text-align: center; font-size: 11px; color: #B8A48E; margin-top: 16px;">Compact multi-day overview &nbsp;|&nbsp; Tap a day to expand</div>
+    </div>
+  </div>
+
+  <!-- Mode 3: Single-day Timeline -->
+  <div>
+    <div class="label" style="margin-bottom: 8px;">Mode 3: Single-day Timeline (double-tap a date, or tap a day in Mode 2)</div>
+    <div style="background: #F5EBE0; border-radius: 20px; padding: 16px; border: 2px solid #E6D5C5;">
+      <!-- Back + date header -->
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+        <div style="font-size: 14px; color: #8B7355;">&larr;</div>
+        <div>
+          <div style="font-family: serif; font-size: 20px; color: #3D2C1E;">March 22</div>
+          <div style="font-size: 12px; color: #B8A48E;">Saturday</div>
+        </div>
+      </div>
+
+      <!-- Time at top as horizontal bar -->
+      <div style="display: flex; justify-content: space-between; font-size: 10px; color: #B8A48E; padding: 0 4px; margin-bottom: 4px;">
+        <span>6am</span><span>9am</span><span>12pm</span><span>3pm</span><span>6pm</span><span>9pm</span>
+      </div>
+      <div style="position: relative; height: 24px; background: #E6D5C533; border-radius: 6px; margin-bottom: 20px;">
+        <!-- Event markers on time bar -->
+        <div style="position: absolute; left: 20%; top: 4px; width: 8px; height: 16px; background: #7BAE7F; border-radius: 3px;" title="9:00 Diet"></div>
+        <div style="position: absolute; left: 30%; top: 4px; width: 16px; height: 16px; background: #E8835C; border-radius: 3px;" title="10:30 Park"></div>
+        <div style="position: absolute; left: 60%; top: 4px; width: 8px; height: 16px; background: #6BA3BE; border-radius: 3px;" title="15:00 Vaccine"></div>
+        <div style="position: absolute; left: 80%; top: 4px; width: 8px; height: 16px; background: #7BAE7F; border-radius: 3px;" title="18:00 Diet"></div>
+      </div>
+
+      <!-- Full event cards (scrollable) -->
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <!-- Card 1 -->
+        <div style="background: #FBF6F1; border-radius: 14px; padding: 14px; border-left: 3px solid #7BAE7F;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="font-size: 12px; color: #7BAE7F; font-weight: 500;">Diet</div>
+            <div style="font-size: 11px; color: #B8A48E;">9:00 AM</div>
+          </div>
+          <div style="font-size: 15px; color: #3D2C1E; margin-top: 4px;">Fed 200g Royal Canin</div>
+          <div style="font-size: 12px; color: #B8A48E; margin-top: 2px;">Doudu</div>
+        </div>
+
+        <!-- Card 2 with photo -->
+        <div style="background: #FBF6F1; border-radius: 14px; padding: 14px; border-left: 3px solid #E8835C;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="font-size: 12px; color: #E8835C; font-weight: 500;">Daily</div>
+            <div style="font-size: 11px; color: #B8A48E;">10:30 AM</div>
+          </div>
+          <div style="font-size: 15px; color: #3D2C1E; margin-top: 4px;">Went to the park together! Had a great time chasing squirrels and playing fetch.</div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 10px;">
+            <div style="background: #E6D5C5; height: 100px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #8B7355; font-size: 12px;">Photo</div>
+            <div style="background: #E6D5C5; height: 100px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #8B7355; font-size: 12px;">Photo</div>
+          </div>
+          <div style="font-size: 12px; color: #B8A48E; margin-top: 6px;">Doudu</div>
+        </div>
+
+        <!-- Card 3 -->
+        <div style="background: #FBF6F1; border-radius: 14px; padding: 14px; border-left: 3px solid #6BA3BE;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="font-size: 12px; color: #6BA3BE; font-weight: 500;">Medical</div>
+            <div style="font-size: 11px; color: #B8A48E;">3:00 PM</div>
+          </div>
+          <div style="font-size: 15px; color: #3D2C1E; margin-top: 4px;">Vaccination - Rabies booster shot</div>
+          <div style="font-size: 12px; color: #B8A48E; margin-top: 2px;">Mimi</div>
+        </div>
+
+        <!-- Card 4 -->
+        <div style="background: #FBF6F1; border-radius: 14px; padding: 14px; border-left: 3px solid #7BAE7F;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="font-size: 12px; color: #7BAE7F; font-weight: 500;">Diet</div>
+            <div style="font-size: 11px; color: #B8A48E;">6:00 PM</div>
+          </div>
+          <div style="font-size: 15px; color: #3D2C1E; margin-top: 4px;">Evening meal - 180g + chicken treat</div>
+          <div style="font-size: 12px; color: #B8A48E; margin-top: 2px;">Doudu</div>
+        </div>
+      </div>
+
+      <div style="text-align: center; font-size: 11px; color: #B8A48E; margin-top: 16px;">Pinch to zoom time bar &nbsp;|&nbsp; Swipe left/right for prev/next day</div>
+    </div>
+  </div>
+
+</div>
+
+<div style="max-width: 400px; margin: 24px auto 0;">
+  <h3>Navigation Flow</h3>
+  <div style="background: #1a1a2e; color: #e0e0e0; border-radius: 12px; padding: 20px; font-family: monospace; font-size: 13px; line-height: 2;">
+    <div><span style="color: #7BAE7F;">Calendar</span> ──tab switch──▶ <span style="color: #6BA3BE;">Multi-day Timeline</span></div>
+    <div><span style="color: #7BAE7F;">Calendar</span> ──double tap──▶ <span style="color: #E8835C;">Single-day Timeline</span></div>
+    <div><span style="color: #6BA3BE;">Multi-day</span> ──tap a day───▶ <span style="color: #E8835C;">Single-day Timeline</span></div>
+    <div><span style="color: #E8835C;">Single-day</span> ──← back─────▶ <span style="color: #6BA3BE;">Multi-day</span> or <span style="color: #7BAE7F;">Calendar</span></div>
+  </div>
+</div>

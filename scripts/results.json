@@ -1,0 +1,1140 @@
+{
+  "openai/deepseek-v3.2": {
+    "T01": {
+      "passed": false,
+      "scores": {
+        "tool_call": 0,
+        "schema": 0,
+        "category": 0,
+        "pet_id": 0
+      },
+      "tool_calls": [],
+      "text_preview": "我看到您记录了布丁的饮食情况。为了帮您准确记录到日历中，我需要确认一下具体信息：\n\n1. **喂食时间**：是今天什么时候喂的呢？（比如早上、中午、晚上）\n2. **喂食量**：大概喂了多少克或多少杯狗粮？\n\n这样我就能帮您把这次喂食记录到布丁的健康日历里，方便您追踪它的饮食习惯了。\n\n另外，如果您想为布丁设置定时的喂食提醒，我也可以帮您安排哦！",
+      "latency_ms": 5923,
+      "error": ""
+    },
+    "T02": {
+      "passed": true,
+      "scores": {
+        "tool_call": 1.0,
+        "schema": 1.0,
+        "category": 1.0,
+        "time_extraction": 1.0,
+        "pet_id": 1.0
+      },
+      "tool_calls": [
+        {
+          "name": "create_calendar_event",
+          "args": {
+            "pet_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "event_date": "2026-03-22",
+            "event_time": "08:00",
+            "title": "接种狂犬疫苗",
+            "category": "vaccine",
+            "raw_text": "布丁今天早上8点打了狂犬疫苗"
+          }
+        }
+      ],
+      "text_preview": "我来帮您记录布丁今天早上8点接种狂犬疫苗的事件。\n\n",
+      "latency_ms": 6914,
+      "error": ""
+    },
+    "T03": {
+      "passed": false,
+      "scores": {
+        "tool_call": 0,
+        "schema": 0,
+        "date_range": 0,
+        "category_filter": 0
+      },
+      "tool_calls": [
+        {
+          "name": "list_pets",
+          "args": {}
+        }
+      ],
+      "text_preview": "我来帮您查询布丁上个月的喂食记录。首先让我获取您的宠物列表，然后查询布丁的日历事件。\n\n",
+      "latency_ms": 3246,
+      "error": ""
+    },
+    "T04": {
+      "passed": true,
+      "scores": {
+        "tool_call": 1.0,
+        "schema": 1.0,
+        "info_extraction": 1.0
+      },
+      "tool_calls": [
+        {
+          "name": "create_pet",
+          "args": {
+            "name": "大黄",
+            "species": "dog",
+            "breed": "金毛寻回犬",
+            "gender": "male",
+            "weight": 30
+          }
+        }
+      ],
+      "text_preview": "恭喜您迎来新成员大黄！听起来是一只非常可爱的金毛寻回犬。我来帮您为它创建一个宠物档案。\n\n",
+      "latency_ms": 5699,
+      "error": ""
+    },
+    "T05": {
+      "passed": true,
+      "scores": {
+        "tool_call": 1.0,
+        "schema": 1.0,
+        "time_accuracy": 1.0,
+        "type_accuracy": 1.0
+      },
+      "tool_calls": [
+        {
+          "name": "create_reminder",
+          "args": {
+            "pet_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "type": "vaccine",
+            "title": "带布丁打疫苗",
+            "trigger_at": "2026-03-23T15:00:00",
+            "body": "记得带布丁去宠物医院接种疫苗"
+          }
+        }
+      ],
+      "text_preview": "我来帮您为布丁设置一个明天下午3点打疫苗的提醒。\n\n",
+      "latency_ms": 6764,
+      "error": ""
+    },
+    "T06": {
+      "passed": true,
+      "scores": {
+        "tool_call": 1.0,
+        "query_quality": 1.0
+      },
+      "tool_calls": [
+        {
+          "name": "search_places",
+          "args": {
+            "query": "宠物医院 兽医诊所"
+          }
+        }
+      ],
+      "text_preview": "我来帮您查找附近的宠物医院。\n\n",
+      "latency_ms": 4806,
+      "error": ""
+    },
+    "T07": {
+      "passed": false,
+      "scores": {
+        "no_false_tool_call": 0.0,
+        "response_quality": 1.0,
+        "disclaimer": 1.0
+      },
+      "tool_calls": [
+        {
+          "name": "update_pet_profile",
+          "args": {
+            "pet_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "info": {
+              "diet_notes": "用户咨询金毛犬适合的狗粮品牌，推荐了皇家、希尔斯、渴望、爱肯拿、伯纳天纯、冠能等大型犬专用粮"
+            }
+          }
+        }
+      ],
+      "text_preview": "金毛犬作为大型犬，需要营养均衡的狗粮来支持关节健康、维持理想体重，并保持毛发光泽。以下是一些适合金毛犬的优质狗粮品牌和选择建议：\n\n**优质品牌推荐：**\n- **皇家 (Royal Canin)** - 有针对大型犬幼犬/成犬的专用配方\n- **希尔斯 (Hill's Science Diet)** - 大型犬系列，注重关节和消化健康\n- **渴望 (Orijen)** - 高蛋白，原料优质，适合活动量大的金毛\n- **爱肯拿 (Acana)** - 与渴望同厂，性价比稍高\n- **伯纳天纯 (Pure & Natural)** - 国内口碑较好的品牌\n- **冠能 (Purina Pro ",
+      "latency_ms": 16739,
+      "error": ""
+    },
+    "T08": {
+      "passed": true,
+      "scores": {
+        "ambiguity_handling": 1.0
+      },
+      "tool_calls": [],
+      "text_preview": "听到您的宠物今天吐了两次，我非常理解您的担心。呕吐是宠物常见的症状，可能由多种原因引起。\n\n为了帮您记录这个情况并为您提供更有针对性的建议，我需要知道这是您哪只宠物出现了呕吐症状？\n\n- 布丁（金毛犬）\n- 咪咪（英短猫）\n\n请告诉我具体是哪一只，这样我就能帮您记录这次异常事件，并根据不同物种的特点给您更准确的指导。",
+      "latency_ms": 4165,
+      "error": ""
+    },
+    "T09": {
+      "passed": true,
+      "scores": {
+        "urgency": 1.0,
+        "vet_referral": 1.0,
+        "proactive_search": 1.0
+      },
+      "tool_calls": [
+        {
+          "name": "search_places",
+          "args": {
+            "query": "宠物急诊 24小时 兽医紧急"
+          }
+        }
+      ],
+      "text_preview": "看到您描述的情况，我非常担心。猫咪突然抽搐、眼睛翻白是紧急医疗状况，需要立即就医！\n\n**请立即采取以下行动：**\n\n1. **立即联系最近的宠物医院或急诊中心** - 不要等待\n2. **在前往医院的路上**：\n   - 保持环境安静、光线柔和\n   - 不要试图约束猫咪，避免被咬伤\n   - 移开周围的危险物品\n   - 记录抽搐开始的时间和持续时间\n   - 如果可能，用手机录下抽搐的视频给兽医看\n\n3. **联系兽医时提供的信息**：\n   - 猫咪的年龄、品种\n   - 抽搐开始的时间\n   - 抽搐的表现（全身性还是局部性）\n   - 最近是否有头部外伤、接触毒物或异常行为\n   ",
+      "latency_ms": 8627,
+      "error": ""
+    },
+    "T10": {
+      "passed": true,
+      "scores": {
+        "language_match": 1.0,
+        "tool_call": 1.0,
+        "schema": 1.0
+      },
+      "tool_calls": [
+        {
+          "name": "create_calendar_event",
+          "args": {
+            "pet_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "event_date": "2026-03-22",
+            "event_time": "09:00",
+            "title": "Vomiting episode",
+            "category": "abnormal",
+            "raw_text": "Pudding vomited this morning around 9am"
+          }
+        }
+      ],
+      "text_preview": "I'll log Pudding's vomiting episode for you. Let me record this health event to the calendar.\n\n",
+      "latency_ms": 6635,
+      "error": ""
+    },
+    "T11": {
+      "passed": true,
+      "scores": {
+        "multi_tool": 0.5,
+        "event_schema": 1.0
+      },
+      "tool_calls": [
+        {
+          "name": "create_calendar_event",
+          "args": {
+            "pet_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "event_date": "2026-03-22",
+            "title": "服用驱虫药",
+            "category": "deworming",
+            "raw_text": "布丁今天吃了驱虫药"
+          }
+        }
+      ],
+      "text_preview": "我来帮您记录布丁今天吃了驱虫药，并设置下个月的提醒。\n\n首先，我需要记录今天的驱虫事件到日历中：\n\n",
+      "latency_ms": 6265,
+      "error": ""
+    },
+    "T12": {
+      "passed": false,
+      "scores": {
+        "proactive_save": 0,
+        "info_quality": 0
+      },
+      "tool_calls": [
+        {
+          "name": "create_calendar_event",
+          "args": {
+            "pet_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "event_date": "2026-03-22",
+            "title": "换粮后拉肚子，疑似鸡肉过敏",
+            "category": "abnormal",
+            "raw_text": "布丁最近换了狗粮之后一直拉肚子，可能对鸡肉过敏"
+          }
+        }
+      ],
+      "text_preview": "听到布丁换粮后拉肚子，这确实让人担心。让我先记录一下这个情况，然后为您提供一些建议。\n\n",
+      "latency_ms": 6613,
+      "error": ""
+    },
+    "T13": {
+      "passed": false,
+      "scores": {
+        "tool_call": 0,
+        "email_quality": 0
+      },
+      "tool_calls": [
+        {
+          "name": "create_calendar_event",
+          "args": {
+            "pet_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "event_date": "2026-03-22",
+            "title": "拉肚子一周",
+            "category": "abnormal",
+            "raw_text": "布丁最近拉肚子一周了，想预约检查"
+          }
+        }
+      ],
+      "text_preview": "我来帮您为布丁预约兽医检查。首先，我需要记录布丁拉肚子的健康事件到日历中，这样兽医就能了解具体情况。\n\n",
+      "latency_ms": 7502,
+      "error": ""
+    }
+  },
+  "openai/glm-5": {
+    "T01": {
+      "passed": true,
+      "scores": {
+        "tool_call": 1.0,
+        "schema": 1.0,
+        "category": 1.0,
+        "pet_id": 1.0
+      },
+      "tool_calls": [
+        {
+          "name": "create_calendar_event",
+          "args": {
+            "pet_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "event_date": "2026-03-22",
+            "title": "吃了两顿狗粮",
+            "category": "diet",
+            "raw_text": "布丁今天吃了两顿狗粮"
+          }
+        }
+      ],
+      "text_preview": "",
+      "latency_ms": 9834,
+      "error": ""
+    },
+    "T02": {
+      "passed": true,
+      "scores": {
+        "tool_call": 1.0,
+        "schema": 1.0,
+        "category": 1.0,
+        "time_extraction": 1.0,
+        "pet_id": 1.0
+      },
+      "tool_calls": [
+        {
+          "name": "create_calendar_event",
+          "args": {
+            "pet_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "event_date": "2026-03-22",
+            "event_time": "08:00",
+            "title": "狂犬疫苗",
+            "category": "vaccine",
+            "raw_text": "布丁今天早上8点打了狂犬疫苗"
+          }
+        }
+      ],
+      "text_preview": "",
+      "latency_ms": 10676,
+      "error": ""
+    },
+    "T03": {
+      "passed": true,
+      "scores": {
+        "tool_call": 1.0,
+        "date_range": 1.0,
+        "category_filter": 1.0,
+        "schema": 1.0
+      },
+      "tool_calls": [
+        {
+          "name": "query_calendar_events",
+          "args": {
+            "pet_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "category": "diet",
+            "start_date": "2026-02-01",
+            "end_date": "2026-02-28"
+          }
+        }
+      ],
+      "text_preview": "",
+      "latency_ms": 16880,
+      "error": ""
+    },
+    "T04": {
+      "passed": true,
+      "scores": {
+        "tool_call": 1.0,
+        "schema": 1.0,
+        "info_extraction": 1.0
+      },
+      "tool_calls": [
+        {
+          "name": "create_pet",
+          "args": {
+            "name": "大黄",
+            "species": "dog",
+            "breed": "金毛",
+            "gender": "male",
+            "weight": 30
+          }
+        }
+      ],
+      "text_preview": "太棒了！恭喜你新养了一只金毛！让我帮你创建大黄的档案～",
+      "latency_ms": 12657,
+      "error": ""
+    },
+    "T05": {
+      "passed": true,
+      "scores": {
+        "tool_call": 1.0,
+        "schema": 1.0,
+        "time_accuracy": 1.0,
+        "type_accuracy": 1.0
+      },
+      "tool_calls": [
+        {
+          "name": "create_reminder",
+          "args": {
+            "pet_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "type": "vaccine",
+            "title": "带布丁去打疫苗",
+            "trigger_at": "2026-03-23T15:00:00"
+          }
+        }
+      ],
+      "text_preview": "",
+      "latency_ms": 14569,
+      "error": ""
+    },
+    "T06": {
+      "passed": true,
+      "scores": {
+        "tool_call": 1.0,
+        "query_quality": 1.0
+      },
+      "tool_calls": [
+        {
+          "name": "search_places",
+          "args": {
+            "query": "宠物医院 veterinary clinic"
+          }
+        }
+      ],
+      "text_preview": "",
+      "latency_ms": 5499,
+      "error": ""
+    },
+    "T07": {
+      "passed": true,
+      "scores": {
+        "no_false_tool_call": 1.0,
+        "response_quality": 1.0,
+        "disclaimer": 1.0
+      },
+      "tool_calls": [],
+      "text_preview": "您好！金毛犬是大型犬，选择狗粮时需要考虑它们的体型、活动量和营养需求。以下是一些常见的优质狗粮品牌推荐：\n\n## 国产优质品牌\n- **比瑞吉** — 性价比高，适合日常喂养\n- **伯纳天纯** — 天然粮，配方较温和\n- **疯狂小狗** — 适合大型犬，价格亲民\n- **麦富迪** — 进口原料，品质稳定\n\n## 进口品牌\n- **渴望** — 高蛋白，适合活跃的金毛\n- **爱肯拿** — 天然配方，营养均衡\n- **皇家** — 有大型犬专用系列\n- **冠能** — 科学配方，适合各年龄段\n\n## 选择建议\n1. **看年龄段** — 幼犬、成犬、老年犬需求不同\n2. **看成分表",
+      "latency_ms": 18685,
+      "error": ""
+    },
+    "T08": {
+      "passed": false,
+      "scores": {
+        "ambiguity_handling": 0.3
+      },
+      "tool_calls": [
+        {
+          "name": "list_pets",
+          "args": {}
+        }
+      ],
+      "text_preview": "我了解了，宠物今天呕吐了两次。请问是布丁还是咪咪呢？这样我可以帮您记录下来。\n\n另外，我想了解一下：\n- 呕吐物是什么样的？（食物、黄水、泡沫等）\n- 除此之外还有其他症状吗？（比如精神不好、拉肚子、不吃东西等）\n\n这些信息有助于判断可能的原因。如果呕吐持续或伴有其他症状，建议尽快就医。",
+      "latency_ms": 11423,
+      "error": ""
+    },
+    "T09": {
+      "passed": false,
+      "scores": {
+        "urgency": 1.0,
+        "vet_referral": 1.0,
+        "proactive_search": 0.0
+      },
+      "tool_calls": [
+        {
+          "name": "create_calendar_event",
+          "args": {
+            "pet_id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+            "event_date": "2026-03-22",
+            "event_time": "当前",
+            "title": "突发抽搐、眼睛翻白",
+            "category": "abnormal",
+            "raw_text": "猫咪咪突然抽搐不停，眼睛翻白"
+          }
+        }
+      ],
+      "text_preview": "## ⚠️ 紧急情况！\n\n猫咪抽搐、眼睛翻白是**紧急医疗状况**，请立即采取以下措施：\n\n### 🏥 立即行动：\n1. **马上联系最近的宠物医院**，准备送医\n2. **不要**试图强行按住猫咪或把东西塞进嘴里\n3. 将猫咪轻轻移到安全、柔软的地方，避免撞伤\n4. 移除周围可能造成伤害的物品\n5. 记录抽搐持续时间和症状表现，这对医生诊断很重要\n\n### 📞 需要我帮你搜索附近的宠物医院吗？\n\n---\n\n我现在帮你记录这个异常事件：",
+      "latency_ms": 11671,
+      "error": ""
+    },
+    "T10": {
+      "passed": true,
+      "scores": {
+        "language_match": 1.0,
+        "tool_call": 1.0,
+        "schema": 1.0
+      },
+      "tool_calls": [
+        {
+          "name": "create_calendar_event",
+          "args": {
+            "pet_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "event_date": "2026-03-22",
+            "event_time": "09:00",
+            "title": "Vomiting/呕吐",
+            "category": "abnormal",
+            "raw_text": "Pudding vomited this morning around 9am"
+          }
+        }
+      ],
+      "text_preview": "",
+      "latency_ms": 10823,
+      "error": ""
+    },
+    "T11": {
+      "passed": true,
+      "scores": {
+        "multi_tool": 1.0,
+        "event_schema": 1.0,
+        "reminder_schema": 1.0
+      },
+      "tool_calls": [
+        {
+          "name": "create_calendar_event",
+          "args": {
+            "pet_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "event_date": "2026-03-22",
+            "title": "吃驱虫药",
+            "category": "deworming"
+          }
+        },
+        {
+          "name": "create_reminder",
+          "args": {
+            "pet_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "type": "medication",
+            "title": "给布丁吃驱虫药",
+            "body": "布丁上次驱虫是2026年3月22日，今天该进行下一次驱虫了。",
+            "trigger_at": "2026-04-22T09:00:00"
+          }
+        }
+      ],
+      "text_preview": "好的！我来帮你记录布丁今天吃了驱虫药，并设置下个月的提醒。",
+      "latency_ms": 17775,
+      "error": ""
+    },
+    "T12": {
+      "passed": true,
+      "scores": {
+        "proactive_save": 1.0,
+        "info_quality": 1.0
+      },
+      "tool_calls": [
+        {
+          "name": "create_calendar_event",
+          "args": {
+            "pet_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "event_date": "2026-03-22",
+            "title": "换狗粮后持续拉肚子，疑似鸡肉过敏",
+            "category": "abnormal",
+            "raw_text": "布丁最近换了狗粮之后一直拉肚子，可能对鸡肉过敏"
+          }
+        },
+        {
+          "name": "update_pet_profile",
+          "args": {
+            "pet_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "info": {
+              "possible_allergies": "鸡肉",
+              "recent_diet_change": "更换狗粮后出现腹泻"
+            }
+          }
+        }
+      ],
+      "text_preview": "我来帮您记录布丁的这个情况，并给您一些建议。",
+      "latency_ms": 11855,
+      "error": ""
+    },
+    "T13": {
+      "passed": true,
+      "scores": {
+        "tool_call": 1.0,
+        "email_quality": 1.0
+      },
+      "tool_calls": [
+        {
+          "name": "draft_email",
+          "args": {
+            "subject": "预约检查 - 金毛犬布丁腹泻问题",
+            "body": "尊敬的兽医：\n\n您好！\n\n我是布丁的主人。布丁是一只金毛犬，最近出现腹泻症状已经持续一周了。我非常担心它的健康状况，希望能尽快预约带它来诊所检查。\n\n布丁的基本情况：\n- 品种：金毛寻回犬\n- 症状：腹泻持续约一周\n\n请问您最近什么时候方便安排检查？我可以根据您的时间安排带布丁过来。\n\n期待您的回复，谢谢！\n\n此致\n敬礼\n\n布丁的主人"
+          }
+        }
+      ],
+      "text_preview": "我来帮您起草一封给兽医的邮件。",
+      "latency_ms": 14534,
+      "error": ""
+    }
+  },
+  "openai/kimi-k2.5": {
+    "T01": {
+      "passed": true,
+      "scores": {
+        "tool_call": 1.0,
+        "schema": 1.0,
+        "category": 1.0,
+        "pet_id": 1.0
+      },
+      "tool_calls": [
+        {
+          "name": "create_calendar_event",
+          "args": {
+            "title": "吃了两顿狗粮",
+            "event_date": "2026-03-22",
+            "category": "diet",
+            "pet_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "raw_text": "布丁今天吃了两顿狗粮"
+          }
+        }
+      ],
+      "text_preview": "",
+      "latency_ms": 5822,
+      "error": ""
+    },
+    "T02": {
+      "passed": true,
+      "scores": {
+        "tool_call": 1.0,
+        "schema": 1.0,
+        "category": 1.0,
+        "time_extraction": 1.0,
+        "pet_id": 1.0
+      },
+      "tool_calls": [
+        {
+          "name": "create_calendar_event",
+          "args": {
+            "pet_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "title": "接种狂犬疫苗",
+            "category": "vaccine",
+            "event_date": "2026-03-22",
+            "event_time": "08:00",
+            "raw_text": "布丁今天早上8点打了狂犬疫苗"
+          }
+        }
+      ],
+      "text_preview": "",
+      "latency_ms": 7183,
+      "error": ""
+    },
+    "T03": {
+      "passed": true,
+      "scores": {
+        "tool_call": 1.0,
+        "date_range": 1.0,
+        "category_filter": 1.0,
+        "schema": 1.0
+      },
+      "tool_calls": [
+        {
+          "name": "query_calendar_events",
+          "args": {
+            "pet_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "category": "diet",
+            "start_date": "2026-02-01",
+            "end_date": "2026-02-28"
+          }
+        }
+      ],
+      "text_preview": " 我来帮你查询布丁上个月的喂食记录。 ",
+      "latency_ms": 9110,
+      "error": ""
+    },
+    "T04": {
+      "passed": true,
+      "scores": {
+        "tool_call": 1.0,
+        "schema": 1.0,
+        "info_extraction": 1.0
+      },
+      "tool_calls": [
+        {
+          "name": "create_pet",
+          "args": {
+            "name": "大黄",
+            "species": "dog",
+            "breed": "Golden Retriever",
+            "gender": "male",
+            "birthday": "2023-03-22",
+            "weight": 30
+          }
+        }
+      ],
+      "text_preview": "",
+      "latency_ms": 5877,
+      "error": ""
+    },
+    "T05": {
+      "passed": true,
+      "scores": {
+        "tool_call": 1.0,
+        "schema": 1.0,
+        "time_accuracy": 1.0,
+        "type_accuracy": 1.0
+      },
+      "tool_calls": [
+        {
+          "name": "create_reminder",
+          "args": {
+            "pet_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "title": "带布丁去打疫苗",
+            "type": "vaccine",
+            "trigger_at": "2026-03-23T15:00:00"
+          }
+        }
+      ],
+      "text_preview": "",
+      "latency_ms": 5796,
+      "error": ""
+    },
+    "T06": {
+      "passed": true,
+      "scores": {
+        "tool_call": 1.0,
+        "query_quality": 1.0
+      },
+      "tool_calls": [
+        {
+          "name": "search_places",
+          "args": {
+            "query": "宠物医院"
+          }
+        }
+      ],
+      "text_preview": " 我来帮您搜索附近的宠物医院！ ",
+      "latency_ms": 3015,
+      "error": ""
+    },
+    "T07": {
+      "passed": true,
+      "scores": {
+        "no_false_tool_call": 1.0,
+        "response_quality": 1.0,
+        "disclaimer": 1.0
+      },
+      "tool_calls": [],
+      "text_preview": " 金毛犬作为大型犬，需要高蛋白、关节保护和美毛配方的狗粮。以下是一些口碑较好的品牌推荐：\n\n## 高端进口粮\n- **渴望 (Orijen)** / **爱肯拿 (Acana)**：高蛋白、鲜肉含量高，适合活跃的金毛\n- **纽翠斯 (Nutrience)**：黑钻系列含冻干，适口性好\n- **荒野盛宴 (Taste of the Wild)**：含益生菌，性价比高\n- **纽顿 (Nutram)**：加拿大进口，低敏配方\n\n## 中高端选择\n- **伯纳天纯**：国产中高端，有大型犬专用配方\n- **比乐**：原味鲜系列口碑不错\n- **鲜朗**：烘焙粮，原料透明\n\n## 选粮要点\n✅ 看配",
+      "latency_ms": 19308,
+      "error": ""
+    },
+    "T08": {
+      "passed": true,
+      "scores": {
+        "ambiguity_handling": 1.0
+      },
+      "tool_calls": [],
+      "text_preview": " 您好！请问您说的是**布丁**还是**咪咪**吐了两次呢？\n\n无论是哪只宝贝，呕吐两次都需要多留意。以下是一些建议：\n\n**可能的原因：**\n- 吃得太快或吃了不适合的食物\n- 毛球（猫咪常见）\n- 肠胃不适或轻微感染\n\n**您可以先观察：**\n- 呕吐物里有没有食物、毛发或异物？\n- 呕吐后精神食欲如何？\n- 有没有腹泻或其他异常？\n\n**建议：**\n- 暂时禁食4-6小时，让肠胃休息\n- 之后少量多次喂水，观察是否再吐\n- 如果继续呕吐、精神萎靡或出现其他症状，请尽快就医\n\n请告诉我具体是哪只宠物，我可以帮您记录到健康日历中，方便追踪情况。\n\nThis is general guidan",
+      "latency_ms": 8806,
+      "error": ""
+    },
+    "T09": {
+      "passed": true,
+      "scores": {
+        "urgency": 1.0,
+        "vet_referral": 1.0,
+        "proactive_search": 1.0
+      },
+      "tool_calls": [
+        {
+          "name": "search_places",
+          "args": {
+            "query": "24小时宠物医院 急诊"
+          }
+        }
+      ],
+      "text_preview": " **⚠️ 紧急情况！请立即带咪咪去最近的宠物医院！**\n\n抽搐伴随眼睛翻白是非常严重的症状，可能由以下原因引起：\n- 癫痫发作\n- 中毒\n- 低血糖\n- 脑部问题\n- 严重感染\n\n**请立即采取以下措施：**\n\n1. **马上联系最近的24小时宠物医院**，告知症状并前往就诊\n2. **保持冷静**，将咪咪放在安全、平坦的地方，周围不要放尖锐物品\n3. **不要强行按住它或把东西塞进嘴里**（猫咪抽搐时不会咬到舌头）\n4. **记录抽搐持续时间**，这对医生诊断很重要\n5. **检查周围环境**，看是否有误食有毒物质的可能\n\n我现在帮您搜索附近的宠物医院： ",
+      "latency_ms": 11980,
+      "error": ""
+    },
+    "T10": {
+      "passed": true,
+      "scores": {
+        "language_match": 1.0,
+        "tool_call": 1.0,
+        "schema": 1.0
+      },
+      "tool_calls": [
+        {
+          "name": "create_calendar_event",
+          "args": {
+            "pet_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "title": "呕吐",
+            "category": "abnormal",
+            "event_date": "2026-03-22",
+            "event_time": "09:00",
+            "raw_text": "Pudding vomited this morning around 9am, please log it."
+          }
+        }
+      ],
+      "text_preview": "",
+      "latency_ms": 12799,
+      "error": ""
+    },
+    "T11": {
+      "passed": false,
+      "scores": {
+        "multi_tool": 1.0,
+        "event_schema": 1.0,
+        "reminder_schema": 0.0
+      },
+      "tool_calls": [
+        {
+          "name": "create_calendar_event",
+          "args": {
+            "pet_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "event_date": "2026-03-22",
+            "category": "deworming",
+            "title": "服用驱虫药"
+          }
+        },
+        {
+          "name": "create_reminder",
+          "args": {
+            "pet_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "title": "布丁该吃驱虫药啦",
+            "type": "deworming",
+            "trigger_at": "2026-04-22T09:00:00",
+            "body": "记得给布丁服用驱虫药哦～"
+          }
+        }
+      ],
+      "text_preview": "",
+      "latency_ms": 12389,
+      "error": ""
+    },
+    "T12": {
+      "passed": true,
+      "scores": {
+        "proactive_save": 1.0,
+        "info_quality": 1.0
+      },
+      "tool_calls": [
+        {
+          "name": "create_calendar_event",
+          "args": {
+            "pet_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "event_date": "2026-03-22",
+            "title": "换粮后持续腹泻",
+            "category": "abnormal",
+            "raw_text": "布丁最近换了狗粮之后一直拉肚子，可能对鸡肉过敏"
+          }
+        },
+        {
+          "name": "update_pet_profile",
+          "args": {
+            "pet_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "info": {
+              "possible_allergy": "鸡肉",
+              "allergy_symptoms": "腹泻",
+              "allergy_notes": "换粮后出现持续腹泻，疑似对鸡肉成分过敏"
+            }
+          }
+        }
+      ],
+      "text_preview": "",
+      "latency_ms": 11063,
+      "error": ""
+    },
+    "T13": {
+      "passed": true,
+      "scores": {
+        "tool_call": 1.0,
+        "email_quality": 1.0
+      },
+      "tool_calls": [
+        {
+          "name": "draft_email",
+          "args": {
+            "subject": "预约检查 - 布丁持续腹泻一周",
+            "body": "您好，\n\n我是布丁（金毛犬）的主人。想跟您预约一个检查时间。\n\n布丁最近一周持续出现腹泻症状，大便稀软，有时呈水样。食欲和精神状态目前还算正常，但腹泻情况一直没有好转，我有些担心。\n\n希望能尽快安排一个就诊时间，让医生帮忙检查一下原因。\n\n期待您的回复，谢谢！\n\n此致\n敬礼"
+          }
+        }
+      ],
+      "text_preview": "",
+      "latency_ms": 5155,
+      "error": ""
+    }
+  },
+  "openai/qwen3.5-plus-2026-02-15": {
+    "T01": {
+      "passed": true,
+      "scores": {
+        "tool_call": 1.0,
+        "schema": 1.0,
+        "category": 1.0,
+        "pet_id": 1.0
+      },
+      "tool_calls": [
+        {
+          "name": "create_calendar_event",
+          "args": {
+            "pet_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "event_date": "2026-03-22",
+            "title": "吃了两顿狗粮",
+            "category": "diet",
+            "raw_text": "布丁今天吃了两顿狗粮"
+          }
+        }
+      ],
+      "text_preview": "The user is telling me that 布丁 (Pudding) ate two meals of dog food today. This is a diet-related event that should be recorded to the calendar.\n\nI need to:\n1. Use create_calendar_event to record this feeding event\n2. The pet_id for 布丁 is: a1b2c3d4-e5f6-7890-abcd-ef1234567890\n3. The event_date is tod",
+      "latency_ms": 9486,
+      "error": ""
+    },
+    "T02": {
+      "passed": true,
+      "scores": {
+        "tool_call": 1.0,
+        "schema": 1.0,
+        "category": 1.0,
+        "time_extraction": 1.0,
+        "pet_id": 1.0
+      },
+      "tool_calls": [
+        {
+          "name": "create_calendar_event",
+          "args": {
+            "pet_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "event_date": "2026-03-22",
+            "event_time": "08:00",
+            "title": "狂犬疫苗",
+            "category": "vaccine",
+            "raw_text": "布丁今天早上8点打了狂犬疫苗"
+          }
+        }
+      ],
+      "text_preview": "The user is telling me that their pet 布丁 (Pudding) received a rabies vaccine at 8 AM this morning. This is a health event that should be recorded to the calendar.\n\nI need to:\n1. Create a calendar event for this vaccination\n2. Use the pet_id for 布丁 which is: a1b2c3d4-e5f6-7890-abcd-ef1234567890\n3. Th",
+      "latency_ms": 9010,
+      "error": ""
+    },
+    "T03": {
+      "passed": true,
+      "scores": {
+        "tool_call": 1.0,
+        "date_range": 1.0,
+        "category_filter": 1.0,
+        "schema": 1.0
+      },
+      "tool_calls": [
+        {
+          "name": "query_calendar_events",
+          "args": {
+            "pet_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "category": "diet",
+            "start_date": "2026-02-01",
+            "end_date": "2026-02-28"
+          }
+        }
+      ],
+      "text_preview": "用户想查询布丁（Pudding）上个月的喂食记录。我需要使用 query_calendar_events 工具来查询。\n\n布丁的 ID 是：a1b2c3d4-e5f6-7890-abcd-ef1234567890\n\n今天是 2026-03-22，所以上个月是 2026-02。我需要设置：\n- pet_id: a1b2c3d4-e5f6-7890-abcd-ef1234567890\n- category: diet (喂食属于饮食类别)\n- start_date: 2026-02-01\n- end_date: 2026-02-28\n\n让我调用这个工具。",
+      "latency_ms": 5865,
+      "error": ""
+    },
+    "T04": {
+      "passed": true,
+      "scores": {
+        "tool_call": 1.0,
+        "schema": 1.0,
+        "info_extraction": 1.0
+      },
+      "tool_calls": [
+        {
+          "name": "create_pet",
+          "args": {
+            "name": "大黄",
+            "species": "dog",
+            "breed": "金毛",
+            "gender": "male",
+            "weight": 30
+          }
+        }
+      ],
+      "text_preview": "The user is telling me about a new pet they've adopted - a Golden Retriever named 大黄 (Da Huang/Dahuang), 3 years old, male, approximately 30 kg.\n\nI need to create a new pet profile for this dog. Let me check the required parameters for create_pet:\n- name (required): 大黄\n- species (required): dog\n- br",
+      "latency_ms": 5794,
+      "error": ""
+    },
+    "T05": {
+      "passed": true,
+      "scores": {
+        "tool_call": 1.0,
+        "schema": 1.0,
+        "time_accuracy": 1.0,
+        "type_accuracy": 1.0
+      },
+      "tool_calls": [
+        {
+          "name": "create_reminder",
+          "args": {
+            "pet_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "type": "vaccine",
+            "title": "带布丁打疫苗",
+            "trigger_at": "2026-03-23T15:00:00",
+            "body": "明天下午3点带布丁去宠物医院接种疫苗"
+          }
+        }
+      ],
+      "text_preview": "The user wants to set a reminder for tomorrow at 3 PM to take their dog 布丁 (Pudding) for a vaccine appointment.\n\nLet me check the details:\n- Pet: 布丁 (Pudding) - ID: a1b2c3d4-e5f6-7890-abcd-ef1234567890\n- Time: Tomorrow at 3 PM (2026-03-23 at 15:00)\n- Type: vaccine reminder\n\nI need to use the create_",
+      "latency_ms": 7895,
+      "error": ""
+    },
+    "T06": {
+      "passed": true,
+      "scores": {
+        "tool_call": 1.0,
+        "query_quality": 1.0
+      },
+      "tool_calls": [
+        {
+          "name": "search_places",
+          "args": {
+            "query": "宠物医院 兽医诊所"
+          }
+        }
+      ],
+      "text_preview": "The user is asking about nearby pet hospitals/veterinary clinics. This is a perfect use case for the search_places tool. I should search for veterinary clinics or pet hospitals nearby.\n\nThe user wrote in Chinese, so I need to respond in Chinese as well.\n\nLet me call the search_places tool with a que",
+      "latency_ms": 3585,
+      "error": ""
+    },
+    "T07": {
+      "passed": true,
+      "scores": {
+        "no_false_tool_call": 1.0,
+        "response_quality": 1.0,
+        "disclaimer": 1.0
+      },
+      "tool_calls": [],
+      "text_preview": "用户询问金毛犬适合吃什么品牌的狗粮。这是一个关于宠物饮食的一般性问题，不需要调用任何工具，因为：\n1. 用户没有提到要记录任何事件\n2. 没有要创建或更新宠物档案\n3. 没有要设置提醒\n4. 没有要查询日历\n5. 没有要搜索地点\n6. 没有要起草邮件\n\n这是一个健康/饮食咨询问题，我应该提供有帮助的建议，并在最后加上免责声明。用户用中文提问，所以我应该用中文回复。\n\n让我提供一些关于金毛犬狗粮选择的实用建议。金毛犬是大型犬，选择狗粮时需要考虑以下几个要点：\n\n**推荐的品牌类型：**\n\n1. **大型犬专用配方** - 选择标明\"大型犬\"或\"金毛专用\"的狗粮，这类配方通常含有适当的钙磷比例，有",
+      "latency_ms": 9762,
+      "error": ""
+    },
+    "T08": {
+      "passed": false,
+      "scores": {
+        "ambiguity_handling": 0.3
+      },
+      "tool_calls": [
+        {
+          "name": "list_pets",
+          "args": {}
+        }
+      ],
+      "text_preview": "The user is reporting that their pet vomited twice today. This is a health-related concern that I should:\n\n1. Record as a calendar event (abnormal category since vomiting is a symptom)\n2. Provide helpful guidance about what to watch for\n3. Recommend consulting a vet if symptoms persist\n\nHowever, I n",
+      "latency_ms": 5905,
+      "error": ""
+    },
+    "T09": {
+      "passed": false,
+      "scores": {
+        "urgency": 1.0,
+        "vet_referral": 1.0,
+        "proactive_search": 0.0
+      },
+      "tool_calls": [
+        {
+          "name": "create_calendar_event",
+          "args": {
+            "pet_id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+            "event_date": "2026-03-22",
+            "title": "猫咪抽搐、眼睛翻白 - 紧急医疗情况",
+            "category": "abnormal",
+            "raw_text": "我的猫咪咪突然抽搐不停，眼睛翻白"
+          }
+        }
+      ],
+      "text_preview": "The user is describing a serious medical emergency - their cat Mimi is having seizures (抽搐不停，眼睛翻白 = convulsing continuously, eyes rolling back). This is a critical health situation.\n\nI need to:\n1. Respond with urgency and concern in Chinese (matching the user's language)\n2. Provide immediate guidanc",
+      "latency_ms": 7474,
+      "error": ""
+    },
+    "T10": {
+      "passed": true,
+      "scores": {
+        "language_match": 1.0,
+        "tool_call": 1.0,
+        "schema": 1.0
+      },
+      "tool_calls": [
+        {
+          "name": "create_calendar_event",
+          "args": {
+            "pet_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "event_date": "2026-03-22",
+            "event_time": "09:00",
+            "title": "Vomiting",
+            "category": "abnormal",
+            "raw_text": "Pudding vomited this morning around 9am"
+          }
+        }
+      ],
+      "text_preview": "The user wants me to log that Pudding vomited this morning around 9am. This is a health event that should be recorded to the calendar.\n\nI need to use the create_calendar_event function. Let me check the required parameters:\n- pet_id: Pudding's ID is a1b2c3d4-e5f6-7890-abcd-ef1234567890\n- event_date:",
+      "latency_ms": 7066,
+      "error": ""
+    },
+    "T11": {
+      "passed": true,
+      "scores": {
+        "multi_tool": 1.0,
+        "event_schema": 1.0,
+        "reminder_schema": 1.0
+      },
+      "tool_calls": [
+        {
+          "name": "create_calendar_event",
+          "args": {
+            "pet_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "event_date": "2026-03-22",
+            "title": "布丁服用驱虫药",
+            "category": "deworming"
+          }
+        },
+        {
+          "name": "create_reminder",
+          "args": {
+            "pet_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "type": "medication",
+            "title": "布丁驱虫药提醒",
+            "trigger_at": "2026-04-22T09:00:00",
+            "body": "记得给布丁服用驱虫药"
+          }
+        }
+      ],
+      "text_preview": "The user is asking me to:\n1. Record that 布丁 (Pudding) took deworming medication today (2026-03-22)\n2. Set a reminder for next month on the 22nd (2026-04-22) to take deworming medication again\n\nFor the first task, I need to use create_calendar_event with:\n- pet_id: a1b2c3d4-e5f6-7890-abcd-ef123456789",
+      "latency_ms": 10648,
+      "error": ""
+    },
+    "T12": {
+      "passed": false,
+      "scores": {
+        "proactive_save": 0,
+        "info_quality": 0
+      },
+      "tool_calls": [
+        {
+          "name": "create_calendar_event",
+          "args": {
+            "pet_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "event_date": "2026-03-22",
+            "title": "换狗粮后拉肚子，疑似鸡肉过敏",
+            "category": "abnormal",
+            "raw_text": "布丁最近换了狗粮之后一直拉肚子，可能对鸡肉过敏"
+          }
+        }
+      ],
+      "text_preview": "用户提到布丁（金毛犬）换了狗粮后一直拉肚子，可能对鸡肉过敏。这是一个健康相关的问题，我需要：\n\n1. 首先记录这个异常症状到日历中（使用create_calendar_event）\n2. 提供关于食物过敏的友好建议\n3. 建议咨询兽医\n\n让我先记录这个健康事件。我需要使用布丁的宠物ID：a1b2c3d4-e5f6-7890-abcd-ef1234567890\n\n事件日期是今天：2026-03-22\n类别应该是\"abnormal\"（异常症状）\n标题可以写\"换狗粮后拉肚子，疑似鸡肉过敏\"\n\n然后我会提供关于食物过敏的建议。",
+      "latency_ms": 8089,
+      "error": ""
+    },
+    "T13": {
+      "passed": true,
+      "scores": {
+        "tool_call": 1.0,
+        "email_quality": 1.0
+      },
+      "tool_calls": [
+        {
+          "name": "draft_email",
+          "args": {
+            "subject": "预约检查 - 布丁（金毛犬）腹泻一周",
+            "body": "尊敬的兽医您好，\n\n我是金毛犬布丁的主人。布丁最近一周持续出现腹泻症状，我比较担心它的健康状况，希望能预约一次检查。\n\n以下是布丁的基本信息：\n- 名字：布丁\n- 品种：金毛寻回犬\n- 症状：腹泻，已持续约一周\n\n请问您最近是否有可用的预约时间？我会配合您的时间安排带布丁前来就诊。\n\n如有需要，我可以提供更多关于布丁症状的详细信息。\n\n感谢您的帮助，期待您的回复。\n\n此致\n敬礼\n\n[您的姓名]\n[您的联系电话]\n[您的邮箱]"
+          }
+        }
+      ],
+      "text_preview": "用户想让我帮他们给兽医写一封邮件，内容是关于布丁（他们的金毛犬）最近拉肚子一周了，想预约检查。\n\n我需要使用 draft_email 工具来创建这封邮件。我需要：\n1. 写一个合适的主题行\n2. 写一个专业的邮件正文，说明情况并请求预约\n\n让我用中文写这封邮件，因为用户使用的是中文。\n\n主题应该简洁明了，比如\"预约检查 - 布丁（金毛犬）腹泻一周\"\n\n正文应该包括：\n- 问候\n- 说明宠物信息（布丁，金毛犬）\n- 描述症状（拉肚子一周）\n- 请求预约检查\n- 联系方式（可以留空让用户填写）\n- 感谢\n\n让我调用 draft_email 工具。",
+      "latency_ms": 8823,
+      "error": ""
+    }
+  }
+}

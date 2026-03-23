@@ -1,0 +1,320 @@
+{
+  "openai/grok-4-1-fast-non-reasoning": {
+    "T01": {
+      "passed": true,
+      "scores": {
+        "tool_call": 1.0,
+        "schema": 1.0,
+        "category": 1.0,
+        "pet_id": 1.0
+      },
+      "tool_calls": [
+        {
+          "name": "create_calendar_event",
+          "args": {
+            "category": "diet",
+            "event_date": "2026-03-22",
+            "pet_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "title": "布丁吃了两顿狗粮",
+            "raw_text": "布丁今天吃了两顿狗粮"
+          }
+        }
+      ],
+      "text_preview": "",
+      "latency_ms": 1970,
+      "error": ""
+    },
+    "T02": {
+      "passed": true,
+      "scores": {
+        "tool_call": 1.0,
+        "schema": 1.0,
+        "category": 1.0,
+        "time_extraction": 1.0,
+        "pet_id": 1.0
+      },
+      "tool_calls": [
+        {
+          "name": "create_calendar_event",
+          "args": {
+            "category": "vaccine",
+            "event_date": "2026-03-22",
+            "pet_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "title": "打了狂犬疫苗",
+            "event_time": "08:00",
+            "raw_text": "布丁今天早上8点打了狂犬疫苗"
+          }
+        }
+      ],
+      "text_preview": "",
+      "latency_ms": 1881,
+      "error": ""
+    },
+    "T03": {
+      "passed": false,
+      "scores": {
+        "tool_call": 1.0,
+        "date_range": 0.5,
+        "category_filter": 0.0,
+        "schema": 1.0
+      },
+      "tool_calls": [
+        {
+          "name": "query_calendar_events",
+          "args": {
+            "pet_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "start_date": "2026-02-01"
+          }
+        },
+        {
+          "name": "query_calendar_events",
+          "args": {
+            "pet_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "start_date": "2026-02-22"
+          }
+        }
+      ],
+      "text_preview": "",
+      "latency_ms": 2111,
+      "error": ""
+    },
+    "T04": {
+      "passed": true,
+      "scores": {
+        "tool_call": 1.0,
+        "schema": 1.0,
+        "info_extraction": 1.0
+      },
+      "tool_calls": [
+        {
+          "name": "create_pet",
+          "args": {
+            "name": "大黄",
+            "species": "dog",
+            "breed": "金毛",
+            "gender": "male",
+            "weight": 30
+          }
+        }
+      ],
+      "text_preview": "",
+      "latency_ms": 1996,
+      "error": ""
+    },
+    "T05": {
+      "passed": true,
+      "scores": {
+        "tool_call": 1.0,
+        "schema": 1.0,
+        "time_accuracy": 1.0,
+        "type_accuracy": 1.0
+      },
+      "tool_calls": [
+        {
+          "name": "create_reminder",
+          "args": {
+            "pet_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "title": "带布丁去打疫苗",
+            "trigger_at": "2026-03-23T15:00:00",
+            "type": "vaccine",
+            "body": "提醒：明天下午3点带布丁去打疫苗，请准时前往兽医诊所。"
+          }
+        }
+      ],
+      "text_preview": "",
+      "latency_ms": 3143,
+      "error": ""
+    },
+    "T06": {
+      "passed": true,
+      "scores": {
+        "tool_call": 1.0,
+        "query_quality": 1.0
+      },
+      "tool_calls": [
+        {
+          "name": "search_places",
+          "args": {
+            "query": "宠物医院"
+          }
+        }
+      ],
+      "text_preview": "",
+      "latency_ms": 1976,
+      "error": ""
+    },
+    "T07": {
+      "passed": true,
+      "scores": {
+        "no_false_tool_call": 1.0,
+        "response_quality": 1.0,
+        "disclaimer": 1.0
+      },
+      "tool_calls": [],
+      "text_preview": "金毛犬作为大型犬，适合选择高品质、富含蛋白质（鸡肉、鱼肉或羊肉来源）、关节支持成分（如葡萄糖胺、软骨素）和适中热量的狗粮品牌，以维护它们的关节健康和活力。推荐以下几款国际知名品牌（根据营养均衡和用户反馈）：\n\n- **皇家（Royal Canin）**：有专为金毛设计的“金毛成犬粮”，支持皮肤和关节。\n- **爱慕斯（Eukanuba）**：高蛋白配方，适合活跃金毛，关节保护好。\n- **希尔思（Hill's Science Diet）**：科学配方，易消化，适合敏感肠胃的金毛。\n- **Orijen 或 Acana**：天然谷物免费，高肉含量，适合追求高端的家庭。\n- **国内可选**：麦富",
+      "latency_ms": 5558,
+      "error": ""
+    },
+    "T08": {
+      "passed": false,
+      "scores": {
+        "ambiguity_handling": 0.3
+      },
+      "tool_calls": [
+        {
+          "name": "create_calendar_event",
+          "args": {
+            "category": "abnormal",
+            "event_date": "2026-03-22",
+            "pet_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "title": "吐了两次",
+            "raw_text": "他今天吐了两次"
+          }
+        }
+      ],
+      "text_preview": "",
+      "latency_ms": 1710,
+      "error": ""
+    },
+    "T09": {
+      "passed": false,
+      "scores": {
+        "urgency": 0.0,
+        "vet_referral": 0.0,
+        "proactive_search": 0.0
+      },
+      "tool_calls": [
+        {
+          "name": "create_calendar_event",
+          "args": {
+            "category": "abnormal",
+            "event_date": "2026-03-22",
+            "pet_id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+            "title": "咪咪突然抽搐不停，眼睛翻白",
+            "raw_text": "我的猫咪咪突然抽搐不停，眼睛翻白"
+          }
+        }
+      ],
+      "text_preview": "",
+      "latency_ms": 2047,
+      "error": ""
+    },
+    "T10": {
+      "passed": true,
+      "scores": {
+        "language_match": 1.0,
+        "tool_call": 1.0,
+        "schema": 1.0
+      },
+      "tool_calls": [
+        {
+          "name": "create_calendar_event",
+          "args": {
+            "category": "abnormal",
+            "event_date": "2026-03-22",
+            "pet_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "title": "Pudding vomited",
+            "event_time": "09:00",
+            "raw_text": "Pudding vomited this morning around 9am"
+          }
+        }
+      ],
+      "text_preview": "",
+      "latency_ms": 1947,
+      "error": ""
+    },
+    "T11": {
+      "passed": true,
+      "scores": {
+        "multi_tool": 1.0,
+        "event_schema": 1.0,
+        "reminder_schema": 1.0
+      },
+      "tool_calls": [
+        {
+          "name": "create_calendar_event",
+          "args": {
+            "category": "deworming",
+            "event_date": "2026-03-22",
+            "pet_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "title": "布丁吃了驱虫药",
+            "raw_text": "布丁今天吃了驱虫药"
+          }
+        },
+        {
+          "name": "create_reminder",
+          "args": {
+            "pet_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "title": "布丁下次驱虫",
+            "trigger_at": "2026-04-22T09:00:00",
+            "type": "medication",
+            "body": "提醒布丁下个月22号再吃一次驱虫药"
+          }
+        }
+      ],
+      "text_preview": "",
+      "latency_ms": 2561,
+      "error": ""
+    },
+    "T12": {
+      "passed": true,
+      "scores": {
+        "proactive_save": 1.0,
+        "info_quality": 1.0
+      },
+      "tool_calls": [
+        {
+          "name": "create_calendar_event",
+          "args": {
+            "category": "abnormal",
+            "event_date": "2026-03-22",
+            "pet_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "title": "布丁换狗粮后持续拉肚子，可能鸡肉过敏",
+            "raw_text": "布丁最近换了狗粮之后一直拉肚子，可能对鸡肉过敏"
+          }
+        },
+        {
+          "name": "update_pet_profile",
+          "args": {
+            "info": {
+              "possible_allergy": "鸡肉过敏"
+            },
+            "pet_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+          }
+        }
+      ],
+      "text_preview": "",
+      "latency_ms": 2148,
+      "error": ""
+    },
+    "T13": {
+      "passed": true,
+      "scores": {
+        "tool_call": 1.0,
+        "email_quality": 1.0
+      },
+      "tool_calls": [
+        {
+          "name": "create_calendar_event",
+          "args": {
+            "category": "abnormal",
+            "event_date": "2026-03-15",
+            "pet_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "title": "布丁拉肚子一周",
+            "raw_text": "布丁最近拉肚子一周了"
+          }
+        },
+        {
+          "name": "draft_email",
+          "args": {
+            "body": "亲爱的兽医，\n\n您好！我是布丁（金毛寻回犬）的家长。最近一周，布丁一直拉肚子，情况持续了大约7天。我很担心他的健康，想预约一个时间带他去检查。请问您最近有哪些空档可以安排？\n\n谢谢您的帮助！\n\n此致  \n敬礼  \n[您的姓名]  \n[您的联系电话]  \n[您的邮箱]",
+            "subject": "布丁拉肚子预约检查"
+          }
+        }
+      ],
+      "text_preview": "",
+      "latency_ms": 2783,
+      "error": ""
+    }
+  }
+}

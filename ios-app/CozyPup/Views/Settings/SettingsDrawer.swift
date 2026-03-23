@@ -42,6 +42,7 @@ struct SettingsDrawer: View {
         }
         .animation(.easeInOut(duration: 0.25), value: currentPage == .list)
         .onAppear { loadPrefs() }
+        .task { await petStore.fetchFromAPI() }
         .onChange(of: notifications) { savePrefs() }
         .onChange(of: medReminders) { savePrefs() }
         .onChange(of: weeklyInsights) { savePrefs() }

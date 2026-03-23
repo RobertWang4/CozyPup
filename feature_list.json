@@ -1,0 +1,175 @@
+[
+  {
+    "id": 1,
+    "category": "functional",
+    "priority": 1,
+    "description": "Backend: Add photos JSON field to CalendarEvent model + migration",
+    "steps": [
+      "Write test for CalendarEvent with photos (tests/test_calendar_photos.py)",
+      "Add photos JSON column to models.py CalendarEvent class",
+      "Create Alembic migration: alembic revision --autogenerate -m 'add photos to calendar_events'",
+      "Apply migration: alembic upgrade head",
+      "Run test: pytest tests/test_calendar_photos.py -v",
+      "Commit"
+    ],
+    "depends_on": [],
+    "passes": true
+  },
+  {
+    "id": 2,
+    "category": "functional",
+    "priority": 2,
+    "description": "Backend: Update schemas + add photo upload/serve endpoints",
+    "steps": [
+      "Add photos: list[str] = [] to CalendarEventResponse schema",
+      "Update _event_to_response helper to include photos",
+      "Add photo upload endpoint POST /{event_id}/photos with validation (5MB, 4 max, MIME check)",
+      "Add GET /photos/{filename} endpoint to serve photos",
+      "Write integration tests for photo upload + max photos limit",
+      "Run tests: pytest tests/test_calendar_photos.py -v",
+      "Commit"
+    ],
+    "depends_on": [
+      1
+    ],
+    "passes": true
+  },
+  {
+    "id": 3,
+    "category": "functional",
+    "priority": 3,
+    "description": "Backend: Update agent tool for photo_urls support in create_calendar_event",
+    "steps": [
+      "Add photo_urls array param to create_calendar_event tool definition in TOOL_DEFINITIONS",
+      "Update _create_calendar_event handler to accept and store photo_urls",
+      "Run existing agent tests: pytest tests/test_chat_agent.py -v",
+      "Commit"
+    ],
+    "depends_on": [
+      1
+    ],
+    "passes": true
+  },
+  {
+    "id": 4,
+    "category": "functional",
+    "priority": 4,
+    "description": "iOS: Update CalendarEvent model + APIClient multipart + CalendarStore uploadPhoto",
+    "steps": [
+      "Add photos: [String] field to CalendarEvent.swift model with CodingKeys",
+      "Add uploadMultipart() method to APIClient.swift",
+      "Add uploadEventPhoto() method to CalendarStore.swift",
+      "Build to verify: xcodebuild",
+      "Commit"
+    ],
+    "depends_on": [],
+    "passes": true
+  },
+  {
+    "id": 5,
+    "category": "functional",
+    "priority": 5,
+    "description": "iOS: Mode toggle + view routing in CalendarDrawer (calendar/timeline/singleDay)",
+    "steps": [
+      "Add timeline localization strings to L.swift",
+      "Add CalendarMode enum and state to CalendarDrawer",
+      "Add mode toggle button to CalendarDrawer top bar",
+      "Route views based on mode with transitions",
+      "Build to verify: xcodebuild",
+      "Commit"
+    ],
+    "depends_on": [],
+    "passes": true
+  },
+  {
+    "id": 6,
+    "category": "functional",
+    "priority": 6,
+    "description": "iOS: MultiDayTimelineView with 4 zoom levels (day/week/month/year) + pinch gesture",
+    "steps": [
+      "Create MultiDayTimelineView.swift with ZoomLevel enum and MagnificationGesture",
+      "Create DayRow sub-view with zoom-dependent sizing (dateFont, leftWidth, bottomPadding)",
+      "Implement 4 content variants: dayContent, weekContent, monthContent, yearContent",
+      "Build to verify: xcodebuild",
+      "Commit"
+    ],
+    "depends_on": [
+      5
+    ],
+    "passes": true
+  },
+  {
+    "id": 7,
+    "category": "functional",
+    "priority": 7,
+    "description": "iOS: HeatStripView — horizontal time distribution bar with pinch-to-zoom",
+    "steps": [
+      "Create HeatStripView.swift with GeometryReader + event blocks positioned by time",
+      "Add MagnificationGesture for zoom (1x-3x)",
+      "Add time labels (6am-9pm)",
+      "Build to verify: xcodebuild",
+      "Commit"
+    ],
+    "depends_on": [],
+    "passes": true
+  },
+  {
+    "id": 8,
+    "category": "functional",
+    "priority": 8,
+    "description": "iOS: TimelineEventCard + SingleDayTimelineView with heat strip and swipe navigation",
+    "steps": [
+      "Create TimelineEventCard.swift with left accent bar, category color, photo grid, pet name",
+      "Create SingleDayTimelineView.swift with date header, HeatStripView, event cards",
+      "Add swipe left/right DragGesture for day navigation",
+      "Build to verify: xcodebuild",
+      "Commit"
+    ],
+    "depends_on": [
+      7
+    ],
+    "passes": true
+  },
+  {
+    "id": 9,
+    "category": "functional",
+    "priority": 9,
+    "description": "iOS: Double-tap gesture on MonthGrid to enter single-day timeline",
+    "steps": [
+      "Add onDoubleTap callback to MonthGrid",
+      "Add double-tap gesture to day cells (before single-tap)",
+      "Wire up in CalendarDrawer to set singleDayDate and switch to .singleDay mode",
+      "Build to verify: xcodebuild",
+      "Commit"
+    ],
+    "depends_on": [
+      5,
+      8
+    ],
+    "passes": true
+  },
+  {
+    "id": 10,
+    "category": "integration",
+    "priority": 10,
+    "description": "Final integration: run all backend tests + iOS build + verify all views work together",
+    "steps": [
+      "Run all backend tests: pytest tests/ -v",
+      "Build iOS: xcodebuild full build",
+      "Verify: mode toggle, multi-day timeline, pinch zoom, single-day view, heat strip, swipe nav, double-tap, pet filter, photo placeholders",
+      "Final commit"
+    ],
+    "depends_on": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "passes": true
+  }
+]
