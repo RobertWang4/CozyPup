@@ -5,6 +5,7 @@ struct ChatRequest: Encodable {
     let session_id: String?
     let location: LocationCoord?
     let language: String?
+    let images: [String]?  // base64 JPEG strings
 
     struct LocationCoord: Encodable {
         let lat: Double
@@ -21,15 +22,18 @@ enum SSEEvent {
 
 class ChatService {
     static func streamChat(message: String, sessionId: String?,
-                           location: (lat: Double, lng: Double)?) -> AsyncThrowingStream<SSEEvent, Error> {
+                           location: (lat: Double, lng: Double)?,
+                           images: [Data] = []) -> AsyncThrowingStream<SSEEvent, Error> {
         let lang = UserDefaults.standard.string(forKey: "cozypup_language") ?? "zh"
+        let base64Images: [String]? = images.isEmpty ? nil : images.map { $0.base64EncodedString() }
         return AsyncThrowingStream { continuation in
             Task {
                 let body = ChatRequest(
                     message: message,
                     session_id: sessionId,
                     location: location.map { .init(lat: $0.lat, lng: $0.lng) },
-                    language: lang
+                    language: lang,
+                    images: base64Images
                 )
 
                 let stream = await APIClient.shared.streamRequest("/chat", body: body)

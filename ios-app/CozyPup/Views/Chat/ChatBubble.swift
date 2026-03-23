@@ -54,6 +54,7 @@ struct ChatBubble: View {
             if !isUser { Spacer(minLength: 60) }
         }
     }
+
 }
 
 struct TranslationModifier: ViewModifier {

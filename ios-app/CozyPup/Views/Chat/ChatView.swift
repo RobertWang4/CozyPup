@@ -14,8 +14,10 @@ struct ChatView: View {
     @State private var showSettings = false
     @State private var calendarDrag: CGFloat = 0
     @State private var settingsDrag: CGFloat = 0
+    @State private var voiceDragOffset: CGFloat = 0
+    @State private var pendingPhotos: [Data] = []
 
-    private var drawerWidth: CGFloat { UIScreen.main.bounds.width * 0.85 }
+    private var drawerWidth: CGFloat { UIScreen.main.bounds.width * 0.90 }
 
     // Calendar: -drawerWidth (hidden) to 0 (open)
     private var calendarX: CGFloat {
@@ -71,6 +73,14 @@ struct ChatView: View {
                         LazyVStack(spacing: 10) {
                             ForEach(chatStore.messages) { msg in
                                 VStack(spacing: Tokens.spacing.sm) {
+                                    // Photos above bubble
+                                    if let photos = msg.imageData, !photos.isEmpty {
+                                        HStack {
+                                            if msg.role == .user { Spacer() }
+                                            photoGrid(photos)
+                                            if msg.role != .user { Spacer() }
+                                        }
+                                    }
                                     if !msg.content.isEmpty {
                                         ChatBubble(role: msg.role, content: msg.content)
                                     }
@@ -103,24 +113,33 @@ struct ChatView: View {
 
                 ChatInputBar(
                     text: $inputText,
+                    pendingPhotos: $pendingPhotos,
                     isStreaming: isStreaming,
                     isListening: speech.isListening,
+                    transcript: speech.transcript,
+                    audioLevel: speech.audioLevel,
                     onSend: sendMessage,
                     onMicDown: startVoice,
                     onMicUp: releaseVoice,
-                    onMicCancel: cancelVoice
+                    onMicCancel: cancelVoice,
+                    dragOffsetOut: $voiceDragOffset
                 )
             }
             .background(Tokens.bg.ignoresSafeArea())
-
-            // Voice overlay
+        }
+        .overlay {
             if speech.isListening {
-                VoiceInputOverlay(
+                VoiceRecordingOverlay(
                     transcript: speech.transcript,
                     audioLevel: speech.audioLevel,
-                    isCancelling: false
+                    dragOffset: voiceDragOffset,
+                    cancelThreshold: -120
                 )
-                .transition(.opacity)
+                .transition(.asymmetric(
+                    insertion: .scale(scale: 0.3, anchor: .bottom).combined(with: .opacity),
+                    removal: .scale(scale: 0.5, anchor: .bottom).combined(with: .opacity)
+                ))
+                .animation(.spring(response: 0.4, dampingFraction: 0.75), value: speech.isListening)
             }
         }
         // 1. Edge swipe areas (always rendered, below dimming overlay)
@@ -349,23 +368,26 @@ struct ChatView: View {
 
     private func sendMessage() {
         let text = inputText.trimmingCharacters(in: .whitespaces)
-        guard !text.isEmpty, !isStreaming else { return }
+        let photos = pendingPhotos
+        guard !text.isEmpty || !photos.isEmpty, !isStreaming else { return }
         Haptics.light()
 
-        let userMsg = ChatMessage(role: .user, content: text)
+        let userMsg = ChatMessage(role: .user, content: text, imageData: photos.isEmpty ? nil : photos)
         let assistantMsg = ChatMessage(role: .assistant)
         chatStore.messages.append(userMsg)
         chatStore.messages.append(assistantMsg)
         chatStore.save()
 
         inputText = ""
+        pendingPhotos = []
         isStreaming = true
 
         Task {
             let coord = location.lastLocation
             let loc = coord.map { (lat: $0.latitude, lng: $0.longitude) }
             let stream = ChatService.streamChat(
-                message: text, sessionId: chatStore.sessionId, location: loc
+                message: text, sessionId: chatStore.sessionId, location: loc,
+                images: photos
             )
 
             do {
@@ -429,5 +451,26 @@ struct ChatView: View {
 
     private func cancelVoice() {
         speech.cancel()
+    }
+
+    @ViewBuilder
+    private func photoGrid(_ photos: [Data]) -> some View {
+        let cols = photos.count == 1 ? 1 : (photos.count <= 4 ? 2 : 3)
+        let size: CGFloat = photos.count == 1 ? 160 : (photos.count <= 4 ? 90 : 70)
+        LazyVGrid(
+            columns: Array(repeating: GridItem(.fixed(size), spacing: 4), count: cols),
+            alignment: .trailing,
+            spacing: 4
+        ) {
+            ForEach(Array(photos.enumerated()), id: \.offset) { _, data in
+                if let img = UIImage(data: data) {
+                    Image(uiImage: img)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: size, height: size)
+                        .clipShape(RoundedRectangle(cornerRadius: Tokens.radiusSmall))
+                }
+            }
+        }
     }
 }

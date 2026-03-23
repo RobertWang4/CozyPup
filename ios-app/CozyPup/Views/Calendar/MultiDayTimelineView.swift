@@ -8,8 +8,13 @@ struct MultiDayTimelineView: View {
 
     enum ZoomLevel: Int, CaseIterable {
         case day = 0, week, month, year
-        var dayCount: Int {
-            switch self { case .day: return 14; case .week: return 35; case .month: return 90; case .year: return 365 }
+        var dayRange: (future: Int, past: Int) {
+            switch self {
+            case .day: return (365, 365)
+            case .week: return (365, 365)
+            case .month: return (365, 365)
+            case .year: return (365, 730)
+            }
         }
         var label: String {
             switch self { case .day: return "DAY"; case .week: return "WEEK"; case .month: return "MONTH"; case .year: return "YEAR" }
@@ -19,55 +24,75 @@ struct MultiDayTimelineView: View {
     @State private var zoomLevel: ZoomLevel = .day
     @GestureState private var pinchScale: CGFloat = 1.0
 
-    // Generate array of dates going back from today
     private var days: [Date] {
         let cal = Calendar.current
         let today = Date()
-        return (0..<zoomLevel.dayCount).compactMap { cal.date(byAdding: .day, value: -$0, to: today) }
+        let range = zoomLevel.dayRange
+        let total = range.future + range.past + 1
+        return (0..<total).compactMap { i in
+            cal.date(byAdding: .day, value: range.future - i, to: today)
+        }
+    }
+
+    private var todayIndex: Int {
+        zoomLevel.dayRange.future
     }
 
     var body: some View {
-        VStack(spacing: 0) {
-            // Zoom level label
-            Text(zoomLevel.label)
-                .font(Tokens.fontCaption2.weight(.semibold))
-                .foregroundColor(Tokens.textTertiary)
-                .tracking(1.5)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, Tokens.spacing.sm)
-
+        ScrollViewReader { proxy in
             ScrollView(showsIndicators: false) {
                 LazyVStack(spacing: 0) {
                     ForEach(Array(days.enumerated()), id: \.offset) { index, date in
                         let dateKey = dateString(date)
                         let dayEvents = eventsForDate(dateKey)
 
+                        // Month header when day is 1st of month
+                        if isFirstOfMonth(date) {
+                            monthHeader(for: date)
+                                .id("month-\(index)")
+                        }
+
                         DayRow(
                             date: date,
                             events: dayEvents,
                             pets: petStore.pets,
                             zoomLevel: zoomLevel,
-                            isToday: index == 0,
+                            isToday: index == todayIndex,
                             onTap: { onSelectDay(dateKey) }
                         )
+                        .id(index)
                     }
                 }
+                .padding(.bottom, Tokens.spacing.xl)
+            }
+            .onAppear {
+                proxy.scrollTo(todayIndex, anchor: .top)
             }
         }
-        .gesture(
-            MagnificationGesture()
-                .updating($pinchScale) { value, state, _ in state = value }
-                .onEnded { value in
-                    withAnimation(.easeInOut(duration: 0.35)) {
-                        if value < 0.7, let next = ZoomLevel(rawValue: zoomLevel.rawValue + 1) {
-                            zoomLevel = next  // Pinch in -> zoom out (more days)
-                        } else if value > 1.4, let prev = ZoomLevel(rawValue: zoomLevel.rawValue - 1) {
-                            zoomLevel = prev  // Pinch out -> zoom in (fewer days, more detail)
-                        }
-                    }
-                }
-        )
         .animation(.easeInOut(duration: 0.35), value: zoomLevel)
+    }
+
+    // MARK: - Month Header
+
+    private func monthHeader(for date: Date) -> some View {
+        let f = DateFormatter()
+        f.dateFormat = "MMMM yyyy"
+        let title = f.string(from: date)
+
+        return HStack {
+            Text(title.uppercased())
+                .font(Tokens.fontCaption.weight(.semibold))
+                .foregroundColor(Tokens.accent)
+                .tracking(1.2)
+            Spacer()
+        }
+        .padding(.horizontal, Tokens.spacing.lg)
+        .padding(.top, Tokens.spacing.lg)
+        .padding(.bottom, Tokens.spacing.sm)
+    }
+
+    private func isFirstOfMonth(_ date: Date) -> Bool {
+        Calendar.current.component(.day, from: date) == 1
     }
 
     private func eventsForDate(_ dateKey: String) -> [CalendarEvent] {
@@ -100,157 +125,197 @@ struct DayRow: View {
         f.dateFormat = "EEE"
         return f.string(from: date).uppercased()
     }
-    private var isFirstOfMonth: Bool { dayNum == 1 }
-    private var monthShort: String {
-        let f = DateFormatter()
-        f.dateFormat = "MMM"
-        return f.string(from: date).uppercased()
-    }
-
-    // Zoom-dependent sizing
-    private var leftWidth: CGFloat { [64, 48, 36, 24][zoomLevel.rawValue] }
-    private var dateFont: Font {
-        [Font.system(size: 32, design: .serif),
-         .system(size: 22, design: .serif),
-         .system(size: 14, design: .serif),
-         .system(size: 10, design: .serif)][zoomLevel.rawValue]
-    }
-    private var weekdayFont: Font {
-        [Tokens.fontCaption, Tokens.fontCaption2, Tokens.fontCaption2, Tokens.fontCaption2][zoomLevel.rawValue]
-    }
-    private var bottomPadding: CGFloat { [18, 8, 2, 0][zoomLevel.rawValue] }
-    private var eventSpacing: CGFloat { [Tokens.spacing.xs, 2, 0, 0][zoomLevel.rawValue] }
-    private var dateColor: Color {
-        isToday ? Tokens.accent : Tokens.text
-    }
 
     var body: some View {
         HStack(alignment: .top, spacing: 0) {
             // Left: date column
-            VStack(alignment: .trailing, spacing: Tokens.spacing.xxs) {
-                if isFirstOfMonth && zoomLevel.rawValue >= 2 {
-                    Text(monthShort)
-                        .font(Tokens.fontCaption2.weight(.semibold))
-                        .foregroundColor(Tokens.accent)
-                }
-                Text("\(dayNum)")
-                    .font(dateFont)
-                    .foregroundColor(dateColor)
-                if zoomLevel.rawValue <= 1 {
-                    Text(weekdayShort)
-                        .font(weekdayFont)
-                        .foregroundColor(isToday ? Tokens.accent : Tokens.textTertiary)
-                }
-            }
-            .frame(width: leftWidth, alignment: .trailing)
-            .padding(.trailing, Tokens.spacing.sm)
-            .onTapGesture { onTap() }
+            dateColumn
+                .onTapGesture { onTap() }
 
-            // Right: events column with vertical line
-            VStack(alignment: .leading, spacing: eventSpacing) {
-                if events.isEmpty && zoomLevel == .day {
-                    Text("\u{2014}")
-                        .font(Tokens.fontCaption)
-                        .foregroundColor(Tokens.textTertiary)
-                } else {
-                    switch zoomLevel {
-                    case .day:
-                        dayContent
-                    case .week:
-                        weekContent
-                    case .month:
-                        monthContent
-                    case .year:
-                        yearContent
-                    }
-                }
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.leading, Tokens.spacing.sm)
-            .padding(.bottom, bottomPadding)
-            .overlay(alignment: .leading) {
-                if zoomLevel != .year {
-                    Rectangle()
-                        .fill(Tokens.border)
-                        .frame(width: 1)
-                }
-            }
+            // Center: vertical timeline line + dot
+            timelineLine
+
+            // Right: event content
+            eventContent
         }
         .padding(.horizontal, Tokens.spacing.md)
     }
 
-    // MARK: - Day zoom: full title + time + pet color dot
+    // MARK: - Date Column
+
+    private var dateColumn: some View {
+        VStack(alignment: .trailing, spacing: 1) {
+            Text(weekdayShort)
+                .font(Tokens.fontCaption2.weight(.medium))
+                .foregroundColor(isToday ? Tokens.accent : Tokens.textTertiary)
+
+            Text("\(dayNum)")
+                .font(.system(size: dateSize, weight: isToday ? .bold : .regular, design: .serif))
+                .foregroundColor(isToday ? Tokens.accent : Tokens.text)
+        }
+        .frame(width: dateColumnWidth, alignment: .trailing)
+        .padding(.trailing, Tokens.spacing.sm)
+        .padding(.vertical, rowVerticalPadding)
+    }
+
+    // MARK: - Timeline Line
+
+    private var timelineLine: some View {
+        VStack(spacing: 0) {
+            Rectangle()
+                .fill(isToday ? Tokens.accent.opacity(0.3) : Tokens.border)
+                .frame(width: 1)
+                .frame(maxHeight: .infinity)
+        }
+        .frame(width: Tokens.spacing.lg)
+        .overlay {
+            Circle()
+                .fill(isToday ? Tokens.accent : (events.isEmpty ? Tokens.border : Tokens.textSecondary))
+                .frame(width: isToday ? 8 : 5, height: isToday ? 8 : 5)
+        }
+    }
+
+    // MARK: - Event Content
+
+    private var eventContent: some View {
+        VStack(alignment: .leading, spacing: eventCardSpacing) {
+            if events.isEmpty {
+                Color.clear.frame(height: emptyRowHeight)
+            } else {
+                switch zoomLevel {
+                case .day:
+                    dayContent
+                case .week:
+                    weekContent
+                case .month:
+                    monthContent
+                case .year:
+                    yearContent
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.leading, Tokens.spacing.xs)
+        .padding(.vertical, rowVerticalPadding)
+    }
+
+    // MARK: - Zoom-dependent sizing
+
+    private var dateColumnWidth: CGFloat { [56, 44, 36, 28][zoomLevel.rawValue] }
+    private var dateSize: CGFloat { [26, 20, 14, 11][zoomLevel.rawValue] }
+    private var rowVerticalPadding: CGFloat { [10, 6, 3, 1][zoomLevel.rawValue] }
+    private var emptyRowHeight: CGFloat { [28, 16, 8, 4][zoomLevel.rawValue] }
+    private var eventCardSpacing: CGFloat { [Tokens.spacing.sm, Tokens.spacing.xs, 2, 1][zoomLevel.rawValue] }
+
+    // MARK: - Day: event cards
 
     @ViewBuilder var dayContent: some View {
         ForEach(events, id: \.id) { evt in
             HStack(spacing: Tokens.spacing.sm) {
-                Circle()
-                    .fill(petColor(for: evt))
-                    .frame(width: 8, height: 8)
+                // Category accent bar
+                RoundedRectangle(cornerRadius: 1.5)
+                    .fill(categoryColor(evt.category))
+                    .frame(width: 3, height: 36)
+
                 VStack(alignment: .leading, spacing: Tokens.spacing.xxs) {
                     Text(evt.title)
                         .font(Tokens.fontSubheadline)
                         .foregroundColor(Tokens.text)
                         .lineLimit(2)
-                    if let time = evt.eventTime {
-                        Text(time)
-                            .font(Tokens.fontCaption)
-                            .foregroundColor(Tokens.textTertiary)
+
+                    HStack(spacing: Tokens.spacing.xs) {
+                        if let time = evt.eventTime {
+                            Text(time)
+                                .font(Tokens.fontCaption2)
+                                .foregroundColor(Tokens.textTertiary)
+                        }
+                        // Pet color dot + name
+                        Circle()
+                            .fill(petColor(for: evt))
+                            .frame(width: 6, height: 6)
+                        if let name = evt.petName {
+                            Text(name)
+                                .font(Tokens.fontCaption2)
+                                .foregroundColor(Tokens.textTertiary)
+                        }
                     }
                 }
+                Spacer()
             }
+            .padding(.vertical, Tokens.spacing.sm)
+            .padding(.horizontal, Tokens.spacing.sm)
+            .background(Tokens.surface)
+            .cornerRadius(Tokens.radiusSmall)
         }
     }
 
-    // MARK: - Week zoom: one-line truncated
+    // MARK: - Week: compact single line per event
 
     @ViewBuilder var weekContent: some View {
         ForEach(events.prefix(3), id: \.id) { evt in
             HStack(spacing: Tokens.spacing.xs) {
-                Circle()
-                    .fill(petColor(for: evt))
-                    .frame(width: 6, height: 6)
+                RoundedRectangle(cornerRadius: 1)
+                    .fill(categoryColor(evt.category))
+                    .frame(width: 2, height: 14)
                 Text(evt.title)
                     .font(Tokens.fontCaption)
                     .foregroundColor(Tokens.text)
                     .lineLimit(1)
+                Spacer()
+                if let time = evt.eventTime {
+                    Text(time)
+                        .font(Tokens.fontCaption2)
+                        .foregroundColor(Tokens.textTertiary)
+                }
             }
+            .padding(.vertical, 3)
+            .padding(.horizontal, Tokens.spacing.sm)
+            .background(Tokens.surface)
+            .cornerRadius(Tokens.spacing.sm)
         }
         if events.count > 3 {
-            Text("+\(events.count - 3)")
+            Text("+\(events.count - 3) more")
                 .font(Tokens.fontCaption2)
                 .foregroundColor(Tokens.textTertiary)
+                .padding(.leading, Tokens.spacing.sm)
         }
     }
 
-    // MARK: - Month zoom: colored dots
+    // MARK: - Month: colored dots
 
     @ViewBuilder var monthContent: some View {
         if !events.isEmpty {
-            HStack(spacing: 3) {
-                ForEach(events.prefix(5), id: \.id) { evt in
+            HStack(spacing: 4) {
+                ForEach(events.prefix(6), id: \.id) { evt in
                     Circle()
                         .fill(petColor(for: evt))
-                        .frame(width: 6, height: 6)
+                        .frame(width: 7, height: 7)
+                }
+                if events.count > 6 {
+                    Text("+\(events.count - 6)")
+                        .font(.system(size: 9))
+                        .foregroundColor(Tokens.textTertiary)
                 }
             }
-            .padding(.vertical, 1)
+            .padding(.vertical, 2)
         }
     }
 
-    // MARK: - Year zoom: thin colored bar
+    // MARK: - Year: thin bar
 
     @ViewBuilder var yearContent: some View {
         if !events.isEmpty {
             HStack(spacing: 1) {
-                ForEach(events.prefix(4), id: \.id) { evt in
+                ForEach(events.prefix(5), id: \.id) { evt in
                     RoundedRectangle(cornerRadius: 1)
                         .fill(petColor(for: evt))
-                        .frame(width: 12, height: 3)
+                        .frame(width: 10, height: 3)
                 }
             }
         }
     }
+
+    // MARK: - Helpers
 
     private func petColor(for event: CalendarEvent) -> Color {
         if let hex = event.petColorHex, !hex.isEmpty {
@@ -260,5 +325,17 @@ struct DayRow: View {
             return pet.color
         }
         return Tokens.accent
+    }
+
+    private func categoryColor(_ category: EventCategory) -> Color {
+        switch category {
+        case .diet: return Tokens.green
+        case .medical: return Tokens.blue
+        case .daily: return Tokens.accent
+        case .abnormal: return Tokens.red
+        case .vaccine: return Tokens.purple
+        case .deworming: return Tokens.orange
+        case .excretion: return Tokens.textSecondary
+        }
     }
 }

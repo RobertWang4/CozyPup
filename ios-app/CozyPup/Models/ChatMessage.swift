@@ -85,12 +85,19 @@ struct ChatMessage: Identifiable, Codable, Equatable {
     let role: MessageRole
     var content: String
     var cards: [CardData]
+    var imageData: [Data]?  // attached photos (JPEG data, not persisted to UserDefaults)
 
-    init(role: MessageRole, content: String = "", cards: [CardData] = []) {
+    enum CodingKeys: String, CodingKey {
+        case id, role, content, cards
+        // imageData intentionally excluded — too large for UserDefaults
+    }
+
+    init(role: MessageRole, content: String = "", cards: [CardData] = [], imageData: [Data]? = nil) {
         self.id = UUID().uuidString
         self.role = role
         self.content = content
         self.cards = cards
+        self.imageData = imageData
     }
 }
 

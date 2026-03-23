@@ -35,10 +35,18 @@ struct MonthGrid: View {
                             }
                         )
 
-                    // Event dot
-                    Circle()
-                        .fill(hasEvents ? Tokens.accent.opacity(0.6) : Color.clear)
-                        .frame(width: 5, height: 5)
+                    // Pet-colored event dots
+                    HStack(spacing: 2) {
+                        let petColors = uniquePetColors(for: dayEvents)
+                        if petColors.isEmpty {
+                            Circle().fill(Color.clear).frame(width: 5, height: 5)
+                        } else {
+                            ForEach(Array(petColors.prefix(3).enumerated()), id: \.offset) { _, color in
+                                Circle().fill(color).frame(width: 5, height: 5)
+                            }
+                        }
+                    }
+                    .frame(height: 5)
                 }
                 .padding(.vertical, Tokens.spacing.xs)
                 .onTapGesture(count: 2) {
@@ -56,5 +64,23 @@ struct MonthGrid: View {
         events.filter { e in
             e.eventDate == date && (filterPetId == nil || e.petId == filterPetId)
         }
+    }
+
+    /// Returns unique pet colors for the given events (one dot per pet)
+    private func uniquePetColors(for events: [CalendarEvent]) -> [Color] {
+        var seen = Set<String>()
+        var colors: [Color] = []
+        for evt in events {
+            guard !seen.contains(evt.petId) else { continue }
+            seen.insert(evt.petId)
+            if let pet = pets.first(where: { $0.id == evt.petId }) {
+                colors.append(pet.color)
+            } else if let hex = evt.petColorHex, !hex.isEmpty {
+                colors.append(Color(hex: hex))
+            } else {
+                colors.append(Tokens.accent)
+            }
+        }
+        return colors
     }
 }

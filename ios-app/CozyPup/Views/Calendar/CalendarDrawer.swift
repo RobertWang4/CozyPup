@@ -38,70 +38,26 @@ struct CalendarDrawer: View {
     }
 
     var body: some View {
-        ZStack(alignment: .topTrailing) {
-            ScrollView(showsIndicators: false) {
-                VStack(spacing: 0) {
-                    
-                    // Pet avatars
-                    HStack(spacing: Tokens.spacing.md) {
-                        ForEach(petStore.pets) { pet in
-                            Button {
-                                withAnimation(.easeInOut(duration: 0.2)) {
-                                    filterPetId = filterPetId == pet.id ? nil : pet.id
-                                }
-                            } label: {
-                                PetAvatarCircle(
-                                    pet: pet,
-                                    size: 56,
-                                    isActiveFilter: filterPetId == pet.id,
-                                    isDimmed: filterPetId != nil && filterPetId != pet.id
-                                )
-                            }
-                            .buttonStyle(.plain)
+        VStack(spacing: 0) {
+            // Pet avatars + action buttons (fixed header)
+            HStack(spacing: Tokens.spacing.md) {
+                ForEach(petStore.pets) { pet in
+                    Button {
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            filterPetId = filterPetId == pet.id ? nil : pet.id
                         }
-                        Spacer()
+                    } label: {
+                        PetAvatarCircle(
+                            pet: pet,
+                            size: 56,
+                            isActiveFilter: filterPetId == pet.id,
+                            isDimmed: filterPetId != nil && filterPetId != pet.id
+                        )
                     }
-                    .padding(.horizontal, Tokens.spacing.lg)
-                    .padding(.top, 70)
-                    .padding(.bottom, 0) // No bottom padding so triangle touches card
-
-                    switch mode {
-                    case .calendar:
-                        // Calendar Card
-                        calendarCard
-                            .padding(.horizontal, Tokens.spacing.md)
-                            .padding(.bottom, Tokens.spacing.md)
-                            .shadow(color: .black.opacity(0.03), radius: 8, y: 2)
-
-                        // Events List
-                        if selectedDate != nil {
-                            eventsList
-                                .padding(.horizontal, Tokens.spacing.md)
-                                .padding(.bottom, 30)
-                        } else {
-                            Spacer().frame(height: 30)
-                        }
-
-                    case .timeline:
-                        MultiDayTimelineView(filterPetId: $filterPetId) { date in
-                            singleDayDate = date
-                            withAnimation(.easeInOut(duration: 0.3)) { mode = .singleDay }
-                        }
-                        .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
-
-                    case .singleDay:
-                        if let date = singleDayDate {
-                            SingleDayTimelineView(date: date, filterPetId: filterPetId) {
-                                withAnimation(.easeInOut(duration: 0.3)) { mode = .timeline }
-                            }
-                            .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
-                        }
-                    }
+                    .buttonStyle(.plain)
                 }
-            }
-            
-            // Top bar buttons
-            HStack(spacing: Tokens.spacing.sm) {
+                Spacer()
+
                 // Mode toggle
                 Button {
                     withAnimation(.easeInOut(duration: 0.3)) {
@@ -111,26 +67,49 @@ struct CalendarDrawer: View {
                     Image(systemName: mode == .calendar ? "list.bullet" : "calendar")
                         .font(Tokens.fontSubheadline)
                         .foregroundColor(mode == .timeline ? Tokens.white : Tokens.textSecondary)
-                        .frame(width: Tokens.size.iconSmall, height: Tokens.size.iconSmall)
+                        .frame(width: Tokens.size.buttonSmall, height: Tokens.size.buttonSmall)
                         .background(mode == .timeline ? Tokens.accent : Tokens.surface)
                         .clipShape(Circle())
                 }
+            }
+            .padding(.horizontal, Tokens.spacing.lg)
+            .padding(.top, 70)
 
-                // Close button
-                Button {
-                    withAnimation(.easeInOut(duration: 0.3)) { isPresented = false }
-                } label: {
-                    Image(systemName: "xmark")
-                        .font(Tokens.fontSubheadline.weight(.medium))
-                        .foregroundColor(Tokens.textSecondary)
-                        .frame(width: Tokens.size.buttonSmall, height: Tokens.size.buttonSmall)
-                        .background(Tokens.surface)
-                        .clipShape(Circle())
+            // Scrollable content area
+            switch mode {
+            case .calendar:
+                ScrollView(showsIndicators: false) {
+                    VStack(spacing: 0) {
+                        calendarCard
+                            .padding(.horizontal, Tokens.spacing.md)
+                            .padding(.bottom, Tokens.spacing.md)
+                            .shadow(color: .black.opacity(0.03), radius: 8, y: 2)
+
+                        if selectedDate != nil {
+                            eventsList
+                                .padding(.horizontal, Tokens.spacing.md)
+                                .padding(.bottom, 30)
+                        } else {
+                            Spacer().frame(height: 30)
+                        }
+                    }
+                }
+
+            case .timeline:
+                MultiDayTimelineView(filterPetId: $filterPetId) { date in
+                    singleDayDate = date
+                    withAnimation(.easeInOut(duration: 0.3)) { mode = .singleDay }
+                }
+
+            case .singleDay:
+                if let date = singleDayDate {
+                    SingleDayTimelineView(date: date, filterPetId: filterPetId) {
+                        withAnimation(.easeInOut(duration: 0.3)) { mode = .timeline }
+                    }
                 }
             }
-            .padding(.trailing, Tokens.spacing.md)
-            .padding(.top, Tokens.spacing.md)
         }
+        .padding(.horizontal, Tokens.spacing.sm)
         .task { await calendarStore.fetchMonth(year: year, month: month + 1) }
         .onChange(of: month) { Task { await calendarStore.fetchMonth(year: year, month: month + 1) } }
         .onChange(of: year) { Task { await calendarStore.fetchMonth(year: year, month: month + 1) } }
@@ -264,9 +243,9 @@ struct PetAvatarCircle: View {
                         .foregroundColor(pet.color)
                 }
                 
-                // Border
+                // Border — pet's own color
                 Circle()
-                    .stroke(isActiveFilter ? Tokens.accent : Tokens.accent.opacity(0.3), lineWidth: 2)
+                    .stroke(isActiveFilter ? pet.color : pet.color.opacity(0.3), lineWidth: 2)
                     .frame(width: size, height: size)
             }
             

@@ -15,7 +15,10 @@ class SpeechService: ObservableObject {
     private var interruptionObserver: Any?
 
     init() {
-        recognizer = SFSpeechRecognizer(locale: Locale.current)
+        // Prefer Chinese if user's language is zh, otherwise use device locale
+        let lang = UserDefaults.standard.string(forKey: "cozypup_language") ?? "zh"
+        let locale = lang == "zh" ? Locale(identifier: "zh-Hans-CN") : Locale.current
+        recognizer = SFSpeechRecognizer(locale: locale)
     }
 
     func requestPermission() async -> Bool {

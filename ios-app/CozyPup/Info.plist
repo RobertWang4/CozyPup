@@ -7,5 +7,9 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>CozyPup needs camera access to take photos of your pet</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>CozyPup needs photo library access to attach pet photos</string>
 </dict>
 </plist>

@@ -43,6 +43,7 @@ class ChatRequest(BaseModel):
     session_id: str | None = None
     location: dict | None = None  # {"lat": float, "lng": float}
     language: str | None = None   # "zh", "en", or None (auto-detect from message)
+    images: list[str] | None = None  # base64-encoded JPEG strings
 
 
 async def _get_or_create_session(
@@ -183,6 +184,7 @@ async def _run_chat_agent_to_queue(
                 "location": request.location,
                 "is_emergency": is_emergency,
                 "pets": pets,
+                "images": request.images,
             },
             on_token=on_token,
             on_card=on_card,

@@ -80,10 +80,24 @@ class ChatAgent(BaseAgent):
 
         # Build message history
         context_messages = context.get("context_messages", [])
+        images = context.get("images") or []
+
+        # Build user message — multimodal if images present
+        if images:
+            user_content: list[dict] = [{"type": "text", "text": message}]
+            for img_b64 in images:
+                user_content.append({
+                    "type": "image_url",
+                    "image_url": {"url": f"data:image/jpeg;base64,{img_b64}"}
+                })
+            user_msg = {"role": "user", "content": user_content}
+        else:
+            user_msg = {"role": "user", "content": message}
+
         messages = [
             {"role": "system", "content": system_prompt},
             *context_messages,
-            {"role": "user", "content": message},
+            user_msg,
         ]
 
         full_response = ""
