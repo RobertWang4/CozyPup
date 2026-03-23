@@ -7,6 +7,7 @@ from typing import Callable, Optional
 import litellm
 
 from app.agents.base import BaseAgent
+from app.agents.pending_actions import store_action
 from app.agents.post_processor import execute_suggested_actions, response_claims_action
 from app.agents.pre_processor import SuggestedAction, format_actions_for_prompt, pre_process
 from app.agents.prompts import CHAT_SYSTEM_PROMPT
@@ -18,6 +19,23 @@ logger = logging.getLogger(__name__)
 
 # Maximum rounds of tool calls before forcing a text response
 MAX_TOOL_ROUNDS = 5
+
+# Tools that modify data — LLM judges, but execution requires user confirmation.
+# Read-only and recording tools execute immediately.
+CONFIRM_TOOLS = {"update_pet_profile", "delete_pet"}
+
+
+def _describe_tool_call(fn_name: str, fn_args: dict) -> str:
+    """Generate human-readable description from LLM's tool call arguments."""
+    if fn_name == "update_pet_profile":
+        info = fn_args.get("info", {})
+        if "name" in info:
+            return f"把名字改为「{info['name']}」"
+        keys = ", ".join(info.keys())
+        return f"更新宠物信息: {keys}"
+    if fn_name == "delete_pet":
+        return "删除宠物"
+    return f"执行 {fn_name}"
 
 
 class ChatAgent(BaseAgent):
@@ -51,6 +69,7 @@ class ChatAgent(BaseAgent):
         """
         db = context["db"]
         user_id = context["user_id"]
+        session_id = context.get("session_id")
         location = context.get("location")
         system_prompt = context.get("system_prompt", CHAT_SYSTEM_PROMPT)
         pets = context.get("pets", [])
@@ -103,6 +122,7 @@ class ChatAgent(BaseAgent):
         full_response = ""
         cards: list[dict] = []
         any_tool_called = False
+        has_confirm_card = False
 
         # --- Phase 1: Streaming LLM call with tool execution ---
         for _round in range(MAX_TOOL_ROUNDS):
@@ -154,6 +174,38 @@ class ChatAgent(BaseAgent):
                     })
                     continue
 
+                # --- Confirm gate: intercept modifying tools ---
+                if fn_name in CONFIRM_TOOLS and session_id:
+                    description = _describe_tool_call(fn_name, fn_args)
+                    action_id = store_action(
+                        user_id=str(user_id),
+                        session_id=str(session_id),
+                        tool_name=fn_name,
+                        arguments=fn_args,
+                        description=description,
+                    )
+                    confirm_card = {
+                        "type": "confirm_action",
+                        "action_id": action_id,
+                        "message": description,
+                    }
+                    cards.append(confirm_card)
+                    if on_card:
+                        await _maybe_await(on_card, confirm_card)
+                    has_confirm_card = True
+
+                    # Tell the LLM it's pending confirmation (so it doesn't say "已完成")
+                    messages.append({
+                        "role": "tool",
+                        "tool_call_id": tc["id"],
+                        "content": json.dumps({
+                            "status": "pending_user_confirmation",
+                            "message": "已发送确认卡片给用户，等待用户确认后执行。",
+                        }),
+                    })
+                    continue
+
+                # --- Normal execution for non-confirm tools ---
                 try:
                     result = await execute_tool(fn_name, fn_args, db, user_id, location=location, images=images)
                     await db.commit()
@@ -176,6 +228,11 @@ class ChatAgent(BaseAgent):
                     "tool_call_id": tc["id"],
                     "content": json.dumps(result),
                 })
+
+            # If we emitted confirm cards and no other tools need execution,
+            # skip the follow-up LLM call (no need for "已完成" text)
+            if has_confirm_card:
+                break
 
         # --- Phase 2: Deterministic post-check ---
         # If LLM claimed an action but didn't call any tool, execute

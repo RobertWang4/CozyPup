@@ -14,8 +14,7 @@ from sse_starlette.sse import EventSourceResponse
 
 from app.agents.chat_agent import ChatAgent
 from app.agents.emergency import detect_emergency
-from app.agents.pending_actions import pop_action, store_action
-from app.agents.pre_processor import get_confirmable_actions, pre_process
+from app.agents.pending_actions import pop_action
 from app.agents.prompts import CHAT_SYSTEM_PROMPT
 from app.agents.tools import execute_tool
 from app.auth import get_current_user_id
@@ -233,44 +232,6 @@ async def _event_generator(
 
     # 4. Load context
     pets = await _get_pets(db, user_id)
-
-    # 5. Check for confirmable actions (medium confidence, skip LLM)
-    suggested = pre_process(request.message, pets)
-    confirmable = get_confirmable_actions(suggested)
-
-    if confirmable and not is_emergency:
-        # Emit confirm cards — no LLM call needed
-        confirm_cards = []
-        for action in confirmable:
-            action_id = store_action(
-                user_id=str(user_id),
-                session_id=session_id,
-                tool_name=action.tool_name,
-                arguments=action.arguments,
-                description=action.confirm_description,
-            )
-            card = {
-                "type": "confirm_action",
-                "action_id": action_id,
-                "message": action.confirm_description,
-            }
-            confirm_cards.append(card)
-            yield {"event": "card", "data": json.dumps(card)}
-
-        # Save as assistant message
-        await _save_message(
-            db, session.id, user_id, MessageRole.assistant,
-            "",  # No text, just cards
-            json.dumps(confirm_cards),
-        )
-
-        yield {
-            "event": "done",
-            "data": json.dumps({"intent": "chat", "session_id": session_id}),
-        }
-        return  # Skip LLM entirely
-
-    # 6. Normal flow — stream ChatAgent response
     context_messages = await _get_context_messages(db, session.id)
 
     queue: asyncio.Queue = asyncio.Queue()
