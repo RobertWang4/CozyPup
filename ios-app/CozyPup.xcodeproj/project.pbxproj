@@ -522,8 +522,10 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = CozyPup/Info.plist;
 				INFOPLIST_KEY_NSAppTransportSecurity_NSAllowsArbitraryLoads = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "CozyPup needs camera access to take photos of your pet";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "CozyPup uses your location to find nearby pet services";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "CozyPup needs microphone access for voice input";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "CozyPup needs photo library access to attach pet photos";
 				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "CozyPup uses speech recognition for voice input";
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UIStatusBarStyle = UIStatusBarStyleDefault;
@@ -548,8 +550,10 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = CozyPup/Info.plist;
 				INFOPLIST_KEY_NSAppTransportSecurity_NSAllowsArbitraryLoads = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "CozyPup needs camera access to take photos of your pet";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "CozyPup uses your location to find nearby pet services";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "CozyPup needs microphone access for voice input";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "CozyPup needs photo library access to attach pet photos";
 				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "CozyPup uses speech recognition for voice input";
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UIStatusBarStyle = UIStatusBarStyleDefault;

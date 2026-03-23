@@ -3,6 +3,7 @@ import SwiftUI
 struct SettingsDrawer: View {
     @EnvironmentObject var auth: AuthStore
     @EnvironmentObject var petStore: PetStore
+    @EnvironmentObject var calendarStore: CalendarStore
     @Binding var isPresented: Bool
 
     @State private var notifications = true
@@ -52,7 +53,11 @@ struct SettingsDrawer: View {
         )) {
             Button(L.delete, role: .destructive) {
                 if let pet = showDeleteConfirm {
-                    Task { await petStore.remove(pet.id) }
+                    Task {
+                        await petStore.remove(pet.id)
+                        let now = Calendar.current.dateComponents([.year, .month], from: Date())
+                        await calendarStore.fetchMonth(year: now.year!, month: now.month!)
+                    }
                 }
             }
             Button(L.cancel, role: .cancel) { }
