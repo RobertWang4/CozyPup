@@ -1,10 +1,12 @@
 """LiteLLM-compatible tool definitions and execution logic for the Chat Agent."""
 
 import asyncio
+import base64
 import json
 import logging
 import uuid
 from datetime import date, datetime, time
+from pathlib import Path
 
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -13,6 +15,12 @@ from app.models import (
     CalendarEvent, EventCategory, EventSource, EventType,
     Pet, Reminder, Species,
 )
+
+UPLOAD_DIR = Path(__file__).resolve().parent.parent / "uploads" / "avatars"
+UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+
+PHOTO_DIR = Path(__file__).resolve().parent.parent / "uploads" / "photos"
+PHOTO_DIR.mkdir(parents=True, exist_ok=True)
 from app.rag.writer import write_calendar_event as _rag_write_event
 
 logger = logging.getLogger(__name__)
@@ -296,6 +304,191 @@ TOOL_DEFINITIONS = [
                     },
                 },
                 "required": ["subject", "body"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "delete_pet",
+            "description": (
+                "Delete a pet profile. Use when the user wants to remove a pet "
+                "from their account."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "pet_id": {
+                        "type": "string",
+                        "description": "UUID of the pet to delete.",
+                    },
+                },
+                "required": ["pet_id"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "delete_calendar_event",
+            "description": (
+                "Delete a calendar event record. Use when the user wants to remove "
+                "a previously logged event. You MUST first call query_calendar_events "
+                "to find the event_id."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "event_id": {
+                        "type": "string",
+                        "description": "UUID of the event to delete (from query_calendar_events results).",
+                    },
+                },
+                "required": ["event_id"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "list_reminders",
+            "description": (
+                "List the user's active reminders. Use when the user asks about "
+                "their upcoming reminders or scheduled notifications."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {},
+                "required": [],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "update_reminder",
+            "description": (
+                "Update an existing reminder. Use when the user wants to change "
+                "the time, title, or details of a reminder. You MUST first call "
+                "list_reminders to find the reminder_id."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "reminder_id": {
+                        "type": "string",
+                        "description": "UUID of the reminder to update (from list_reminders results).",
+                    },
+                    "title": {
+                        "type": "string",
+                        "description": "New reminder title.",
+                    },
+                    "body": {
+                        "type": "string",
+                        "description": "New reminder body/description.",
+                    },
+                    "trigger_at": {
+                        "type": "string",
+                        "description": "New trigger time in ISO 8601 format (YYYY-MM-DDTHH:MM:SS).",
+                    },
+                    "type": {
+                        "type": "string",
+                        "enum": ["medication", "vaccine", "checkup", "feeding", "grooming", "other"],
+                        "description": "New reminder type.",
+                    },
+                },
+                "required": ["reminder_id"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "delete_reminder",
+            "description": (
+                "Delete/cancel a reminder. Use when the user wants to cancel a "
+                "scheduled reminder. You MUST first call list_reminders to find "
+                "the reminder_id."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "reminder_id": {
+                        "type": "string",
+                        "description": "UUID of the reminder to delete (from list_reminders results).",
+                    },
+                },
+                "required": ["reminder_id"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "upload_event_photo",
+            "description": (
+                "Attach a photo to a calendar event from the user's message images. "
+                "Use when the user sends a photo and asks to add it to a specific "
+                "event record."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "event_id": {
+                        "type": "string",
+                        "description": "UUID of the event to attach the photo to.",
+                    },
+                    "image_base64": {
+                        "type": "string",
+                        "description": "Base64-encoded JPEG image data.",
+                    },
+                },
+                "required": ["event_id", "image_base64"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "set_language",
+            "description": (
+                "Change the app's display language. Use when the user asks to "
+                "switch language."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "language": {
+                        "type": "string",
+                        "enum": ["zh", "en"],
+                        "description": "Language code to switch to.",
+                    },
+                },
+                "required": ["language"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "set_pet_avatar",
+            "description": (
+                "Set a pet's avatar/profile photo from the user's message images. "
+                "Use when the user sends a photo and says to use it as a pet's avatar."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "pet_id": {
+                        "type": "string",
+                        "description": "UUID of the pet.",
+                    },
+                    "image_base64": {
+                        "type": "string",
+                        "description": "Base64-encoded JPEG image data.",
+                    },
+                },
+                "required": ["pet_id", "image_base64"],
             },
         },
     },
@@ -733,6 +926,261 @@ async def _draft_email(
     }
 
 
+async def _delete_pet(
+    arguments: dict,
+    db: AsyncSession,
+    user_id: uuid.UUID,
+) -> dict:
+    """Delete a pet profile."""
+    pet_id = uuid.UUID(arguments["pet_id"])
+
+    result = await db.execute(
+        select(Pet).where(Pet.id == pet_id, Pet.user_id == user_id)
+    )
+    pet = result.scalar_one_or_none()
+    if not pet:
+        return {"success": False, "error": "Pet not found"}
+
+    pet_name = pet.name
+    await db.delete(pet)
+    await db.flush()
+
+    return {
+        "success": True,
+        "pet_id": str(pet_id),
+        "pet_name": pet_name,
+    }
+
+
+async def _delete_calendar_event(
+    arguments: dict,
+    db: AsyncSession,
+    user_id: uuid.UUID,
+) -> dict:
+    """Delete a calendar event record."""
+    event_id = uuid.UUID(arguments["event_id"])
+
+    result = await db.execute(
+        select(CalendarEvent).where(
+            CalendarEvent.id == event_id, CalendarEvent.user_id == user_id
+        )
+    )
+    event = result.scalar_one_or_none()
+    if not event:
+        return {"success": False, "error": "Event not found"}
+
+    title = event.title
+    await db.delete(event)
+    await db.flush()
+
+    return {
+        "success": True,
+        "event_id": str(event_id),
+        "title": title,
+    }
+
+
+async def _list_reminders(
+    arguments: dict,
+    db: AsyncSession,
+    user_id: uuid.UUID,
+) -> dict:
+    """List the user's active (unsent) reminders."""
+    result = await db.execute(
+        select(Reminder)
+        .where(Reminder.user_id == user_id, Reminder.sent == False)  # noqa: E712
+        .order_by(Reminder.trigger_at)
+    )
+    reminders = result.scalars().all()
+
+    return {
+        "reminders": [
+            {
+                "id": str(r.id),
+                "pet_id": str(r.pet_id),
+                "type": r.type,
+                "title": r.title,
+                "body": r.body,
+                "trigger_at": r.trigger_at.isoformat() if r.trigger_at else None,
+            }
+            for r in reminders
+        ],
+        "count": len(reminders),
+    }
+
+
+async def _update_reminder(
+    arguments: dict,
+    db: AsyncSession,
+    user_id: uuid.UUID,
+) -> dict:
+    """Update an existing reminder."""
+    reminder_id = uuid.UUID(arguments["reminder_id"])
+
+    result = await db.execute(
+        select(Reminder).where(
+            Reminder.id == reminder_id, Reminder.user_id == user_id
+        )
+    )
+    reminder = result.scalar_one_or_none()
+    if not reminder:
+        return {"success": False, "error": "Reminder not found"}
+
+    if "title" in arguments:
+        reminder.title = arguments["title"]
+    if "body" in arguments:
+        reminder.body = arguments["body"]
+    if "trigger_at" in arguments:
+        reminder.trigger_at = datetime.fromisoformat(arguments["trigger_at"])
+    if "type" in arguments:
+        reminder.type = arguments["type"]
+
+    await db.flush()
+
+    # Load pet name for card
+    pet_result = await db.execute(select(Pet).where(Pet.id == reminder.pet_id))
+    pet = pet_result.scalar_one_or_none()
+
+    card = {
+        "type": "reminder",
+        "pet_name": pet.name if pet else "Unknown",
+        "title": reminder.title,
+        "trigger_at": reminder.trigger_at.isoformat() if reminder.trigger_at else None,
+        "reminder_type": reminder.type,
+    }
+
+    return {
+        "success": True,
+        "reminder_id": str(reminder.id),
+        "title": reminder.title,
+        "trigger_at": reminder.trigger_at.isoformat() if reminder.trigger_at else None,
+        "card": card,
+    }
+
+
+async def _delete_reminder(
+    arguments: dict,
+    db: AsyncSession,
+    user_id: uuid.UUID,
+) -> dict:
+    """Delete/cancel a reminder."""
+    reminder_id = uuid.UUID(arguments["reminder_id"])
+
+    result = await db.execute(
+        select(Reminder).where(
+            Reminder.id == reminder_id, Reminder.user_id == user_id
+        )
+    )
+    reminder = result.scalar_one_or_none()
+    if not reminder:
+        return {"success": False, "error": "Reminder not found"}
+
+    title = reminder.title
+    await db.delete(reminder)
+    await db.flush()
+
+    return {
+        "success": True,
+        "reminder_id": str(reminder_id),
+        "title": title,
+    }
+
+
+async def _upload_event_photo(
+    arguments: dict,
+    db: AsyncSession,
+    user_id: uuid.UUID,
+    **_kwargs,
+) -> dict:
+    """Attach a photo to a calendar event."""
+    event_id = uuid.UUID(arguments["event_id"])
+
+    result = await db.execute(
+        select(CalendarEvent).where(
+            CalendarEvent.id == event_id, CalendarEvent.user_id == user_id
+        )
+    )
+    event = result.scalar_one_or_none()
+    if not event:
+        return {"success": False, "error": "Event not found"}
+
+    image_data = base64.b64decode(arguments["image_base64"])
+    if len(image_data) > 5 * 1024 * 1024:
+        return {"success": False, "error": "Image must be under 5MB"}
+
+    photo_id = uuid.uuid4()
+    filename = f"{photo_id}.jpg"
+    filepath = PHOTO_DIR / filename
+    filepath.write_bytes(image_data)
+
+    photo_url = f"/api/v1/calendar/photos/{filename}"
+    photos = list(event.photos) if event.photos else []
+    photos.append(photo_url)
+    event.photos = photos
+    await db.flush()
+
+    return {
+        "success": True,
+        "event_id": str(event_id),
+        "photo_url": photo_url,
+    }
+
+
+async def _set_language(
+    arguments: dict,
+    db: AsyncSession,
+    user_id: uuid.UUID,
+) -> dict:
+    """Change the app display language (frontend-only action)."""
+    language = arguments["language"]
+
+    card = {
+        "type": "set_language",
+        "language": language,
+    }
+
+    return {
+        "success": True,
+        "language": language,
+        "card": card,
+    }
+
+
+async def _set_pet_avatar(
+    arguments: dict,
+    db: AsyncSession,
+    user_id: uuid.UUID,
+    **_kwargs,
+) -> dict:
+    """Set a pet's avatar from a base64 image."""
+    pet_id = uuid.UUID(arguments["pet_id"])
+
+    result = await db.execute(
+        select(Pet).where(Pet.id == pet_id, Pet.user_id == user_id)
+    )
+    pet = result.scalar_one_or_none()
+    if not pet:
+        return {"success": False, "error": "Pet not found"}
+
+    image_data = base64.b64decode(arguments["image_base64"])
+    if len(image_data) > 5 * 1024 * 1024:
+        return {"success": False, "error": "Image must be under 5MB"}
+
+    filename = f"{pet_id}.jpg"
+    filepath = UPLOAD_DIR / filename
+    filepath.write_bytes(image_data)
+
+    pet.avatar_url = f"/api/v1/pets/{pet_id}/avatar"
+    await db.flush()
+
+    return {
+        "success": True,
+        "pet_id": str(pet_id),
+        "pet_name": pet.name,
+        "avatar_url": pet.avatar_url,
+    }
+
+
 _TOOL_HANDLERS = {
     "create_calendar_event": _create_calendar_event,
     "query_calendar_events": _query_calendar_events,
@@ -743,10 +1191,18 @@ _TOOL_HANDLERS = {
     "create_reminder": _create_reminder,
     "search_places": _search_places,
     "draft_email": _draft_email,
+    "delete_pet": _delete_pet,
+    "delete_calendar_event": _delete_calendar_event,
+    "list_reminders": _list_reminders,
+    "update_reminder": _update_reminder,
+    "delete_reminder": _delete_reminder,
+    "upload_event_photo": _upload_event_photo,
+    "set_language": _set_language,
+    "set_pet_avatar": _set_pet_avatar,
 }
 
-# Tools that accept extra kwargs (e.g., location)
-_TOOLS_WITH_KWARGS = {"search_places"}
+# Tools that accept extra kwargs (e.g., location, images)
+_TOOLS_WITH_KWARGS = {"search_places", "upload_event_photo", "set_pet_avatar"}
 
 
 async def execute_tool(
