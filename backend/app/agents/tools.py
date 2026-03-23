@@ -178,9 +178,11 @@ TOOL_DEFINITIONS = [
         "function": {
             "name": "update_pet_profile",
             "description": (
-                "Save any information about a pet to its profile. Use this whenever the user "
-                "mentions ANY detail about their pet — gender, diet, allergies, vet, weight, "
-                "temperament, medical history, etc. The info is stored as flexible key-value pairs. "
+                "Update any information about a pet, including RENAMING. Use this whenever the user "
+                "wants to change their pet's name, or mentions ANY detail about their pet — gender, "
+                "diet, allergies, vet, weight, temperament, medical history, etc. "
+                "To rename: pass {\"name\": \"new_name\"} in info. "
+                "The info is stored as flexible key-value pairs. "
                 "Call this proactively to build up the pet's profile over time."
             ),
             "parameters": {

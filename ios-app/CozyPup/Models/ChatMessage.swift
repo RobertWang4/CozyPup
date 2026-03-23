@@ -44,12 +44,36 @@ struct ReminderCardData: Codable, Equatable {
     let reminder_type: String
 }
 
+struct ConfirmActionCardData: Codable, Equatable {
+    let type: String
+    let action_id: String
+    let message: String
+    var status: ConfirmStatus = .pending
+
+    enum ConfirmStatus: String, Codable, Equatable {
+        case pending, confirmed, cancelled
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case type, action_id, message, status
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        type = try container.decode(String.self, forKey: .type)
+        action_id = try container.decode(String.self, forKey: .action_id)
+        message = try container.decode(String.self, forKey: .message)
+        status = (try? container.decode(ConfirmStatus.self, forKey: .status)) ?? .pending
+    }
+}
+
 enum CardData: Codable, Equatable {
     case record(RecordCardData)
     case map(MapCardData)
     case email(EmailCardData)
     case petCreated(PetCreatedCardData)
     case reminder(ReminderCardData)
+    case confirmAction(ConfirmActionCardData)
 
     init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
@@ -63,6 +87,8 @@ enum CardData: Codable, Equatable {
             self = .petCreated(d)
         } else if let d = try? container.decode(ReminderCardData.self), d.type == "reminder" {
             self = .reminder(d)
+        } else if let d = try? container.decode(ConfirmActionCardData.self), d.type == "confirm_action" {
+            self = .confirmAction(d)
         } else {
             throw DecodingError.dataCorruptedError(in: container, debugDescription: "Unknown card type")
         }
@@ -76,6 +102,7 @@ enum CardData: Codable, Equatable {
         case .email(let d): try container.encode(d)
         case .petCreated(let d): try container.encode(d)
         case .reminder(let d): try container.encode(d)
+        case .confirmAction(let d): try container.encode(d)
         }
     }
 }

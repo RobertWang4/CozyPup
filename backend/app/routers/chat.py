@@ -6,7 +6,7 @@ import logging
 import uuid
 from datetime import date
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -14,7 +14,10 @@ from sse_starlette.sse import EventSourceResponse
 
 from app.agents.chat_agent import ChatAgent
 from app.agents.emergency import detect_emergency
+from app.agents.pending_actions import pop_action, store_action
+from app.agents.pre_processor import get_confirmable_actions, pre_process
 from app.agents.prompts import CHAT_SYSTEM_PROMPT
+from app.agents.tools import execute_tool
 from app.auth import get_current_user_id
 from app.database import get_db
 from app.models import Chat, ChatSession, MessageRole, Pet
@@ -44,6 +47,10 @@ class ChatRequest(BaseModel):
     location: dict | None = None  # {"lat": float, "lng": float}
     language: str | None = None   # "zh", "en", or None (auto-detect from message)
     images: list[str] | None = None  # base64-encoded JPEG strings
+
+
+class ConfirmActionRequest(BaseModel):
+    action_id: str
 
 
 async def _get_or_create_session(
@@ -226,9 +233,46 @@ async def _event_generator(
 
     # 4. Load context
     pets = await _get_pets(db, user_id)
+
+    # 5. Check for confirmable actions (medium confidence, skip LLM)
+    suggested = pre_process(request.message, pets)
+    confirmable = get_confirmable_actions(suggested)
+
+    if confirmable and not is_emergency:
+        # Emit confirm cards — no LLM call needed
+        confirm_cards = []
+        for action in confirmable:
+            action_id = store_action(
+                user_id=str(user_id),
+                session_id=session_id,
+                tool_name=action.tool_name,
+                arguments=action.arguments,
+                description=action.confirm_description,
+            )
+            card = {
+                "type": "confirm_action",
+                "action_id": action_id,
+                "message": action.confirm_description,
+            }
+            confirm_cards.append(card)
+            yield {"event": "card", "data": json.dumps(card)}
+
+        # Save as assistant message
+        await _save_message(
+            db, session.id, user_id, MessageRole.assistant,
+            "",  # No text, just cards
+            json.dumps(confirm_cards),
+        )
+
+        yield {
+            "event": "done",
+            "data": json.dumps({"intent": "chat", "session_id": session_id}),
+        }
+        return  # Skip LLM entirely
+
+    # 6. Normal flow — stream ChatAgent response
     context_messages = await _get_context_messages(db, session.id)
 
-    # 5. Stream ChatAgent response
     queue: asyncio.Queue = asyncio.Queue()
     task = asyncio.create_task(
         _run_chat_agent_to_queue(
@@ -251,7 +295,7 @@ async def _event_generator(
     full_response = result.get("response", "")
     cards = result.get("cards", [])
 
-    # 6. Save assistant response
+    # 7. Save assistant response
     cards_json = json.dumps(cards) if cards else None
     await _save_message(
         db, session.id, user_id, MessageRole.assistant, full_response, cards_json
@@ -266,7 +310,7 @@ async def _event_generator(
         session_date=date.today(),
     ))
 
-    # 7. Done event
+    # 8. Done event
     yield {
         "event": "done",
         "data": json.dumps({"intent": "chat", "session_id": session_id}),
@@ -280,3 +324,47 @@ async def chat(
     db: AsyncSession = Depends(get_db),
 ):
     return EventSourceResponse(_event_generator(request, user_id, db))
+
+
+@router.post("/chat/confirm-action")
+async def confirm_action(
+    request: ConfirmActionRequest,
+    user_id: uuid.UUID = Depends(get_current_user_id),
+    db: AsyncSession = Depends(get_db),
+):
+    """Execute a pending action that the user confirmed via card button.
+
+    No LLM involved — direct tool execution from stored arguments.
+    """
+    action = pop_action(request.action_id, str(user_id))
+    if not action:
+        raise HTTPException(status_code=404, detail="Action not found or expired")
+
+    try:
+        result = await execute_tool(
+            action.tool_name, action.arguments, db, user_id,
+        )
+        await db.commit()
+    except Exception as exc:
+        logger.error("confirm_action_error", extra={
+            "action_id": action.action_id,
+            "tool": action.tool_name,
+            "error": str(exc)[:200],
+        })
+        raise HTTPException(status_code=500, detail=str(exc))
+
+    # Save confirmation as assistant message in the chat
+    session_id = uuid.UUID(action.session_id)
+    card = result.get("card")
+    cards_json = json.dumps([card]) if card else None
+    await _save_message(
+        db, session_id, user_id, MessageRole.assistant,
+        action.description,
+        cards_json,
+    )
+
+    return {
+        "success": result.get("success", True),
+        "card": card,
+        "message": action.description,
+    }

@@ -1,9 +1,11 @@
 """Deterministic pre-processor — extracts intent and pre-fills tool arguments
 before the LLM sees the message.
 
-When confidence is high, the suggested actions are injected into the system
-prompt so the LLM only needs to copy-paste the arguments into a tool call.
-If the LLM still fails, the post-processor can execute these directly.
+When confidence is high (>= 0.8), the suggested actions are injected into the
+system prompt so the LLM only needs to copy-paste the arguments into a tool call.
+
+When confidence is medium (CONFIRM_THRESHOLD <= c < 0.8) AND values are
+extractable, a confirm card is shown to the user for one-tap execution.
 """
 
 import re
@@ -12,11 +14,15 @@ from dataclasses import dataclass, field
 from datetime import date, timedelta
 
 
+CONFIRM_THRESHOLD = 0.5  # Minimum confidence for confirm card
+
+
 @dataclass
 class SuggestedAction:
     tool_name: str
     arguments: dict
     confidence: float  # 0.0 - 1.0
+    confirm_description: str = ""  # Human-readable description for confirm card
 
 
 # ---------- Date parsing ----------
@@ -77,6 +83,70 @@ def _resolve_pets(message: str, pets: list) -> list[tuple[str, str]]:
     ]
 
 
+# ---------- Value extraction ----------
+
+def _extract_new_name(message: str) -> str | None:
+    """Extract the new pet name from a rename message."""
+    patterns = [
+        r"(?:改|换)(?:成|为|做|叫)\s*[「「\"']?(.+?)[」」\"']?\s*(?:吧|了|呢|啊|$)",
+        r"名字.*?(?:是|叫)\s*[「「\"']?(.+?)[」」\"']?\s*(?:[,，。]|你|帮|改|$)",
+        r"rename\s+(?:to\s+)?(\S+)",
+        r"change\s+name\s+to\s+(\S+)",
+    ]
+    for p in patterns:
+        m = re.search(p, message.strip(), re.I)
+        if m:
+            name = m.group(1).strip().rstrip("。，,.!！?？ ")
+            if 1 <= len(name) <= 20:
+                return name
+    return None
+
+
+def _extract_weight(message: str) -> float | None:
+    """Extract weight in kg from message."""
+    # Match patterns like "5kg", "5公斤", "10斤"
+    m = re.search(r"(\d+(?:\.\d+)?)\s*(?:kg|公斤)", message, re.I)
+    if m:
+        return float(m.group(1))
+    m = re.search(r"(\d+(?:\.\d+)?)\s*斤", message)
+    if m:
+        return float(m.group(1)) / 2  # 斤 to kg
+    m = re.search(r"(\d+(?:\.\d+)?)\s*(?:lb|lbs|pounds?)", message, re.I)
+    if m:
+        return round(float(m.group(1)) * 0.4536, 1)
+    return None
+
+
+def _extract_birthday(message: str) -> str | None:
+    """Extract birthday as YYYY-MM-DD string."""
+    # "2024年3月5日" or "2024-03-05"
+    m = re.search(r"(\d{4})[年.\-/](\d{1,2})[月.\-/](\d{1,2})[日号]?", message)
+    if m:
+        try:
+            d = date(int(m.group(1)), int(m.group(2)), int(m.group(3)))
+            return d.isoformat()
+        except ValueError:
+            pass
+    # "3月5号" — assume current year
+    m = re.search(r"(\d{1,2})[月.\-/](\d{1,2})[日号]?", message)
+    if m:
+        try:
+            d = date(date.today().year, int(m.group(1)), int(m.group(2)))
+            return d.isoformat()
+        except ValueError:
+            pass
+    return None
+
+
+def _extract_gender(message: str) -> str | None:
+    """Extract gender from message."""
+    if re.search(r"公的|公狗|公猫|male|boy|男", message, re.I):
+        return "male"
+    if re.search(r"母的|母狗|母猫|female|girl|女", message, re.I):
+        return "female"
+    return None
+
+
 # ---------- Intent patterns ----------
 
 _CALENDAR_PATTERNS = [
@@ -102,12 +172,22 @@ _CREATE_PET_PATTERN = re.compile(
 )
 
 _UPDATE_PROFILE_PATTERNS = [
-    (re.compile(r"生日[是在]|birthday", re.I), "birthday"),
-    (re.compile(r"体重[是有]?|重.*?(?:斤|kg|公斤)|weigh", re.I), "weight"),
-    (re.compile(r"过敏|allerg", re.I), "allergies"),
-    (re.compile(r"是公的|是母的|公狗|母狗|male|female|gender|性别", re.I), "gender"),
-    (re.compile(r"绝育|neutered|spayed", re.I), "neutered"),
+    # (regex, key, confidence)
+    (re.compile(r"改名|名字.*改|名字.*换|名字.*叫|更名|rename|change.*name", re.I), "name", 0.9),
+    (re.compile(r"生日[是在]|birthday", re.I), "birthday", 0.85),
+    (re.compile(r"体重[是有]?|重.*?(?:斤|kg|公斤)|weigh", re.I), "weight", 0.85),
+    (re.compile(r"过敏|allerg", re.I), "allergies", 0.85),
+    (re.compile(r"是公的|是母的|公狗|母狗|male|female|gender|性别", re.I), "gender", 0.85),
+    (re.compile(r"绝育|neutered|spayed", re.I), "neutered", 0.85),
 ]
+
+# Value extractors by key — returns extracted value or None
+_VALUE_EXTRACTORS: dict[str, callable] = {
+    "name": _extract_new_name,
+    "birthday": _extract_birthday,
+    "weight": _extract_weight,
+    "gender": _extract_gender,
+}
 
 
 # ---------- Main entry point ----------
@@ -161,6 +241,7 @@ def pre_process(
                             "raw_text": message,
                         },
                         confidence=actual_confidence,
+                        confirm_description=f"为{pet_name}记录 {category} 事件（{event_date.isoformat()}）",
                     ))
                 # No break — continue matching so multiple intents are detected
                 # (e.g., "vaccination + deworming" → two create_calendar_event calls)
@@ -175,22 +256,47 @@ def pre_process(
                 tool_name="create_pet",
                 arguments={"name": name, "species": "dog"},
                 confidence=0.7,  # Lower — LLM should refine species/breed
+                confirm_description=f"添加新宠物「{name}」",
             ))
 
     # --- Update pet profile ---
     if not is_question and pets:
         resolved_pets = _resolve_pets(message, pets)
-        for pattern, key in _UPDATE_PROFILE_PATTERNS:
+        for pattern, key, conf in _UPDATE_PROFILE_PATTERNS:
             if pattern.search(message):
-                for pet_id, _ in resolved_pets:
+                # Try to extract the actual value
+                extractor = _VALUE_EXTRACTORS.get(key)
+                extracted = extractor(message) if extractor else None
+
+                for pet_id, pet_name in resolved_pets:
+                    if extracted is not None:
+                        # We have a concrete value — can be used for confirm card
+                        args = {"pet_id": pet_id, "info": {key: extracted}}
+                        desc = f"把{pet_name}的{key}改为「{extracted}」"
+                    else:
+                        # Raw message — need LLM to extract
+                        args = {"pet_id": pet_id, "info": {key: message}}
+                        desc = f"更新{pet_name}的{key}"
+                        conf = min(conf, 0.7)  # Lower confidence since we can't extract value
+
                     actions.append(SuggestedAction(
                         tool_name="update_pet_profile",
-                        arguments={"pet_id": pet_id, "info": {key: message}},
-                        confidence=0.7,  # LLM should extract the actual value
+                        arguments=args,
+                        confidence=conf,
+                        confirm_description=desc,
                     ))
                 break
 
     return actions
+
+
+def get_confirmable_actions(actions: list[SuggestedAction]) -> list[SuggestedAction]:
+    """Return actions suitable for confirm cards (medium confidence + extractable values)."""
+    return [
+        a for a in actions
+        if CONFIRM_THRESHOLD <= a.confidence < 0.8
+        and a.confirm_description
+    ]
 
 
 def format_actions_for_prompt(actions: list[SuggestedAction]) -> str:

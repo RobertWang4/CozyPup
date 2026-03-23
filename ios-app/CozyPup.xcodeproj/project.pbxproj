@@ -32,6 +32,7 @@
 		C48637977806DD97714F14DC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 45AA8E3614CA2B9242759444 /* Assets.xcassets */; };
 		C71076A367C99C70DB2FA10D /* Tokens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19D7C11CBBBB1FAF7AB1FA82 /* Tokens.swift */; };
 		CA967467835A9E2ADC5F68D2 /* RecordCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFCDE79E9D9654B2E99B6A3E /* RecordCard.swift */; };
+		B1C2D3E400000001C0000001 /* ConfirmActionCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1C2D3E400000001C0000002 /* ConfirmActionCard.swift */; };
 		D5FA653E9B82083C5D63B0D2 /* ChatMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 369D8B87FDDB80958DDAD250 /* ChatMessage.swift */; };
 		D7EF6BD5206BF3B30C294354 /* Pet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A64F760C22D68D06ECA76404 /* Pet.swift */; };
 		DBF96E2B35FB712BC97A1C27 /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2586D01E7C42221ABD72995 /* LocationService.swift */; };
@@ -83,6 +84,7 @@
 		D2586D01E7C42221ABD72995 /* LocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
 		D437A3D3656001306737E784 /* CozyPupApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CozyPupApp.swift; sourceTree = "<group>"; };
 		D6BFEAAE726D42EB903C43E3 /* ActionCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionCard.swift; sourceTree = "<group>"; };
+		B1C2D3E400000001C0000002 /* ConfirmActionCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfirmActionCard.swift; sourceTree = "<group>"; };
 		E59EDD63ED4B5127A8B5D2DC /* CalendarEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarEvent.swift; sourceTree = "<group>"; };
 		E6D276B8E4BE99D3CA63F74F /* EventRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventRow.swift; sourceTree = "<group>"; };
 		E722C9266BF5B0325E6B52A6 /* MapCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapCard.swift; sourceTree = "<group>"; };
@@ -260,6 +262,7 @@
 				E722C9266BF5B0325E6B52A6 /* MapCard.swift */,
 				FFCDE79E9D9654B2E99B6A3E /* RecordCard.swift */,
 				D6BFEAAE726D42EB903C43E3 /* ActionCard.swift */,
+				B1C2D3E400000001C0000002 /* ConfirmActionCard.swift */,
 			);
 			path = Cards;
 			sourceTree = "<group>";
@@ -365,6 +368,7 @@
 				F3D92B290727D53D19BFEBDA /* PetStore.swift in Sources */,
 				CA967467835A9E2ADC5F68D2 /* RecordCard.swift in Sources */,
 				E61F15752A4C4AFCADD9DBE5 /* ActionCard.swift in Sources */,
+				B1C2D3E400000001C0000001 /* ConfirmActionCard.swift in Sources */,
 				885B288C97AAC7FAFAF5980E /* SettingsDrawer.swift in Sources */,
 				70C3D30CE2C49632B01A8EE8 /* SpeechService.swift in Sources */,
 				C71076A367C99C70DB2FA10D /* Tokens.swift in Sources */,

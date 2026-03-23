@@ -361,6 +361,13 @@ struct ChatView: View {
                 title: "\(data.pet_name) · \(data.title)",
                 subtitle: data.trigger_at
             )
+        case .confirmAction(let data):
+            ConfirmActionCard(
+                message: data.message,
+                status: data.status,
+                onConfirm: { handleConfirmAction(actionId: data.action_id) },
+                onCancel: { handleCancelAction(actionId: data.action_id) }
+            )
         }
     }
 
@@ -418,6 +425,64 @@ struct ChatView: View {
             }
             chatStore.save()
             isStreaming = false
+        }
+    }
+
+    // MARK: - Confirm Actions
+
+    private func handleConfirmAction(actionId: String) {
+        Haptics.light()
+        Task {
+            struct ConfirmBody: Encodable { let action_id: String }
+            struct ConfirmResponse: Decodable {
+                let success: Bool
+                let card: CardData?
+                let message: String?
+            }
+
+            do {
+                let resp: ConfirmResponse = try await APIClient.shared.request(
+                    "POST", "/chat/confirm-action",
+                    body: ConfirmBody(action_id: actionId)
+                )
+
+                // Update the confirm card status
+                updateConfirmCardStatus(actionId: actionId, status: .confirmed)
+
+                // If a result card came back, append it
+                if let card = resp.card, let idx = chatStore.messages.indices.last {
+                    chatStore.messages[idx].cards.append(card)
+
+                    // Refresh relevant stores
+                    if case .record(let r) = card, let comps = parseYearMonth(r.date) {
+                        Task { await calendarStore.fetchMonth(year: comps.0, month: comps.1) }
+                    }
+                }
+
+                Task { await petStore.fetchFromAPI() }
+            } catch {
+                updateConfirmCardStatus(actionId: actionId, status: .pending)
+            }
+            chatStore.save()
+        }
+    }
+
+    private func handleCancelAction(actionId: String) {
+        Haptics.light()
+        updateConfirmCardStatus(actionId: actionId, status: .cancelled)
+        chatStore.save()
+    }
+
+    private func updateConfirmCardStatus(actionId: String, status: ConfirmActionCardData.ConfirmStatus) {
+        for msgIdx in chatStore.messages.indices {
+            for cardIdx in chatStore.messages[msgIdx].cards.indices {
+                if case .confirmAction(var data) = chatStore.messages[msgIdx].cards[cardIdx],
+                   data.action_id == actionId {
+                    data.status = status
+                    chatStore.messages[msgIdx].cards[cardIdx] = .confirmAction(data)
+                    return
+                }
+            }
         }
     }
 

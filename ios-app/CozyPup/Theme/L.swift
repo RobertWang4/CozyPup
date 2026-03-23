@@ -87,6 +87,9 @@ enum L {
     static var petAdded: String { z ? "宠物已添加" : "Pet Added" }
     static var reminderSet: String { z ? "提醒已设置" : "Reminder Set" }
     static var recordedToCalendar: String { z ? "已记录到日历" : "Recorded to Calendar" }
+    static var confirm: String { z ? "确认" : "Confirm" }
+    static var actionConfirmed: String { z ? "已执行" : "Done" }
+    static var actionCancelled: String { z ? "已取消" : "Cancelled" }
 
     // Timeline
     static var timeline: String { z ? "时间线" : "Timeline" }
