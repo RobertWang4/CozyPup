@@ -1,7 +1,10 @@
 import os
 
+from pathlib import Path
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from app.debug.logging_config import setup_logging
 from app.routers.auth import router as auth_router
 from app.routers.calendar import router as calendar_router
@@ -50,6 +53,12 @@ app.add_middleware(ChatRateLimitMiddleware)
 app.add_middleware(ErrorCaptureMiddleware)
 app.add_middleware(RequestLoggingMiddleware)
 app.add_middleware(CorrelationMiddleware)
+
+
+# Serve temp images for LLM vision (proxy doesn't support base64)
+_temp_img_dir = Path(__file__).resolve().parent / "uploads" / "temp_images"
+_temp_img_dir.mkdir(parents=True, exist_ok=True)
+app.mount("/temp-images", StaticFiles(directory=str(_temp_img_dir)), name="temp-images")
 
 
 @app.get("/health")

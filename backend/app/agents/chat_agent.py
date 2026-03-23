@@ -1,7 +1,10 @@
 """Chat Agent — handles general conversation with function calling for calendar operations."""
 
+import base64
 import json
 import logging
+import uuid as _uuid
+from pathlib import Path
 from typing import Callable, Optional
 
 import litellm
@@ -122,12 +125,25 @@ class ChatAgent(BaseAgent):
         context_messages = context.get("context_messages", [])
         images = context.get("images") or []
 
-        # Build user message
-        # Note: images are passed to tools (e.g., avatar upload) via context,
-        # but NOT sent to the LLM as vision input — not all models support it.
+        # Build user message — multimodal if images present
+        # The API proxy doesn't support base64 images, so we save them
+        # as temp files and pass public URLs to the LLM.
+        temp_image_paths: list[Path] = []
         if images:
-            photo_note = f"\n[用户附带了{len(images)}张照片]"
-            user_msg = {"role": "user", "content": message + photo_note}
+            temp_dir = Path(__file__).resolve().parent.parent / "uploads" / "temp_images"
+            temp_dir.mkdir(parents=True, exist_ok=True)
+            user_content: list[dict] = [{"type": "text", "text": message}]
+            for img_b64 in images:
+                fname = f"{_uuid.uuid4().hex}.jpg"
+                fpath = temp_dir / fname
+                fpath.write_bytes(base64.b64decode(img_b64))
+                temp_image_paths.append(fpath)
+                img_url = f"{settings.server_public_url}/temp-images/{fname}"
+                user_content.append({
+                    "type": "image_url",
+                    "image_url": {"url": img_url},
+                })
+            user_msg = {"role": "user", "content": user_content}
         else:
             user_msg = {"role": "user", "content": message}
 
@@ -276,6 +292,13 @@ class ChatAgent(BaseAgent):
                 suggested_actions, db, user_id, on_card=on_card, location=location,
             )
             cards.extend(fallback_cards)
+
+        # Clean up temp images
+        for p in temp_image_paths:
+            try:
+                p.unlink(missing_ok=True)
+            except Exception:
+                pass
 
         return {
             "response": full_response,

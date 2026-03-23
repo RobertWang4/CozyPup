@@ -21,6 +21,9 @@ class Settings(BaseSettings):
 
     firebase_project_id: str = "cozypup-39487"
 
+    # Server public URL (for constructing image URLs for LLM vision)
+    server_public_url: str = "http://168.138.75.153:8000"
+
     # RAG settings
     embedding_model: str = "text-embedding-3-small"
     embedding_api_base: str = ""       # Separate proxy URL for embeddings

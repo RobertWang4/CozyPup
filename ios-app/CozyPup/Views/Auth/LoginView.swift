@@ -2,6 +2,7 @@ import SwiftUI
 
 struct LoginView: View {
     @EnvironmentObject var auth: AuthStore
+    @State private var showEmailAuth = false
 
     var body: some View {
         VStack(spacing: 40) {
@@ -23,7 +24,7 @@ struct LoginView: View {
             VStack(spacing: 14) {
                 Button {
                     Haptics.light()
-                    auth.login(provider: "apple")
+                    auth.loginWithApple()
                 } label: {
                     HStack(spacing: Tokens.spacing.sm) {
                         Image(systemName: "apple.logo")
@@ -39,7 +40,7 @@ struct LoginView: View {
 
                 Button {
                     Haptics.light()
-                    auth.login(provider: "google")
+                    auth.loginWithGoogle()
                 } label: {
                     HStack(spacing: Tokens.spacing.sm) {
                         Image(systemName: "g.circle.fill")
@@ -53,12 +54,57 @@ struct LoginView: View {
                     .cornerRadius(Tokens.spacing.md)
                     .font(Tokens.fontCallout.weight(.semibold))
                 }
+
+                Button {
+                    Haptics.light()
+                    showEmailAuth = true
+                } label: {
+                    HStack(spacing: Tokens.spacing.sm) {
+                        Image(systemName: "envelope.fill")
+                        Text("Sign in with Email")
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, Tokens.spacing.md)
+                    .background(Tokens.surface)
+                    .foregroundColor(Tokens.text)
+                    .overlay(RoundedRectangle(cornerRadius: Tokens.spacing.md).stroke(Tokens.border, lineWidth: 1))
+                    .cornerRadius(Tokens.spacing.md)
+                    .font(Tokens.fontCallout.weight(.semibold))
+                }
+
+                #if targetEnvironment(simulator)
+                Button {
+                    auth.loginDev()
+                } label: {
+                    Text("Dev Login (Simulator)")
+                        .font(Tokens.fontCaption)
+                        .foregroundColor(Tokens.textTertiary)
+                }
+                .padding(.top, Tokens.spacing.xs)
+                #endif
             }
             .padding(.horizontal, Tokens.spacing.xl)
+
+            if let error = auth.errorMessage {
+                Text(error)
+                    .font(Tokens.fontCaption)
+                    .foregroundColor(Tokens.red)
+                    .padding(.horizontal, Tokens.spacing.xl)
+            }
 
             Spacer()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Tokens.bg.ignoresSafeArea())
+        .overlay {
+            if auth.isLoading {
+                Tokens.dimOverlay.ignoresSafeArea()
+                ProgressView()
+            }
+        }
+        .sheet(isPresented: $showEmailAuth) {
+            EmailAuthView()
+                .environmentObject(auth)
+        }
     }
 }
