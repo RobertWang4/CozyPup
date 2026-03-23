@@ -52,6 +52,10 @@ def _describe_tool_call(fn_name: str, fn_args: dict) -> str:
         return "删除提醒"
     if fn_name == "draft_email":
         return f"草拟邮件: {fn_args.get('subject', '')}"
+    if fn_name == "set_pet_avatar":
+        return "设置宠物头像"
+    if fn_name == "upload_event_photo":
+        return "上传事件照片"
     return fn_name
 
 

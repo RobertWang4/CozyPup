@@ -534,6 +534,14 @@ struct ChatView: View {
                         .scaledToFill()
                         .frame(width: size, height: size)
                         .clipShape(RoundedRectangle(cornerRadius: Tokens.radiusSmall))
+                        .contextMenu {
+                            Button {
+                                UIPasteboard.general.image = img
+                            } label: {
+                                Label(Lang.shared.isZh ? "拷贝图片" : "Copy Image", systemImage: "doc.on.doc")
+                            }
+                            ShareLink(item: Image(uiImage: img), preview: SharePreview("Photo", image: Image(uiImage: img)))
+                        }
                 }
             }
         }
