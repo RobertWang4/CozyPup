@@ -118,15 +118,12 @@ class ChatAgent(BaseAgent):
         context_messages = context.get("context_messages", [])
         images = context.get("images") or []
 
-        # Build user message — multimodal if images present
+        # Build user message
+        # Note: images are passed to tools (e.g., avatar upload) via context,
+        # but NOT sent to the LLM as vision input — not all models support it.
         if images:
-            user_content: list[dict] = [{"type": "text", "text": message}]
-            for img_b64 in images:
-                user_content.append({
-                    "type": "image_url",
-                    "image_url": {"url": f"data:image/jpeg;base64,{img_b64}"}
-                })
-            user_msg = {"role": "user", "content": user_content}
+            photo_note = f"\n[用户附带了{len(images)}张照片]"
+            user_msg = {"role": "user", "content": message + photo_note}
         else:
             user_msg = {"role": "user", "content": message}
 
