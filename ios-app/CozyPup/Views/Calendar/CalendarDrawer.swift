@@ -14,6 +14,7 @@ struct CalendarDrawer: View {
     @State private var selectedDate: String?
     @State private var filterPetId: String?
     @State private var mode: CalendarMode = .calendar
+    @State private var previousMode: CalendarMode = .calendar
     @State private var singleDayDate: String?
 
     init(isPresented: Binding<Bool>) {
@@ -99,13 +100,14 @@ struct CalendarDrawer: View {
             case .timeline:
                 MultiDayTimelineView(filterPetId: $filterPetId) { date in
                     singleDayDate = date
+                    previousMode = .timeline
                     withAnimation(.easeInOut(duration: 0.3)) { mode = .singleDay }
                 }
 
             case .singleDay:
                 if let date = singleDayDate {
                     SingleDayTimelineView(date: date, filterPetId: filterPetId) {
-                        withAnimation(.easeInOut(duration: 0.3)) { mode = .timeline }
+                        withAnimation(.easeInOut(duration: 0.3)) { mode = previousMode }
                     }
                 }
             }
@@ -170,6 +172,8 @@ struct CalendarDrawer: View {
                 filterPetId: filterPetId,
                 onDoubleTap: { date in
                     singleDayDate = date
+                    selectedDate = date
+                    previousMode = .calendar
                     withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
                         mode = .singleDay
                     }
