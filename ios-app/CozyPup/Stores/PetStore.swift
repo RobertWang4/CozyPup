@@ -91,6 +91,25 @@ class PetStore: ObservableObject {
         }
     }
 
+    func saveProfileMd(_ petId: String, profileMd: String) async {
+        struct Body: Encodable { let profile_md: String }
+        do {
+            let updated: Pet = try await APIClient.shared.request(
+                "PUT", "/pets/\(petId)", body: Body(profile_md: profileMd)
+            )
+            if let idx = pets.firstIndex(where: { $0.id == petId }) {
+                pets[idx] = updated
+                saveLocal()
+            }
+        } catch {
+            // Optimistic local update
+            if let idx = pets.firstIndex(where: { $0.id == petId }) {
+                pets[idx].profileMd = profileMd
+                saveLocal()
+            }
+        }
+    }
+
     func remove(_ id: String) async {
         do {
             try await APIClient.shared.requestNoContent("DELETE", "/pets/\(id)")

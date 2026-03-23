@@ -17,6 +17,7 @@ class PetUpdate(BaseModel):
     breed: str | None = None
     birthday: str | None = None
     weight: float | None = None
+    profile_md: str | None = None
 
 
 class PetResponse(BaseModel):
@@ -28,4 +29,5 @@ class PetResponse(BaseModel):
     weight: float | None
     avatar_url: str
     color_hex: str
+    profile_md: str | None = None
     created_at: str

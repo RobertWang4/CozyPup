@@ -54,10 +54,12 @@
 		FA82C6590ACDC7D49CF14998 /* EventRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6D276B8E4BE99D3CA63F74F /* EventRow.swift */; };
 		FC5BC1932B70E128C7F1B81B /* EmergencyBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88BD4E3CC91B5ED73B8A2AB6 /* EmergencyBanner.swift */; };
 		FF279B03D7AC13828EE65FF4 /* PetFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 080771DF5730E9583B536DC5 /* PetFormView.swift */; };
+		C1D2E3F400000001D0000002 /* PetProfileEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1D2E3F400000001D0000001 /* PetProfileEditor.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		080771DF5730E9583B536DC5 /* PetFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PetFormView.swift; sourceTree = "<group>"; };
+		C1D2E3F400000001D0000001 /* PetProfileEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PetProfileEditor.swift; sourceTree = "<group>"; };
 		19D7C11CBBBB1FAF7AB1FA82 /* Tokens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tokens.swift; sourceTree = "<group>"; };
 		1D8DC0ADAB2E88C2F59583DA /* PetStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PetStore.swift; sourceTree = "<group>"; };
 		3489B7A2D858787350EDED43 /* EmptyStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyStateView.swift; sourceTree = "<group>"; };
@@ -222,6 +224,7 @@
 			children = (
 				F9D034942C1B826D36D5E8D4 /* LegalPageView.swift */,
 				080771DF5730E9583B536DC5 /* PetFormView.swift */,
+				C1D2E3F400000001D0000001 /* PetProfileEditor.swift */,
 				B6F1DE010DA6010A14147BF8 /* SettingsDrawer.swift */,
 			);
 			path = Settings;
@@ -330,7 +333,6 @@
 			packageReferences = (
 				E158F7402F71D3FF0033B60C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				E1E323422F71CF9000C5A46D /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
-				E158F7402F71D3FF0033B60C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 09A95F131FB66BBBB810306C /* Products */;
@@ -394,6 +396,7 @@
 				6C6DBA9BDCB701B90E25D163 /* OnboardingView.swift in Sources */,
 				D7EF6BD5206BF3B30C294354 /* Pet.swift in Sources */,
 				FF279B03D7AC13828EE65FF4 /* PetFormView.swift in Sources */,
+				C1D2E3F400000001D0000002 /* PetProfileEditor.swift in Sources */,
 				F3D92B290727D53D19BFEBDA /* PetStore.swift in Sources */,
 				CA967467835A9E2ADC5F68D2 /* RecordCard.swift in Sources */,
 				E61F15752A4C4AFCADD9DBE5 /* ActionCard.swift in Sources */,

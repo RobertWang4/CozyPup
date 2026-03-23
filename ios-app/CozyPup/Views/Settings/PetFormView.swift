@@ -17,6 +17,7 @@ struct PetFormView: View {
     @State private var avatarImage: UIImage?
     @State private var isUploadingAvatar = false
     @State private var avatarVersion = 0  // bust AsyncImage cache after upload
+    @State private var showProfileEditor = false
     @FocusState private var customSpeciesFocused: Bool
 
     /// Live pet from store (updates after avatar upload)
@@ -187,6 +188,42 @@ struct PetFormView: View {
                         .background(Tokens.surface)
                         .cornerRadius(12)
                         .overlay(RoundedRectangle(cornerRadius: 12).stroke(Tokens.border))
+                }
+            }
+
+            // Profile MD card
+            if let pet = editingPet {
+                Button { showProfileEditor = true } label: {
+                    HStack {
+                        VStack(alignment: .leading, spacing: 4) {
+                            HStack(spacing: 6) {
+                                Image(systemName: "doc.text.fill")
+                                    .foregroundColor(Tokens.accent)
+                                Text(Lang.shared.isZh ? "宠物档案" : "Pet Profile")
+                                    .font(Tokens.fontSubheadline.weight(.medium))
+                                    .foregroundColor(Tokens.text)
+                            }
+                            Text(pet.profileMd != nil
+                                 ? (Lang.shared.isZh ? "AI 已生成，点击查看或编辑" : "AI generated — tap to view or edit")
+                                 : (Lang.shared.isZh ? "AI 会在聊天中自动生成" : "AI will generate during chats"))
+                                .font(Tokens.fontCaption)
+                                .foregroundColor(Tokens.textSecondary)
+                        }
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .font(Tokens.fontCaption)
+                            .foregroundColor(Tokens.textTertiary)
+                    }
+                    .padding(Tokens.spacing.md)
+                    .background(Tokens.surface)
+                    .cornerRadius(12)
+                    .overlay(RoundedRectangle(cornerRadius: 12).stroke(Tokens.border))
+                }
+                .buttonStyle(.plain)
+                .sheet(isPresented: $showProfileEditor) {
+                    if let store = petStore {
+                        PetProfileEditor(pet: pet, petStore: store, isPresented: $showProfileEditor)
+                    }
                 }
             }
 

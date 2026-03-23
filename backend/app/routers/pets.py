@@ -32,6 +32,7 @@ def _pet_to_response(pet: Pet) -> PetResponse:
         weight=pet.weight,
         avatar_url=pet.avatar_url,
         color_hex=pet.color_hex,
+        profile_md=pet.profile_md,
         created_at=pet.created_at.isoformat(),
     )
 
@@ -116,6 +117,8 @@ async def update_pet(
         pet.birthday = date.fromisoformat(req.birthday)
     if req.weight is not None:
         pet.weight = req.weight
+    if req.profile_md is not None:
+        pet.profile_md = req.profile_md
 
     await db.commit()
     await db.refresh(pet)

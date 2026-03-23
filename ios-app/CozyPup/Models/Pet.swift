@@ -20,6 +20,7 @@ struct Pet: Identifiable, Codable, Equatable {
     var weight: Double?
     var avatarUrl: String
     var colorHex: String
+    var profileMd: String?
     let createdAt: String
 
     var color: Color { Color(hex: colorHex) }
@@ -28,6 +29,7 @@ struct Pet: Identifiable, Codable, Equatable {
         case id, name, species, breed, birthday, weight
         case avatarUrl = "avatar_url"
         case colorHex = "color_hex"
+        case profileMd = "profile_md"
         case createdAt = "created_at"
     }
 
@@ -41,6 +43,7 @@ struct Pet: Identifiable, Codable, Equatable {
         self.weight = weight
         self.avatarUrl = ""
         self.colorHex = petColorHexes[colorIndex % petColorHexes.count]
+        self.profileMd = nil
         self.createdAt = ISO8601DateFormatter().string(from: Date())
     }
 }
