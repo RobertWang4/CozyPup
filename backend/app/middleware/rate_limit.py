@@ -40,13 +40,18 @@ class ChatRateLimitMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         # Only apply to POST /api/v1/chat
         if request.method == "POST" and request.url.path == "/api/v1/chat":
-            # Check message length
+            # Check message length (not total body — images are large)
             body = await request.body()
-            if len(body) > MAX_MESSAGE_LENGTH * 4:  # rough UTF-8 estimate
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail=f"Message too long (max {MAX_MESSAGE_LENGTH} characters)",
-                )
+            try:
+                import json as _json
+                msg_text = _json.loads(body).get("message", "")
+                if len(msg_text) > MAX_MESSAGE_LENGTH:
+                    raise HTTPException(
+                        status_code=status.HTTP_400_BAD_REQUEST,
+                        detail=f"Message too long (max {MAX_MESSAGE_LENGTH} characters)",
+                    )
+            except (ValueError, AttributeError):
+                pass
 
             # Extract user from auth header for rate limiting
             auth = request.headers.get("authorization", "")
