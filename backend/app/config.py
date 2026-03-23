@@ -19,6 +19,8 @@ class Settings(BaseSettings):
     apns_bundle_id: str = "com.cozypup.app"
     apns_use_sandbox: bool = True  # True for dev, False for production
 
+    firebase_project_id: str = "cozypup-39487"
+
     # RAG settings
     embedding_model: str = "text-embedding-3-small"
     embedding_api_base: str = ""       # Separate proxy URL for embeddings
