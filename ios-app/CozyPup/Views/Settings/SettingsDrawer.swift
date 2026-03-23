@@ -252,8 +252,10 @@ struct SettingsDrawer: View {
                         }
                     } label: {
                         Image(systemName: "chevron.left")
-                            .font(Tokens.fontSubheadline.weight(.semibold))
-                            .foregroundColor(Tokens.textSecondary)
+                            .font(Tokens.fontBody.weight(.semibold))
+                            .foregroundColor(Tokens.text)
+                            .frame(width: Tokens.size.buttonMedium, height: Tokens.size.buttonMedium)
+                            .contentShape(Rectangle())
                     }
                 }
             }
