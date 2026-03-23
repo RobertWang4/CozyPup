@@ -58,7 +58,12 @@ struct MultiDayTimelineView: View {
                             pets: petStore.pets,
                             zoomLevel: zoomLevel,
                             isToday: index == todayIndex,
-                            onTap: { onSelectDay(dateKey) }
+                            onTap: { onSelectDay(dateKey) },
+                            onUpdate: { id, title, category, date, time in
+                                calendarStore.update(id, title: title, category: category,
+                                                     eventDate: date, eventTime: time)
+                            },
+                            onDelete: { id in calendarStore.remove(id) }
                         )
                         .id(index)
                     }
@@ -117,6 +122,8 @@ struct DayRow: View {
     let zoomLevel: MultiDayTimelineView.ZoomLevel
     let isToday: Bool
     let onTap: () -> Void
+    var onUpdate: ((String, String, EventCategory, String, String?) -> Void)?
+    var onDelete: ((String) -> Void)?
 
     private var cal: Calendar { Calendar.current }
     private var dayNum: Int { cal.component(.day, from: date) }
@@ -211,41 +218,76 @@ struct DayRow: View {
 
     @ViewBuilder var dayContent: some View {
         ForEach(events, id: \.id) { evt in
-            HStack(spacing: Tokens.spacing.sm) {
-                // Category accent bar
-                RoundedRectangle(cornerRadius: 1.5)
-                    .fill(categoryColor(evt.category))
-                    .frame(width: 3, height: 36)
+            VStack(alignment: .leading, spacing: 0) {
+                HStack(spacing: Tokens.spacing.sm) {
+                    // Category accent bar
+                    RoundedRectangle(cornerRadius: 1.5)
+                        .fill(categoryColor(evt.category))
+                        .frame(width: 3, height: 36)
 
-                VStack(alignment: .leading, spacing: Tokens.spacing.xxs) {
-                    Text(evt.title)
-                        .font(Tokens.fontSubheadline)
-                        .foregroundColor(Tokens.text)
-                        .lineLimit(2)
+                    VStack(alignment: .leading, spacing: Tokens.spacing.xxs) {
+                        Text(evt.title)
+                            .font(Tokens.fontSubheadline)
+                            .foregroundColor(Tokens.text)
+                            .lineLimit(2)
 
-                    HStack(spacing: Tokens.spacing.xs) {
-                        if let time = evt.eventTime {
-                            Text(time)
-                                .font(Tokens.fontCaption2)
-                                .foregroundColor(Tokens.textTertiary)
-                        }
-                        // Pet color dot + name
-                        Circle()
-                            .fill(petColor(for: evt))
-                            .frame(width: 6, height: 6)
-                        if let name = evt.petName {
-                            Text(name)
-                                .font(Tokens.fontCaption2)
-                                .foregroundColor(Tokens.textTertiary)
+                        HStack(spacing: Tokens.spacing.xs) {
+                            if let time = evt.eventTime {
+                                Text(time)
+                                    .font(Tokens.fontCaption2)
+                                    .foregroundColor(Tokens.textTertiary)
+                            }
+                            Circle()
+                                .fill(petColor(for: evt))
+                                .frame(width: 6, height: 6)
+                            if let name = evt.petName {
+                                Text(name)
+                                    .font(Tokens.fontCaption2)
+                                    .foregroundColor(Tokens.textTertiary)
+                            }
                         }
                     }
+                    Spacer()
                 }
-                Spacer()
+
+                // Show photos if any
+                if !evt.photos.isEmpty {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 4) {
+                            ForEach(evt.photos, id: \.self) { urlStr in
+                                AsyncImage(url: APIClient.shared.avatarURL(urlStr)) { image in
+                                    image.resizable().scaledToFill()
+                                } placeholder: {
+                                    Tokens.placeholderBg
+                                }
+                                .frame(width: 48, height: 36)
+                                .clipped()
+                                .cornerRadius(6)
+                            }
+                        }
+                        .padding(.leading, Tokens.spacing.md)
+                        .padding(.top, 4)
+                    }
+                }
             }
             .padding(.vertical, Tokens.spacing.sm)
             .padding(.horizontal, Tokens.spacing.sm)
             .background(Tokens.surface)
             .cornerRadius(Tokens.radiusSmall)
+            .contextMenu {
+                if let onUpdate {
+                    Button {
+                        onUpdate(evt.id, evt.title, evt.category, evt.eventDate, evt.eventTime)
+                    } label: {
+                        Label(Lang.shared.isZh ? "编辑" : "Edit", systemImage: "pencil")
+                    }
+                }
+                if let onDelete {
+                    Button(role: .destructive) { Haptics.medium(); onDelete(evt.id) } label: {
+                        Label(L.delete, systemImage: "trash")
+                    }
+                }
+            }
         }
     }
 

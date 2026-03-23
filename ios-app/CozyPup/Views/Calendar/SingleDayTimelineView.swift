@@ -84,13 +84,24 @@ struct SingleDayTimelineView: View {
                 HeatStripView(events: events, pets: petStore.pets)
                     .padding(.bottom, Tokens.spacing.lg)
 
-                // Event cards
+                // Event cards (full editing + photo upload)
                 ForEach(events) { evt in
                     let pet = petStore.getById(evt.petId)
                     TimelineEventCard(
                         event: evt,
                         petColor: pet?.color ?? Tokens.accent,
-                        petName: pet?.name ?? ""
+                        petName: pet?.name ?? "",
+                        allowPhotoUpload: true,
+                        onUpdate: { title, category, date, time in
+                            calendarStore.update(evt.id, title: title, category: category,
+                                                 eventDate: date, eventTime: time)
+                        },
+                        onDelete: {
+                            calendarStore.remove(evt.id)
+                        },
+                        onPhotoUpload: { imageData in
+                            Task { await calendarStore.uploadEventPhoto(eventId: evt.id, imageData: imageData) }
+                        }
                     )
                     .padding(.horizontal, Tokens.spacing.md)
                     .padding(.bottom, 12)

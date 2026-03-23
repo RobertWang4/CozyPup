@@ -79,16 +79,22 @@ struct EventRow: View {
                 .padding(Tokens.spacing.sm).background(Tokens.bg).cornerRadius(Tokens.spacing.sm)
                 .overlay(RoundedRectangle(cornerRadius: Tokens.spacing.sm).stroke(Tokens.border))
                 .font(Tokens.fontSubheadline)
+                .foregroundColor(Tokens.text)
+                .submitLabel(.done)
 
             HStack(spacing: 6) {
                 TextField(L.date, text: $editDate)
                     .padding(Tokens.spacing.sm).background(Tokens.bg).cornerRadius(Tokens.spacing.sm)
                     .overlay(RoundedRectangle(cornerRadius: Tokens.spacing.sm).stroke(Tokens.border))
                     .font(Tokens.fontSubheadline)
+                    .foregroundColor(Tokens.text)
+                    .submitLabel(.done)
                 TextField(L.time, text: $editTime)
                     .padding(Tokens.spacing.sm).background(Tokens.bg).cornerRadius(Tokens.spacing.sm)
                     .overlay(RoundedRectangle(cornerRadius: Tokens.spacing.sm).stroke(Tokens.border))
                     .font(Tokens.fontSubheadline)
+                    .foregroundColor(Tokens.text)
+                    .submitLabel(.done)
             }
 
             Picker(Lang.shared.isZh ? "分类" : "Category", selection: $editCategory) {
@@ -100,6 +106,7 @@ struct EventRow: View {
 
             HStack(spacing: 6) {
                 Button {
+                    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
                     onUpdate(editTitle, editCategory, editDate, editTime.isEmpty ? nil : editTime)
                     editing = false
                 } label: {
@@ -109,7 +116,10 @@ struct EventRow: View {
                         .padding(.horizontal, 12).padding(.vertical, 6)
                         .background(Tokens.accent).cornerRadius(8)
                 }
-                Button { editing = false } label: {
+                Button {
+                    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                    editing = false
+                } label: {
                     Text(L.cancel)
                         .font(Tokens.fontCaption.weight(.medium))
                         .foregroundColor(Tokens.textSecondary)
@@ -121,6 +131,7 @@ struct EventRow: View {
         .padding(12)
         .background(Tokens.surface)
         .cornerRadius(14)
+        .onTapGesture { } // prevent tap-through to calendar
     }
 
     private func startEdit() {
