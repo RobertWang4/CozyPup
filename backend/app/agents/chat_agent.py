@@ -28,24 +28,36 @@ MAX_TOOL_ROUNDS = 5
 CONFIRM_TOOLS = {"delete_pet", "delete_calendar_event", "delete_reminder"}
 
 
-def _describe_tool_call(fn_name: str, fn_args: dict) -> str:
+def _describe_tool_call(fn_name: str, fn_args: dict, pets: list | None = None) -> str:
     """Generate human-readable description from LLM's tool call arguments."""
+    def _pet_name(pid: str) -> str:
+        if not pets:
+            return ""
+        for p in pets:
+            if str(p.id if hasattr(p, "id") else p.get("id", "")) == pid:
+                return p.name if hasattr(p, "name") else p.get("name", "")
+        return ""
+
+    pid = fn_args.get("pet_id", "")
+    name = _pet_name(pid)
+    label = f"「{name}」" if name else ""
+
     if fn_name == "update_pet_profile":
         info = fn_args.get("info", {})
         if "name" in info:
-            return f"把名字改为「{info['name']}」"
+            return f"把{label}名字改为「{info['name']}」"
         keys = ", ".join(info.keys())
-        return f"更新宠物信息: {keys}"
+        return f"更新{label}宠物信息: {keys}"
     if fn_name == "create_pet":
         return f"添加新宠物「{fn_args.get('name', '')}」"
     if fn_name == "delete_pet":
-        return "删除宠物"
+        return f"删除宠物{label}"
     if fn_name == "create_calendar_event":
         title = fn_args.get("title", "")
-        date = fn_args.get("event_date", "")
-        return f"记录「{title}」({date})"
+        d = fn_args.get("event_date", "")
+        return f"记录「{title}」({d})"
     if fn_name == "update_calendar_event":
-        return f"修改日历事件"
+        return "修改日历事件"
     if fn_name == "delete_calendar_event":
         return "删除日历事件"
     if fn_name == "create_reminder":
@@ -57,7 +69,7 @@ def _describe_tool_call(fn_name: str, fn_args: dict) -> str:
     if fn_name == "draft_email":
         return f"草拟邮件: {fn_args.get('subject', '')}"
     if fn_name == "set_pet_avatar":
-        return "设置宠物头像"
+        return f"设置{label}头像"
     if fn_name == "upload_event_photo":
         return "上传事件照片"
     return fn_name
@@ -211,7 +223,7 @@ class ChatAgent(BaseAgent):
 
                 # --- Confirm gate: only for destructive operations ---
                 if fn_name in CONFIRM_TOOLS and session_id:
-                    description = _describe_tool_call(fn_name, fn_args)
+                    description = _describe_tool_call(fn_name, fn_args, pets)
                     action_id = store_action(
                         user_id=str(user_id),
                         session_id=str(session_id),
