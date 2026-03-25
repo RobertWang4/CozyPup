@@ -925,6 +925,15 @@ async def _update_pet_profile(
     if not pet:
         return {"success": False, "error": "Pet not found"}
 
+    # --- Sanitize LLM values (reject raw sentences in short fields) ---
+    info, rejected_keys = _sanitize_info(info)
+    if not info and rejected_keys:
+        return {
+            "success": False,
+            "error": f"Invalid values for: {', '.join(rejected_keys)}. "
+                     "Breed, name, coat_color should be short values, not full sentences.",
+        }
+
     # --- Force-lock path: user confirmed via confirm card ---
     existing = dict(pet.profile) if pet.profile else {}
 
@@ -1029,6 +1038,26 @@ async def _update_pet_profile(
         "saved_keys": list(info.keys()),
         "card": card,
     }
+
+
+def _sanitize_info(info: dict) -> tuple[dict, list[str]]:
+    """Sanitize LLM-provided info values. Returns (cleaned_info, rejected_keys)."""
+    rejected = []
+    # Short-string fields: max length varies by field
+    MAX_LEN = {"breed": 25, "name": 20, "coat_color": 15, "gender": 10}
+    for key, max_len in MAX_LEN.items():
+        if key in info and isinstance(info[key], str) and len(info[key]) > max_len:
+            rejected.append(key)
+            del info[key]
+    # Weight must be a number
+    for wk in ("weight", "weight_kg"):
+        if wk in info and not isinstance(info[wk], (int, float)):
+            try:
+                info[wk] = float(info[wk])
+            except (ValueError, TypeError):
+                rejected.append(wk)
+                del info[wk]
+    return info, rejected
 
 
 def _apply_profile_updates(pet, info: dict, existing: dict):
