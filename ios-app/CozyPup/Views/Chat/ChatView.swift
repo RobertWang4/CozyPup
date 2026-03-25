@@ -101,11 +101,13 @@ struct ChatView: View {
                             .padding(.vertical, 12)
                             Color.clear.frame(height: 1).id("bottom")
                         }
-                        // Measure content height and scroll offset inside ScrollView
                         .background(GeometryReader { geo in
-                            Color.clear
-                                .preference(key: ContentHeightKey.self, value: geo.size.height)
-                                .preference(key: ScrollOffsetKey.self, value: geo.frame(in: .named("chatScroll")).minY)
+                            Color.clear.onChange(of: geo.size.height, initial: true) { _, h in
+                                contentHeight = h
+                            }
+                            .onChange(of: geo.frame(in: .named("chatScroll")).minY, initial: true) { _, y in
+                                scrollOffset = y
+                            }
                         })
                     }
                     .coordinateSpace(name: "chatScroll")
@@ -117,15 +119,10 @@ struct ChatView: View {
                     .onChange(of: chatStore.messages.count) {
                         withAnimation { proxy.scrollTo("bottom") }
                     }
-                    .onPreferenceChange(ScrollOffsetKey.self) { value in
-                        scrollOffset = value
-                    }
-                    .onPreferenceChange(ContentHeightKey.self) { value in
-                        contentHeight = value
-                    }
                     .background(GeometryReader { geo in
-                        Color.clear.onAppear { containerHeight = geo.size.height }
-                            .onChange(of: geo.size.height) { _, h in containerHeight = h }
+                        Color.clear.onChange(of: geo.size.height, initial: true) { _, h in
+                            containerHeight = h
+                        }
                     })
                     .modifier(ScrollIndicatorOverlay(
                         contentHeight: contentHeight,
@@ -208,7 +205,7 @@ struct ChatView: View {
         }
         // 4. Settings drawer
         .overlay(alignment: .trailing) {
-            SettingsDrawer(isPresented: $showSettings, deepLinkPetId: settingsDeepLinkPetId)
+            SettingsDrawer(isPresented: $showSettings, deepLinkPetId: $settingsDeepLinkPetId)
                 .frame(width: drawerWidth)
                 .frame(maxHeight: .infinity)
                 .background(Tokens.bg)
