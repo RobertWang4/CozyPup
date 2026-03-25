@@ -6,7 +6,12 @@ struct MonthGrid: View {
     let pets: [Pet]
     @Binding var selectedDate: String?
     var filterPetId: String?
+    var onLongPress: ((String) -> Void)?
     var onDoubleTap: ((String) -> Void)?
+
+    // Track last tap for manual double-tap detection
+    @State private var lastTapDate: String?
+    @State private var lastTapTime: Date?
 
     private let columns = Array(repeating: GridItem(.flexible()), count: 7)
 
@@ -50,16 +55,27 @@ struct MonthGrid: View {
                 }
                 .padding(.vertical, Tokens.spacing.xs)
                 .contentShape(Rectangle())
-                .simultaneousGesture(
-                    TapGesture(count: 2).onEnded {
+                .onTapGesture {
+                    let now = Date()
+                    if lastTapDate == dateStr,
+                       let last = lastTapTime,
+                       now.timeIntervalSince(last) < 0.35 {
+                        // Double tap detected
+                        Haptics.light()
                         onDoubleTap?(dateStr)
-                    }
-                )
-                .simultaneousGesture(
-                    TapGesture(count: 1).onEnded {
+                        lastTapDate = nil
+                        lastTapTime = nil
+                    } else {
+                        // Single tap — select immediately
                         selectedDate = dateStr
+                        lastTapDate = dateStr
+                        lastTapTime = now
                     }
-                )
+                }
+                .onLongPressGesture(minimumDuration: 0.5) {
+                    Haptics.medium()
+                    onLongPress?(dateStr)
+                }
             }
         }
         .padding(.horizontal, Tokens.spacing.xs)
@@ -76,9 +92,13 @@ struct MonthGrid: View {
         var seen = Set<String>()
         var colors: [Color] = []
         for evt in events {
-            guard !seen.contains(evt.petId) else { continue }
-            seen.insert(evt.petId)
-            if let pet = pets.first(where: { $0.id == evt.petId }) {
+            if let petId = evt.petId {
+                guard !seen.contains(petId) else { continue }
+                seen.insert(petId)
+            }
+
+            if let petId = evt.petId,
+               let pet = pets.first(where: { $0.id == petId }) {
                 colors.append(pet.color)
             } else if let hex = evt.petColorHex, !hex.isEmpty {
                 colors.append(Color(hex: hex))

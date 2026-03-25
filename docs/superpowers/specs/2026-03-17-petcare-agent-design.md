@@ -145,8 +145,10 @@ The ChatAgent has access to these tools. The LLM decides when to call them; the 
 |------|---------|--------------|
 | `create_calendar_event` | Record health events to calendar | Yes (record card) |
 | `query_calendar_events` | Look up past events/history | No |
-| `create_pet` | Add a new pet profile | Yes (pet_created card) |
+| `create_pet` | Add a new pet profile (auto-generates initial profile_md) | Yes (pet_created card) |
 | `update_pet_profile` | Save any pet info as flexible key-value JSON | No |
+| `save_pet_profile_md` | Silently update pet's narrative markdown profile when learning new info from chat | No |
+| `summarize_pet_profile` | User-triggered: comprehensively summarize and update pet profile from chat history | Yes (profile_summarized card) |
 | `list_pets` | List all registered pets with IDs | No |
 | `create_reminder` | Set push notification reminder | Yes (reminder card) |
 | `search_places` | Find nearby vets, parks, pet stores via Google Places API | Yes (map card) |

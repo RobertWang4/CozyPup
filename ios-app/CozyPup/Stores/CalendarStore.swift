@@ -64,8 +64,13 @@ class CalendarStore: ObservableObject {
                 let source: String
             }
 
+            guard let petId = event.petId else {
+                print("CalendarStore.add skipped API sync: missing petId for event \(event.id)")
+                return
+            }
+
             let body = CreateBody(
-                pet_id: event.petId,
+                pet_id: petId,
                 event_date: event.eventDate,
                 event_time: event.eventTime,
                 title: event.title,

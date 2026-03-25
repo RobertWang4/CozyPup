@@ -15,6 +15,8 @@ from app.auth import (
 )
 from app.database import get_db
 from app.models import User
+from pydantic import BaseModel
+
 from app.schemas.auth import (
     AuthRequest,
     AuthResponse,
@@ -23,6 +25,10 @@ from app.schemas.auth import (
     RefreshResponse,
     UserResponse,
 )
+
+
+class UpdateUserRequest(BaseModel):
+    name: str | None = None
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1/auth", tags=["auth"])
@@ -98,6 +104,29 @@ async def me(
     if user is None:
         from fastapi import HTTPException
         raise HTTPException(status_code=404, detail="User not found")
+    return UserResponse(
+        id=str(user.id),
+        email=user.email,
+        name=user.name,
+        auth_provider=user.auth_provider,
+        phone_number=user.phone_number,
+    )
+
+
+@router.patch("/me", response_model=UserResponse)
+async def update_me(
+    req: UpdateUserRequest,
+    user_id: uuid.UUID = Depends(get_current_user_id),
+    db: AsyncSession = Depends(get_db),
+):
+    result = await db.execute(select(User).where(User.id == user_id))
+    user = result.scalar_one_or_none()
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    if req.name is not None:
+        user.name = req.name.strip()
+    await db.commit()
+    await db.refresh(user)
     return UserResponse(
         id=str(user.id),
         email=user.email,

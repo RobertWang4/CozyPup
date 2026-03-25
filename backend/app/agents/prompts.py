@@ -60,7 +60,7 @@ The user's pets are listed below.
 
 ## Pet profile maintenance
 
-Each pet may have a narrative profile document below. When you learn NEW information about a pet from conversation (personality, health, routines, preferences), silently call `save_pet_profile_md` with the FULL updated document. Do NOT tell the user you are updating the profile. If a pet has no profile yet and you know at least 2 facts beyond name/species, create one.
+Each pet has a narrative profile document below (auto-generated at creation). When you learn NEW information about a pet from conversation (personality, health, routines, preferences), silently call `save_pet_profile_md` with the FULL updated document. Do NOT tell the user you are updating the profile.
 
 {pet_context}
 

@@ -16,6 +16,7 @@ struct CalendarDrawer: View {
     @State private var mode: CalendarMode = .calendar
     @State private var previousMode: CalendarMode = .calendar
     @State private var singleDayDate: String?
+    @State private var timelineTargetDate: String?
 
     init(isPresented: Binding<Bool>) {
         _isPresented = isPresented
@@ -63,7 +64,12 @@ struct CalendarDrawer: View {
                 // Mode toggle
                 Button {
                     withAnimation(.easeInOut(duration: 0.3)) {
-                        mode = (mode == .calendar) ? .timeline : .calendar
+                        if mode == .calendar {
+                            timelineTargetDate = selectedDate
+                            mode = .timeline
+                        } else {
+                            mode = .calendar
+                        }
                     }
                 } label: {
                     Image(systemName: mode == .calendar ? "list.bullet" : "calendar")
@@ -84,6 +90,7 @@ struct CalendarDrawer: View {
                     VStack(spacing: 0) {
                         calendarCard
                             .padding(.horizontal, Tokens.spacing.md)
+                            .padding(.top, Tokens.spacing.md)
                             .padding(.bottom, Tokens.spacing.md)
                             .shadow(color: .black.opacity(0.03), radius: 8, y: 2)
 
@@ -98,7 +105,7 @@ struct CalendarDrawer: View {
                 }
 
             case .timeline:
-                MultiDayTimelineView(filterPetId: $filterPetId) { date in
+                MultiDayTimelineView(filterPetId: $filterPetId, scrollToDate: timelineTargetDate) { date in
                     singleDayDate = date
                     previousMode = .timeline
                     withAnimation(.easeInOut(duration: 0.3)) { mode = .singleDay }
@@ -113,7 +120,10 @@ struct CalendarDrawer: View {
             }
         }
         .padding(.horizontal, Tokens.spacing.sm)
-        .task { await calendarStore.fetchMonth(year: year, month: month + 1) }
+        .task {
+            await calendarStore.fetchMonth(year: year, month: month + 1)
+            await petStore.fetchFromAPI()
+        }
         .onChange(of: month) { Task { await calendarStore.fetchMonth(year: year, month: month + 1) } }
         .onChange(of: year) { Task { await calendarStore.fetchMonth(year: year, month: month + 1) } }
         .background(Tokens.bg)
@@ -170,12 +180,20 @@ struct CalendarDrawer: View {
                 pets: petStore.pets,
                 selectedDate: $selectedDate,
                 filterPetId: filterPetId,
-                onDoubleTap: { date in
+                onLongPress: { date in
                     singleDayDate = date
                     selectedDate = date
                     previousMode = .calendar
                     withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
                         mode = .singleDay
+                    }
+                },
+                onDoubleTap: { date in
+                    timelineTargetDate = date
+                    selectedDate = date
+                    previousMode = .calendar
+                    withAnimation(.easeInOut(duration: 0.35)) {
+                        mode = .timeline
                     }
                 }
             )
@@ -198,7 +216,7 @@ struct CalendarDrawer: View {
                     .padding(.vertical, Tokens.spacing.md)
             } else {
                 ForEach(selectedEvents) { evt in
-                    let pet = petStore.getById(evt.petId)
+                    let pet = evt.petId.flatMap(petStore.getById)
                     let petColor = pet?.color ?? Tokens.accent
                     EventRow(event: evt, petColor: petColor, pet: pet) { title, category, date, time in
                         calendarStore.update(evt.id, title: title, category: category,

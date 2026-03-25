@@ -74,6 +74,7 @@ struct EventEditSheet: View {
             .background(Tokens.bg)
             .navigationTitle(Lang.shared.isZh ? "编辑事件" : "Edit Event")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbarColorScheme(.light, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button(L.cancel) { dismiss() }

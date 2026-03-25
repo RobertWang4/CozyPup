@@ -29,7 +29,7 @@ xcodebuild -project CozyPup.xcodeproj -scheme CozyPup \
   -destination 'platform=iOS Simulator,name=iPhone 17 Pro' build
 ```
 
-Or open `ios-app/CozyPup.xcodeproj` in Xcode and Cmd+R. Bundle ID: `com.cozypup.app`, deployment target iOS 17.0.
+Or open `ios-app/CozyPup.xcodeproj` in Xcode and Cmd+R. Bundle ID: `com.robertwang.cozypup.dev`, deployment target iOS 17.0.
 
 ### Tests
 
@@ -203,5 +203,5 @@ Backend `.env` requires: `DATABASE_URL` (Neon PostgreSQL), `JWT_SECRET`, `MODEL_
 
 - **Done**: All REST APIs, database models, iOS SwiftUI frontend, frontend-backend integration, Phase 3 agents (v1 — router + multi-agent pattern)
 - **In progress**: Refactoring to Constrained Agent architecture (unified ChatAgent, validation layers, remove router + sub-agents)
-- **Not done**: Phase 4 push notifications, RAG knowledge base, multi-step planning (Agent Phase 2)
+- **Not done**: Phase 4 push notifications, RAG knowledge base, multi-step planning (Agent Phase 2), Phase 5 宠物共享（多主人共享 + 会员体系）
 - **Spec**: `docs/superpowers/specs/2026-03-17-petcare-agent-design.md` has the full architecture (incl. design system, agent evolution roadmap, iOS standards)

@@ -27,6 +27,8 @@ struct CozyPupApp: App {
                     ChatView()
                 }
             }
+            .animation(.easeInOut(duration: 0.3), value: auth.isAuthenticated)
+            .animation(.easeInOut(duration: 0.3), value: auth.hasAcknowledgedDisclaimer)
             .environmentObject(auth)
             .environmentObject(petStore)
             .environmentObject(calendarStore)

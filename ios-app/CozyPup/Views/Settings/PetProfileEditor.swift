@@ -17,9 +17,11 @@ struct PetProfileEditor: View {
                     editor
                 }
             }
-            .background(Tokens.bg)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Tokens.bg.ignoresSafeArea())
             .navigationTitle(Lang.shared.isZh ? "\(pet.name) 的档案" : "\(pet.name)'s Profile")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbarColorScheme(.light, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button(L.cancel) { isPresented = false }
@@ -41,8 +43,11 @@ struct PetProfileEditor: View {
                 }
             }
         }
+        .presentationDetents([.large])
+        .presentationDragIndicator(.visible)
+        .presentationBackground(Tokens.bg)
         .onAppear {
-            text = pet.profileMd ?? ""
+            text = pet.profileMd ?? generateInitialProfile()
         }
     }
 
@@ -82,6 +87,40 @@ struct PetProfileEditor: View {
             .foregroundColor(Tokens.text)
             .scrollContentBackground(.hidden)
             .padding(Tokens.spacing.md)
+    }
+
+    private func generateInitialProfile() -> String {
+        let isZh = Lang.shared.isZh
+        var lines: [String] = []
+        lines.append("# \(pet.name)")
+        lines.append("")
+
+        // Basics
+        lines.append(isZh ? "## 基本信息" : "## Basics")
+        let speciesStr: String = {
+            switch pet.species {
+            case .dog: return isZh ? "狗" : "Dog"
+            case .cat: return isZh ? "猫" : "Cat"
+            case .other: return isZh ? "其他" : "Other"
+            }
+        }()
+        lines.append(isZh ? "- 类型：\(speciesStr)" : "- Species: \(speciesStr)")
+        if !pet.breed.isEmpty {
+            lines.append(isZh ? "- 品种：\(pet.breed)" : "- Breed: \(pet.breed)")
+        }
+        if let bday = pet.birthday, !bday.isEmpty {
+            lines.append(isZh ? "- 生日：\(bday)" : "- Birthday: \(bday)")
+        }
+        if let w = pet.weight, w > 0 {
+            lines.append(isZh ? "- 体重：\(String(format: "%.1f", w)) kg" : "- Weight: \(String(format: "%.1f", w)) kg")
+        }
+
+        lines.append("")
+        lines.append(isZh ? "## 性格\n" : "## Personality\n")
+        lines.append(isZh ? "## 健康\n" : "## Health\n")
+        lines.append(isZh ? "## 日常" : "## Routine")
+
+        return lines.joined(separator: "\n")
     }
 
     private func save() {

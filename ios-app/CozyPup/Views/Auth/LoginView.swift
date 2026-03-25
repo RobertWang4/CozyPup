@@ -76,7 +76,7 @@ struct LoginView: View {
         .background(Tokens.bg.ignoresSafeArea())
         .overlay {
             if auth.isLoading {
-                Tokens.dimOverlay.ignoresSafeArea()
+                Tokens.dimOverlay.opacity(0.35).ignoresSafeArea()
                 ProgressView()
             }
         }

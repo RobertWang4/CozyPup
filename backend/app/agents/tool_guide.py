@@ -9,5 +9,6 @@ TOOL_DECISION_TREE = """\
 - 用户要【删除】什么 → 对应 delete_* tool
 - 用户要【找附近医院/宠物店】→ search_places
 - 用户描述【紧急症状】→ trigger_emergency
+- 用户要求【总结/更新宠物档案】→ summarize_pet_profile
 - 用户只是聊天/问问题 → 不调工具，直接回复
 """

@@ -13,6 +13,7 @@ struct SettingsDrawer: View {
     @State private var editingPetId: String?
     @State private var showAddPet = false
     @State private var showDeleteConfirm: Pet?
+    @State private var showUserProfile = false
 
     private let prefsKey = "cozypup_notification_prefs"
 
@@ -62,6 +63,9 @@ struct SettingsDrawer: View {
             }
             Button(L.cancel, role: .cancel) { }
         }
+        .sheet(isPresented: $showUserProfile) {
+            UserProfileSheet(auth: auth)
+        }
     }
 
     // MARK: - Settings List
@@ -70,22 +74,30 @@ struct SettingsDrawer: View {
         NavigationStack {
             List {
                 Section {
-                    HStack(spacing: 12) {
-                        Circle()
-                            .fill(Tokens.accent)
-                            .frame(width: Tokens.size.avatarMedium, height: Tokens.size.avatarMedium)
-                            .overlay(
-                                Text(String(auth.user?.name.prefix(1) ?? "U"))
-                                    .foregroundColor(Tokens.white)
-                                    .font(Tokens.fontHeadline.weight(.semibold))
-                            )
-                        VStack(alignment: .leading, spacing: Tokens.spacing.xxs) {
-                            Text(auth.user?.name ?? "User")
-                                .font(Tokens.fontCallout.weight(.medium))
-                                .foregroundColor(Tokens.text)
-                            Text(auth.user?.email ?? "")
-                                .font(Tokens.fontSubheadline)
-                                .foregroundColor(Tokens.textSecondary)
+                    Button {
+                        showUserProfile = true
+                    } label: {
+                        HStack(spacing: 12) {
+                            Circle()
+                                .fill(Tokens.accent)
+                                .frame(width: Tokens.size.avatarMedium, height: Tokens.size.avatarMedium)
+                                .overlay(
+                                    Text(String(auth.user?.name.prefix(1) ?? "U"))
+                                        .foregroundColor(Tokens.white)
+                                        .font(Tokens.fontHeadline.weight(.semibold))
+                                )
+                            VStack(alignment: .leading, spacing: Tokens.spacing.xxs) {
+                                Text(auth.user?.name ?? "User")
+                                    .font(Tokens.fontCallout.weight(.medium))
+                                    .foregroundColor(Tokens.text)
+                                Text(auth.user?.email ?? "")
+                                    .font(Tokens.fontSubheadline)
+                                    .foregroundColor(Tokens.textSecondary)
+                            }
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(Tokens.fontCaption)
+                                .foregroundColor(Tokens.textTertiary)
                         }
                     }
                     .listRowBackground(Tokens.surface)
@@ -181,19 +193,6 @@ struct SettingsDrawer: View {
                     Toggle(L.weeklyInsights, isOn: $weeklyInsights)
                 }
                 .tint(Tokens.green)
-                .listRowBackground(Tokens.surface)
-
-                Section {
-                    NavigationLink { LegalPageView(title: L.privacyPolicy, content: privacyText) } label: {
-                        Label(L.privacyPolicy, systemImage: "shield")
-                    }
-                    NavigationLink { LegalPageView(title: L.disclaimer, content: disclaimerText) } label: {
-                        Label(L.disclaimer, systemImage: "doc.text")
-                    }
-                    NavigationLink { LegalPageView(title: L.about, content: aboutText) } label: {
-                        Label(L.about, systemImage: "info.circle")
-                    }
-                }
                 .listRowBackground(Tokens.surface)
 
                 Section {
@@ -298,7 +297,4 @@ struct SettingsDrawer: View {
         return rem > 0 ? "\(years)y\(rem)mo" : "\(years)y"
     }
 
-    private let privacyText = "CozyPup values your privacy. We only collect data necessary to provide personalized pet health suggestions. Your data is stored locally on your device and is not shared with third parties."
-    private let disclaimerText = "CozyPup provides AI-generated suggestions for informational purposes only. These suggestions do not constitute professional veterinary advice. Always consult a qualified veterinarian for medical concerns."
-    private let aboutText = "CozyPup v1.0\n\nYour pet's personal health butler, powered by AI.\n\nBuilt with love for pet parents everywhere. 🐾"
 }

@@ -21,6 +21,23 @@ router = APIRouter(prefix="/api/v1/pets", tags=["pets"])
 
 PET_COLORS = ["E8835C", "6BA3BE", "7BAE7F", "9B7ED8", "E8A33C"]
 
+SPECIES_ZH = {"dog": "狗", "cat": "猫", "other": "其他"}
+
+
+def _generate_initial_profile(
+    name: str, species: str, breed: str, birthday: date | None, weight: float | None,
+) -> str:
+    lines = [f"# {name}", "", "## 基本信息"]
+    lines.append(f"- 类型：{SPECIES_ZH.get(species, species)}")
+    if breed:
+        lines.append(f"- 品种：{breed}")
+    if birthday:
+        lines.append(f"- 生日：{birthday.isoformat()}")
+    if weight and weight > 0:
+        lines.append(f"- 体重：{weight:.1f} kg")
+    lines.extend(["", "## 性格", "", "## 健康", "", "## 日常"])
+    return "\n".join(lines)
+
 
 def _pet_to_response(pet: Pet) -> PetResponse:
     return PetResponse(
@@ -50,15 +67,17 @@ async def create_pet(
     count = count_result.scalar() or 0
     color = PET_COLORS[count % len(PET_COLORS)]
 
+    bday = date.fromisoformat(req.birthday) if req.birthday else None
     pet = Pet(
         id=uuid.uuid4(),
         user_id=user_id,
         name=req.name,
         species=req.species,
         breed=req.breed,
-        birthday=date.fromisoformat(req.birthday) if req.birthday else None,
+        birthday=bday,
         weight=req.weight,
         color_hex=color,
+        profile_md=_generate_initial_profile(req.name, req.species.value, req.breed, bday, req.weight),
     )
     db.add(pet)
     await db.commit()

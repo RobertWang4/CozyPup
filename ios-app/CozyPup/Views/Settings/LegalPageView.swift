@@ -11,8 +11,11 @@ struct LegalPageView: View {
                 .foregroundColor(Tokens.textSecondary)
                 .padding(20)
         }
-        .background(Tokens.bg)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Tokens.bg.ignoresSafeArea())
         .navigationTitle(title)
         .navigationBarTitleDisplayMode(.inline)
+        .toolbarColorScheme(.light, for: .navigationBar)
+        .tint(Tokens.text)
     }
 }

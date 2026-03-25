@@ -86,7 +86,7 @@ struct SingleDayTimelineView: View {
 
                 // Event cards (full editing + photo upload)
                 ForEach(events) { evt in
-                    let pet = petStore.getById(evt.petId)
+                    let pet = evt.petId.flatMap(petStore.getById)
                     TimelineEventCard(
                         event: evt,
                         petColor: pet?.color ?? Tokens.accent,

@@ -12,6 +12,25 @@ targets:
     type: application
     platform: iOS
     sources: [CozyPup]
+    info:
+      path: CozyPup/Info.plist
+      properties:
+        CFBundleURLTypes:
+          - CFBundleTypeRole: Editor
+            CFBundleURLSchemes:
+              - com.googleusercontent.apps.601329501885-ru8qjq46n4ri34eenkd4g1qkcqho1fm2
+        UILaunchScreen: {}
+        UIRequiresFullScreen: true
+        UIStatusBarStyle: UIStatusBarStyleDefault
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        NSCameraUsageDescription: "CozyPup needs camera access to take photos of your pet"
+        NSMicrophoneUsageDescription: "CozyPup needs microphone access for voice input"
+        NSPhotoLibraryUsageDescription: "CozyPup needs photo library access to attach pet photos"
+        NSSpeechRecognitionUsageDescription: "CozyPup uses speech recognition for voice input"
+        NSLocationWhenInUseUsageDescription: "CozyPup uses your location to find nearby pet services"
+        NSAppTransportSecurity:
+          NSAllowsArbitraryLoads: true
     dependencies:
       - package: GoogleSignIn
         product: GoogleSignIn
@@ -23,15 +42,4 @@ targets:
         MARKETING_VERSION: "1.0"
         CURRENT_PROJECT_VERSION: "1"
         DEVELOPMENT_TEAM: SP9KQ7NFJN
-        GENERATE_INFOPLIST_FILE: true
-        INFOPLIST_KEY_NSCameraUsageDescription: "CozyPup needs camera access to take photos of your pet"
-        INFOPLIST_KEY_NSMicrophoneUsageDescription: "CozyPup needs microphone access for voice input"
-        INFOPLIST_KEY_NSPhotoLibraryUsageDescription: "CozyPup needs photo library access to attach pet photos"
-        INFOPLIST_KEY_NSSpeechRecognitionUsageDescription: "CozyPup uses speech recognition for voice input"
-        INFOPLIST_KEY_NSLocationWhenInUseUsageDescription: "CozyPup uses your location to find nearby pet services"
-        INFOPLIST_KEY_NSAppTransportSecurity_NSAllowsArbitraryLoads: true
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
-        INFOPLIST_KEY_UILaunchScreen_Generation: true
-        INFOPLIST_KEY_UIRequiresFullScreen: true
-        INFOPLIST_KEY_UIStatusBarStyle: UIStatusBarStyleDefault
-        INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait

@@ -28,7 +28,9 @@
 		885B288C97AAC7FAFAF5980E /* SettingsDrawer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6F1DE010DA6010A14147BF8 /* SettingsDrawer.swift */; };
 		8C479A4CCAAB3EA751F08C51 /* ChatService.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF65632CC6A30CD8137CBF57 /* ChatService.swift */; };
 		95829061BD7EB93A2A9E169E /* PetProfileEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = E953D8A8BA28DA30AE609878 /* PetProfileEditor.swift */; };
+		A1B2C3D4E5F6A7B8C9D0E1F2 /* UserProfileSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1E2D3C4B5A6978869706152 /* UserProfileSheet.swift */; };
 		99852793A13EC2793BD1D09C /* EmptyStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3489B7A2D858787350EDED43 /* EmptyStateView.swift */; };
+		B1C2D3E4F5A6B7C8D9E0F1A2 /* PinchGestureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2D3E4F5A6B7C8D9E0F1A2B3 /* PinchGestureView.swift */; };
 		ACC8DEDAA3BCE7642D22C250 /* ChatStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50750BC93A661BAE576D418E /* ChatStore.swift */; };
 		B0BE23343ADC65DAF3EEF9A3 /* AuthStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 913C15A464B82E869A8EA6E8 /* AuthStore.swift */; };
 		B26546A329CCAA0E29AF43B5 /* ConfirmActionCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDD76A395C37067B90C0DFD7 /* ConfirmActionCard.swift */; };
@@ -62,6 +64,7 @@
 		1D8DC0ADAB2E88C2F59583DA /* PetStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PetStore.swift; sourceTree = "<group>"; };
 		33E08B0B44AEEB61CFD807D9 /* HeatStripView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeatStripView.swift; sourceTree = "<group>"; };
 		3489B7A2D858787350EDED43 /* EmptyStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyStateView.swift; sourceTree = "<group>"; };
+		C2D3E4F5A6B7C8D9E0F1A2B3 /* PinchGestureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinchGestureView.swift; sourceTree = "<group>"; };
 		369D8B87FDDB80958DDAD250 /* ChatMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessage.swift; sourceTree = "<group>"; };
 		3AB153B3B040FAF4F372F8B2 /* EventEditSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventEditSheet.swift; sourceTree = "<group>"; };
 		3FDC9E1441AC78B6C6632FD0 /* EmailCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailCard.swift; sourceTree = "<group>"; };
@@ -95,6 +98,7 @@
 		E6D276B8E4BE99D3CA63F74F /* EventRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventRow.swift; sourceTree = "<group>"; };
 		E722C9266BF5B0325E6B52A6 /* MapCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapCard.swift; sourceTree = "<group>"; };
 		E953D8A8BA28DA30AE609878 /* PetProfileEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PetProfileEditor.swift; sourceTree = "<group>"; };
+		F1E2D3C4B5A6978869706152 /* UserProfileSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileSheet.swift; sourceTree = "<group>"; };
 		EBAD5792AB19AA7036912E67 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		EF65632CC6A30CD8137CBF57 /* ChatService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatService.swift; sourceTree = "<group>"; };
 		F142E2AF757CA909CA959BD8 /* CalendarDrawer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarDrawer.swift; sourceTree = "<group>"; };
@@ -221,6 +225,7 @@
 			children = (
 				88BD4E3CC91B5ED73B8A2AB6 /* EmergencyBanner.swift */,
 				3489B7A2D858787350EDED43 /* EmptyStateView.swift */,
+				C2D3E4F5A6B7C8D9E0F1A2B3 /* PinchGestureView.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -231,6 +236,7 @@
 				F9D034942C1B826D36D5E8D4 /* LegalPageView.swift */,
 				080771DF5730E9583B536DC5 /* PetFormView.swift */,
 				E953D8A8BA28DA30AE609878 /* PetProfileEditor.swift */,
+				F1E2D3C4B5A6978869706152 /* UserProfileSheet.swift */,
 				B6F1DE010DA6010A14147BF8 /* SettingsDrawer.swift */,
 			);
 			path = Settings;
@@ -380,6 +386,7 @@
 				EA6F86AD25C72F589A001B9F /* EmailCard.swift in Sources */,
 				FC5BC1932B70E128C7F1B81B /* EmergencyBanner.swift in Sources */,
 				99852793A13EC2793BD1D09C /* EmptyStateView.swift in Sources */,
+				B1C2D3E4F5A6B7C8D9E0F1A2 /* PinchGestureView.swift in Sources */,
 				2547DAC516A2F05FB22ACAC6 /* EventEditSheet.swift in Sources */,
 				FA82C6590ACDC7D49CF14998 /* EventRow.swift in Sources */,
 				11DE02B8DAA886EB61A80137 /* HapticsHelper.swift in Sources */,
@@ -395,6 +402,7 @@
 				D7EF6BD5206BF3B30C294354 /* Pet.swift in Sources */,
 				FF279B03D7AC13828EE65FF4 /* PetFormView.swift in Sources */,
 				95829061BD7EB93A2A9E169E /* PetProfileEditor.swift in Sources */,
+				A1B2C3D4E5F6A7B8C9D0E1F2 /* UserProfileSheet.swift in Sources */,
 				F3D92B290727D53D19BFEBDA /* PetStore.swift in Sources */,
 				CA967467835A9E2ADC5F68D2 /* RecordCard.swift in Sources */,
 				885B288C97AAC7FAFAF5980E /* SettingsDrawer.swift in Sources */,
@@ -536,18 +544,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = SP9KQ7NFJN;
-				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = CozyPup/Info.plist;
-				INFOPLIST_KEY_NSAppTransportSecurity_NSAllowsArbitraryLoads = YES;
-				INFOPLIST_KEY_NSCameraUsageDescription = "CozyPup needs camera access to take photos of your pet";
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "CozyPup uses your location to find nearby pet services";
-				INFOPLIST_KEY_NSMicrophoneUsageDescription = "CozyPup needs microphone access for voice input";
-				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "CozyPup needs photo library access to attach pet photos";
-				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "CozyPup uses speech recognition for voice input";
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UIRequiresFullScreen = YES;
-				INFOPLIST_KEY_UIStatusBarStyle = UIStatusBarStyleDefault;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -566,18 +563,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = SP9KQ7NFJN;
-				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = CozyPup/Info.plist;
-				INFOPLIST_KEY_NSAppTransportSecurity_NSAllowsArbitraryLoads = YES;
-				INFOPLIST_KEY_NSCameraUsageDescription = "CozyPup needs camera access to take photos of your pet";
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "CozyPup uses your location to find nearby pet services";
-				INFOPLIST_KEY_NSMicrophoneUsageDescription = "CozyPup needs microphone access for voice input";
-				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "CozyPup needs photo library access to attach pet photos";
-				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "CozyPup uses speech recognition for voice input";
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UIRequiresFullScreen = YES;
-				INFOPLIST_KEY_UIStatusBarStyle = UIStatusBarStyleDefault;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
