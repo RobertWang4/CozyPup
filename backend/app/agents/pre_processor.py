@@ -328,27 +328,28 @@ def get_confirmable_actions(actions: list[SuggestedAction]) -> list[SuggestedAct
 
 
 def format_actions_for_prompt(actions: list[SuggestedAction]) -> str:
-    """Format high-confidence actions as a system prompt section."""
-    high_confidence = [a for a in actions if a.confidence >= 0.8]
-    if not high_confidence:
+    """Format high-confidence actions as a system prompt section.
+
+    .. deprecated:: Use :func:`format_hints` instead. This function is kept
+       for backward compatibility but now delegates to the hint format.
+    """
+    hints = format_hints(actions)
+    if not hints:
         return ""
+    return "## Suggested actions (hints)\n" + "\n".join(hints)
 
-    lines = [
-        "## Pre-analyzed actions (EXECUTE THESE)",
-        "The following actions were detected from the user's message. "
-        "You MUST call these tools with these arguments. "
-        "You MUST rewrite the title into a short 2-8 word summary (e.g. '学校公园散步', '喂了200克狗粮'). "
-        "NEVER use the user's raw sentence as the title. Keep all other fields exactly as shown.",
-        "",
-    ]
-    for i, action in enumerate(high_confidence, 1):
-        args_str = ", ".join(f'{k}="{v}"' if isinstance(v, str) else f"{k}={v}"
-                             for k, v in action.arguments.items())
-        lines.append(f"{i}. {action.tool_name}({args_str})")
 
-    lines.append("")
-    if len(high_confidence) > 1:
-        lines.append("Execute these actions in the order listed. After each tool call, use the result to inform the next one.")
-        lines.append("")
-    lines.append("After calling the tool(s), give a brief warm confirmation to the user.")
-    return "\n".join(lines)
+def format_hints(actions: list[SuggestedAction]) -> list[str]:
+    """Convert suggested actions to hint strings for prompt injection.
+
+    Hints are advisory — LLM decides whether to act on them.
+    No longer forces tool_choice='required'.
+    """
+    import json
+
+    hints = []
+    for action in actions:
+        if action.confidence >= 0.5:
+            args_str = json.dumps(action.arguments, ensure_ascii=False)
+            hints.append(f"{action.tool_name}({args_str}) [置信度: {action.confidence:.1f}]")
+    return hints
