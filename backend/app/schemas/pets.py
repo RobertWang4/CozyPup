@@ -17,6 +17,7 @@ class PetUpdate(BaseModel):
     breed: str | None = None
     birthday: str | None = None
     weight: float | None = None
+    gender: str | None = None  # "male", "female", "unknown"
     profile_md: str | None = None
 
 
@@ -27,6 +28,8 @@ class PetResponse(BaseModel):
     breed: str
     birthday: str | None
     weight: float | None
+    gender: str | None = None
+    species_locked: bool = False
     avatar_url: str
     color_hex: str
     profile_md: str | None = None

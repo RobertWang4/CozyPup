@@ -40,6 +40,7 @@ def _generate_initial_profile(
 
 
 def _pet_to_response(pet: Pet) -> PetResponse:
+    gender = (pet.profile or {}).get("gender") if pet.profile else None
     return PetResponse(
         id=str(pet.id),
         name=pet.name,
@@ -47,6 +48,8 @@ def _pet_to_response(pet: Pet) -> PetResponse:
         breed=pet.breed,
         birthday=pet.birthday.isoformat() if pet.birthday else None,
         weight=pet.weight,
+        gender=gender,
+        species_locked=pet.species_locked,
         avatar_url=pet.avatar_url,
         color_hex=pet.color_hex,
         profile_md=pet.profile_md,
@@ -128,8 +131,11 @@ async def update_pet(
 
     if req.name is not None:
         pet.name = req.name
-    if req.species is not None:
+    if req.species is not None and req.species != pet.species:
+        if pet.species_locked:
+            raise HTTPException(status_code=400, detail="Species can only be changed once")
         pet.species = req.species
+        pet.species_locked = True
     if req.breed is not None:
         pet.breed = req.breed
     if req.birthday is not None:
@@ -138,6 +144,10 @@ async def update_pet(
         pet.weight = req.weight
     if req.profile_md is not None:
         pet.profile_md = req.profile_md
+    if req.gender is not None:
+        existing = pet.profile or {}
+        existing["gender"] = req.gender
+        pet.profile = existing
 
     await db.commit()
     await db.refresh(pet)

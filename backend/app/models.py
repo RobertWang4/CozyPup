@@ -81,6 +81,7 @@ class Pet(Base):
     user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     name: Mapped[str] = mapped_column(String(100), nullable=False)
     species: Mapped[Species] = mapped_column(Enum(Species), nullable=False)
+    species_locked: Mapped[bool] = mapped_column(default=False)
     breed: Mapped[str] = mapped_column(String(100), default="")
     birthday: Mapped[date | None] = mapped_column(Date)
     weight: Mapped[float | None] = mapped_column(Float)

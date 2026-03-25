@@ -60,6 +60,22 @@ class PetStore: ObservableObject {
         }
     }
 
+    func updateGender(_ id: String, gender: String) async {
+        struct Body: Encodable { let gender: String }
+        do {
+            let updated: Pet = try await APIClient.shared.request("PUT", "/pets/\(id)", body: Body(gender: gender))
+            if let idx = pets.firstIndex(where: { $0.id == id }) {
+                pets[idx] = updated
+                saveLocal()
+            }
+        } catch {
+            if let idx = pets.firstIndex(where: { $0.id == id }) {
+                pets[idx].gender = gender
+                saveLocal()
+            }
+        }
+    }
+
     func update(_ id: String, name: String, species: Species, breed: String, birthday: String?, weight: Double?) async {
         struct UpdateBody: Encodable {
             let name: String

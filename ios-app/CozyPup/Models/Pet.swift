@@ -18,6 +18,8 @@ struct Pet: Identifiable, Codable, Equatable {
     var breed: String
     var birthday: String?
     var weight: Double?
+    var gender: String?
+    var speciesLocked: Bool?
     var avatarUrl: String
     var colorHex: String
     var profileMd: String?
@@ -26,7 +28,8 @@ struct Pet: Identifiable, Codable, Equatable {
     var color: Color { Color(hex: colorHex) }
 
     enum CodingKeys: String, CodingKey {
-        case id, name, species, breed, birthday, weight
+        case id, name, species, breed, birthday, weight, gender
+        case speciesLocked = "species_locked"
         case avatarUrl = "avatar_url"
         case colorHex = "color_hex"
         case profileMd = "profile_md"

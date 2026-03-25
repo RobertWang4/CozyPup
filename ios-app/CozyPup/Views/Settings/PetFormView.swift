@@ -11,6 +11,7 @@ struct PetFormView: View {
     @State private var species: Species = .dog
     @State private var customSpecies = ""
     @State private var breed = ""
+    @State private var gender = ""
     @State private var birthday = ""
     @State private var weight = ""
     @State private var selectedPhoto: PhotosPickerItem?
@@ -26,6 +27,19 @@ struct PetFormView: View {
             return store.getById(id)
         }
         return editingPet
+    }
+
+    private var isSpeciesLocked: Bool {
+        editingPet?.speciesLocked ?? false
+    }
+
+    private func genderLabel(_ g: String) -> String {
+        let isZh = Lang.shared.isZh
+        switch g {
+        case "male": return isZh ? "公 ♂" : "Male ♂"
+        case "female": return isZh ? "母 ♀" : "Female ♀"
+        default: return isZh ? "未知" : "Unknown"
+        }
     }
 
     private func speciesLabel(_ s: Species) -> String {
@@ -123,10 +137,18 @@ struct PetFormView: View {
             }
 
             VStack(alignment: .leading, spacing: 6) {
-                Text(L.species).font(Tokens.fontSubheadline.weight(.medium)).foregroundColor(Tokens.textSecondary)
+                HStack {
+                    Text(L.species).font(Tokens.fontSubheadline.weight(.medium)).foregroundColor(Tokens.textSecondary)
+                    if isSpeciesLocked {
+                        Text(Lang.shared.isZh ? "（不可修改）" : "(locked)")
+                            .font(Tokens.fontCaption)
+                            .foregroundColor(Tokens.textTertiary)
+                    }
+                }
                 HStack(spacing: 10) {
                     ForEach(Species.allCases, id: \.self) { s in
                         Button {
+                            guard !isSpeciesLocked else { return }
                             species = s
                             if s == .other { customSpeciesFocused = true }
                         } label: {
@@ -141,7 +163,9 @@ struct PetFormView: View {
                                     RoundedRectangle(cornerRadius: 20)
                                         .stroke(species == s ? Color.clear : Tokens.border)
                                 )
+                                .opacity(isSpeciesLocked && species != s ? 0.4 : 1)
                         }
+                        .disabled(isSpeciesLocked)
                     }
                 }
                 if species == .other {
@@ -165,6 +189,27 @@ struct PetFormView: View {
                     .background(Tokens.surface)
                     .cornerRadius(12)
                     .overlay(RoundedRectangle(cornerRadius: 12).stroke(Tokens.border))
+            }
+
+            VStack(alignment: .leading, spacing: 6) {
+                Text(Lang.shared.isZh ? "性别" : "Gender")
+                    .font(Tokens.fontSubheadline.weight(.medium)).foregroundColor(Tokens.textSecondary)
+                HStack(spacing: 10) {
+                    ForEach(["male", "female", "unknown"], id: \.self) { g in
+                        Button {
+                            gender = g
+                        } label: {
+                            Text(genderLabel(g))
+                                .font(Tokens.fontSubheadline.weight(.medium))
+                                .padding(.horizontal, Tokens.spacing.md)
+                                .padding(.vertical, Tokens.spacing.sm)
+                                .background(gender == g ? Tokens.accent : Tokens.surface)
+                                .foregroundColor(gender == g ? Tokens.white : Tokens.text)
+                                .cornerRadius(20)
+                                .overlay(RoundedRectangle(cornerRadius: 20).stroke(gender == g ? Color.clear : Tokens.border))
+                        }
+                    }
+                }
             }
 
             HStack(spacing: 12) {
@@ -231,6 +276,10 @@ struct PetFormView: View {
                 Haptics.light()
                 let bday = birthday.isEmpty ? nil : birthday
                 let w = Double(weight)
+                // Save gender separately if editing
+                if let pet = editingPet, let store = petStore, !gender.isEmpty {
+                    Task { await store.updateGender(pet.id, gender: gender) }
+                }
                 onSave(name, species, breed, bday, w)
             } label: {
                 Text(editingPet != nil ? L.saveChanges : L.addPet)
@@ -255,6 +304,7 @@ struct PetFormView: View {
                 breed = pet.breed
                 birthday = pet.birthday ?? ""
                 weight = pet.weight.map { String($0) } ?? ""
+                gender = pet.gender ?? ""
             }
         }
     }
