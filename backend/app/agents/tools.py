@@ -610,6 +610,28 @@ TOOL_DEFINITIONS = [
             },
         },
     },
+    {
+        "type": "function",
+        "function": {
+            "name": "request_images",
+            "description": (
+                "请求查看用户附带的图片。\n"
+                "当你需要看图片内容才能回答用户问题时调用（什么颜色/什么品种/图片里是什么）。\n"
+                "不要用于: 换头像、存日记等操作（那些工具会自动接收图片，不需要你先看）。\n"
+                "调用后图片会返回给你，你再根据图片内容回答用户。"
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "reason": {
+                        "type": "string",
+                        "description": "为什么需要看图片，例如'用户问宠物颜色'",
+                    },
+                },
+                "required": ["reason"],
+            },
+        },
+    },
 ]
 
 
@@ -1442,6 +1464,7 @@ _TOOL_HANDLERS = {
     "set_language": _set_language,
     "set_pet_avatar": _set_pet_avatar,
     "trigger_emergency": _trigger_emergency,
+    "request_images": None,  # Special: handled by orchestrator, not here
 }
 
 # Tools that accept extra kwargs (e.g., location, images)

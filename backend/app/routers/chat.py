@@ -181,9 +181,12 @@ async def _event_generator(
         today=today_str,
     )
 
-    # Build messages — always send images to LLM, let it decide what to do
+    # Build messages — Step 1: text only (no images). LLM decides if it needs to see images.
+    # Images are passed separately to orchestrator for tool execution + on-demand viewing.
+    has_images = bool(request.images)
     recent_msgs = [{"role": m.role.value, "content": m.content} for m in context_messages]
-    messages = build_messages(recent_msgs, request.message, images=request.images)
+    image_hint = "\n\n[用户附带了图片。如果你需要查看图片内容才能回答，请调用 request_images 工具。如果只是执行操作（换头像、存日记等），直接调用对应工具即可，图片会自动传给工具。]" if has_images else ""
+    messages = build_messages(recent_msgs, request.message + image_hint, images=None)
 
     # --- Phase 3: Run orchestrator via queue ---
 

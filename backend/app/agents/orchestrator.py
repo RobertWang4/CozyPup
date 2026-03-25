@@ -222,6 +222,44 @@ async def _handle_single_task(
         result.response_text = "".join(text_parts)
         return result
 
+    # Special: request_images — inject images into conversation and continue
+    if fn_name == "request_images":
+        images = kwargs.get("images") or []
+        messages.append({
+            "role": "assistant",
+            "content": initial_text or None,
+            "tool_calls": [tool_call],
+        })
+        if images:
+            # Build multimodal tool result with images
+            image_content = [{"type": "text", "text": "这是用户附带的图片，请仔细查看后回答："}]
+            for img_b64 in images:
+                image_content.append({
+                    "type": "image_url",
+                    "image_url": {"url": f"data:image/jpeg;base64,{img_b64}"},
+                })
+            messages.append({
+                "role": "tool",
+                "tool_call_id": tool_call["id"],
+                "content": "图片已加载，请查看对话中的图片。",
+            })
+            # Add images as a user message so LLM can see them
+            messages.append({
+                "role": "user",
+                "content": image_content,
+            })
+        else:
+            messages.append({
+                "role": "tool",
+                "tool_call_id": tool_call["id"],
+                "content": json.dumps({"error": "用户没有附带图片"}),
+            })
+
+        followup_text, _ = await _stream_completion(messages, model, on_token)
+        text_parts.append(followup_text)
+        result.response_text = "".join(text_parts)
+        return result
+
     # Execute tool
     if db and user_id:
         try:
