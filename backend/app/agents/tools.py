@@ -1546,6 +1546,12 @@ async def _set_pet_avatar(
 
     # Prefer image from user's attached photos, fall back to arguments
     img_b64 = (images[0] if images else None) or arguments.get("image_base64")
+    logger.info("set_pet_avatar_debug", extra={
+        "pet_id": str(pet_id),
+        "has_images": bool(images),
+        "images_count": len(images) if images else 0,
+        "img_b64_len": len(img_b64) if img_b64 else 0,
+    })
     if not img_b64:
         return {"success": False, "error": "No image provided. Ask the user to attach a photo."}
     image_data = base64.b64decode(img_b64)
@@ -1555,6 +1561,7 @@ async def _set_pet_avatar(
     filename = f"{pet_id}.jpg"
     filepath = UPLOAD_DIR / filename
     filepath.write_bytes(image_data)
+    logger.info("avatar_file_written", extra={"path": str(filepath), "size": len(image_data)})
 
     pet.avatar_url = f"/api/v1/pets/{pet_id}/avatar"
     await db.flush()
