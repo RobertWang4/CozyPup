@@ -15,6 +15,7 @@ from sse_starlette.sse import EventSourceResponse
 from app.agents.emergency import build_emergency_hint, detect_emergency
 from app.agents.orchestrator import run_orchestrator
 from app.agents.pending_actions import pop_action
+from app.agents.post_processor import response_claims_action, execute_suggested_actions
 from app.agents.pre_processor import pre_process
 from app.agents.prompts_v2 import build_messages, build_system_prompt
 from app.agents.context_agent import trigger_summary_if_needed
@@ -247,6 +248,34 @@ async def _event_generator(
     if result is None:
         from app.agents.orchestrator import OrchestratorResult
         result = OrchestratorResult()
+
+    # --- Layer 2: Post-processor guard ---
+    # If LLM claimed action ("已更新/已记录") but didn't call any tools,
+    # execute pre-analyzed actions deterministically as fallback.
+    no_tools_called = not result.cards and not result.confirm_cards
+    claims_action = response_claims_action(result.response_text)
+    has_suggestions = bool(suggested_actions)
+
+    if no_tools_called and claims_action and has_suggestions:
+        logger.warning("post_processor_triggered", extra={
+            "response_preview": result.response_text[:100],
+            "suggested_count": len(suggested_actions),
+        })
+
+        async def on_card_fallback(card_data):
+            logger.info("card_event_queued_fallback", extra={"card_type": card_data.get("type", "unknown")})
+            yield_cards.append(card_data)
+
+        yield_cards: list[dict] = []
+        fallback_cards = await execute_suggested_actions(
+            suggested_actions, db, user_id,
+            on_card=None,
+            location=request.location,
+        )
+        # Push fallback cards to SSE
+        for card in fallback_cards:
+            result.cards.append(card)
+            yield {"event": "card", "data": json.dumps(card)}
 
     # Save assistant response
     all_cards = result.cards + result.confirm_cards
