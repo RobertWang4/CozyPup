@@ -13,7 +13,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sse_starlette.sse import EventSourceResponse
 
 from app.agents.chat_agent import ChatAgent
-from app.agents.emergency import detect_emergency
+from app.agents.emergency import build_emergency_hint, detect_emergency
 from app.agents.pending_actions import pop_action
 from app.agents.prompts import CHAT_SYSTEM_PROMPT
 from app.agents.tools import execute_tool
@@ -151,6 +151,7 @@ async def _run_chat_agent_to_queue(
     pets: list[Pet],
     context_messages: list[dict],
     is_emergency: bool = False,
+    emergency_hint: str | None = None,
 ):
     """Run ChatAgent, pushing SSE events into the queue."""
     pet_context = await _build_pet_context(pets)
@@ -178,6 +179,7 @@ async def _run_chat_agent_to_queue(
                 "session_id": session.id,
                 "location": request.location,
                 "is_emergency": is_emergency,
+                "emergency_hint": emergency_hint,
                 "pets": pets,
                 "images": request.images,
             },
@@ -207,17 +209,16 @@ async def _event_generator(
     # 2. Save user message
     await _save_message(db, session.id, user_id, MessageRole.user, request.message)
 
-    # 3. Emergency detection (non-blocking — emitted before chat response)
-    is_emergency = detect_emergency(request.message)
+    # 3. Emergency detection — inject hint into agent context, let LLM decide
+    emergency_result = detect_emergency(request.message)
+    is_emergency = emergency_result.detected
+    emergency_hint = build_emergency_hint(emergency_result.keywords) if is_emergency else None
     if is_emergency:
-        logger.info("emergency_detected", extra={
+        logger.info("emergency_keywords_detected", extra={
             "session_id": session_id,
             "user_id": str(user_id),
+            "keywords": emergency_result.keywords,
         })
-        yield {
-            "event": "emergency",
-            "data": json.dumps({"message": "Possible emergency detected", "action": "find_er"}),
-        }
 
     # 4. Load context
     pets = await _get_pets(db, user_id)
@@ -228,6 +229,7 @@ async def _event_generator(
         _run_chat_agent_to_queue(
             queue, request, session, user_id, db, pets, context_messages,
             is_emergency=is_emergency,
+            emergency_hint=emergency_hint,
         )
     )
 
