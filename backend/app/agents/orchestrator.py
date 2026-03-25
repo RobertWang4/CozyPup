@@ -135,7 +135,7 @@ async def run_orchestrator(
 
     # PATH C: Multi task — parallel executors
     result = await _handle_multi_task(
-        tool_calls, initial_text, db, user_id, session_id,
+        tool_calls, initial_text, use_model, db, user_id, session_id,
         on_token, on_card, today, **kwargs,
     )
     return result
@@ -303,6 +303,7 @@ async def _handle_single_task(
 async def _handle_multi_task(
     tool_calls: list[dict],
     initial_text: str,
+    model: str,
     db, user_id, session_id,
     on_token, on_card,
     today: str = "",
@@ -387,11 +388,15 @@ async def _handle_multi_task(
         else:
             summaries.append(f"❌ {exec_result.error or '执行失败'}")
 
-    # Append summaries to response
-    if summaries and on_token:
-        summary_text = "\n" + "\n".join(summaries)
-        await _maybe_await(on_token, summary_text)
-        result.response_text += summary_text
+    # Generate natural language summary via LLM (not raw technical output)
+    if summaries:
+        summary_prompt = "你刚才执行了以下操作，请用简短温暖的语气告诉用户结果：\n" + "\n".join(summaries)
+        followup_msgs = [
+            *[{"role": "system", "content": "用简短温暖的语气总结操作结果，不要列出工具名称。"}],
+            {"role": "user", "content": summary_prompt},
+        ]
+        followup_text, _ = await _stream_completion(followup_msgs, model, on_token)
+        result.response_text += followup_text
 
     return result
 
