@@ -196,6 +196,7 @@ async def _event_generator(
         await queue.put({"event": "token", "data": json.dumps({"text": text})})
 
     async def on_card(card_data):
+        logger.info("card_event_queued", extra={"card_type": card_data.get("type", "unknown")})
         await queue.put({"event": "card", "data": json.dumps(card_data)})
 
     async def _run_orchestrator_to_queue():
