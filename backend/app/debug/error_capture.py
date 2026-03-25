@@ -21,6 +21,7 @@ class ErrorSnapshot:
     fingerprint: str
     request_data: dict
     correlation_context: dict
+    user_id: str = ""
     agent_state: dict | None = None
     db_context: dict | None = None
 
@@ -33,7 +34,7 @@ def capture_error(
 ) -> ErrorSnapshot:
     """Create an ErrorSnapshot from an exception."""
     # Lazy imports to avoid circular dependency (correlation imports from debug, debug from correlation)
-    from .correlation import get_correlation_context, get_correlation_id
+    from .correlation import get_correlation_context, get_correlation_id, get_user_id
     from .fingerprint import compute_fingerprint
     from .error_types import ErrorCategory, PetPalError
 
@@ -59,6 +60,7 @@ def capture_error(
         fingerprint=fingerprint,
         request_data=request_data or {},
         correlation_context=get_correlation_context(),
+        user_id=get_user_id(),
         agent_state=agent_state,
         db_context=db_context,
     )

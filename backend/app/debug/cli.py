@@ -29,8 +29,10 @@ def trace(correlation_id: str):
         return
 
     ts = _format_ts(snap.timestamp)
+    user = snap.user_id or snap.correlation_context.get("user_id", "") or "anonymous"
     click.echo(f"Trace for {correlation_id}")
     click.echo(f"  Timestamp:  {ts}")
+    click.echo(f"  User:       {user}")
     click.echo(f"  Category:   {snap.category}")
     click.echo(f"  Module:     {snap.module}")
     click.echo(f"  Error type: {snap.error_type}")
@@ -52,13 +54,17 @@ def trace(correlation_id: str):
 
 @cli.command()
 @click.option("--module", default=None, help="Filter by module path")
+@click.option("--user", default=None, help="Filter by user ID (prefix match)")
 @click.option("--last", default=10, help="Show last N errors (default: 10)")
-def errors(module: str | None, last: int):
+def errors(module: str | None, user: str | None, last: int):
     """List recent error snapshots."""
     snapshots = _load_all_snapshots()
 
     if module:
         snapshots = [s for s in snapshots if module in s.module]
+
+    if user:
+        snapshots = [s for s in snapshots if _get_user_id(s).startswith(user)]
 
     snapshots.sort(key=lambda s: s.timestamp, reverse=True)
     snapshots = snapshots[:last]
@@ -67,14 +73,14 @@ def errors(module: str | None, last: int):
         click.echo("No error snapshots found.")
         return
 
-    click.echo("TIMESTAMP            | CATEGORY   | MODULE                  | TYPE            | MESSAGE                                                     | FP")
-    click.echo("-" * 80)
+    click.echo("TIMESTAMP            | USER (short) | CATEGORY   | MODULE                  | TYPE            | MESSAGE")
+    click.echo("-" * 120)
 
     for snap in snapshots:
         ts = _format_ts(snap.timestamp)
-        msg = snap.error_message[:60]
-        fp = snap.fingerprint[:8]
-        click.echo(f"{ts} | {snap.category} | {snap.module} | {snap.error_type} | {msg} | {fp}")
+        uid = _get_user_id(snap)[:8] or "anon"
+        msg = snap.error_message[:50]
+        click.echo(f"{ts} | {uid:<12} | {snap.category:<10} | {snap.module:<23} | {snap.error_type:<15} | {msg}")
 
 
 @cli.command("generate-test")
@@ -186,6 +192,73 @@ def summary(since: str):
         click.echo(
             f"{fp[:8]} | {len(snaps)} | {latest.category} | {latest.module} | {last_seen} | {msg}"
         )
+
+
+@cli.command()
+@click.argument("user_id")
+@click.option("--last", default=20, help="Show last N errors (default: 20)")
+def user(user_id: str, last: int):
+    """Show all errors for a specific user (prefix match on user ID)."""
+    snapshots = _load_all_snapshots()
+    snapshots = [s for s in snapshots if _get_user_id(s).startswith(user_id)]
+    snapshots.sort(key=lambda s: s.timestamp, reverse=True)
+    snapshots = snapshots[:last]
+
+    if not snapshots:
+        click.echo(f"No errors found for user {user_id}")
+        return
+
+    full_uid = _get_user_id(snapshots[0])
+    click.echo(f"\nErrors for user: {full_uid}")
+    click.echo(f"Total: {len(snapshots)} (showing last {last})\n")
+
+    for snap in snapshots:
+        ts = _format_ts(snap.timestamp)
+        click.echo(f"  [{ts}] {snap.category}/{snap.error_type}")
+        click.echo(f"    {snap.error_message[:80]}")
+        click.echo(f"    → {snap.request_data.get('method', '?')} {snap.request_data.get('path', '?')}")
+        click.echo(f"    trace: {snap.correlation_id}")
+        click.echo()
+
+
+@cli.command()
+@click.option("--since", default="24h", help="Time window: 1h, 24h, 7d (default: 24h)")
+def users(since: str):
+    """Show error counts grouped by user — find who's having problems."""
+    delta = _parse_since(since)
+    if delta is None:
+        click.echo(f"Invalid --since value: {since}. Use formats like 1h, 24h, 7d.")
+        return
+
+    cutoff = datetime.now(timezone.utc) - delta
+    snapshots = _load_all_snapshots()
+    snapshots = [s for s in snapshots if _parse_timestamp(s.timestamp) >= cutoff]
+
+    if not snapshots:
+        click.echo("No errors in the given time window.")
+        return
+
+    user_groups: dict[str, list[ErrorSnapshot]] = {}
+    for snap in snapshots:
+        uid = _get_user_id(snap) or "anonymous"
+        user_groups.setdefault(uid, []).append(snap)
+
+    click.echo(f"\nError counts by user (last {since}):\n")
+    click.echo(f"{'USER ID':<40} {'COUNT':>5}  {'LAST ERROR':<20} {'LATEST MESSAGE'}")
+    click.echo("-" * 110)
+
+    for uid, snaps in sorted(user_groups.items(), key=lambda kv: len(kv[1]), reverse=True):
+        latest = max(snaps, key=lambda s: s.timestamp)
+        last_seen = _format_ts(latest.timestamp)
+        msg = latest.error_message[:40]
+        click.echo(f"{uid:<40} {len(snaps):>5}  {last_seen:<20} {msg}")
+
+    click.echo(f"\nTotal: {len(snapshots)} errors across {len(user_groups)} users")
+
+
+def _get_user_id(snap: ErrorSnapshot) -> str:
+    """Extract user_id from snapshot, checking both top-level and correlation_context."""
+    return snap.user_id or snap.correlation_context.get("user_id", "") or ""
 
 
 def _load_all_snapshots() -> list[ErrorSnapshot]:

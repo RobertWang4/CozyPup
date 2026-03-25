@@ -7,6 +7,7 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 from app.config import settings
+from app.debug.correlation import set_user_id
 
 security = HTTPBearer()
 
@@ -121,4 +122,6 @@ async def get_current_user_id(
     credentials: HTTPAuthorizationCredentials = Depends(security),
 ) -> uuid.UUID:
     payload = verify_token(credentials.credentials, "access")
-    return uuid.UUID(payload["sub"])
+    uid = uuid.UUID(payload["sub"])
+    set_user_id(str(uid))
+    return uid
