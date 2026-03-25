@@ -13,7 +13,7 @@ from app.database import get_db
 from app.models import Pet
 from app.schemas.pets import PetCreate, PetResponse, PetUpdate
 
-UPLOAD_DIR = Path(__file__).resolve().parent.parent / "uploads" / "avatars"
+UPLOAD_DIR = Path("/app/uploads/avatars") if Path("/app/uploads").exists() else Path(__file__).resolve().parent.parent / "uploads" / "avatars"
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
 logger = logging.getLogger(__name__)
