@@ -258,6 +258,37 @@ TOOL_DEFINITIONS = [
     {
         "type": "function",
         "function": {
+            "name": "summarize_pet_profile",
+            "description": (
+                "用户主动要求总结/更新宠物档案时调用。\n"
+                "回顾所有已知信息和聊天历史，生成完整的宠物档案文档。\n"
+                "仅在用户明确要求时调用 (帮我总结一下XX的信息/更新一下档案/整理一下宠物资料)。\n"
+                "必须传完整文档 (非 diff)，800 字以内，用 markdown 分节。\n"
+                "用用户的语言撰写，尽量丰富详实。"
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "pet_id": {
+                        "type": "string",
+                        "description": "UUID of the pet.",
+                    },
+                    "profile_md": {
+                        "type": "string",
+                        "description": (
+                            "The FULL markdown profile document. Summarize ALL known info about the pet "
+                            "from conversation history and existing profile. Sections: basics, personality, "
+                            "health, daily routine, notes. Be thorough and detailed."
+                        ),
+                    },
+                },
+                "required": ["pet_id", "profile_md"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
             "name": "list_pets",
             "description": (
                 "列出用户所有已注册的宠物及其档案。\n"
@@ -589,6 +620,8 @@ async def _create_calendar_event(
     arguments: dict,
     db: AsyncSession,
     user_id: uuid.UUID,
+    images: list[str] | None = None,
+    **kwargs,
 ) -> dict:
     """Create a CalendarEvent record in the database."""
     # Resolve pet(s): support both pet_id (single) and pet_ids (multi)
@@ -635,8 +668,22 @@ async def _create_calendar_event(
         edited=False,
     )
 
-    # Attach photos if provided
+    # Attach photos: from arguments (LLM-provided URLs) or from user's chat images (base64)
     photo_urls = arguments.get("photo_urls", [])
+    if not photo_urls and images:
+        # Auto-save base64 images from chat to disk
+        for img_b64 in images:
+            try:
+                image_data = base64.b64decode(img_b64)
+                if len(image_data) > 5 * 1024 * 1024:
+                    continue
+                photo_id = uuid.uuid4()
+                filename = f"{photo_id}.jpg"
+                filepath = PHOTO_DIR / filename
+                filepath.write_bytes(image_data)
+                photo_urls.append(f"/api/v1/calendar/photos/{filename}")
+            except Exception:
+                continue
     if photo_urls:
         event.photos = photo_urls
 
@@ -754,6 +801,24 @@ async def _update_calendar_event(
 PET_COLORS = ["E8835C", "6BA3BE", "7BAE7F", "9B7ED8", "E8A33C"]
 
 
+_SPECIES_ZH = {"dog": "狗", "cat": "猫", "other": "其他"}
+
+
+def _generate_initial_profile_md(
+    name: str, species: str, breed: str, birthday: date | None, weight: float | None,
+) -> str:
+    lines = [f"# {name}", "", "## 基本信息"]
+    lines.append(f"- 类型：{_SPECIES_ZH.get(species, species)}")
+    if breed:
+        lines.append(f"- 品种：{breed}")
+    if birthday:
+        lines.append(f"- 生日：{birthday.isoformat()}")
+    if weight and weight > 0:
+        lines.append(f"- 体重：{weight:.1f} kg")
+    lines.extend(["", "## 性格", "", "## 健康", "", "## 日常"])
+    return "\n".join(lines)
+
+
 async def _create_pet(
     arguments: dict,
     db: AsyncSession,
@@ -773,15 +838,17 @@ async def _create_pet(
     count = count_result.scalar() or 0
     color = PET_COLORS[count % len(PET_COLORS)]
 
+    bday = date.fromisoformat(birthday_str) if birthday_str else None
     pet = Pet(
         id=uuid.uuid4(),
         user_id=user_id,
         name=name,
         species=species,
         breed=breed,
-        birthday=date.fromisoformat(birthday_str) if birthday_str else None,
+        birthday=bday,
         weight=weight,
         color_hex=color,
+        profile_md=_generate_initial_profile_md(name, arguments["species"], breed, bday, weight),
     )
 
     # Store optional fields in flexible profile JSON
@@ -890,6 +957,42 @@ async def _save_pet_profile_md(
     await db.flush()
 
     return {"success": True, "pet_id": str(pet.id), "pet_name": pet.name}
+
+
+async def _summarize_pet_profile(
+    arguments: dict,
+    db: AsyncSession,
+    user_id: uuid.UUID,
+) -> dict:
+    """User-triggered: summarize and update the pet's profile document."""
+    pet_id = uuid.UUID(arguments["pet_id"])
+    profile_md = arguments.get("profile_md", "").strip()
+    if not profile_md:
+        return {"success": False, "error": "Empty profile_md"}
+    if len(profile_md) > 5000:
+        return {"success": False, "error": "profile_md too long (max 5000 chars)"}
+
+    result = await db.execute(
+        select(Pet).where(Pet.id == pet_id, Pet.user_id == user_id)
+    )
+    pet = result.scalar_one_or_none()
+    if not pet:
+        return {"success": False, "error": "Pet not found"}
+
+    pet.profile_md = profile_md
+    await db.flush()
+
+    card = {
+        "type": "profile_summarized",
+        "pet_name": pet.name,
+    }
+
+    return {
+        "success": True,
+        "pet_id": str(pet.id),
+        "pet_name": pet.name,
+        "card": card,
+    }
 
 
 async def _list_pets(
@@ -1325,6 +1428,7 @@ _TOOL_HANDLERS = {
     "create_pet": _create_pet,
     "update_pet_profile": _update_pet_profile,
     "save_pet_profile_md": _save_pet_profile_md,
+    "summarize_pet_profile": _summarize_pet_profile,
     "list_pets": _list_pets,
     "create_reminder": _create_reminder,
     "search_places": _search_places,
@@ -1341,7 +1445,7 @@ _TOOL_HANDLERS = {
 }
 
 # Tools that accept extra kwargs (e.g., location, images)
-_TOOLS_WITH_KWARGS = {"search_places", "upload_event_photo", "set_pet_avatar"}
+_TOOLS_WITH_KWARGS = {"search_places", "upload_event_photo", "set_pet_avatar", "create_calendar_event"}
 
 
 async def execute_tool(
