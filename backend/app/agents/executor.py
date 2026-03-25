@@ -11,6 +11,7 @@ from dataclasses import dataclass, field
 
 import litellm
 
+from app.agents import llm_extra_kwargs
 from app.config import settings
 from app.agents.tools import TOOL_DEFINITIONS, execute_tool
 from app.agents.validation import validate_tool_args
@@ -93,6 +94,7 @@ async def run_executor(
             tool_choice="auto",
             temperature=0.1,
             stream=False,
+            **llm_extra_kwargs(),
         )
 
         message = response.choices[0].message
@@ -138,6 +140,7 @@ async def run_executor(
                 tool_choice="auto",
                 temperature=0.1,
                 stream=False,
+                **llm_extra_kwargs(),
             )
 
             retry_msg = retry_response.choices[0].message

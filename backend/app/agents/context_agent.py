@@ -53,6 +53,7 @@ async def summarize_context(
         user_content += f"{role}: {content}\n"
 
     try:
+        from app.agents import llm_extra_kwargs
         response = await litellm.acompletion(
             model=settings.context_model,
             messages=[
@@ -61,6 +62,7 @@ async def summarize_context(
             ],
             temperature=0.1,
             response_format={"type": "json_object"},
+            **llm_extra_kwargs(),
         )
 
         raw = response.choices[0].message.content

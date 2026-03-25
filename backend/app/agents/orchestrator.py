@@ -14,6 +14,7 @@ from typing import Callable, Awaitable
 
 import litellm
 
+from app.agents import llm_extra_kwargs
 from app.config import settings
 from app.agents.executor import run_executor, ExecutorResult
 from app.agents.tools import TOOL_DEFINITIONS, execute_tool
@@ -80,6 +81,7 @@ async def run_orchestrator(
             tool_choice="auto",
             temperature=0.3,
             stream=True,
+            **llm_extra_kwargs(),
         )
 
         async for chunk in response:
@@ -371,6 +373,7 @@ async def _stream_completion(
         tools=TOOL_DEFINITIONS,
         tool_choice="auto",
         temperature=0.3,
+        **llm_extra_kwargs(),
         stream=True,
     )
 
