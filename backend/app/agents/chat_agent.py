@@ -140,22 +140,12 @@ class ChatAgent(BaseAgent):
         images = context.get("images") or []
 
         # Build user message — multimodal if images present
-        # The API proxy doesn't support base64 images, so we save them
-        # as temp files and pass public URLs to the LLM.
-        temp_image_paths: list[Path] = []
         if images:
-            temp_dir = Path(__file__).resolve().parent.parent / "uploads" / "temp_images"
-            temp_dir.mkdir(parents=True, exist_ok=True)
             user_content: list[dict] = [{"type": "text", "text": message}]
             for img_b64 in images:
-                fname = f"{_uuid.uuid4().hex}.jpg"
-                fpath = temp_dir / fname
-                fpath.write_bytes(base64.b64decode(img_b64))
-                temp_image_paths.append(fpath)
-                img_url = f"{settings.server_public_url}/temp-images/{fname}"
                 user_content.append({
                     "type": "image_url",
-                    "image_url": {"url": img_url},
+                    "image_url": {"url": f"data:image/jpeg;base64,{img_b64}"},
                 })
             user_msg = {"role": "user", "content": user_content}
         else:

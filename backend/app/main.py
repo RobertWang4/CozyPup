@@ -55,11 +55,6 @@ app.add_middleware(RequestLoggingMiddleware)
 app.add_middleware(CorrelationMiddleware)
 
 
-# Serve temp images for LLM vision (proxy doesn't support base64)
-_temp_img_dir = Path(__file__).resolve().parent / "uploads" / "temp_images"
-_temp_img_dir.mkdir(parents=True, exist_ok=True)
-app.mount("/temp-images", StaticFiles(directory=str(_temp_img_dir)), name="temp-images")
-
 
 @app.get("/health")
 async def health():

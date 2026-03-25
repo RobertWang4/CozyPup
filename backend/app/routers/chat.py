@@ -164,11 +164,9 @@ async def _event_generator(
 
     # --- Phase 1: Parallel preprocessing ---
 
-    # Stage 1: Parallel DB queries
-    pets, _ = await asyncio.gather(
-        _get_pets(db, user_id),
-        db.refresh(session),  # ensure context_summary is loaded
-    )
+    # Stage 1: Sequential DB queries (async sessions don't support concurrent ops)
+    pets = await _get_pets(db, user_id)
+    await db.refresh(session)  # ensure context_summary is loaded
 
     # Stage 2: Sync operations (fast, no await needed)
     emergency_result = detect_emergency(request.message)
@@ -299,7 +297,12 @@ async def _event_generator(
     )
 
     # Trigger context compression if needed (async, non-blocking)
-    _track_task(trigger_summary_if_needed(session.id, db))
+    # Must use a separate db session — the current one will be closed after response
+    from app.database import async_session
+    async def _summarize_bg():
+        async with async_session() as bg_db:
+            await trigger_summary_if_needed(session.id, bg_db)
+    _track_task(_summarize_bg())
 
     # Done event
     yield {
