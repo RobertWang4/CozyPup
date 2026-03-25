@@ -149,6 +149,18 @@ async def update_pet(
         existing["gender"] = req.gender
         pet.profile = existing
 
+    # Sync all structured fields into profile JSON so AI always sees latest data
+    profile = pet.profile or {}
+    if pet.name:
+        profile["name"] = pet.name
+    if pet.breed:
+        profile["breed"] = pet.breed
+    if pet.birthday:
+        profile["birthday"] = pet.birthday.isoformat()
+    if pet.weight:
+        profile["weight_kg"] = pet.weight
+    pet.profile = profile
+
     await db.commit()
     await db.refresh(pet)
     logger.info("pet_updated", extra={"pet_id": str(pet.id)})
