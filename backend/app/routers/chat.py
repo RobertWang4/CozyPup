@@ -29,6 +29,39 @@ router = APIRouter(prefix="/api/v1", tags=["chat"])
 
 MAX_CONTEXT_MESSAGES = 5
 
+# ---------- Image intent detection ----------
+# If the user's text is clearly a tool command (avatar, log event with photo),
+# skip sending images to the LLM (saves tokens + latency).
+# Only send images to LLM when user asks about the image content or has no text.
+
+import re
+
+_IMAGE_TOOL_PATTERNS = re.compile(
+    r"换头像|设为头像|改头像|设头像|用这张.*头像|头像.*换|头像.*设"
+    r"|set.*avatar|change.*avatar|use.*avatar"
+    r"|记录|记一下|拍了|拍的|拍照|存一下|保存"
+    r"|log.*this|record.*this|save.*photo",
+    re.IGNORECASE,
+)
+
+
+def _images_needed_for_llm(message: str) -> bool:
+    """Determine if images should be sent to the LLM for understanding.
+
+    Returns False when the text is a clear tool command (avatar/log) —
+    images go directly to the tool executor, not through LLM vision.
+    Returns True when the user asks about image content or sends no text.
+    """
+    text = message.strip()
+    if not text:
+        # No text — user wants LLM to look at the image
+        return True
+    if _IMAGE_TOOL_PATTERNS.search(text):
+        # Tool command — images bypass LLM, go straight to executor
+        return False
+    # Default: send images to LLM (user might be asking about the image)
+    return True
+
 # Background task tracking — prevents garbage collection of fire-and-forget tasks
 _bg_tasks: set[asyncio.Task] = set()
 
@@ -182,9 +215,21 @@ async def _event_generator(
         today=today_str,
     )
 
+    # Image routing: only send images to LLM when needed for understanding
+    has_images = bool(request.images)
+    if has_images and _images_needed_for_llm(request.message):
+        llm_images = request.images    # LLM needs to see the images
+        tool_images = request.images   # tools also get them
+    elif has_images:
+        llm_images = None              # skip LLM vision (save tokens)
+        tool_images = request.images   # tools still get the images (avatar/photo upload)
+    else:
+        llm_images = None
+        tool_images = None
+
     # Build messages
     recent_msgs = [{"role": m.role.value, "content": m.content} for m in context_messages]
-    messages = build_messages(recent_msgs, request.message, images=request.images)
+    messages = build_messages(recent_msgs, request.message, images=llm_images)
 
     # --- Phase 3: Run orchestrator via queue ---
 
@@ -210,7 +255,7 @@ async def _event_generator(
                 on_card=on_card,
                 today=today_str,
                 location=request.location,
-                images=request.images,
+                images=tool_images,
             )
             await queue.put(("_result", result))
         except Exception as e:
