@@ -16,7 +16,9 @@ struct ChatView: View {
     @State private var settingsDrag: CGFloat = 0
     @State private var voiceDragOffset: CGFloat = 0
     @State private var pendingPhotos: [Data] = []
-    @State private var keyboardHeight: CGFloat = 0
+    @State private var scrollOffset: CGFloat = 0
+    @State private var contentHeight: CGFloat = 0
+    @State private var containerHeight: CGFloat = 0
 
     private var drawerWidth: CGFloat { UIScreen.main.bounds.width * 0.90 }
 
@@ -97,7 +99,21 @@ struct ChatView: View {
                         .padding(.horizontal, 12)
                         .padding(.vertical, 12)
                         Color.clear.frame(height: 1).id("bottom")
+                        // Track scroll offset via top of content
+                        .background(GeometryReader { geo in
+                            Color.clear.preference(
+                                key: ScrollOffsetKey.self,
+                                value: geo.frame(in: .named("chatScroll")).minY
+                            )
+                        })
                     }
+                    // Track total content height (on the VStack inside ScrollView)
+                    .background(GeometryReader { geo in
+                        Color.clear
+                            .preference(key: ContentHeightKey.self, value: geo.size.height)
+                    })
+                    .coordinateSpace(name: "chatScroll")
+                    .scrollIndicators(.hidden)
                     .scrollDismissesKeyboard(.interactively)
                     .onTapGesture {
                         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
@@ -105,12 +121,27 @@ struct ChatView: View {
                     .onChange(of: chatStore.messages.count) {
                         withAnimation { proxy.scrollTo("bottom") }
                     }
+                    .onPreferenceChange(ScrollOffsetKey.self) { value in
+                        scrollOffset = value
+                    }
+                    .onPreferenceChange(ContentHeightKey.self) { value in
+                        contentHeight = value
+                    }
+                    .background(GeometryReader { geo in
+                        Color.clear.onAppear { containerHeight = geo.size.height }
+                            .onChange(of: geo.size.height) { _, h in containerHeight = h }
+                    })
+                    .modifier(ScrollIndicatorOverlay(
+                        contentHeight: contentHeight,
+                        containerHeight: containerHeight,
+                        scrollOffset: scrollOffset
+                    ))
                 }
 
                 Text(L.aiDisclaimer)
                     .font(Tokens.fontCaption2)
-                    .foregroundColor(Tokens.textSecondary)
-                    .padding(.vertical, 6)
+                    .foregroundColor(Tokens.textTertiary)
+                    .padding(.vertical, 2)
 
                 ChatInputBar(
                     text: $inputText,
@@ -126,20 +157,11 @@ struct ChatView: View {
                     dragOffsetOut: $voiceDragOffset
                 )
                 .allowsHitTesting(!showSettings && !showCalendar)
+                // Hide input bar when drawer is open so keyboard doesn't push it up
+                .frame(height: (showSettings || showCalendar) ? 0 : nil)
+                .clipped()
             }
-            // Only pad for keyboard when drawers are closed (chat input needs it)
-            .padding(.bottom, (!showCalendar && !showSettings) ? keyboardHeight : 0)
             .background(Tokens.bg.ignoresSafeArea())
-            .animation(.easeOut(duration: 0.25), value: keyboardHeight)
-        }
-        .ignoresSafeArea(.keyboard)
-        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { notif in
-            if let frame = notif.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect {
-                keyboardHeight = frame.height
-            }
-        }
-        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in
-            keyboardHeight = 0
         }
         .overlay {
             if speech.isListening {
@@ -367,21 +389,21 @@ struct ChatView: View {
                 label: L.petAdded,
                 title: data.pet_name,
                 subtitle: "\(data.breed ?? data.species)"
-            )
+            ) { withAnimation(.easeOut(duration: 0.3)) { showSettings = true } }
         case .reminder(let data):
             ActionCard(
                 icon: "bell.fill", iconColor: Tokens.accent,
                 label: L.reminderSet,
                 title: "\(data.pet_name) · \(data.title)",
                 subtitle: data.trigger_at
-            )
+            ) { withAnimation(.easeOut(duration: 0.3)) { showCalendar = true } }
         case .petUpdated(let data):
             ActionCard(
                 icon: "checkmark.circle.fill", iconColor: Tokens.green,
                 label: Lang.shared.isZh ? "已更新" : "Updated",
                 title: data.pet_name,
                 subtitle: data.saved_keys?.joined(separator: ", ") ?? ""
-            )
+            ) { withAnimation(.easeOut(duration: 0.3)) { showSettings = true } }
         case .confirmAction(let data):
             ConfirmActionCard(
                 message: data.message,
@@ -398,7 +420,13 @@ struct ChatView: View {
                 label: labelForActionType(data.type),
                 title: data.pet_name ?? data.title ?? "",
                 subtitle: data.saved_keys?.joined(separator: ", ") ?? ""
-            )
+            ) {
+                let dest = navigationForActionType(data.type)
+                withAnimation(.easeOut(duration: 0.3)) {
+                    if dest == "settings" { showSettings = true }
+                    else if dest == "calendar" { showCalendar = true }
+                }
+            }
         }
     }
 
@@ -466,6 +494,16 @@ struct ChatView: View {
             }
             chatStore.save()
             isStreaming = false
+        }
+    }
+
+    // MARK: - Card Navigation
+
+    private func navigationForActionType(_ type: String) -> String {
+        switch type {
+        case "pet_deleted", "pet_updated", "profile_summarized": return "settings"
+        case "event_deleted", "reminder_deleted": return "calendar"
+        default: return ""
         }
     }
 
