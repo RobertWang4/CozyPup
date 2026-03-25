@@ -24,6 +24,8 @@ struct PetFormView: View {
     @State private var showGenderConfirm = false
     @State private var pendingSpecies: Species?
     @State private var pendingGender: String?
+    @State private var speciesLocked = false
+    @State private var genderLocked = false
 
     /// Live pet from store (updates after avatar upload)
     private var currentPet: Pet? {
@@ -33,20 +35,16 @@ struct PetFormView: View {
         return editingPet
     }
 
-    private var isSpeciesLocked: Bool {
-        editingPet?.speciesLocked ?? false
-    }
-
-    private var isGenderLocked: Bool {
-        guard let pet = editingPet else { return false }
-        let g = pet.gender ?? ""
-        return !g.isEmpty
+    private var speciesDisplayText: String {
+        if !speciesDisplay.isEmpty { return speciesDisplay }
+        if species == .other && !customSpecies.isEmpty { return customSpecies }
+        return speciesLabel(species)
     }
 
     private var speciesMenuLabel: some View {
-        Text(speciesLabel(species))
+        Text(speciesDisplayText)
             .font(Tokens.fontBody)
-            .foregroundColor(isSpeciesLocked ? Tokens.textTertiary : Tokens.text)
+            .foregroundColor(speciesLocked ? Tokens.textTertiary : Tokens.text)
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(12)
             .background(Tokens.surface)
@@ -57,7 +55,7 @@ struct PetFormView: View {
     private var genderMenuLabel: some View {
         Text(gender.isEmpty ? "-" : genderLabel(gender))
             .font(Tokens.fontBody)
-            .foregroundColor(gender.isEmpty ? Tokens.textTertiary : (isGenderLocked ? Tokens.textTertiary : Tokens.text))
+            .foregroundColor(gender.isEmpty ? Tokens.textTertiary : (genderLocked ? Tokens.textTertiary : Tokens.text))
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(12)
             .background(Tokens.surface)
@@ -65,8 +63,49 @@ struct PetFormView: View {
             .overlay(RoundedRectangle(cornerRadius: 12).stroke(Tokens.border))
     }
 
+    @State private var speciesDisplay = ""
+
+    private var allPetTypes: [(String, String, Species)] {
+        let z = Lang.shared.isZh
+        return [
+            ("dog", z ? "狗" : "Dog", .dog),
+            ("cat", z ? "猫" : "Cat", .cat),
+            ("rabbit", z ? "兔子" : "Rabbit", .other),
+            ("hamster", z ? "仓鼠" : "Hamster", .other),
+            ("bird", z ? "鸟" : "Bird", .other),
+            ("parrot", z ? "鹦鹉" : "Parrot", .other),
+            ("fish", z ? "鱼" : "Fish", .other),
+            ("turtle", z ? "乌龟/龟" : "Turtle", .other),
+            ("snake", z ? "蛇" : "Snake", .other),
+            ("lizard", z ? "蜥蜴" : "Lizard", .other),
+            ("guinea_pig", z ? "豚鼠" : "Guinea Pig", .other),
+            ("chinchilla", z ? "龙猫" : "Chinchilla", .other),
+            ("hedgehog", z ? "刺猬" : "Hedgehog", .other),
+            ("ferret", z ? "雪貂" : "Ferret", .other),
+            ("duck", z ? "鸭子" : "Duck", .other),
+            ("pig", z ? "猪/小香猪" : "Pig", .other),
+            ("horse", z ? "马/小马" : "Horse/Pony", .other),
+            ("alpaca", z ? "羊驼" : "Alpaca", .other),
+            ("spider", z ? "蜘蛛" : "Spider", .other),
+            ("crab", z ? "螃蟹/寄居蟹" : "Crab/Hermit Crab", .other),
+        ]
+    }
+
+    private func selectSpecies(_ s: Species, display: String) {
+        if editingPet != nil && !speciesLocked {
+            pendingSpecies = s
+            speciesDisplay = display
+            showSpeciesConfirm = true
+        } else if editingPet == nil {
+            species = s
+            speciesDisplay = display
+            if display.isEmpty { customSpecies = "" }
+            else { customSpecies = display }
+        }
+    }
+
     private func confirmSpecies(_ s: Species) {
-        if editingPet != nil && !isSpeciesLocked {
+        if editingPet != nil && !speciesLocked {
             pendingSpecies = s
             showSpeciesConfirm = true
         } else {
@@ -75,7 +114,7 @@ struct PetFormView: View {
     }
 
     private func confirmGender(_ g: String) {
-        if editingPet != nil && !isGenderLocked {
+        if editingPet != nil && !genderLocked {
             pendingGender = g
             showGenderConfirm = true
         } else {
@@ -186,29 +225,30 @@ struct PetFormView: View {
                     .overlay(RoundedRectangle(cornerRadius: 12).stroke(Tokens.border))
             }
 
-            // Row 2: Species only
-            VStack(alignment: .leading, spacing: 6) {
-                Text(L.species).font(Tokens.fontSubheadline.weight(.medium)).foregroundColor(Tokens.textSecondary)
-                Menu {
-                    Button(L.dog) { confirmSpecies(.dog) }
-                    Button(L.cat) { confirmSpecies(.cat) }
-                    Button(L.other) { confirmSpecies(.other); customSpeciesFocused = true }
-                } label: {
-                    speciesMenuLabel
+            // Row 2: Species + Gender
+            HStack(spacing: 12) {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(L.species).font(Tokens.fontSubheadline.weight(.medium)).foregroundColor(Tokens.textSecondary)
+                    Menu {
+                        ForEach(allPetTypes, id: \.0) { key, label, sp in
+                            Button(label) { selectSpecies(sp, display: label) }
+                        }
+                    } label: {
+                        speciesMenuLabel
+                    }
+                    .disabled(speciesLocked)
                 }
-                .disabled(isSpeciesLocked)
-            }
-
-            // Custom species input
-            if species == .other {
-                TextField(Lang.shared.isZh ? "输入宠物类型，如：兔子、仓鼠" : "e.g. Rabbit, Hamster", text: $customSpecies)
-                    .focused($customSpeciesFocused)
-                    .textFieldStyle(.plain)
-                    .font(Tokens.fontSubheadline)
-                    .padding(10)
-                    .background(Tokens.surface)
-                    .cornerRadius(10)
-                    .overlay(RoundedRectangle(cornerRadius: 10).stroke(Tokens.border))
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(Lang.shared.isZh ? "性别" : "Gender")
+                        .font(Tokens.fontSubheadline.weight(.medium)).foregroundColor(Tokens.textSecondary)
+                    Menu {
+                        Button(genderLabel("male")) { confirmGender("male") }
+                        Button(genderLabel("female")) { confirmGender("female") }
+                    } label: {
+                        genderMenuLabel
+                    }
+                    .disabled(genderLocked)
+                }
             }
 
             // Row 3: Breed
@@ -223,7 +263,7 @@ struct PetFormView: View {
                     .overlay(RoundedRectangle(cornerRadius: 12).stroke(Tokens.border))
             }
 
-            // Row 4: Birthday + Weight + Gender
+            // Row 4: Birthday + Weight
             HStack(spacing: 12) {
                 VStack(alignment: .leading, spacing: 6) {
                     Text(L.birthday).font(Tokens.fontSubheadline.weight(.medium)).foregroundColor(Tokens.textSecondary)
@@ -247,24 +287,6 @@ struct PetFormView: View {
                         .background(Tokens.surface)
                         .cornerRadius(12)
                         .overlay(RoundedRectangle(cornerRadius: 12).stroke(Tokens.border))
-                }
-                VStack(alignment: .leading, spacing: 6) {
-                    Text(Lang.shared.isZh ? "性别" : "Gender")
-                        .font(Tokens.fontSubheadline.weight(.medium)).foregroundColor(Tokens.textSecondary)
-                    Menu {
-                        Button(genderLabel("male")) { confirmGender("male") }
-                        Button(genderLabel("female")) { confirmGender("female") }
-                    } label: {
-                        Text(gender.isEmpty ? "-" : genderLabel(gender))
-                            .font(Tokens.fontBody)
-                            .foregroundColor(gender.isEmpty ? Tokens.textTertiary : Tokens.text)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(12)
-                            .background(Tokens.surface)
-                            .cornerRadius(12)
-                            .overlay(RoundedRectangle(cornerRadius: 12).stroke(Tokens.border))
-                    }
-                    .disabled(isGenderLocked)
                 }
             }
 
@@ -338,6 +360,13 @@ struct PetFormView: View {
                 birthday = pet.birthday ?? ""
                 weight = pet.weight.map { String($0) } ?? ""
                 gender = pet.gender ?? ""
+                speciesLocked = pet.speciesLocked ?? false
+                genderLocked = !(pet.gender ?? "").isEmpty
+                // Set display text for species
+                if pet.species == .dog { speciesDisplay = L.dog }
+                else if pet.species == .cat { speciesDisplay = L.cat }
+                else if !pet.breed.isEmpty { speciesDisplay = pet.breed }
+                else { speciesDisplay = L.other }
             }
         }
         .alert(
@@ -345,7 +374,16 @@ struct PetFormView: View {
             isPresented: $showSpeciesConfirm
         ) {
             Button(Lang.shared.isZh ? "确认（不可再改）" : "Confirm (cannot change later)") {
-                if let s = pendingSpecies { species = s }
+                if let s = pendingSpecies, let pet = editingPet, let store = petStore {
+                    species = s
+                    if !speciesDisplay.isEmpty && s == .other {
+                        customSpecies = speciesDisplay
+                    }
+                    speciesLocked = true
+                    Task { await store.update(pet.id, name: name, species: s, breed: breed,
+                                              birthday: birthday.isEmpty ? nil : birthday,
+                                              weight: Double(weight)) }
+                }
             }
             Button(L.cancel, role: .cancel) { pendingSpecies = nil }
         } message: {
@@ -358,7 +396,11 @@ struct PetFormView: View {
             isPresented: $showGenderConfirm
         ) {
             Button(Lang.shared.isZh ? "确认（不可再改）" : "Confirm (cannot change later)") {
-                if let g = pendingGender { gender = g }
+                if let g = pendingGender, let pet = editingPet, let store = petStore {
+                    gender = g
+                    genderLocked = true
+                    Task { await store.updateGender(pet.id, gender: g) }
+                }
             }
             Button(L.cancel, role: .cancel) { pendingGender = nil }
         } message: {

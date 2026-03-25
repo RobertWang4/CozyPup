@@ -146,7 +146,10 @@ async def update_pet(
         pet.profile_md = req.profile_md
     if req.gender is not None:
         existing = pet.profile or {}
+        if existing.get("gender_locked"):
+            raise HTTPException(status_code=400, detail="Gender can only be set once")
         existing["gender"] = req.gender
+        existing["gender_locked"] = True
         pet.profile = existing
 
     # Sync all structured fields into profile JSON so AI always sees latest data

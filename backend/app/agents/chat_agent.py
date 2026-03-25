@@ -195,7 +195,7 @@ class ChatAgent(BaseAgent):
 
                 logger.info(
                     "chat_agent_tool_call",
-                    extra={"tool": fn_name, "round": _round},
+                    extra={"tool": fn_name, "round": _round, "arguments": fn_args},
                 )
 
                 validation_errors = validate_tool_args(fn_name, fn_args)
@@ -247,6 +247,39 @@ class ChatAgent(BaseAgent):
                 try:
                     result = await execute_tool(fn_name, fn_args, db, user_id, location=location, images=images)
                     await db.commit()
+
+                    # Tool returned needs_confirm (e.g. gender/species first-time set)
+                    if result.get("needs_confirm") and session_id:
+                        confirm_tool = result.get("confirm_tool", fn_name)
+                        confirm_args = result.get("confirm_arguments", fn_args)
+                        confirm_desc = result.get("confirm_description", f"确认执行 {fn_name}")
+                        action_id = store_action(
+                            user_id=str(user_id),
+                            session_id=str(session_id),
+                            tool_name=confirm_tool,
+                            arguments=confirm_args,
+                            description=confirm_desc,
+                        )
+                        confirm_card = {
+                            "type": "confirm_action",
+                            "action_id": action_id,
+                            "message": confirm_desc,
+                        }
+                        cards.append(confirm_card)
+                        if on_card:
+                            await _maybe_await(on_card, confirm_card)
+                        has_confirm_card = True
+
+                        # Tell the LLM it's pending confirmation
+                        messages.append({
+                            "role": "tool",
+                            "tool_call_id": tc["id"],
+                            "content": json.dumps({
+                                "status": "pending_user_confirmation",
+                                "message": confirm_desc,
+                            }),
+                        })
+                        continue
 
                     if "card" in result:
                         card = result["card"]

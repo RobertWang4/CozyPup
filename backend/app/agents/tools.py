@@ -873,11 +873,17 @@ async def _create_pet(
         profile_md=_generate_initial_profile_md(name, arguments["species"], breed, bday, weight),
     )
 
+    # Lock species on creation (always required)
+    pet.species_locked = True
+
     # Store optional fields in flexible profile JSON
     profile = {}
     for key in ("gender", "neutered", "coat_color"):
         if key in arguments:
             profile[key] = arguments[key]
+    # Lock gender if provided at creation
+    if "gender" in arguments:
+        profile["gender_locked"] = True
     if profile:
         pet.profile = profile
 
@@ -908,6 +914,7 @@ async def _update_pet_profile(
     """Merge new info into the pet's flexible JSON profile."""
     pet_id = uuid.UUID(arguments["pet_id"])
     info = arguments.get("info", {})
+    force_lock = arguments.pop("_force_lock", False)
     if not info:
         return {"success": False, "error": "No info provided"}
 
@@ -918,23 +925,92 @@ async def _update_pet_profile(
     if not pet:
         return {"success": False, "error": "Pet not found"}
 
-    # Also update real columns if matching keys are provided
-    if "birthday" in info:
-        try:
-            pet.birthday = date.fromisoformat(str(info["birthday"]))
-        except (ValueError, TypeError):
-            pass
-    if "weight" in info or "weight_kg" in info:
-        w = info.get("weight") or info.get("weight_kg")
-        if isinstance(w, (int, float)):
-            pet.weight = float(w)
-    if "name" in info:
-        pet.name = str(info["name"])
-    if "breed" in info:
-        pet.breed = str(info["breed"])
-
-    # Merge into flexible JSON profile
+    # --- Force-lock path: user confirmed via confirm card ---
     existing = dict(pet.profile) if pet.profile else {}
+
+    if force_lock:
+        if "gender" in info:
+            existing["gender"] = info["gender"]
+            existing["gender_locked"] = True
+        if "species" in info:
+            pet.species = Species(info["species"])
+            pet.species_locked = True
+        existing.update(info)
+        pet.profile = existing
+        await db.flush()
+        return {
+            "success": True,
+            "pet_id": str(pet.id),
+            "pet_name": pet.name,
+            "saved_keys": list(info.keys()),
+            "card": {
+                "type": "pet_updated",
+                "pet_name": pet.name,
+                "saved_keys": list(info.keys()),
+            },
+        }
+
+    # --- Check locked fields (gender / species) ---
+    rejected: list[str] = []
+
+    if "gender" in info and existing.get("gender_locked"):
+        rejected.append("gender")
+        del info["gender"]
+    if "species" in info and pet.species_locked:
+        rejected.append("species")
+        del info["species"]
+
+    if rejected and not info:
+        label = "、".join("性别" if f == "gender" else "物种" for f in rejected)
+        return {
+            "success": False,
+            "error": f"{pet.name}的{label}已经设定过了，无法修改。",
+        }
+
+    # --- Gender/species first-time set → needs confirm card ---
+    setting_gender = "gender" in info and not existing.get("gender_locked")
+    setting_species = "species" in info and not pet.species_locked
+
+    if setting_gender or setting_species:
+        # Separate lockable fields from normal fields
+        lockable = {}
+        if setting_gender:
+            lockable["gender"] = info.pop("gender")
+        if setting_species:
+            lockable["species"] = info.pop("species")
+
+        # Execute remaining normal fields immediately
+        if info:
+            _apply_profile_updates(pet, info, existing)
+            existing.update(info)
+            pet.profile = existing
+            await db.flush()
+
+        # Build confirm description
+        parts = []
+        gender_map = {"male": "公", "female": "母"}
+        species_map = {"dog": "狗", "cat": "猫", "other": "其他"}
+        if "gender" in lockable:
+            g = gender_map.get(lockable["gender"], lockable["gender"])
+            parts.append(f"性别设为「{g}」")
+        if "species" in lockable:
+            s = species_map.get(lockable["species"], lockable["species"])
+            parts.append(f"物种设为「{s}」")
+        desc = f"{pet.name}: {'，'.join(parts)}（⚠️ 一旦确认将无法修改）"
+
+        return {
+            "success": True,
+            "needs_confirm": True,
+            "pet_id": str(pet.id),
+            "pet_name": pet.name,
+            "confirm_tool": "update_pet_profile",
+            "confirm_arguments": {"pet_id": str(pet.id), "info": lockable, "_force_lock": True},
+            "confirm_description": desc,
+            "saved_keys": list(info.keys()) if info else [],
+        }
+
+    # --- Normal update (no lockable fields) ---
+    _apply_profile_updates(pet, info, existing)
     existing.update(info)
     pet.profile = existing
 
@@ -953,6 +1029,23 @@ async def _update_pet_profile(
         "saved_keys": list(info.keys()),
         "card": card,
     }
+
+
+def _apply_profile_updates(pet, info: dict, existing: dict):
+    """Apply standard profile field updates to pet model columns."""
+    if "birthday" in info:
+        try:
+            pet.birthday = date.fromisoformat(str(info["birthday"]))
+        except (ValueError, TypeError):
+            pass
+    if "weight" in info or "weight_kg" in info:
+        w = info.get("weight") or info.get("weight_kg")
+        if isinstance(w, (int, float)):
+            pet.weight = float(w)
+    if "name" in info:
+        pet.name = str(info["name"])
+    if "breed" in info:
+        pet.breed = str(info["breed"])
 
 
 async def _save_pet_profile_md(

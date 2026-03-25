@@ -1,174 +1,211 @@
 [
   {
-    "id": 1,
+    "id": 11,
     "category": "functional",
     "priority": 1,
-    "description": "Backend: Add photos JSON field to CalendarEvent model + migration",
+    "description": "Backend: Add context_summary JSONB field to ChatSession model + migration",
     "steps": [
-      "Write test for CalendarEvent with photos (tests/test_calendar_photos.py)",
-      "Add photos JSON column to models.py CalendarEvent class",
-      "Create Alembic migration: alembic revision --autogenerate -m 'add photos to calendar_events'",
+      "Add context_summary: Column(JSONB, nullable=True) to ChatSession in models.py",
+      "Add summarized_up_to: Column(Integer, nullable=True) for tracking last summarized message",
+      "Create Alembic migration: alembic revision --autogenerate -m 'add context_summary to chat_sessions'",
       "Apply migration: alembic upgrade head",
-      "Run test: pytest tests/test_calendar_photos.py -v",
+      "Run existing tests to verify no regression: pytest tests/ -v",
       "Commit"
     ],
     "depends_on": [],
     "passes": true
   },
   {
-    "id": 2,
+    "id": 12,
     "category": "functional",
     "priority": 2,
-    "description": "Backend: Update schemas + add photo upload/serve endpoints",
+    "description": "Backend: Implement context_agent.py — async context summarization with cheap model",
     "steps": [
-      "Add photos: list[str] = [] to CalendarEventResponse schema",
-      "Update _event_to_response helper to include photos",
-      "Add photo upload endpoint POST /{event_id}/photos with validation (5MB, 4 max, MIME check)",
-      "Add GET /photos/{filename} endpoint to serve photos",
-      "Write integration tests for photo upload + max photos limit",
-      "Run tests: pytest tests/test_calendar_photos.py -v",
+      "Create backend/app/agents/context_agent.py",
+      "Implement summarize_context(messages, previous_summary) that calls a cheap LLM",
+      "Output format: {topics, pending, mood, key_facts, summarized_up_to}",
+      "Implement should_summarize(session) — returns True when unsummarized messages >= 5",
+      "Implement trigger_summary_if_needed(session_id, db) — async, non-blocking",
+      "Add CONTEXT_MODEL setting to config.py for cheap model selection",
+      "Write test: tests/test_context_agent.py — mock LLM, verify summary structure",
+      "Run test: pytest tests/test_context_agent.py -v",
       "Commit"
     ],
     "depends_on": [
-      1
+      11
     ],
     "passes": true
   },
   {
-    "id": 3,
+    "id": 13,
     "category": "functional",
     "priority": 3,
-    "description": "Backend: Update agent tool for photo_urls support in create_calendar_event",
+    "description": "Backend: Refactor prompt building — cache-friendly order + context compression",
     "steps": [
-      "Add photo_urls array param to create_calendar_event tool definition in TOOL_DEFINITIONS",
-      "Update _create_calendar_event handler to accept and store photo_urls",
-      "Run existing agent tests: pytest tests/test_chat_agent.py -v",
+      "Create backend/app/agents/prompts_v2.py with new prompt builder",
+      "Prompt order: (1) tool definitions + decision tree, (2) pet profiles, (3) session summary, (4) recent 3-5 raw messages, (5) emergency hint, (6) pre-processor hints",
+      "Implement build_system_prompt(pets, session_summary, hints, emergency_hint) function",
+      "Implement build_messages(recent_messages, user_message, images) function",
+      "Load session_summary from DB instead of last 20 raw messages",
+      "Fall back to last 5 raw messages if no summary exists yet",
+      "Write test to verify prompt structure and token reduction",
+      "Run tests: pytest tests/ -v",
       "Commit"
     ],
     "depends_on": [
-      1
+      12
     ],
     "passes": true
   },
   {
-    "id": 4,
+    "id": 14,
+    "category": "functional",
+    "priority": 2,
+    "description": "Backend: Create tool_guide.py — decision tree + enhanced tool descriptions",
+    "steps": [
+      "Create backend/app/agents/tool_guide.py with TOOL_DECISION_TREE string constant",
+      "Write decision tree: user reports event→create_calendar_event, asks about past→query, wants reminder→create_reminder, pet info→update_pet_profile, delete→delete_*, find nearby→search_places, emergency→trigger_emergency, just chatting→no tool",
+      "Enhance every tool description in tools.py: add usage scenario, anti-patterns, key constraints",
+      "Add trigger_emergency tool to TOOL_DEFINITIONS: {message, action: find_er|call_vet|first_aid}",
+      "Add trigger_emergency executor in tools.py that returns card type='emergency'",
+      "Write test to verify all tool descriptions have scenario+anti-pattern",
+      "Run tests: pytest tests/ -v",
+      "Commit"
+    ],
+    "depends_on": [],
+    "passes": true
+  },
+  {
+    "id": 15,
+    "category": "functional",
+    "priority": 3,
+    "description": "Backend: Refactor emergency.py — keyword hint injection instead of direct SSE",
+    "steps": [
+      "Modify detect_emergency() to return {detected: bool, keywords: list[str]} instead of just bool",
+      "Add build_emergency_hint(keywords) function that generates prompt hint string",
+      "Remove direct SSE emergency event emission from chat router",
+      "Instead inject emergency hint into prompt via build_system_prompt()",
+      "Keep dual-model routing: if keywords detected, use emergency_model",
+      "Update chat router to use new emergency flow",
+      "Write test: verify hint generation, verify no direct SSE emission",
+      "Run tests: pytest tests/ -v",
+      "Commit"
+    ],
+    "depends_on": [
+      14
+    ],
+    "passes": true
+  },
+  {
+    "id": 16,
     "category": "functional",
     "priority": 4,
-    "description": "iOS: Update CalendarEvent model + APIClient multipart + CalendarStore uploadPhoto",
+    "description": "Backend: Implement executor.py — independent sub-agent for tool execution",
     "steps": [
-      "Add photos: [String] field to CalendarEvent.swift model with CodingKeys",
-      "Add uploadMultipart() method to APIClient.swift",
-      "Add uploadEventPhoto() method to CalendarStore.swift",
-      "Build to verify: xcodebuild",
+      "Create backend/app/agents/executor.py",
+      "Implement ExecutorAgent class with execute(task, context, available_tools) method",
+      "Non-streaming LLM call with minimal context (task description + tool definitions only)",
+      "Return structured JSON: {success, tool, arguments, card, summary} or {needs_confirm, tool, description}",
+      "Handle destructive operations: detect delete_* tools, return needs_confirm instead of executing",
+      "Handle validation errors: validate_tool_args before execution, retry once on failure",
+      "Add EXECUTOR_MODEL setting to config.py",
+      "Write test: tests/test_executor.py — mock LLM, verify structured output, confirm gate",
+      "Run test: pytest tests/test_executor.py -v",
       "Commit"
     ],
-    "depends_on": [],
+    "depends_on": [
+      14
+    ],
     "passes": true
   },
   {
-    "id": 5,
+    "id": 17,
     "category": "functional",
     "priority": 5,
-    "description": "iOS: Mode toggle + view routing in CalendarDrawer (calendar/timeline/singleDay)",
+    "description": "Backend: Implement orchestrator.py — main agent with 3-path routing",
     "steps": [
-      "Add timeline localization strings to L.swift",
-      "Add CalendarMode enum and state to CalendarDrawer",
-      "Add mode toggle button to CalendarDrawer top bar",
-      "Route views based on mode with transitions",
-      "Build to verify: xcodebuild",
+      "Create backend/app/agents/orchestrator.py",
+      "Implement OrchestratorAgent class with run(message, context, on_token, on_card) method",
+      "Path A (pure chat): no tools needed, stream response directly",
+      "Path B (single task): orchestrator calls tool itself via fast path, no executor",
+      "Path C (multi task): parse tasks, dispatch parallel executors via asyncio.gather()",
+      "Collect executor results, handle needs_confirm (store pending action + push confirm card)",
+      "Generate final streaming response summarizing all results",
+      "Add ORCHESTRATOR_MODEL setting to config.py",
+      "Write test: tests/test_orchestrator.py — mock LLM, verify 3 paths, verify parallel dispatch",
+      "Run test: pytest tests/test_orchestrator.py -v",
       "Commit"
     ],
-    "depends_on": [],
+    "depends_on": [
+      16
+    ],
     "passes": true
   },
   {
-    "id": 6,
+    "id": 18,
     "category": "functional",
     "priority": 6,
-    "description": "iOS: MultiDayTimelineView with 4 zoom levels (day/week/month/year) + pinch gesture",
+    "description": "Backend: Refactor chat router to use new Orchestrator + context pipeline",
     "steps": [
-      "Create MultiDayTimelineView.swift with ZoomLevel enum and MagnificationGesture",
-      "Create DayRow sub-view with zoom-dependent sizing (dateFont, leftWidth, bottomPadding)",
-      "Implement 4 content variants: dayContent, weekContent, monthContent, yearContent",
-      "Build to verify: xcodebuild",
+      "Update routers/chat.py _event_generator to use new pipeline",
+      "Replace old ChatAgent with OrchestratorAgent",
+      "Add asyncio.gather() for parallel preprocessing: load_pets, load_messages, load_session_summary, pre_process, emergency_check",
+      "Build prompt using prompts_v2.build_system_prompt()",
+      "Wire on_token and on_card callbacks to SSE queue",
+      "After response: async trigger context_agent summary if needed",
+      "Keep confirm-action endpoint working with new executor flow",
+      "Run all tests: pytest tests/ -v",
       "Commit"
     ],
     "depends_on": [
-      5
+      13,
+      15,
+      17
     ],
     "passes": true
   },
   {
-    "id": 7,
+    "id": 19,
     "category": "functional",
     "priority": 7,
-    "description": "iOS: HeatStripView — horizontal time distribution bar with pinch-to-zoom",
+    "description": "Backend: Downgrade pre_processor to hint mode + implement speculative execution",
     "steps": [
-      "Create HeatStripView.swift with GeometryReader + event blocks positioned by time",
-      "Add MagnificationGesture for zoom (1x-3x)",
-      "Add time labels (6am-9pm)",
-      "Build to verify: xcodebuild",
-      "Commit"
-    ],
-    "depends_on": [],
-    "passes": true
-  },
-  {
-    "id": 8,
-    "category": "functional",
-    "priority": 8,
-    "description": "iOS: TimelineEventCard + SingleDayTimelineView with heat strip and swipe navigation",
-    "steps": [
-      "Create TimelineEventCard.swift with left accent bar, category color, photo grid, pet name",
-      "Create SingleDayTimelineView.swift with date header, HeatStripView, event cards",
-      "Add swipe left/right DragGesture for day navigation",
-      "Build to verify: xcodebuild",
+      "Modify pre_processor.py: change format_actions_for_prompt() to generate hint format instead of MUST-EXECUTE format",
+      "New hint format: '💡 系统检测到以下可能的意图（仅供参考）: ...'",
+      "Remove tool_choice='required' logic — always use tool_choice='auto'",
+      "Create backend/app/agents/speculative.py",
+      "Implement speculative_execute(actions, db, user_id) — execute high-confidence non-destructive actions without commit",
+      "Implement confirm_or_rollback(speculative_results, actual_results, db) — commit if match, rollback if mismatch",
+      "Wire speculative execution into chat router Phase 1 (parallel with LLM call)",
+      "Write test: tests/test_speculative.py — verify execute-without-commit, verify rollback",
+      "Run tests: pytest tests/ -v",
       "Commit"
     ],
     "depends_on": [
-      7
+      18
     ],
     "passes": true
   },
   {
-    "id": 9,
-    "category": "functional",
-    "priority": 9,
-    "description": "iOS: Double-tap gesture on MonthGrid to enter single-day timeline",
-    "steps": [
-      "Add onDoubleTap callback to MonthGrid",
-      "Add double-tap gesture to day cells (before single-tap)",
-      "Wire up in CalendarDrawer to set singleDayDate and switch to .singleDay mode",
-      "Build to verify: xcodebuild",
-      "Commit"
-    ],
-    "depends_on": [
-      5,
-      8
-    ],
-    "passes": true
-  },
-  {
-    "id": 10,
+    "id": 20,
     "category": "integration",
-    "priority": 10,
-    "description": "Final integration: run all backend tests + iOS build + verify all views work together",
+    "priority": 8,
+    "description": "Integration test: full Agent V2 pipeline end-to-end",
     "steps": [
-      "Run all backend tests: pytest tests/ -v",
-      "Build iOS: xcodebuild full build",
-      "Verify: mode toggle, multi-day timeline, pinch zoom, single-day view, heat strip, swipe nav, double-tap, pet filter, photo placeholders",
-      "Final commit"
+      "Write tests/test_agent_v2_integration.py",
+      "Test pure chat path: send greeting, verify streaming response, no tools called",
+      "Test single task path: send '三妹吃了狗粮', verify create_calendar_event executed, card returned",
+      "Test multi task path: send '三妹吃了狗粮，豆豆打了疫苗', verify parallel execution, multiple cards",
+      "Test emergency path: send '我家猫中毒了', verify trigger_emergency tool called, emergency card",
+      "Test emergency false positive: send '上次中毒是什么时候', verify NO emergency triggered",
+      "Test confirm flow: send '删除三妹', verify needs_confirm returned, confirm endpoint works",
+      "Test context compression: send 6+ messages, verify context_agent triggered async",
+      "Run full suite: pytest tests/ -v",
+      "Commit"
     ],
     "depends_on": [
-      1,
-      2,
-      3,
-      4,
-      5,
-      6,
-      7,
-      8,
-      9
+      18,
+      19
     ],
     "passes": true
   }

@@ -124,6 +124,7 @@ struct ChatView: View {
                     onMicCancel: cancelVoice,
                     dragOffsetOut: $voiceDragOffset
                 )
+                .allowsHitTesting(!showSettings && !showCalendar)
             }
             .background(Tokens.bg.ignoresSafeArea())
         }

@@ -150,6 +150,8 @@ class PetStore: ObservableObject {
                 saveLocal()
             }
             avatarRevision += 1
+            // Clear URL cache so AsyncImage reloads the new avatar everywhere
+            URLCache.shared.removeAllCachedResponses()
         } catch {
             print("PetStore.uploadAvatar failed: \(error)")
         }

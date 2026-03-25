@@ -29,6 +29,8 @@ BASE_SYSTEM_PROMPT = """你是 CozyPup，一个专业的宠物健康助手。你
 - 如果用户一句话提到了多件不同的事（如"去了公园还吃了药"），必须拆分为多个独立的工具调用，每件事一个 create_calendar_event，不要合并成一条记录
 - 不确定时询问用户，不要猜测
 - 【重要】任何涉及数据变更的操作（更新信息、记录事件、换头像、设提醒等）都必须调用对应的工具来执行。绝对不要用文字回复假装已经完成了操作。如果没有调用工具，就不要说"已更新""已记录"等字眼
+- 【锁定字段】性别和物种一旦设定就永久锁定，不可修改。如果用户要求修改已锁定的性别或物种，礼貌地告知该信息已设定且无法更改，不要尝试调用工具修改
+- 【禁止捏造数据】只传用户明确提到的字段。用户没说体重就不要传 weight，没说生日就不要传 birthday。捏造数据和谎报工具调用一样严重。同时，用户提到的每个信息都必须传到工具参数里，不能遗漏
 
 图片处理规则:
 - 用户发了图片时，先看图片内容，理解图片中的宠物外观（毛色、品种、状态等）
@@ -128,6 +130,18 @@ def _build_pet_context(pets: list) -> str:
         )
 
         info = [f"- **{name}** (id: {pet_id}): {species_val}"]
+
+        # Show locked field status
+        profile = p.profile if hasattr(p, "profile") else p.get("profile")
+        profile_dict = profile if isinstance(profile, dict) else {}
+        species_locked = p.species_locked if hasattr(p, "species_locked") else p.get("species_locked", False)
+        gender = profile_dict.get("gender")
+        gender_locked = profile_dict.get("gender_locked", False)
+        if gender:
+            lock_icon = "🔒" if gender_locked else ""
+            info.append(f"性别={gender}{lock_icon}")
+        if species_locked:
+            info.append("物种=🔒已锁定")
 
         breed = p.breed if hasattr(p, "breed") else p.get("breed")
         if breed:
