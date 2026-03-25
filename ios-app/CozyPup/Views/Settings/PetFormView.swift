@@ -20,6 +20,10 @@ struct PetFormView: View {
     @State private var avatarVersion = 0  // bust AsyncImage cache after upload
     @State private var showProfileEditor = false
     @FocusState private var customSpeciesFocused: Bool
+    @State private var showSpeciesConfirm = false
+    @State private var showGenderConfirm = false
+    @State private var pendingSpecies: Species?
+    @State private var pendingGender: String?
 
     /// Live pet from store (updates after avatar upload)
     private var currentPet: Pet? {
@@ -31,6 +35,52 @@ struct PetFormView: View {
 
     private var isSpeciesLocked: Bool {
         editingPet?.speciesLocked ?? false
+    }
+
+    private var isGenderLocked: Bool {
+        guard let pet = editingPet else { return false }
+        let g = pet.gender ?? ""
+        return !g.isEmpty
+    }
+
+    private var speciesMenuLabel: some View {
+        Text(speciesLabel(species))
+            .font(Tokens.fontBody)
+            .foregroundColor(isSpeciesLocked ? Tokens.textTertiary : Tokens.text)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(12)
+            .background(Tokens.surface)
+            .cornerRadius(12)
+            .overlay(RoundedRectangle(cornerRadius: 12).stroke(Tokens.border))
+    }
+
+    private var genderMenuLabel: some View {
+        Text(gender.isEmpty ? "-" : genderLabel(gender))
+            .font(Tokens.fontBody)
+            .foregroundColor(gender.isEmpty ? Tokens.textTertiary : (isGenderLocked ? Tokens.textTertiary : Tokens.text))
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(12)
+            .background(Tokens.surface)
+            .cornerRadius(12)
+            .overlay(RoundedRectangle(cornerRadius: 12).stroke(Tokens.border))
+    }
+
+    private func confirmSpecies(_ s: Species) {
+        if editingPet != nil && !isSpeciesLocked {
+            pendingSpecies = s
+            showSpeciesConfirm = true
+        } else {
+            species = s
+        }
+    }
+
+    private func confirmGender(_ g: String) {
+        if editingPet != nil && !isGenderLocked {
+            pendingGender = g
+            showGenderConfirm = true
+        } else {
+            gender = g
+        }
     }
 
     private func genderLabel(_ g: String) -> String {
@@ -136,50 +186,32 @@ struct PetFormView: View {
                     .overlay(RoundedRectangle(cornerRadius: 12).stroke(Tokens.border))
             }
 
+            // Row 2: Species only
             VStack(alignment: .leading, spacing: 6) {
-                HStack {
-                    Text(L.species).font(Tokens.fontSubheadline.weight(.medium)).foregroundColor(Tokens.textSecondary)
-                    if isSpeciesLocked {
-                        Text(Lang.shared.isZh ? "（不可修改）" : "(locked)")
-                            .font(Tokens.fontCaption)
-                            .foregroundColor(Tokens.textTertiary)
-                    }
+                Text(L.species).font(Tokens.fontSubheadline.weight(.medium)).foregroundColor(Tokens.textSecondary)
+                Menu {
+                    Button(L.dog) { confirmSpecies(.dog) }
+                    Button(L.cat) { confirmSpecies(.cat) }
+                    Button(L.other) { confirmSpecies(.other); customSpeciesFocused = true }
+                } label: {
+                    speciesMenuLabel
                 }
-                HStack(spacing: 10) {
-                    ForEach(Species.allCases, id: \.self) { s in
-                        Button {
-                            guard !isSpeciesLocked else { return }
-                            species = s
-                            if s == .other { customSpeciesFocused = true }
-                        } label: {
-                            Text(speciesLabel(s))
-                                .font(Tokens.fontSubheadline.weight(.medium))
-                                .padding(.horizontal, Tokens.spacing.md)
-                                .padding(.vertical, Tokens.spacing.sm)
-                                .background(species == s ? Tokens.accent : Tokens.surface)
-                                .foregroundColor(species == s ? Tokens.white : Tokens.text)
-                                .cornerRadius(20)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 20)
-                                        .stroke(species == s ? Color.clear : Tokens.border)
-                                )
-                                .opacity(isSpeciesLocked && species != s ? 0.4 : 1)
-                        }
-                        .disabled(isSpeciesLocked)
-                    }
-                }
-                if species == .other {
-                    TextField(Lang.shared.isZh ? "输入宠物类型，如：兔子、仓鼠" : "e.g. Rabbit, Hamster", text: $customSpecies)
-                        .focused($customSpeciesFocused)
-                        .textFieldStyle(.plain)
-                        .font(Tokens.fontSubheadline)
-                        .padding(10)
-                        .background(Tokens.surface)
-                        .cornerRadius(10)
-                        .overlay(RoundedRectangle(cornerRadius: 10).stroke(Tokens.border))
-                }
+                .disabled(isSpeciesLocked)
             }
 
+            // Custom species input
+            if species == .other {
+                TextField(Lang.shared.isZh ? "输入宠物类型，如：兔子、仓鼠" : "e.g. Rabbit, Hamster", text: $customSpecies)
+                    .focused($customSpeciesFocused)
+                    .textFieldStyle(.plain)
+                    .font(Tokens.fontSubheadline)
+                    .padding(10)
+                    .background(Tokens.surface)
+                    .cornerRadius(10)
+                    .overlay(RoundedRectangle(cornerRadius: 10).stroke(Tokens.border))
+            }
+
+            // Row 3: Breed
             VStack(alignment: .leading, spacing: 6) {
                 Text(L.breed).font(Tokens.fontSubheadline.weight(.medium)).foregroundColor(Tokens.textSecondary)
                 TextField(L.breedPlaceholder, text: $breed)
@@ -191,31 +223,13 @@ struct PetFormView: View {
                     .overlay(RoundedRectangle(cornerRadius: 12).stroke(Tokens.border))
             }
 
-            VStack(alignment: .leading, spacing: 6) {
-                Text(Lang.shared.isZh ? "性别" : "Gender")
-                    .font(Tokens.fontSubheadline.weight(.medium)).foregroundColor(Tokens.textSecondary)
-                HStack(spacing: 10) {
-                    ForEach(["male", "female", "unknown"], id: \.self) { g in
-                        Button {
-                            gender = g
-                        } label: {
-                            Text(genderLabel(g))
-                                .font(Tokens.fontSubheadline.weight(.medium))
-                                .padding(.horizontal, Tokens.spacing.md)
-                                .padding(.vertical, Tokens.spacing.sm)
-                                .background(gender == g ? Tokens.accent : Tokens.surface)
-                                .foregroundColor(gender == g ? Tokens.white : Tokens.text)
-                                .cornerRadius(20)
-                                .overlay(RoundedRectangle(cornerRadius: 20).stroke(gender == g ? Color.clear : Tokens.border))
-                        }
-                    }
-                }
-            }
-
+            // Row 4: Birthday + Weight + Gender
             HStack(spacing: 12) {
                 VStack(alignment: .leading, spacing: 6) {
                     Text(L.birthday).font(Tokens.fontSubheadline.weight(.medium)).foregroundColor(Tokens.textSecondary)
                     TextField("YYYY-MM-DD", text: $birthday)
+                        .keyboardType(.numbersAndPunctuation)
+                        .autocorrectionDisabled()
                         .textFieldStyle(.plain)
                         .foregroundColor(Tokens.text)
                         .padding(12)
@@ -233,6 +247,24 @@ struct PetFormView: View {
                         .background(Tokens.surface)
                         .cornerRadius(12)
                         .overlay(RoundedRectangle(cornerRadius: 12).stroke(Tokens.border))
+                }
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(Lang.shared.isZh ? "性别" : "Gender")
+                        .font(Tokens.fontSubheadline.weight(.medium)).foregroundColor(Tokens.textSecondary)
+                    Menu {
+                        Button(genderLabel("male")) { confirmGender("male") }
+                        Button(genderLabel("female")) { confirmGender("female") }
+                    } label: {
+                        Text(gender.isEmpty ? "-" : genderLabel(gender))
+                            .font(Tokens.fontBody)
+                            .foregroundColor(gender.isEmpty ? Tokens.textTertiary : Tokens.text)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(12)
+                            .background(Tokens.surface)
+                            .cornerRadius(12)
+                            .overlay(RoundedRectangle(cornerRadius: 12).stroke(Tokens.border))
+                    }
+                    .disabled(isGenderLocked)
                 }
             }
 
@@ -297,6 +329,7 @@ struct PetFormView: View {
                     .foregroundColor(Tokens.textSecondary)
             }
         }
+        .onTapGesture { UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil) }
         .onAppear {
             if let pet = editingPet {
                 name = pet.name
@@ -306,6 +339,32 @@ struct PetFormView: View {
                 weight = pet.weight.map { String($0) } ?? ""
                 gender = pet.gender ?? ""
             }
+        }
+        .alert(
+            Lang.shared.isZh ? "确认类型" : "Confirm Species",
+            isPresented: $showSpeciesConfirm
+        ) {
+            Button(Lang.shared.isZh ? "确认（不可再改）" : "Confirm (cannot change later)") {
+                if let s = pendingSpecies { species = s }
+            }
+            Button(L.cancel, role: .cancel) { pendingSpecies = nil }
+        } message: {
+            Text(Lang.shared.isZh
+                 ? "类型设置后将无法修改，请确认选择。"
+                 : "Species cannot be changed after this. Please confirm.")
+        }
+        .alert(
+            Lang.shared.isZh ? "确认性别" : "Confirm Gender",
+            isPresented: $showGenderConfirm
+        ) {
+            Button(Lang.shared.isZh ? "确认（不可再改）" : "Confirm (cannot change later)") {
+                if let g = pendingGender { gender = g }
+            }
+            Button(L.cancel, role: .cancel) { pendingGender = nil }
+        } message: {
+            Text(Lang.shared.isZh
+                 ? "性别设置后将无法修改，请确认选择。"
+                 : "Gender cannot be changed after this. Please confirm.")
         }
     }
 }
