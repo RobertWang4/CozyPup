@@ -44,6 +44,17 @@ struct ReminderCardData: Codable, Equatable {
     let reminder_type: String
 }
 
+struct SetLanguageCardData: Codable, Equatable {
+    let type: String
+    let language: String
+}
+
+struct PetUpdatedCardData: Codable, Equatable {
+    let type: String
+    let pet_name: String
+    let saved_keys: [String]?
+}
+
 struct ConfirmActionCardData: Codable, Equatable {
     let type: String
     let action_id: String
@@ -72,8 +83,10 @@ enum CardData: Codable, Equatable {
     case map(MapCardData)
     case email(EmailCardData)
     case petCreated(PetCreatedCardData)
+    case petUpdated(PetUpdatedCardData)
     case reminder(ReminderCardData)
     case confirmAction(ConfirmActionCardData)
+    case setLanguage(SetLanguageCardData)
 
     init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
@@ -85,10 +98,14 @@ enum CardData: Codable, Equatable {
             self = .email(d)
         } else if let d = try? container.decode(PetCreatedCardData.self), d.type == "pet_created" {
             self = .petCreated(d)
+        } else if let d = try? container.decode(PetUpdatedCardData.self), d.type == "pet_updated" {
+            self = .petUpdated(d)
         } else if let d = try? container.decode(ReminderCardData.self), d.type == "reminder" {
             self = .reminder(d)
         } else if let d = try? container.decode(ConfirmActionCardData.self), d.type == "confirm_action" {
             self = .confirmAction(d)
+        } else if let d = try? container.decode(SetLanguageCardData.self), d.type == "set_language" {
+            self = .setLanguage(d)
         } else {
             throw DecodingError.dataCorruptedError(in: container, debugDescription: "Unknown card type")
         }
@@ -101,8 +118,10 @@ enum CardData: Codable, Equatable {
         case .map(let d): try container.encode(d)
         case .email(let d): try container.encode(d)
         case .petCreated(let d): try container.encode(d)
+        case .petUpdated(let d): try container.encode(d)
         case .reminder(let d): try container.encode(d)
         case .confirmAction(let d): try container.encode(d)
+        case .setLanguage(let d): try container.encode(d)
         }
     }
 }

@@ -362,6 +362,13 @@ struct ChatView: View {
                 title: "\(data.pet_name) · \(data.title)",
                 subtitle: data.trigger_at
             )
+        case .petUpdated(let data):
+            ActionCard(
+                icon: "checkmark.circle.fill", iconColor: Tokens.green,
+                label: Lang.shared.isZh ? "已更新" : "Updated",
+                title: data.pet_name,
+                subtitle: data.saved_keys?.joined(separator: ", ") ?? ""
+            )
         case .confirmAction(let data):
             ConfirmActionCard(
                 message: data.message,
@@ -369,6 +376,8 @@ struct ChatView: View {
                 onConfirm: { handleConfirmAction(actionId: data.action_id) },
                 onCancel: { handleCancelAction(actionId: data.action_id) }
             )
+        case .setLanguage:
+            EmptyView()
         }
     }
 
@@ -408,6 +417,12 @@ struct ChatView: View {
                         chatStore.messages[idx].cards.append(c)
                         if case .petCreated = c {
                             Task { await petStore.fetchFromAPI() }
+                        }
+                        if case .petUpdated = c {
+                            Task { await petStore.fetchFromAPI() }
+                        }
+                        if case .setLanguage(let data) = c {
+                            Lang.shared.code = data.language
                         }
                         if case .record(let r) = c, let comps = parseYearMonth(r.date) {
                             Task { await calendarStore.fetchMonth(year: comps.0, month: comps.1) }
