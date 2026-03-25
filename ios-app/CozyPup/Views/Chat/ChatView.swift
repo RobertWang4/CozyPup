@@ -12,6 +12,7 @@ struct ChatView: View {
     @State private var emergency: EmergencyData?
     @State private var showCalendar = false
     @State private var showSettings = false
+    @State private var settingsDeepLinkPetId: String?
     @State private var calendarDrag: CGFloat = 0
     @State private var settingsDrag: CGFloat = 0
     @State private var voiceDragOffset: CGFloat = 0
@@ -56,62 +57,57 @@ struct ChatView: View {
 
                 ScrollViewReader { proxy in
                     ScrollView {
-                        if chatStore.messages.isEmpty {
-                            if petStore.pets.isEmpty {
-                                EmptyStateView(
-                                    icon: "pawprint.fill",
-                                    title: L.welcomeTitle,
-                                    subtitle: L.welcomeSubtitle
-                                )
-                                .frame(minHeight: 400)
-                            } else {
-                                EmptyStateView(
-                                    icon: "bubble.left.and.bubble.right",
-                                    title: L.askAnything,
-                                    subtitle: L.askSubtitle
-                                )
-                                .frame(minHeight: 400)
-                            }
-                        }
-                        LazyVStack(spacing: 10) {
-                            ForEach(chatStore.messages) { msg in
-                                VStack(spacing: Tokens.spacing.sm) {
-                                    // Photos above bubble
-                                    if let photos = msg.imageData, !photos.isEmpty {
-                                        HStack {
-                                            if msg.role == .user { Spacer() }
-                                            photoGrid(photos)
-                                            if msg.role != .user { Spacer() }
-                                        }
-                                    }
-                                    if !msg.content.isEmpty {
-                                        ChatBubble(role: msg.role, content: msg.content)
-                                    }
-                                    ForEach(Array(msg.cards.enumerated()), id: \.offset) { _, card in
-                                        cardView(card)
-                                    }
+                        VStack(spacing: 0) {
+                            if chatStore.messages.isEmpty {
+                                if petStore.pets.isEmpty {
+                                    EmptyStateView(
+                                        icon: "pawprint.fill",
+                                        title: L.welcomeTitle,
+                                        subtitle: L.welcomeSubtitle
+                                    )
+                                    .frame(minHeight: 400)
+                                } else {
+                                    EmptyStateView(
+                                        icon: "bubble.left.and.bubble.right",
+                                        title: L.askAnything,
+                                        subtitle: L.askSubtitle
+                                    )
+                                    .frame(minHeight: 400)
                                 }
                             }
-                            if isStreaming, let last = chatStore.messages.last, last.content.isEmpty {
-                                TypingIndicator()
+                            VStack(spacing: 10) {
+                                ForEach(chatStore.messages) { msg in
+                                    VStack(spacing: Tokens.spacing.sm) {
+                                        if let photos = msg.imageData, !photos.isEmpty {
+                                            HStack {
+                                                if msg.role == .user { Spacer() }
+                                                photoGrid(photos)
+                                                if msg.role != .user { Spacer() }
+                                            }
+                                        }
+                                        if !msg.content.isEmpty {
+                                            ChatBubble(role: msg.role, content: msg.content)
+                                        }
+                                        ForEach(Array(msg.cards.enumerated()), id: \.offset) { _, card in
+                                            cardView(card)
+                                        }
+                                    }
+                                }
+                                if isStreaming, let last = chatStore.messages.last, last.content.isEmpty {
+                                    TypingIndicator()
+                                }
                             }
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 12)
+                            Color.clear.frame(height: 1).id("bottom")
                         }
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 12)
-                        Color.clear.frame(height: 1).id("bottom")
-                        // Track scroll offset via top of content
+                        // Measure content height and scroll offset inside ScrollView
                         .background(GeometryReader { geo in
-                            Color.clear.preference(
-                                key: ScrollOffsetKey.self,
-                                value: geo.frame(in: .named("chatScroll")).minY
-                            )
+                            Color.clear
+                                .preference(key: ContentHeightKey.self, value: geo.size.height)
+                                .preference(key: ScrollOffsetKey.self, value: geo.frame(in: .named("chatScroll")).minY)
                         })
                     }
-                    // Track total content height (on the VStack inside ScrollView)
-                    .background(GeometryReader { geo in
-                        Color.clear
-                            .preference(key: ContentHeightKey.self, value: geo.size.height)
-                    })
                     .coordinateSpace(name: "chatScroll")
                     .scrollIndicators(.hidden)
                     .scrollDismissesKeyboard(.interactively)
@@ -212,7 +208,7 @@ struct ChatView: View {
         }
         // 4. Settings drawer
         .overlay(alignment: .trailing) {
-            SettingsDrawer(isPresented: $showSettings)
+            SettingsDrawer(isPresented: $showSettings, deepLinkPetId: settingsDeepLinkPetId)
                 .frame(width: drawerWidth)
                 .frame(maxHeight: .infinity)
                 .background(Tokens.bg)
@@ -225,7 +221,10 @@ struct ChatView: View {
             if !val { calendarDrag = 0 }
         }
         .onChange(of: showSettings) { _, val in
-            if !val { settingsDrag = 0 }
+            if !val {
+                settingsDrag = 0
+                settingsDeepLinkPetId = nil
+            }
         }
         .task {
             await petStore.fetchFromAPI()
@@ -389,7 +388,7 @@ struct ChatView: View {
                 label: L.petAdded,
                 title: data.pet_name,
                 subtitle: "\(data.breed ?? data.species)"
-            ) { withAnimation(.easeOut(duration: 0.3)) { showSettings = true } }
+            ) { navigateToSettings() }
         case .reminder(let data):
             ActionCard(
                 icon: "bell.fill", iconColor: Tokens.accent,
@@ -403,7 +402,7 @@ struct ChatView: View {
                 label: Lang.shared.isZh ? "已更新" : "Updated",
                 title: data.pet_name,
                 subtitle: data.saved_keys?.joined(separator: ", ") ?? ""
-            ) { withAnimation(.easeOut(duration: 0.3)) { showSettings = true } }
+            ) { navigateToSettings(petId: data.pet_id) }
         case .confirmAction(let data):
             ConfirmActionCard(
                 message: data.message,
@@ -422,9 +421,9 @@ struct ChatView: View {
                 subtitle: data.saved_keys?.joined(separator: ", ") ?? ""
             ) {
                 let dest = navigationForActionType(data.type)
-                withAnimation(.easeOut(duration: 0.3)) {
-                    if dest == "settings" { showSettings = true }
-                    else if dest == "calendar" { showCalendar = true }
+                if dest == "settings" { navigateToSettings(petId: data.pet_id) }
+                else if dest == "calendar" {
+                    withAnimation(.easeOut(duration: 0.3)) { showCalendar = true }
                 }
             }
         }
@@ -498,6 +497,11 @@ struct ChatView: View {
     }
 
     // MARK: - Card Navigation
+
+    private func navigateToSettings(petId: String? = nil) {
+        settingsDeepLinkPetId = petId
+        withAnimation(.easeOut(duration: 0.3)) { showSettings = true }
+    }
 
     private func navigationForActionType(_ type: String) -> String {
         switch type {

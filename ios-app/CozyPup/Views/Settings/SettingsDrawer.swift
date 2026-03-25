@@ -12,6 +12,10 @@ struct SettingsDrawer: View {
     @ObservedObject private var lang = Lang.shared
     @State private var editingPetId: String?
     @State private var showAddPet = false
+    /// Set from outside to deep-link into a pet's edit page
+    var deepLinkPetId: String?
+    /// "edit" or "profile" — which sub-page to show
+    var deepLinkTarget: String?
     @State private var showDeleteConfirm: Pet?
     @State private var showUserProfile = false
 
@@ -43,7 +47,12 @@ struct SettingsDrawer: View {
             }
         }
         .animation(.easeInOut(duration: 0.25), value: currentPage == .list)
-        .onAppear { loadPrefs() }
+        .onAppear {
+            loadPrefs()
+            if let petId = deepLinkPetId {
+                editingPetId = petId
+            }
+        }
         .task { await petStore.fetchFromAPI() }
         .onChange(of: notifications) { savePrefs() }
         .onChange(of: medReminders) { savePrefs() }

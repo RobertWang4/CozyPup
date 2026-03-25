@@ -52,12 +52,14 @@ struct SetLanguageCardData: Codable, Equatable {
 struct PetUpdatedCardData: Codable, Equatable {
     let type: String
     let pet_name: String
+    let pet_id: String?
     let saved_keys: [String]?
 }
 
 struct GenericActionCardData: Codable, Equatable {
     let type: String
     let pet_name: String?
+    let pet_id: String?
     let title: String?
     let saved_keys: [String]?
 }
@@ -119,7 +121,7 @@ enum CardData: Codable, Equatable {
             self = .genericAction(d)
         } else {
             // Never crash on unknown card types — just ignore
-            self = .genericAction(GenericActionCardData(type: "unknown", pet_name: nil, title: nil, saved_keys: nil))
+            self = .genericAction(GenericActionCardData(type: "unknown", pet_name: nil, pet_id: nil, title: nil, saved_keys: nil))
         }
     }
 

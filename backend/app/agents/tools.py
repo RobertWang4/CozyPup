@@ -892,6 +892,7 @@ async def _create_pet(
 
     card = {
         "type": "pet_created",
+        "pet_id": str(pet.id),
         "pet_name": name,
         "species": arguments["species"],
         "breed": breed,
@@ -954,6 +955,7 @@ async def _update_pet_profile(
             "saved_keys": list(info.keys()),
             "card": {
                 "type": "pet_updated",
+                "pet_id": str(pet.id),
                 "pet_name": pet.name,
                 "saved_keys": list(info.keys()),
             },
@@ -1573,6 +1575,7 @@ async def _set_pet_avatar(
         "avatar_url": pet.avatar_url,
         "card": {
             "type": "pet_updated",
+            "pet_id": str(pet.id),
             "pet_name": pet.name,
             "saved_keys": ["avatar"],
         },
