@@ -20,6 +20,7 @@ from app.agents.executor import run_executor, ExecutorResult
 from app.agents.tools import TOOL_DEFINITIONS, execute_tool
 from app.agents.validation import validate_tool_args
 from app.agents.pending_actions import store_action
+from app.agents.chat_agent import _describe_tool_call
 
 logger = logging.getLogger(__name__)
 
@@ -217,17 +218,18 @@ async def _handle_single_task(
     # Confirm gate
     if fn_name in CONFIRM_TOOLS:
         if session_id:
+            desc = _describe_tool_call(fn_name, fn_args)
             action_id = store_action(
                 user_id=str(user_id),
                 session_id=str(session_id),
                 tool_name=fn_name,
                 arguments=fn_args,
-                description=f"确认执行: {fn_name}",
+                description=desc,
             )
             confirm_card = {
                 "type": "confirm_action",
                 "action_id": action_id,
-                "message": f"确认执行: {fn_name}({json.dumps(fn_args, ensure_ascii=False)})",
+                "message": desc,
             }
             result.confirm_cards.append(confirm_card)
             if on_card:
@@ -360,12 +362,12 @@ async def _handle_request_images_then_continue(
                             session_id=str(session_id),
                             tool_name=fn_name,
                             arguments=fn_args,
-                            description=f"确认执行: {fn_name}",
+                            description=_describe_tool_call(fn_name, fn_args),
                         )
                         confirm_card = {
                             "type": "confirm_action",
                             "action_id": action_id,
-                            "message": f"确认执行: {fn_name}({json.dumps(fn_args, ensure_ascii=False)})",
+                            "message": _describe_tool_call(fn_name, fn_args),
                         }
                         result.confirm_cards.append(confirm_card)
                         if on_card:

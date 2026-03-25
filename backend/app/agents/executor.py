@@ -173,7 +173,7 @@ async def run_executor(
                 needs_confirm=True,
                 tool=fn_name,
                 arguments=fn_args,
-                description=f"确认执行: {fn_name}({json.dumps(fn_args, ensure_ascii=False)})",
+                description=f"确认执行: {fn_name}",
             )
 
         # Execute tool

@@ -36,10 +36,38 @@ _RELATIVE_DATES = {
 }
 
 
-def _resolve_date(message: str, today: date) -> date:
-    """Extract a date from the message. Defaults to today."""
+_AMBIGUOUS_DATE = re.compile(
+    r"上周(?![一二三四五六日天])|上个?月(?!\d)|前阵子|前段时间|最近|之前"
+    r"|last week(?!\s*(?:mon|tue|wed|thu|fri|sat|sun))|last month",
+    re.I,
+)
+
+_WEEKDAY_LAST_WEEK = {
+    "上周一": 0, "上周二": 1, "上周三": 2, "上周四": 3,
+    "上周五": 4, "上周六": 5, "上周日": 6, "上周天": 6,
+}
+
+
+def _resolve_date(message: str, today: date) -> date | None:
+    """Extract a date from the message.
+
+    Returns None if the date is ambiguous (e.g. "上周" without specifying day).
+    Returns today if no date info is found.
+    """
+    msg_lower = message.lower()
+
+    # "上周一" → exact date
+    for keyword, weekday in _WEEKDAY_LAST_WEEK.items():
+        if keyword in msg_lower:
+            days_back = (today.weekday() - weekday) % 7 + 7
+            return today - timedelta(days=days_back)
+
+    # Ambiguous dates → return None (caller should ask user)
+    if _AMBIGUOUS_DATE.search(msg_lower):
+        return None
+
     for keyword, delta in _RELATIVE_DATES.items():
-        if keyword in message.lower():
+        if keyword in msg_lower:
             return today + timedelta(days=delta)
     # Check for explicit dates like 3月23号, 3.23, 03-23
     m = re.search(r"(\d{1,2})[月.\-/](\d{1,2})[号日]?", message)
@@ -262,6 +290,10 @@ def pre_process(
             if pattern.search(message):
                 event_date = _resolve_date(message, today)
                 resolved_pets = _resolve_pets(message, pets)
+
+                # Ambiguous date (e.g. "上周") → skip pre-processing, let LLM ask
+                if event_date is None:
+                    continue
 
                 # Check if a specific pet was mentioned by name
                 mentioned_names = [
