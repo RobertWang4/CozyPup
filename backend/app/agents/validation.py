@@ -142,6 +142,87 @@ def _validate_draft_email(args: dict) -> list[str]:
     return _check_required(args, ["subject", "body"])
 
 
+@_register("update_calendar_event")
+def _validate_update_calendar_event(args: dict) -> list[str]:
+    errors = _check_required(args, ["event_id"])
+    errors += _check_uuid(args, "event_id")
+    errors += _check_date(args, "event_date")
+    errors += _check_time(args, "event_time")
+    errors += _check_enum(args, "category", _CATEGORIES, "category")
+    return errors
+
+
+@_register("delete_pet")
+def _validate_delete_pet(args: dict) -> list[str]:
+    errors = _check_required(args, ["pet_id"])
+    errors += _check_uuid(args, "pet_id")
+    return errors
+
+
+@_register("delete_calendar_event")
+def _validate_delete_calendar_event(args: dict) -> list[str]:
+    errors = _check_required(args, ["event_id"])
+    errors += _check_uuid(args, "event_id")
+    return errors
+
+
+@_register("update_reminder")
+def _validate_update_reminder(args: dict) -> list[str]:
+    errors = _check_required(args, ["reminder_id"])
+    errors += _check_uuid(args, "reminder_id")
+    errors += _check_enum(args, "type", _REMINDER_TYPES, "reminder type")
+    errors += _check_datetime(args, "trigger_at")
+    return errors
+
+
+@_register("delete_reminder")
+def _validate_delete_reminder(args: dict) -> list[str]:
+    errors = _check_required(args, ["reminder_id"])
+    errors += _check_uuid(args, "reminder_id")
+    return errors
+
+
+@_register("save_pet_profile_md")
+def _validate_save_pet_profile_md(args: dict) -> list[str]:
+    errors = _check_required(args, ["pet_id", "profile_md"])
+    errors += _check_uuid(args, "pet_id")
+    md = args.get("profile_md", "")
+    if isinstance(md, str) and len(md) > 3000:
+        errors.append(f"profile_md too long: {len(md)} chars (max 3000)")
+    return errors
+
+
+@_register("summarize_pet_profile")
+def _validate_summarize_pet_profile(args: dict) -> list[str]:
+    errors = _check_required(args, ["pet_id"])
+    errors += _check_uuid(args, "pet_id")
+    return errors
+
+
+@_register("set_pet_avatar")
+def _validate_set_pet_avatar(args: dict) -> list[str]:
+    errors = _check_required(args, ["pet_id"])
+    errors += _check_uuid(args, "pet_id")
+    return errors
+
+
+@_register("upload_event_photo")
+def _validate_upload_event_photo(args: dict) -> list[str]:
+    errors = _check_required(args, ["event_id"])
+    errors += _check_uuid(args, "event_id")
+    return errors
+
+
+@_register("list_reminders")
+def _validate_list_reminders(args: dict) -> list[str]:
+    return []
+
+
+@_register("trigger_emergency")
+def _validate_trigger_emergency(args: dict) -> list[str]:
+    return _check_required(args, ["message"])
+
+
 def validate_tool_args(tool_name: str, arguments: dict) -> list[str]:
     """Validate tool arguments against the schema.
 

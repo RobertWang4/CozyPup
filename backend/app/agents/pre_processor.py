@@ -11,7 +11,7 @@ extractable, a confirm card is shown to the user for one-tap execution.
 import re
 import uuid
 from dataclasses import dataclass, field
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 
 
 CONFIRM_THRESHOLD = 0.5  # Minimum confidence for confirm card
@@ -167,7 +167,8 @@ _QUESTION_OVERRIDE = re.compile(
 )
 
 _CREATE_PET_PATTERN = re.compile(
-    r"新养了|新.*(?:狗|猫|宠物)|养了.*(?:叫|名字)|got a new|new (?:pet|puppy|kitten|dog|cat)",
+    r"新养了|新.*(?:狗|猫|宠物)|养了.*(?:叫|名字)|创建.*宠物|添加.*宠物|新来了|刚买了|刚领养"
+    r"|got a new|new (?:pet|puppy|kitten|dog|cat)|adopt",
     re.I,
 )
 
@@ -179,6 +180,23 @@ _UPDATE_PROFILE_PATTERNS = [
     (re.compile(r"过敏|allerg", re.I), "allergies", 0.85),
     (re.compile(r"是公的|是母的|公狗|母狗|male|female|gender|性别", re.I), "gender", 0.85),
     (re.compile(r"绝育|neutered|spayed", re.I), "neutered", 0.85),
+    (re.compile(r"品种[是叫]|breed|是.*?(?:金毛|泰迪|柯基|柴犬|拉布拉多|哈士奇|边牧|法斗|比熊|博美|萨摩|秋田|雪纳瑞|马犬|贵宾|可卡|巴哥)", re.I), "breed", 0.85),
+    (re.compile(r"饮食|吃的|狗粮|猫粮|diet|food|kibble|每天吃", re.I), "diet", 0.8),
+    (re.compile(r"兽医|医院|vet|doctor|clinic", re.I), "vet", 0.8),
+    (re.compile(r"毛色|颜色|coat|color", re.I), "coat_color", 0.8),
+    (re.compile(r"性格|脾气|temperament|personality|怕|胆小|活泼|温顺", re.I), "temperament", 0.8),
+]
+
+_REMINDER_PATTERNS = [
+    (re.compile(r"提醒我|别忘了|记得|remind me|don't forget|set.*reminder", re.I), 0.85),
+]
+
+_REMINDER_TYPES_MAP = [
+    (re.compile(r"喂药|吃药|medication|medicine", re.I), "medication"),
+    (re.compile(r"疫苗|打针|vaccin", re.I), "vaccine"),
+    (re.compile(r"体检|检查|checkup", re.I), "checkup"),
+    (re.compile(r"喂食|喂饭|feeding|feed", re.I), "feeding"),
+    (re.compile(r"洗澡|美容|grooming|groom|bath", re.I), "grooming"),
 ]
 
 # Value extractors by key — returns extracted value or None
@@ -279,13 +297,86 @@ def pre_process(
         # Extract name if possible (e.g., "叫豆豆" → "豆豆")
         name_match = re.search(r"叫(\S+)", message)
         name = name_match.group(1) if name_match else ""
+
+        # Extract species
+        species = None
+        if re.search(r"猫|cat|kitten", message, re.I):
+            species = "cat"
+        elif re.search(r"狗|dog|puppy", message, re.I):
+            species = "dog"
+
+        # Extract breed
+        breed_match = re.search(
+            r"(金毛|泰迪|柯基|柴犬|拉布拉多|哈士奇|边牧|法斗|比熊|博美|萨摩|秋田|雪纳瑞|马犬|贵宾|可卡|巴哥"
+            r"|golden retriever|labrador|corgi|husky|poodle|bulldog|shiba|beagle|chihuahua)",
+            message, re.I,
+        )
+        breed = breed_match.group(1) if breed_match else None
+
+        # Extract gender and birthday
+        gender = _extract_gender(message)
+        birthday = _extract_birthday(message)
+
         if name:
+            args = {"name": name, "species": species or "dog"}
+            if breed:
+                args["breed"] = breed
+            if gender:
+                args["gender"] = gender
+            if birthday:
+                args["birthday"] = birthday
+
+            # Higher confidence when both name and species are extracted
+            conf = 0.85 if (name and species) else 0.7
+
             actions.append(SuggestedAction(
                 tool_name="create_pet",
-                arguments={"name": name, "species": "dog"},
-                confidence=0.7,  # Lower — LLM should refine species/breed
+                arguments=args,
+                confidence=conf,
                 confirm_description=f"添加新宠物「{name}」",
             ))
+
+    # --- Reminders ---
+    # Reminder patterns should NOT be blocked by is_question (reminders are future actions)
+    for pattern, confidence in _REMINDER_PATTERNS:
+        if pattern.search(message):
+            # Infer reminder type
+            reminder_type = "other"
+            for type_pattern, type_name in _REMINDER_TYPES_MAP:
+                if type_pattern.search(message):
+                    reminder_type = type_name
+                    break
+
+            trigger_date = _resolve_date(message, today)
+            trigger_at = datetime.combine(trigger_date, datetime.min.replace(hour=9).time()).isoformat()
+
+            resolved_pets = _resolve_pets(message, pets) if pets else []
+
+            if resolved_pets:
+                for pet_id, pet_name in resolved_pets:
+                    actions.append(SuggestedAction(
+                        tool_name="create_reminder",
+                        arguments={
+                            "pet_id": pet_id,
+                            "title": message[:100],
+                            "type": reminder_type,
+                            "trigger_at": trigger_at,
+                        },
+                        confidence=confidence,
+                        confirm_description=f"为{pet_name}设置{reminder_type}提醒（{trigger_date.isoformat()}）",
+                    ))
+            else:
+                actions.append(SuggestedAction(
+                    tool_name="create_reminder",
+                    arguments={
+                        "title": message[:100],
+                        "type": reminder_type,
+                        "trigger_at": trigger_at,
+                    },
+                    confidence=confidence,
+                    confirm_description=f"设置{reminder_type}提醒（{trigger_date.isoformat()}）",
+                ))
+            break  # Only match first reminder pattern
 
     # --- Update pet profile ---
     if not is_question and pets:

@@ -21,10 +21,14 @@ logger = logging.getLogger(__name__)
 
 # Patterns indicating the LLM claimed to perform an action
 _CLAIMED_ACTION = re.compile(
-    r"已记录|已更新|已保存|已添加|已设置|记住了|帮你记|帮你添加|帮你设"
-    r"|I'?ve recorded|I'?ve updated|I'?ve saved|I'?ve added|I'?ve set"
-    r"|I recorded|I updated|I saved|I added|I created"
-    r"|recorded it|saved it|added it|updated it|created it",
+    r"已记录|已更新|已保存|已添加|已设置|已创建|已删除|已发送|已修改"
+    r"|记住了|更新好了|设好了|创建好了|添加好了|保存好了|改好了"
+    r"|帮你记|帮你添加|帮你设|帮你创建|帮你保存|帮你改"
+    r"|资料更新|档案更新|信息更新|性别更新|名字更新"
+    r"|记录到日历|记录到档案|添加到日历"
+    r"|I'?ve recorded|I'?ve updated|I'?ve saved|I'?ve added|I'?ve set|I'?ve created"
+    r"|I recorded|I updated|I saved|I added|I created|I set"
+    r"|recorded it|saved it|added it|updated it|created it|set it",
     re.IGNORECASE,
 )
 
