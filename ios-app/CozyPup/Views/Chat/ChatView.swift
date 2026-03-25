@@ -127,7 +127,13 @@ struct ChatView: View {
                     .modifier(ScrollIndicatorOverlay(
                         contentHeight: contentHeight,
                         containerHeight: containerHeight,
-                        scrollOffset: scrollOffset
+                        scrollOffset: scrollOffset,
+                        onScrub: { progress in
+                            let messages = chatStore.messages
+                            guard !messages.isEmpty else { return }
+                            let idx = min(Int(progress * CGFloat(messages.count)), messages.count - 1)
+                            proxy.scrollTo(messages[idx].id, anchor: .top)
+                        }
                     ))
                 }
 
@@ -202,6 +208,7 @@ struct ChatView: View {
                 .shadow(color: Tokens.dimOverlay.opacity(drawerProgress > 0.01 ? 0.15 : 0), radius: 10, x: 2)
                 .offset(x: calendarX)
                 .ignoresSafeArea()
+                .gesture(calendarDrawerCloseDrag)
         }
         // 4. Settings drawer
         .overlay(alignment: .trailing) {
@@ -213,6 +220,7 @@ struct ChatView: View {
                 .shadow(color: Tokens.dimOverlay.opacity(drawerProgress > 0.01 ? 0.15 : 0), radius: 10, x: -2)
                 .offset(x: settingsX)
                 .ignoresSafeArea()
+                .gesture(settingsDrawerCloseDrag)
         }
         .onChange(of: showCalendar) { _, val in
             if !val { calendarDrag = 0 }
@@ -296,6 +304,46 @@ struct ChatView: View {
                     } else {
                         withAnimation(.spring(response: 0.3)) { settingsDrag = 0 }
                     }
+                }
+            }
+    }
+
+    /// Swipe right on settings drawer content to close
+    private var settingsDrawerCloseDrag: some Gesture {
+        DragGesture(minimumDistance: 30, coordinateSpace: .local)
+            .onChanged { value in
+                guard showSettings, value.translation.width > 0 else { return }
+                settingsDrag = value.translation.width
+            }
+            .onEnded { value in
+                guard showSettings else { return }
+                if value.translation.width > drawerWidth * 0.25 ||
+                   value.predictedEndTranslation.width > drawerWidth * 0.5 {
+                    withAnimation(.easeOut(duration: 0.25)) {
+                        showSettings = false; settingsDrag = 0
+                    }
+                } else {
+                    withAnimation(.spring(response: 0.3)) { settingsDrag = 0 }
+                }
+            }
+    }
+
+    /// Swipe left on calendar drawer content to close
+    private var calendarDrawerCloseDrag: some Gesture {
+        DragGesture(minimumDistance: 30, coordinateSpace: .local)
+            .onChanged { value in
+                guard showCalendar, value.translation.width < 0 else { return }
+                calendarDrag = value.translation.width
+            }
+            .onEnded { value in
+                guard showCalendar else { return }
+                if value.translation.width < -drawerWidth * 0.25 ||
+                   value.predictedEndTranslation.width < -drawerWidth * 0.5 {
+                    withAnimation(.easeOut(duration: 0.25)) {
+                        showCalendar = false; calendarDrag = 0
+                    }
+                } else {
+                    withAnimation(.spring(response: 0.3)) { calendarDrag = 0 }
                 }
             }
     }
