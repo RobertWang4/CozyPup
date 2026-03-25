@@ -7,6 +7,7 @@ class Settings(BaseSettings):
     emergency_model: str = "openai/kimi-k2.5"
     model_api_base: str = ""   # Proxy base URL (e.g. https://api.shubiaobiao.cn/v1)
     model_api_key: str = ""    # Proxy API key
+    context_model: str = "deepseek/deepseek-chat"  # cheap model for summarization
     google_places_api_key: str = ""
     jwt_secret: str = "change-me-in-production"
     jwt_access_expire_minutes: int = 60
