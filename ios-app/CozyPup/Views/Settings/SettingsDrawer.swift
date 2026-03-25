@@ -133,18 +133,6 @@ struct SettingsDrawer: View {
                                             .foregroundColor(Tokens.textSecondary)
                                     }
                                 }
-                                HStack(spacing: Tokens.spacing.sm) {
-                                    if let birthday = pet.birthday {
-                                        Label(petAge(birthday), systemImage: "birthday.cake")
-                                            .font(Tokens.fontCaption)
-                                            .foregroundColor(Tokens.textTertiary)
-                                    }
-                                    if let weight = pet.weight {
-                                        Label(String(format: "%.1fkg", weight), systemImage: "scalemass")
-                                            .font(Tokens.fontCaption)
-                                            .foregroundColor(Tokens.textTertiary)
-                                    }
-                                }
                             }
                             Spacer()
                             Button {
