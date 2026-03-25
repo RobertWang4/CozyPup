@@ -107,13 +107,22 @@ class TestFormatActionsForPrompt:
             SuggestedAction("create_calendar_event", {"pet_id": "abc", "title": "吃了"}, 0.9),
         ]
         result = format_actions_for_prompt(actions)
-        assert "Pre-analyzed actions" in result
+        assert "Suggested actions" in result
         assert "create_calendar_event" in result
+
+    def test_includes_medium_confidence(self):
+        from app.agents.pre_processor import SuggestedAction
+        actions = [
+            SuggestedAction("create_pet", {"name": "Luna"}, 0.6),
+        ]
+        result = format_actions_for_prompt(actions)
+        assert "create_pet" in result
+        assert "置信度: 0.6" in result
 
     def test_skips_low_confidence(self):
         from app.agents.pre_processor import SuggestedAction
         actions = [
-            SuggestedAction("create_pet", {"name": "Luna"}, 0.6),
+            SuggestedAction("create_pet", {"name": "Luna"}, 0.4),
         ]
         result = format_actions_for_prompt(actions)
         assert result == ""

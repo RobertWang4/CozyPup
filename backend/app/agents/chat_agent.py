@@ -132,9 +132,8 @@ class ChatAgent(BaseAgent):
             "suggested_actions": len(suggested_actions),
         })
 
-        # If high-confidence actions exist, force tool calling
-        has_high_confidence = any(a.confidence >= 0.8 for a in suggested_actions)
-        tool_choice = "required" if has_high_confidence else "auto"
+        # Hints are advisory — LLM always decides via tool_choice="auto"
+        tool_choice = "auto"
 
         # Build message history
         context_messages = context.get("context_messages", [])
