@@ -110,6 +110,9 @@ class ChatSession(Base):
     summarized_up_to: Mapped[int | None] = mapped_column(sa.Integer, nullable=True)  # last message ID included in summary
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
+    context_summary: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    summarized_up_to: Mapped[int | None] = mapped_column(sa.Integer, nullable=True)
+
     user: Mapped["User"] = relationship(back_populates="sessions")
     messages: Mapped[list["Chat"]] = relationship(back_populates="session", cascade="all, delete-orphan")
 
