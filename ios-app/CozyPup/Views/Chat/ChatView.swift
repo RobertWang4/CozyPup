@@ -447,7 +447,7 @@ struct ChatView: View {
                 label: Lang.shared.isZh ? "已更新" : "Updated",
                 title: data.pet_name,
                 subtitle: data.saved_keys?.joined(separator: ", ") ?? ""
-            ) { navigateToSettings(petId: data.pet_id) }
+            ) { navigateToSettings(petId: data.pet_id ?? data.pet_name) }
         case .confirmAction(let data):
             ConfirmActionCard(
                 message: data.message,
@@ -466,7 +466,7 @@ struct ChatView: View {
                 subtitle: data.saved_keys?.joined(separator: ", ") ?? ""
             ) {
                 let dest = navigationForActionType(data.type)
-                if dest == "settings" { navigateToSettings(petId: data.pet_id) }
+                if dest == "settings" { navigateToSettings(petId: data.pet_id ?? data.pet_name) }
                 else if dest == "calendar" {
                     withAnimation(.easeOut(duration: 0.3)) { showCalendar = true }
                 }

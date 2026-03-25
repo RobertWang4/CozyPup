@@ -12,7 +12,7 @@ struct SettingsDrawer: View {
     @ObservedObject private var lang = Lang.shared
     @State private var editingPetId: String?
     @State private var showAddPet = false
-    /// Set from outside to deep-link into a pet's edit page
+    /// Set from outside to deep-link into a pet's edit page (pet_id or pet_name)
     @Binding var deepLinkPetId: String?
     @State private var showDeleteConfirm: Pet?
     @State private var showUserProfile = false
@@ -46,9 +46,14 @@ struct SettingsDrawer: View {
         }
         .animation(.easeInOut(duration: 0.25), value: currentPage == .list)
         .onAppear { loadPrefs() }
-        .onChange(of: deepLinkPetId) { _, petId in
-            if let petId {
-                editingPetId = petId
+        .onChange(of: deepLinkPetId) { _, value in
+            if let value {
+                // Try matching by id first, then by name
+                if let pet = petStore.pets.first(where: { $0.id == value }) {
+                    editingPetId = pet.id
+                } else if let pet = petStore.pets.first(where: { $0.name == value }) {
+                    editingPetId = pet.id
+                }
                 deepLinkPetId = nil
             }
         }
