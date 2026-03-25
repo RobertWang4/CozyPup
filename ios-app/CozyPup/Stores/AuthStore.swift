@@ -42,20 +42,25 @@ class AuthStore: ObservableObject {
 
     // MARK: - Google Sign-In
 
+    private static let googleClientID = "496617144117-73j9krtarupr8as09cka2tg06sn4cke8.apps.googleusercontent.com"
+
     func loginWithGoogle() {
-        isLoading = true
         errorMessage = nil
+
+        let config = GIDConfiguration(clientID: Self.googleClientID)
+        GIDSignIn.sharedInstance.configuration = config
 
         guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
               let rootVC = windowScene.windows.first?.rootViewController else {
             errorMessage = "Cannot find root view controller"
-            isLoading = false
             return
         }
 
         Task {
             do {
                 let result = try await GIDSignIn.sharedInstance.signIn(withPresenting: rootVC)
+                // Show loading only after Google sheet dismisses
+                isLoading = true
                 guard let idToken = result.user.idToken?.tokenString else {
                     errorMessage = "Failed to get Google ID token"
                     isLoading = false
@@ -167,6 +172,11 @@ class AuthStore: ObservableObject {
         hasAcknowledgedDisclaimer = false
         UserDefaults.standard.removeObject(forKey: authKey)
         UserDefaults.standard.removeObject(forKey: disclaimerKey)
+        // Clear all cached data from other stores
+        UserDefaults.standard.removeObject(forKey: "cozypup_pets")
+        UserDefaults.standard.removeObject(forKey: "cozypup_calendar")
+        UserDefaults.standard.removeObject(forKey: "cozypup_chat_messages")
+        UserDefaults.standard.removeObject(forKey: "cozypup_chat_session")
         Task { await APIClient.shared.clearTokens() }
     }
 
