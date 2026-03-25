@@ -72,18 +72,19 @@ async def test_pet(db: AsyncSession, test_user):
 class TestToolDefinitions:
     def test_definitions_are_list(self):
         assert isinstance(TOOL_DEFINITIONS, list)
-        assert len(TOOL_DEFINITIONS) == 17
+        assert len(TOOL_DEFINITIONS) == 19
 
     def test_all_tool_names(self):
         names = [t["function"]["name"] for t in TOOL_DEFINITIONS]
         expected = [
             "create_calendar_event", "query_calendar_events",
             "update_calendar_event",
-            "create_pet", "update_pet_profile", "list_pets",
+            "create_pet", "update_pet_profile", "save_pet_profile_md",
+            "list_pets",
             "create_reminder", "search_places", "draft_email",
             "delete_pet", "delete_calendar_event", "list_reminders",
             "update_reminder", "delete_reminder", "upload_event_photo",
-            "set_language", "set_pet_avatar",
+            "set_language", "set_pet_avatar", "trigger_emergency",
         ]
         assert names == expected
 
@@ -99,7 +100,7 @@ class TestToolDefinitions:
         assert "event_date" in params["properties"]
         assert "title" in params["properties"]
         assert "category" in params["properties"]
-        assert set(params["required"]) == {"pet_id", "event_date", "title", "category"}
+        assert set(params["required"]) == {"event_date", "title", "category"}
 
     def test_query_events_definition_structure(self):
         query_tool = TOOL_DEFINITIONS[1]
