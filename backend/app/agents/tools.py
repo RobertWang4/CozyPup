@@ -35,11 +35,13 @@ TOOL_DEFINITIONS = [
         "function": {
             "name": "create_calendar_event",
             "description": (
-                "Record an event to the calendar. Use for pet health events, daily care, "
-                "or shared owner activities (buying supplies, vet appointments, etc.). "
-                "For SHARED events that apply to all pets or the owner (e.g. buying dog food, "
-                "visiting pet store), call this ONCE with pet_id omitted. "
-                "Do NOT create duplicate events for each pet."
+                "记录宠物已发生的健康/生活事件。\n"
+                "当用户报告已经发生的事情时使用 (吃了/拉了/打了疫苗/遛了/洗澡了)。\n"
+                "对于所有宠物或主人共有的事件 (买狗粮/逛宠物店)，只调用一次且不传 pet_id。\n"
+                "不要用于: 用户询问过去的事 (用 query_calendar_events)。\n"
+                "不要用于: 用户想设未来提醒 (用 create_reminder)。\n"
+                "不要用于: 紧急症状 (用 trigger_emergency)。\n"
+                "title 必须是 2-8 字摘要，不要用原始句子。"
             ),
             "parameters": {
                 "type": "object",
@@ -93,8 +95,11 @@ TOOL_DEFINITIONS = [
         "function": {
             "name": "query_calendar_events",
             "description": (
-                "Query the pet's calendar event history. Use this when the user asks about "
-                "past events, health history, or wants to review what was logged."
+                "查询宠物的历史事件记录。\n"
+                "当用户询问过去发生的事情时使用 (上次打疫苗是什么时候？最近吃了什么？)。\n"
+                "不要用于: 记录新发生的事 (用 create_calendar_event)。\n"
+                "不要用于: 查看提醒 (用 list_reminders)。\n"
+                "可按 pet_id、日期范围、category 过滤。"
             ),
             "parameters": {
                 "type": "object",
@@ -126,9 +131,10 @@ TOOL_DEFINITIONS = [
         "function": {
             "name": "update_calendar_event",
             "description": (
-                "Update an existing calendar event. Use this when the user wants to change "
-                "the date, time, title, or category of a previously recorded event. "
-                "You MUST first call query_calendar_events to find the event_id."
+                "修改已有的日历事件。\n"
+                "当用户想更正/修改之前记录的事件时使用 (日期写错了/标题要改)。\n"
+                "不要用于: 记录新事件 (用 create_calendar_event)。\n"
+                "必须先调 query_calendar_events 获取 event_id。"
             ),
             "parameters": {
                 "type": "object",
@@ -164,8 +170,11 @@ TOOL_DEFINITIONS = [
         "function": {
             "name": "create_pet",
             "description": (
-                "Create a new pet profile for the user. Use this when the user says they "
-                "have a new pet and wants to add it to their account."
+                "为用户创建新的宠物档案。\n"
+                "当用户说有新宠物要添加时使用 (我养了一只猫/我新买了一只狗)。\n"
+                "不要用于: 更新已有宠物信息 (用 update_pet_profile)。\n"
+                "不要用于: 改名 (用 update_pet_profile 传 name)。\n"
+                "至少需要 name 和 species。"
             ),
             "parameters": {
                 "type": "object",
@@ -188,12 +197,12 @@ TOOL_DEFINITIONS = [
         "function": {
             "name": "update_pet_profile",
             "description": (
-                "Update any information about a pet, including RENAMING. Use this whenever the user "
-                "wants to change their pet's name, or mentions ANY detail about their pet — gender, "
-                "diet, allergies, vet, weight, temperament, medical history, etc. "
-                "To rename: pass {\"name\": \"new_name\"} in info. "
-                "The info is stored as flexible key-value pairs. "
-                "Call this proactively to build up the pet's profile over time."
+                "更新宠物档案信息，包括改名。\n"
+                "当用户提到宠物的任何属性时使用 (体重/生日/过敏/品种/性别/饮食/性格/兽医等)。\n"
+                "改名: 在 info 里传 {\"name\": \"新名字\"}。\n"
+                "不要用于: 添加新宠物 (用 create_pet)。\n"
+                "不要用于: 记录事件 (用 create_calendar_event)。\n"
+                "主动调用以逐步完善宠物画像。info 是灵活的 key-value 对。"
             ),
             "parameters": {
                 "type": "object",
@@ -221,12 +230,11 @@ TOOL_DEFINITIONS = [
         "function": {
             "name": "save_pet_profile_md",
             "description": (
-                "Save or update a pet's narrative profile document (markdown). "
-                "Call this SILENTLY whenever you learn new information about a pet "
-                "from conversation — personality, health history, routines, preferences. "
-                "You MUST pass the COMPLETE updated document (not a diff or append). "
-                "Keep it concise: under 500 words. Use markdown headers for sections. "
-                "Write in the same language the user uses."
+                "保存/更新宠物的叙事性档案文档 (markdown)。\n"
+                "当从对话中了解到宠物新信息时静默调用 (性格/病史/日常习惯/偏好)。\n"
+                "不要用于: 更新结构化字段如体重/生日 (用 update_pet_profile)。\n"
+                "必须传完整文档 (非 diff)，500 字以内，用 markdown 分节。\n"
+                "用用户的语言撰写。"
             ),
             "parameters": {
                 "type": "object",
@@ -252,9 +260,10 @@ TOOL_DEFINITIONS = [
         "function": {
             "name": "list_pets",
             "description": (
-                "List all of the user's registered pets with their profiles. "
-                "Use this when the user asks about their pets, wants to see all pets, "
-                "or you need to look up pet IDs."
+                "列出用户所有已注册的宠物及其档案。\n"
+                "当用户问自己有哪些宠物、或你需要查 pet_id 时使用。\n"
+                "不要用于: 创建新宠物 (用 create_pet)。\n"
+                "无参数，返回全部宠物列表。"
             ),
             "parameters": {
                 "type": "object",
@@ -268,9 +277,11 @@ TOOL_DEFINITIONS = [
         "function": {
             "name": "create_reminder",
             "description": (
-                "Create a reminder that will send a push notification at the specified time. "
-                "Use this when the user asks to be reminded about something — medication, "
-                "vet appointments, feeding schedules, etc."
+                "创建一个定时推送提醒。\n"
+                "当用户要求未来某时提醒他做某事时使用 (明天提醒我喂药/下周二带去打疫苗)。\n"
+                "不要用于: 记录已发生的事 (用 create_calendar_event)。\n"
+                "不要用于: 查看已有提醒 (用 list_reminders)。\n"
+                "trigger_at 必须是未来时间，ISO 8601 格式。"
             ),
             "parameters": {
                 "type": "object",
@@ -306,9 +317,10 @@ TOOL_DEFINITIONS = [
         "function": {
             "name": "search_places",
             "description": (
-                "Search for nearby pet-related places like veterinary clinics, pet stores, "
-                "dog parks, groomers, or emergency animal hospitals. Use when the user asks "
-                "to find a location or asks 'where can I...'."
+                "搜索附近的宠物相关地点 (宠物医院/宠物店/狗公园/美容店/24h急诊)。\n"
+                "当用户问附近哪里有…/帮我找…时使用。\n"
+                "不要用于: 记录去过的地方 (用 create_calendar_event)。\n"
+                "需要用户授权位置信息才能使用。"
             ),
             "parameters": {
                 "type": "object",
@@ -330,9 +342,10 @@ TOOL_DEFINITIONS = [
         "function": {
             "name": "draft_email",
             "description": (
-                "Present a draft email as a card for the user to review and send. "
-                "Use when the user asks to compose an email to a vet or pet professional. "
-                "YOU write the email content based on conversation context, then call this tool."
+                "生成邮件草稿卡片供用户审阅和发送。\n"
+                "当用户要写邮件给兽医或宠物服务商时使用。\n"
+                "不要用于: 聊天回复 (直接回复即可)。\n"
+                "你来根据对话上下文撰写邮件内容，然后调用此工具。"
             ),
             "parameters": {
                 "type": "object",
@@ -355,8 +368,10 @@ TOOL_DEFINITIONS = [
         "function": {
             "name": "delete_pet",
             "description": (
-                "Delete a pet profile. Use when the user wants to remove a pet "
-                "from their account."
+                "删除宠物档案。\n"
+                "当用户明确要求移除某个宠物时使用。\n"
+                "不要用于: 更新宠物信息 (用 update_pet_profile)。\n"
+                "此操作不可逆，需确认用户意图。"
             ),
             "parameters": {
                 "type": "object",
@@ -375,9 +390,10 @@ TOOL_DEFINITIONS = [
         "function": {
             "name": "delete_calendar_event",
             "description": (
-                "Delete a calendar event record. Use when the user wants to remove "
-                "a previously logged event. You MUST first call query_calendar_events "
-                "to find the event_id."
+                "删除日历事件记录。\n"
+                "当用户要求删除之前记录的事件时使用。\n"
+                "不要用于: 修改事件 (用 update_calendar_event)。\n"
+                "必须先调 query_calendar_events 获取 event_id。"
             ),
             "parameters": {
                 "type": "object",
@@ -396,8 +412,10 @@ TOOL_DEFINITIONS = [
         "function": {
             "name": "list_reminders",
             "description": (
-                "List the user's active reminders. Use when the user asks about "
-                "their upcoming reminders or scheduled notifications."
+                "列出用户所有未发送的提醒。\n"
+                "当用户问有哪些提醒/定时任务时使用。\n"
+                "不要用于: 查看历史事件 (用 query_calendar_events)。\n"
+                "无参数，返回全部活跃提醒。"
             ),
             "parameters": {
                 "type": "object",
@@ -411,9 +429,10 @@ TOOL_DEFINITIONS = [
         "function": {
             "name": "update_reminder",
             "description": (
-                "Update an existing reminder. Use when the user wants to change "
-                "the time, title, or details of a reminder. You MUST first call "
-                "list_reminders to find the reminder_id."
+                "修改已有的提醒。\n"
+                "当用户要改提醒的时间/标题/内容时使用。\n"
+                "不要用于: 创建新提醒 (用 create_reminder)。\n"
+                "必须先调 list_reminders 获取 reminder_id。"
             ),
             "parameters": {
                 "type": "object",
@@ -449,9 +468,10 @@ TOOL_DEFINITIONS = [
         "function": {
             "name": "delete_reminder",
             "description": (
-                "Delete/cancel a reminder. Use when the user wants to cancel a "
-                "scheduled reminder. You MUST first call list_reminders to find "
-                "the reminder_id."
+                "删除/取消一个提醒。\n"
+                "当用户要取消已设定的提醒时使用。\n"
+                "不要用于: 修改提醒 (用 update_reminder)。\n"
+                "必须先调 list_reminders 获取 reminder_id。"
             ),
             "parameters": {
                 "type": "object",
@@ -470,9 +490,10 @@ TOOL_DEFINITIONS = [
         "function": {
             "name": "upload_event_photo",
             "description": (
-                "Attach the user's photo to a calendar event. "
-                "The photo is automatically taken from the user's attached image. "
-                "Use when the user sends a photo and asks to add it to a specific event record."
+                "将用户的照片附加到日历事件。\n"
+                "当用户发了照片并要求关联到某条记录时使用。\n"
+                "不要用于: 设置宠物头像 (用 set_pet_avatar)。\n"
+                "照片自动从用户消息中获取，需要先有 event_id。"
             ),
             "parameters": {
                 "type": "object",
@@ -491,8 +512,10 @@ TOOL_DEFINITIONS = [
         "function": {
             "name": "set_language",
             "description": (
-                "Change the app's display language. Use when the user asks to "
-                "switch language."
+                "切换应用显示语言。\n"
+                "当用户要求切换语言时使用 (说英文/switch to English)。\n"
+                "不要用于: 翻译内容 (直接用目标语言回复)。\n"
+                "支持 zh 和 en。"
             ),
             "parameters": {
                 "type": "object",
@@ -512,9 +535,10 @@ TOOL_DEFINITIONS = [
         "function": {
             "name": "set_pet_avatar",
             "description": (
-                "Set a pet's avatar/profile photo from the user's attached image. "
-                "The photo is automatically taken from the user's message. "
-                "Use when the user sends a photo and says to use it as a pet's avatar."
+                "设置宠物头像。\n"
+                "当用户发了照片并说要用作宠物头像时使用。\n"
+                "不要用于: 给事件附加照片 (用 upload_event_photo)。\n"
+                "照片自动从用户消息中获取。"
             ),
             "parameters": {
                 "type": "object",
@@ -525,6 +549,33 @@ TOOL_DEFINITIONS = [
                     },
                 },
                 "required": ["pet_id"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "trigger_emergency",
+            "description": (
+                "当判断用户描述的是真正的宠物紧急情况时调用。\n"
+                "使用场景: 宠物中毒、抽搐、大出血、呼吸困难、昏迷等危及生命的状况。\n"
+                "不要用于: 用户询问过去的紧急事件、一般性健康咨询、轻微不适。\n"
+                "调用前请仔细判断是否真的紧急。"
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "description": "给用户的紧急提示消息",
+                    },
+                    "action": {
+                        "type": "string",
+                        "enum": ["find_er", "call_vet", "first_aid"],
+                        "description": "建议的紧急操作类型",
+                    },
+                },
+                "required": ["message", "action"],
             },
         },
     },
@@ -1251,6 +1302,22 @@ async def _set_pet_avatar(
     }
 
 
+async def _trigger_emergency(
+    arguments: dict,
+    db: AsyncSession,
+    user_id: uuid.UUID,
+) -> dict:
+    """Return an emergency card for the frontend to display."""
+    return {
+        "success": True,
+        "card": {
+            "type": "emergency",
+            "message": arguments["message"],
+            "action": arguments["action"],
+        },
+    }
+
+
 _TOOL_HANDLERS = {
     "create_calendar_event": _create_calendar_event,
     "query_calendar_events": _query_calendar_events,
@@ -1270,6 +1337,7 @@ _TOOL_HANDLERS = {
     "upload_event_photo": _upload_event_photo,
     "set_language": _set_language,
     "set_pet_avatar": _set_pet_avatar,
+    "trigger_emergency": _trigger_emergency,
 }
 
 # Tools that accept extra kwargs (e.g., location, images)
