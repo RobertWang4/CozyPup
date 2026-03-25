@@ -16,6 +16,7 @@ struct ChatView: View {
     @State private var settingsDrag: CGFloat = 0
     @State private var voiceDragOffset: CGFloat = 0
     @State private var pendingPhotos: [Data] = []
+    @State private var keyboardHeight: CGFloat = 0
 
     private var drawerWidth: CGFloat { UIScreen.main.bounds.width * 0.90 }
 
@@ -126,7 +127,19 @@ struct ChatView: View {
                 )
                 .allowsHitTesting(!showSettings && !showCalendar)
             }
+            // Only pad for keyboard when drawers are closed (chat input needs it)
+            .padding(.bottom, (!showCalendar && !showSettings) ? keyboardHeight : 0)
             .background(Tokens.bg.ignoresSafeArea())
+            .animation(.easeOut(duration: 0.25), value: keyboardHeight)
+        }
+        .ignoresSafeArea(.keyboard)
+        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { notif in
+            if let frame = notif.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect {
+                keyboardHeight = frame.height
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in
+            keyboardHeight = 0
         }
         .overlay {
             if speech.isListening {
@@ -378,6 +391,14 @@ struct ChatView: View {
             )
         case .setLanguage:
             EmptyView()
+        case .genericAction(let data):
+            ActionCard(
+                icon: iconForActionType(data.type),
+                iconColor: colorForActionType(data.type),
+                label: labelForActionType(data.type),
+                title: data.pet_name ?? data.title ?? "",
+                subtitle: data.saved_keys?.joined(separator: ", ") ?? ""
+            )
         }
     }
 
@@ -424,6 +445,10 @@ struct ChatView: View {
                         if case .setLanguage(let data) = c {
                             Lang.shared.code = data.language
                         }
+                        if case .genericAction(let data) = c,
+                           ["pet_deleted", "pet_updated"].contains(data.type) {
+                            Task { await petStore.fetchFromAPI() }
+                        }
                         if case .record(let r) = c, let comps = parseYearMonth(r.date) {
                             Task { await calendarStore.fetchMonth(year: comps.0, month: comps.1) }
                         }
@@ -441,6 +466,37 @@ struct ChatView: View {
             }
             chatStore.save()
             isStreaming = false
+        }
+    }
+
+    // MARK: - Generic Action Card Helpers
+
+    private func iconForActionType(_ type: String) -> String {
+        switch type {
+        case "pet_deleted": return "trash.fill"
+        case "event_deleted": return "calendar.badge.minus"
+        case "reminder_deleted": return "bell.slash.fill"
+        case "profile_summarized": return "doc.text.fill"
+        default: return "checkmark.circle.fill"
+        }
+    }
+
+    private func colorForActionType(_ type: String) -> Color {
+        switch type {
+        case "pet_deleted", "event_deleted", "reminder_deleted": return Tokens.red
+        case "profile_summarized": return Tokens.blue
+        default: return Tokens.green
+        }
+    }
+
+    private func labelForActionType(_ type: String) -> String {
+        let zh = Lang.shared.isZh
+        switch type {
+        case "pet_deleted": return zh ? "已删除" : "Deleted"
+        case "event_deleted": return zh ? "已删除" : "Deleted"
+        case "reminder_deleted": return zh ? "已取消" : "Cancelled"
+        case "profile_summarized": return zh ? "档案已更新" : "Profile Updated"
+        default: return zh ? "已完成" : "Done"
         }
     }
 

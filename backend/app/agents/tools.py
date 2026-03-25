@@ -1307,6 +1307,10 @@ async def _delete_pet(
         "success": True,
         "pet_id": str(pet_id),
         "pet_name": pet_name,
+        "card": {
+            "type": "pet_deleted",
+            "pet_name": pet_name,
+        },
     }
 
 
@@ -1335,6 +1339,10 @@ async def _delete_calendar_event(
         "success": True,
         "event_id": str(event_id),
         "title": title,
+        "card": {
+            "type": "event_deleted",
+            "title": title,
+        },
     }
 
 
@@ -1441,6 +1449,10 @@ async def _delete_reminder(
         "success": True,
         "reminder_id": str(reminder_id),
         "title": title,
+        "card": {
+            "type": "reminder_deleted",
+            "title": title,
+        },
     }
 
 
@@ -1486,6 +1498,12 @@ async def _upload_event_photo(
         "success": True,
         "event_id": str(event_id),
         "photo_url": photo_url,
+        "card": {
+            "type": "record",
+            "pet_name": "",
+            "date": str(arguments.get("event_date", "")),
+            "category": "daily",
+        },
     }
 
 
@@ -1546,6 +1564,11 @@ async def _set_pet_avatar(
         "pet_id": str(pet_id),
         "pet_name": pet.name,
         "avatar_url": pet.avatar_url,
+        "card": {
+            "type": "pet_updated",
+            "pet_name": pet.name,
+            "saved_keys": ["avatar"],
+        },
     }
 
 

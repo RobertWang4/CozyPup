@@ -55,6 +55,13 @@ struct PetUpdatedCardData: Codable, Equatable {
     let saved_keys: [String]?
 }
 
+struct GenericActionCardData: Codable, Equatable {
+    let type: String
+    let pet_name: String?
+    let title: String?
+    let saved_keys: [String]?
+}
+
 struct ConfirmActionCardData: Codable, Equatable {
     let type: String
     let action_id: String
@@ -87,6 +94,7 @@ enum CardData: Codable, Equatable {
     case reminder(ReminderCardData)
     case confirmAction(ConfirmActionCardData)
     case setLanguage(SetLanguageCardData)
+    case genericAction(GenericActionCardData)
 
     init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
@@ -106,8 +114,12 @@ enum CardData: Codable, Equatable {
             self = .confirmAction(d)
         } else if let d = try? container.decode(SetLanguageCardData.self), d.type == "set_language" {
             self = .setLanguage(d)
+        } else if let d = try? container.decode(GenericActionCardData.self) {
+            // Catch-all for pet_deleted, event_deleted, reminder_deleted, profile_summarized, etc.
+            self = .genericAction(d)
         } else {
-            throw DecodingError.dataCorruptedError(in: container, debugDescription: "Unknown card type")
+            // Never crash on unknown card types — just ignore
+            self = .genericAction(GenericActionCardData(type: "unknown", pet_name: nil, title: nil, saved_keys: nil))
         }
     }
 
@@ -122,6 +134,7 @@ enum CardData: Codable, Equatable {
         case .reminder(let d): try container.encode(d)
         case .confirmAction(let d): try container.encode(d)
         case .setLanguage(let d): try container.encode(d)
+        case .genericAction(let d): try container.encode(d)
         }
     }
 }
