@@ -12,21 +12,22 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sse_starlette.sse import EventSourceResponse
 
-from app.agents.chat_agent import ChatAgent
 from app.agents.emergency import build_emergency_hint, detect_emergency
+from app.agents.orchestrator import run_orchestrator
 from app.agents.pending_actions import pop_action
-from app.agents.prompts import CHAT_SYSTEM_PROMPT
+from app.agents.pre_processor import pre_process
+from app.agents.prompts_v2 import build_messages, build_system_prompt
+from app.agents.context_agent import trigger_summary_if_needed
 from app.agents.tools import execute_tool
 from app.auth import get_current_user_id
+from app.config import settings
 from app.database import get_db
 from app.models import Chat, ChatSession, MessageRole, Pet
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1", tags=["chat"])
 
-MAX_CONTEXT_MESSAGES = 20
-
-_chat_agent = ChatAgent()
+MAX_CONTEXT_MESSAGES = 5
 
 # Background task tracking — prevents garbage collection of fire-and-forget tasks
 _bg_tasks: set[asyncio.Task] = set()
@@ -81,41 +82,17 @@ async def _get_pets(db: AsyncSession, user_id: uuid.UUID) -> list[Pet]:
     return list(result.scalars().all())
 
 
-async def _build_pet_context(pets: list[Pet]) -> str:
-    """Build pet profile context string for the system prompt."""
-    if not pets:
-        return "The user has not added any pets yet."
-
-    lines = ["The user's pets:"]
-    for p in pets:
-        info = [f"- {p.name} (id: {p.id}): {p.species.value}"]
-        if p.breed:
-            info.append(f"breed={p.breed}")
-        if p.weight:
-            info.append(f"weight={p.weight}kg")
-        if p.birthday:
-            info.append(f"birthday={p.birthday.isoformat()}")
-        lines.append(", ".join(info))
-        if p.profile_md:
-            lines.append(f"\n### {p.name} 的档案\n{p.profile_md}")
-        elif p.profile:
-            profile_str = json.dumps(p.profile, ensure_ascii=False)
-            lines.append(f"  Profile: {profile_str}")
-    return "\n".join(lines)
-
-
-async def _get_context_messages(
-    db: AsyncSession, session_id: uuid.UUID
-) -> list[dict]:
-    """Load recent messages from the session for LLM context."""
+async def _get_recent_messages(
+    db: AsyncSession, session_id: uuid.UUID, limit: int = 5
+) -> list[Chat]:
+    """Load recent messages from the session (unsummarized only, max limit)."""
     result = await db.execute(
         select(Chat)
         .where(Chat.session_id == session_id)
         .order_by(Chat.created_at.desc())
-        .limit(MAX_CONTEXT_MESSAGES)
+        .limit(limit)
     )
-    messages = list(reversed(result.scalars().all()))
-    return [{"role": m.role.value, "content": m.content} for m in messages]
+    return list(reversed(result.scalars().all()))
 
 
 async def _save_message(
@@ -142,63 +119,6 @@ async def _save_message(
 _SENTINEL = object()
 
 
-async def _run_chat_agent_to_queue(
-    queue: asyncio.Queue,
-    request: ChatRequest,
-    session: ChatSession,
-    user_id: uuid.UUID,
-    db: AsyncSession,
-    pets: list[Pet],
-    context_messages: list[dict],
-    is_emergency: bool = False,
-    emergency_hint: str | None = None,
-):
-    """Run ChatAgent, pushing SSE events into the queue."""
-    pet_context = await _build_pet_context(pets)
-
-    system_msg = CHAT_SYSTEM_PROMPT.format(
-        pet_context=pet_context,
-        today_date=date.today().isoformat(),
-        pre_analyzed_actions="{pre_analyzed_actions}",  # Replaced by ChatAgent
-    )
-
-    async def on_token(text):
-        await queue.put({"event": "token", "data": json.dumps({"text": text})})
-
-    async def on_card(card_data):
-        await queue.put({"event": "card", "data": json.dumps(card_data)})
-
-    try:
-        result = await _chat_agent.execute(
-            request.message,
-            {
-                "system_prompt": system_msg,
-                "context_messages": context_messages,
-                "db": db,
-                "user_id": user_id,
-                "session_id": session.id,
-                "location": request.location,
-                "is_emergency": is_emergency,
-                "emergency_hint": emergency_hint,
-                "pets": pets,
-                "images": request.images,
-            },
-            on_token=on_token,
-            on_card=on_card,
-        )
-        await queue.put(("_result", result))
-    except Exception as e:
-        logger.error("chat_agent_error", extra={
-            "error_type": type(e).__name__,
-            "error_message": str(e)[:500],
-        })
-        error_text = f"Sorry, I'm having trouble right now. Please try again. (Error: {type(e).__name__})"
-        await queue.put({"event": "token", "data": json.dumps({"text": error_text})})
-        await queue.put(("_result", {"response": error_text, "cards": []}))
-    finally:
-        await queue.put(_SENTINEL)
-
-
 async def _event_generator(
     request: ChatRequest, user_id: uuid.UUID, db: AsyncSession
 ):
@@ -209,31 +129,105 @@ async def _event_generator(
     # 2. Save user message
     await _save_message(db, session.id, user_id, MessageRole.user, request.message)
 
-    # 3. Emergency detection — inject hint into agent context, let LLM decide
+    # --- Phase 1: Parallel preprocessing ---
+
+    # Stage 1: Parallel DB queries
+    pets, _ = await asyncio.gather(
+        _get_pets(db, user_id),
+        db.refresh(session),  # ensure context_summary is loaded
+    )
+
+    # Stage 2: Sync operations (fast, no await needed)
     emergency_result = detect_emergency(request.message)
-    is_emergency = emergency_result.detected
-    emergency_hint = build_emergency_hint(emergency_result.keywords) if is_emergency else None
-    if is_emergency:
+    suggested_actions = pre_process(request.message, pets)
+
+    if emergency_result.detected:
         logger.info("emergency_keywords_detected", extra={
             "session_id": session_id,
             "user_id": str(user_id),
             "keywords": emergency_result.keywords,
         })
 
-    # 4. Load context
-    pets = await _get_pets(db, user_id)
-    context_messages = await _get_context_messages(db, session.id)
+    # Stage 3: Get recent messages (max 5)
+    context_messages = await _get_recent_messages(db, session.id, limit=MAX_CONTEXT_MESSAGES)
 
-    queue: asyncio.Queue = asyncio.Queue()
-    task = asyncio.create_task(
-        _run_chat_agent_to_queue(
-            queue, request, session, user_id, db, pets, context_messages,
-            is_emergency=is_emergency,
-            emergency_hint=emergency_hint,
-        )
+    # --- Phase 2: Build prompt ---
+
+    # Build emergency hint
+    emergency_hint = (
+        build_emergency_hint(emergency_result.keywords)
+        if emergency_result.detected
+        else None
     )
 
-    result = {"response": "", "cards": []}
+    # Build preprocessor hints
+    preprocessor_hints = []
+    for action in suggested_actions:
+        if action.confidence >= 0.5:
+            preprocessor_hints.append(
+                f"{action.tool_name}({json.dumps(action.arguments, ensure_ascii=False)})"
+            )
+
+    # Model selection
+    is_emergency = emergency_result.detected
+    model = settings.emergency_model if is_emergency else settings.orchestrator_model
+
+    # Build system prompt (cache-friendly order)
+    today_str = date.today().isoformat()
+    system_prompt = build_system_prompt(
+        pets=pets,
+        session_summary=session.context_summary if session else None,
+        emergency_hint=emergency_hint,
+        preprocessor_hints=preprocessor_hints if preprocessor_hints else None,
+        today=today_str,
+    )
+
+    # Build messages
+    recent_msgs = [{"role": m.role.value, "content": m.content} for m in context_messages]
+    messages = build_messages(recent_msgs, request.message, images=request.images)
+
+    # --- Phase 3: Run orchestrator via queue ---
+
+    queue: asyncio.Queue = asyncio.Queue()
+
+    async def on_token(text):
+        await queue.put({"event": "token", "data": json.dumps({"text": text})})
+
+    async def on_card(card_data):
+        await queue.put({"event": "card", "data": json.dumps(card_data)})
+
+    async def _run_orchestrator_to_queue():
+        try:
+            result = await run_orchestrator(
+                message=request.message,
+                system_prompt=system_prompt,
+                context_messages=messages,  # recent history + current user message
+                model=model,
+                db=db,
+                user_id=user_id,
+                session_id=session.id,
+                on_token=on_token,
+                on_card=on_card,
+                today=today_str,
+                location=request.location,
+                images=request.images,
+            )
+            await queue.put(("_result", result))
+        except Exception as e:
+            logger.error("orchestrator_error", extra={
+                "error_type": type(e).__name__,
+                "error_message": str(e)[:500],
+            })
+            error_text = f"Sorry, I'm having trouble right now. Please try again. (Error: {type(e).__name__})"
+            await queue.put({"event": "token", "data": json.dumps({"text": error_text})})
+            from app.agents.orchestrator import OrchestratorResult
+            await queue.put(("_result", OrchestratorResult(response_text=error_text)))
+        finally:
+            await queue.put(_SENTINEL)
+
+    task = asyncio.create_task(_run_orchestrator_to_queue())
+
+    result = None
     while True:
         item = await queue.get()
         if item is _SENTINEL:
@@ -244,16 +238,25 @@ async def _event_generator(
         yield item
 
     await task
-    full_response = result.get("response", "")
-    cards = result.get("cards", [])
 
-    # 7. Save assistant response
-    cards_json = json.dumps(cards) if cards else None
+    # --- Phase 4: Post-response ---
+
+    if result is None:
+        from app.agents.orchestrator import OrchestratorResult
+        result = OrchestratorResult()
+
+    # Save assistant response
+    all_cards = result.cards + result.confirm_cards
+    cards_json = json.dumps(all_cards) if all_cards else None
     await _save_message(
-        db, session.id, user_id, MessageRole.assistant, full_response, cards_json
+        db, session.id, user_id, MessageRole.assistant,
+        result.response_text, cards_json
     )
 
-    # 8. Done event
+    # Trigger context compression if needed (async, non-blocking)
+    _track_task(trigger_summary_if_needed(session.id, db))
+
+    # Done event
     yield {
         "event": "done",
         "data": json.dumps({"intent": "chat", "session_id": session_id}),
