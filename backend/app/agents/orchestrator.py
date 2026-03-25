@@ -125,6 +125,20 @@ async def run_orchestrator(
         result.response_text = initial_text
         return result
 
+    # If request_images is among tool calls, handle it first, then re-run
+    has_request_images = any(
+        tc["function"]["name"] == "request_images" for tc in tool_calls
+    )
+    if has_request_images:
+        # Find the request_images call
+        ri_tc = next(tc for tc in tool_calls if tc["function"]["name"] == "request_images")
+        # Handle images first, then let LLM decide next steps (may call tools)
+        result = await _handle_request_images_then_continue(
+            ri_tc, messages, initial_text, use_model,
+            db, user_id, session_id, on_token, on_card, today, **kwargs,
+        )
+        return result
+
     # PATH B: Single task — fast path
     if len(tool_calls) == 1:
         result = await _handle_single_task(
@@ -222,42 +236,13 @@ async def _handle_single_task(
         result.response_text = "".join(text_parts)
         return result
 
-    # Special: request_images — inject images into conversation and continue
+    # Special: request_images — handled by _handle_request_images_then_continue
+    # (should not reach here due to early check, but just in case)
     if fn_name == "request_images":
-        images = kwargs.get("images") or []
-        messages.append({
-            "role": "assistant",
-            "content": initial_text or None,
-            "tool_calls": [tool_call],
-        })
-        if images:
-            # Build multimodal tool result with images
-            image_content = [{"type": "text", "text": "这是用户附带的图片，请仔细查看后回答："}]
-            for img_b64 in images:
-                image_content.append({
-                    "type": "image_url",
-                    "image_url": {"url": f"data:image/jpeg;base64,{img_b64}"},
-                })
-            messages.append({
-                "role": "tool",
-                "tool_call_id": tool_call["id"],
-                "content": "图片已加载，请查看对话中的图片。",
-            })
-            # Add images as a user message so LLM can see them
-            messages.append({
-                "role": "user",
-                "content": image_content,
-            })
-        else:
-            messages.append({
-                "role": "tool",
-                "tool_call_id": tool_call["id"],
-                "content": json.dumps({"error": "用户没有附带图片"}),
-            })
-
-        followup_text, _ = await _stream_completion(messages, model, on_token)
-        text_parts.append(followup_text)
-        result.response_text = "".join(text_parts)
+        result = await _handle_request_images_then_continue(
+            tool_call, messages, initial_text, model,
+            db, user_id, session_id, on_token, on_card, "", **kwargs,
+        )
         return result
 
     # Execute tool
@@ -295,6 +280,141 @@ async def _handle_single_task(
             })
             error_text = f"\n工具执行出错: {exc}"
             text_parts.append(error_text)
+
+    result.response_text = "".join(text_parts)
+    return result
+
+
+async def _handle_request_images_then_continue(
+    ri_tool_call: dict,
+    messages: list[dict],
+    initial_text: str,
+    model: str,
+    db, user_id, session_id,
+    on_token, on_card,
+    today: str = "",
+    **kwargs,
+) -> OrchestratorResult:
+    """Handle request_images, then allow LLM to call follow-up tools (e.g. create_calendar_event)."""
+    result = OrchestratorResult()
+    text_parts = [initial_text] if initial_text else []
+
+    images = kwargs.get("images") or []
+    messages.append({
+        "role": "assistant",
+        "content": initial_text or None,
+        "tool_calls": [ri_tool_call],
+    })
+
+    if images:
+        image_content = [{"type": "text", "text": "这是用户附带的图片，请仔细查看后回答："}]
+        for img_b64 in images:
+            image_content.append({
+                "type": "image_url",
+                "image_url": {"url": f"data:image/jpeg;base64,{img_b64}"},
+            })
+        messages.append({
+            "role": "tool",
+            "tool_call_id": ri_tool_call["id"],
+            "content": "图片已加载，请查看对话中的图片。",
+        })
+        messages.append({
+            "role": "user",
+            "content": image_content,
+        })
+    else:
+        messages.append({
+            "role": "tool",
+            "tool_call_id": ri_tool_call["id"],
+            "content": json.dumps({"error": "用户没有附带图片"}),
+        })
+
+    # Follow-up: LLM sees the image and may call tools (e.g. create_calendar_event)
+    followup_text, followup_tools = await _stream_completion(messages, model, on_token)
+    text_parts.append(followup_text)
+
+    # If LLM wants to call tools after seeing the image, execute them
+    if followup_tools:
+        # Filter out request_images if LLM calls it again
+        real_tools = [tc for tc in followup_tools if tc["function"]["name"] != "request_images"]
+        if real_tools:
+            # Add assistant message with tool calls
+            messages.append({
+                "role": "assistant",
+                "content": followup_text or None,
+                "tool_calls": real_tools,
+            })
+
+            for tc in real_tools:
+                fn_name = tc["function"]["name"]
+                try:
+                    fn_args = json.loads(tc["function"]["arguments"])
+                except json.JSONDecodeError:
+                    continue
+
+                # Confirm gate
+                if fn_name in CONFIRM_TOOLS:
+                    if session_id:
+                        action_id = store_action(
+                            user_id=str(user_id),
+                            session_id=str(session_id),
+                            tool_name=fn_name,
+                            arguments=fn_args,
+                            description=f"确认执行: {fn_name}",
+                        )
+                        confirm_card = {
+                            "type": "confirm_action",
+                            "action_id": action_id,
+                            "message": f"确认执行: {fn_name}({json.dumps(fn_args, ensure_ascii=False)})",
+                        }
+                        result.confirm_cards.append(confirm_card)
+                        if on_card:
+                            await _maybe_await(on_card, confirm_card)
+                    messages.append({
+                        "role": "tool",
+                        "tool_call_id": tc["id"],
+                        "content": json.dumps({"status": "waiting_confirm"}),
+                    })
+                    continue
+
+                # Validate
+                errors = validate_tool_args(fn_name, fn_args)
+                if errors:
+                    messages.append({
+                        "role": "tool",
+                        "tool_call_id": tc["id"],
+                        "content": json.dumps({"error": "; ".join(errors)}),
+                    })
+                    continue
+
+                # Execute
+                if db and user_id:
+                    try:
+                        tool_result = await execute_tool(fn_name, fn_args, db, user_id, **kwargs)
+                        await db.commit()
+                        card = tool_result.get("card")
+                        if card:
+                            result.cards.append(card)
+                            if on_card:
+                                await _maybe_await(on_card, card)
+                        messages.append({
+                            "role": "tool",
+                            "tool_call_id": tc["id"],
+                            "content": json.dumps(tool_result, ensure_ascii=False, default=str),
+                        })
+                    except Exception as exc:
+                        logger.error("image_followup_tool_error", extra={
+                            "tool": fn_name, "error": str(exc)
+                        })
+                        messages.append({
+                            "role": "tool",
+                            "tool_call_id": tc["id"],
+                            "content": json.dumps({"error": str(exc)}),
+                        })
+
+            # Generate final summary after tool execution
+            final_text, _ = await _stream_completion(messages, model, on_token)
+            text_parts.append(final_text)
 
     result.response_text = "".join(text_parts)
     return result
