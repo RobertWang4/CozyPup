@@ -199,6 +199,29 @@ _REMINDER_TYPES_MAP = [
     (re.compile(r"洗澡|美容|grooming|groom|bath", re.I), "grooming"),
 ]
 
+_SEARCH_PLACES_PATTERN = re.compile(
+    r"附近|哪里有|找一[下个家]|最近的|推荐.*(?:医院|宠物店|宠物医院|公园|狗公园)"
+    r"|nearby|find.*(?:vet|clinic|pet store|park|hospital)"
+    r"|where.*(?:vet|clinic|pet store|park)",
+    re.I,
+)
+
+_DRAFT_EMAIL_PATTERN = re.compile(
+    r"写.*邮件|草拟.*邮件|发.*邮件|帮我.*邮件|email|draft.*email|write.*email|compose.*email",
+    re.I,
+)
+
+_SUMMARIZE_PROFILE_PATTERN = re.compile(
+    r"总结.*(?:档案|资料|信息)|更新.*档案|整理.*档案|summary.*profile"
+    r"|summarize.*profile|汇总|生成.*报告",
+    re.I,
+)
+
+_SET_AVATAR_PATTERN = re.compile(
+    r"换.*头像|设.*头像|(?:这张|这个).*(?:做|当|设为).*头像|avatar|profile.*(?:pic|photo|image)",
+    re.I,
+)
+
 # Value extractors by key — returns extracted value or None
 _VALUE_EXTRACTORS: dict[str, callable] = {
     "name": _extract_new_name,
@@ -377,6 +400,48 @@ def pre_process(
                     confirm_description=f"设置{reminder_type}提醒（{trigger_date.isoformat()}）",
                 ))
             break  # Only match first reminder pattern
+
+    # --- Search places ---
+    # Not blocked by is_question — searching is a query but requires a tool call
+    if _SEARCH_PLACES_PATTERN.search(message):
+        actions.append(SuggestedAction(
+            tool_name="search_places",
+            arguments={"query": message[:100]},
+            confidence=0.85,
+            confirm_description="搜索附近相关地点",
+        ))
+
+    # --- Draft email ---
+    if not is_question and _DRAFT_EMAIL_PATTERN.search(message):
+        actions.append(SuggestedAction(
+            tool_name="draft_email",
+            arguments={"subject": message[:50], "body": message},
+            confidence=0.8,
+            confirm_description="草拟邮件",
+        ))
+
+    # --- Summarize pet profile ---
+    if _SUMMARIZE_PROFILE_PATTERN.search(message) and pets:
+        resolved_pets = _resolve_pets(message, pets)
+        for pet_id, pet_name in resolved_pets:
+            actions.append(SuggestedAction(
+                tool_name="summarize_pet_profile",
+                arguments={"pet_id": pet_id},
+                confidence=0.85,
+                confirm_description=f"生成{pet_name}的档案总结",
+            ))
+
+    # --- Set pet avatar ---
+    # Not blocked by is_question — setting avatar is an action
+    if _SET_AVATAR_PATTERN.search(message) and pets:
+        resolved_pets = _resolve_pets(message, pets)
+        for pet_id, pet_name in resolved_pets:
+            actions.append(SuggestedAction(
+                tool_name="set_pet_avatar",
+                arguments={"pet_id": pet_id},
+                confidence=0.85,
+                confirm_description=f"设置{pet_name}的头像",
+            ))
 
     # --- Update pet profile ---
     if not is_question and pets:
