@@ -485,15 +485,21 @@ def pre_process(
                 extracted = extractor(message) if extractor else None
 
                 for pet_id, pet_name in resolved_pets:
+                    # Free-text fields: use the raw message as value (LLM would do the same)
+                    FREE_TEXT_FIELDS = {"diet", "vet", "temperament", "allergies", "coat_color"}
                     if extracted is not None:
                         # We have a concrete value — can be used for confirm card
                         args = {"pet_id": pet_id, "info": {key: extracted}}
                         desc = f"把{pet_name}的{key}改为「{extracted}」"
+                    elif key in FREE_TEXT_FIELDS:
+                        # Free-text: use raw message, keep confidence high
+                        args = {"pet_id": pet_id, "info": {key: message[:200]}}
+                        desc = f"更新{pet_name}的{key}"
                     else:
-                        # Raw message — need LLM to extract
+                        # Structured fields without extractor — need LLM
                         args = {"pet_id": pet_id, "info": {key: message}}
                         desc = f"更新{pet_name}的{key}"
-                        conf = min(conf, 0.7)  # Lower confidence since we can't extract value
+                        conf = min(conf, 0.7)
 
                     actions.append(SuggestedAction(
                         tool_name="update_pet_profile",
