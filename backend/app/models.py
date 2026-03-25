@@ -4,7 +4,7 @@ from datetime import date, datetime, time
 
 from pgvector.sqlalchemy import Vector
 from sqlalchemy import Boolean, Date, DateTime, Enum, Float, ForeignKey, JSON, String, Text, Time
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
 
@@ -106,6 +106,8 @@ class ChatSession(Base):
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     session_date: Mapped[date] = mapped_column(Date, nullable=False)  # one per calendar day
+    context_summary: Mapped[dict | None] = mapped_column(JSONB, nullable=True)  # compressed chat history from Context Agent
+    summarized_up_to: Mapped[int | None] = mapped_column(sa.Integer, nullable=True)  # last message ID included in summary
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     user: Mapped["User"] = relationship(back_populates="sessions")
