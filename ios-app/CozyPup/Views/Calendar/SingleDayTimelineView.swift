@@ -100,7 +100,10 @@ struct SingleDayTimelineView: View {
                             calendarStore.remove(evt.id)
                         },
                         onPhotoUpload: { imageData in
-                            Task { await calendarStore.uploadEventPhoto(eventId: evt.id, imageData: imageData) }
+                            return await calendarStore.uploadEventPhoto(eventId: evt.id, imageData: imageData)
+                        },
+                        onPhotoDelete: { photoUrl in
+                            Task { await calendarStore.deleteEventPhoto(eventId: evt.id, photoUrl: photoUrl) }
                         }
                     )
                     .padding(.horizontal, Tokens.spacing.md)

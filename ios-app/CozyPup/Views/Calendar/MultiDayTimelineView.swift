@@ -73,7 +73,13 @@ struct MultiDayTimelineView: View {
                                 calendarStore.update(id, title: title, category: category,
                                                      eventDate: date, eventTime: time)
                             },
-                            onDelete: { id in calendarStore.remove(id) }
+                            onDelete: { id in calendarStore.remove(id) },
+                            onPhotoUpload: { id, imageData in
+                                return await calendarStore.uploadEventPhoto(eventId: id, imageData: imageData)
+                            },
+                            onPhotoDelete: { id, photoUrl in
+                                Task { await calendarStore.deleteEventPhoto(eventId: id, photoUrl: photoUrl) }
+                            }
                         )
                         .id(index)
                     }
@@ -130,6 +136,8 @@ struct DayRow: View {
     let onTap: () -> Void
     var onUpdate: ((String, String, EventCategory, String, String?) -> Void)?
     var onDelete: ((String) -> Void)?
+    var onPhotoUpload: ((String, Data) async -> String?)?
+    var onPhotoDelete: ((String, String) -> Void)?
 
     @State private var editingEvent: CalendarEvent?
 
@@ -161,9 +169,18 @@ struct DayRow: View {
         )
         .sheet(item: $editingEvent) { evt in
             if let onUpdate {
-                EventEditSheet(event: evt) { title, category, date, time in
-                    onUpdate(evt.id, title, category, date, time)
-                }
+                EventEditSheet(
+                    event: evt,
+                    onSave: { title, category, date, time in
+                        onUpdate(evt.id, title, category, date, time)
+                    },
+                    onPhotoUpload: onPhotoUpload.map { upload in
+                        { imageData in await upload(evt.id, imageData) }
+                    },
+                    onPhotoDelete: onPhotoDelete.map { delete in
+                        { photoUrl in delete(evt.id, photoUrl) }
+                    }
+                )
             }
         }
     }

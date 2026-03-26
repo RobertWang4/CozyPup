@@ -8,10 +8,13 @@ struct TimelineEventCard: View {
     var allowPhotoUpload: Bool = false
     var onUpdate: ((String, EventCategory, String, String?) -> Void)?
     var onDelete: (() -> Void)?
-    var onPhotoUpload: ((Data) -> Void)?
+    var onPhotoUpload: ((Data) async -> String?)?
+    var onPhotoDelete: ((String) -> Void)?
 
     @State private var showEditSheet = false
     @State private var selectedPhotoItem: PhotosPickerItem?
+    @State private var cropImage: UIImage?
+    @State private var showCropSheet = false
 
     var body: some View {
         HStack(spacing: 0) {
@@ -90,18 +93,36 @@ struct TimelineEventCard: View {
         }
         .sheet(isPresented: $showEditSheet) {
             if let onUpdate {
-                EventEditSheet(event: event, onSave: onUpdate)
+                EventEditSheet(event: event, onSave: onUpdate, onPhotoUpload: onPhotoUpload, onPhotoDelete: onPhotoDelete)
             }
         }
         .onChange(of: selectedPhotoItem) { _, item in
             guard let item else { return }
             Task {
                 if let data = try? await item.loadTransferable(type: Data.self),
-                   let uiImage = UIImage(data: data),
-                   let jpeg = uiImage.jpegData(compressionQuality: 0.7) {
-                    onPhotoUpload?(jpeg)
+                   let uiImage = UIImage(data: data) {
+                    await MainActor.run {
+                        cropImage = uiImage
+                        showCropSheet = true
+                    }
                 }
                 await MainActor.run { selectedPhotoItem = nil }
+            }
+        }
+        .sheet(isPresented: $showCropSheet) {
+            if let cropImage {
+                PhotoCropSheet(
+                    image: cropImage,
+                    onConfirm: { jpeg in
+                        showCropSheet = false
+                        self.cropImage = nil
+                        Task { _ = await onPhotoUpload?(jpeg) }
+                    },
+                    onCancel: {
+                        showCropSheet = false
+                        self.cropImage = nil
+                    }
+                )
             }
         }
     }
@@ -109,16 +130,32 @@ struct TimelineEventCard: View {
     // MARK: - Photo Grid
 
     private var photoGrid: some View {
-        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 6) {
-            ForEach(event.photos, id: \.self) { urlStr in
-                AsyncImage(url: photoURL(urlStr)) { image in
-                    image.resizable().scaledToFill()
-                } placeholder: {
-                    Tokens.placeholderBg
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: Tokens.spacing.xs) {
+                ForEach(event.photos, id: \.self) { urlStr in
+                    ZStack(alignment: .topTrailing) {
+                        AsyncImage(url: photoURL(urlStr)) { image in
+                            image.resizable().scaledToFill()
+                        } placeholder: {
+                            Tokens.placeholderBg
+                        }
+                        .frame(width: 72, height: 72)
+                        .clipped()
+                        .cornerRadius(Tokens.radiusSmall)
+
+                        if onPhotoDelete != nil {
+                            Button {
+                                onPhotoDelete?(urlStr)
+                            } label: {
+                                Image(systemName: "xmark.circle.fill")
+                                    .font(.system(size: 16))
+                                    .foregroundColor(.white)
+                                    .shadow(radius: 2)
+                            }
+                            .offset(x: 4, y: -4)
+                        }
+                    }
                 }
-                .aspectRatio(4/3, contentMode: .fill)
-                .clipped()
-                .cornerRadius(Tokens.radiusSmall)
             }
         }
     }

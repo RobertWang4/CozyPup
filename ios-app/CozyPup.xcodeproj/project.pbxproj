@@ -35,6 +35,8 @@
 		3396706B2712459F81C08069 /* CustomScrollIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA975912E3F04EB8812D4212 /* CustomScrollIndicator.swift */; };
 		AA975912E3F04EB8812D4212 /* CustomScrollIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomScrollIndicator.swift; sourceTree = "<group>"; };
 		B1C2D3E4F5A6B7C8D9E0F1A2 /* PinchGestureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2D3E4F5A6B7C8D9E0F1A2B3 /* PinchGestureView.swift */; };
+		D4E5F6A7B8C9D0E1F2A3B4C5 /* PhotoCropSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5F6A7B8C9D0E1F2A3B4C5D6 /* PhotoCropSheet.swift */; };
+		E5F6A7B8C9D0E1F2A3B4C5D6 /* PhotoCropSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCropSheet.swift; sourceTree = "<group>"; };
 		ACC8DEDAA3BCE7642D22C250 /* ChatStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50750BC93A661BAE576D418E /* ChatStore.swift */; };
 		B0BE23343ADC65DAF3EEF9A3 /* AuthStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 913C15A464B82E869A8EA6E8 /* AuthStore.swift */; };
 		B26546A329CCAA0E29AF43B5 /* ConfirmActionCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDD76A395C37067B90C0DFD7 /* ConfirmActionCard.swift */; };
@@ -232,6 +234,7 @@
 				8D78E58E938E4CFDA15EA369 /* FullScreenImageViewer.swift */,
 				AA975912E3F04EB8812D4212 /* CustomScrollIndicator.swift */,
 				C2D3E4F5A6B7C8D9E0F1A2B3 /* PinchGestureView.swift */,
+				E5F6A7B8C9D0E1F2A3B4C5D6 /* PhotoCropSheet.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -395,6 +398,7 @@
 				87E5851C01AE4E9FA4419681 /* FullScreenImageViewer.swift in Sources */,
 				3396706B2712459F81C08069 /* CustomScrollIndicator.swift in Sources */,
 				B1C2D3E4F5A6B7C8D9E0F1A2 /* PinchGestureView.swift in Sources */,
+				D4E5F6A7B8C9D0E1F2A3B4C5 /* PhotoCropSheet.swift in Sources */,
 				2547DAC516A2F05FB22ACAC6 /* EventEditSheet.swift in Sources */,
 				FA82C6590ACDC7D49CF14998 /* EventRow.swift in Sources */,
 				11DE02B8DAA886EB61A80137 /* HapticsHelper.swift in Sources */,

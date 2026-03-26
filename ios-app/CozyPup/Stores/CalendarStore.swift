@@ -142,7 +142,8 @@ class CalendarStore: ObservableObject {
 
     // MARK: - Photo upload
 
-    func uploadEventPhoto(eventId: String, imageData: Data) async {
+    /// Upload photo and return the new photo URL, or nil on failure.
+    func uploadEventPhoto(eventId: String, imageData: Data) async -> String? {
         do {
             let data = try await APIClient.shared.uploadMultipart(
                 "/calendar/\(eventId)/photos",
@@ -155,9 +156,27 @@ class CalendarStore: ObservableObject {
                     events[idx].photos = updated.photos
                     saveLocal()
                 }
+                // Return the newly added photo URL
+                return updated.photos.last
             }
         } catch {
             print("CalendarStore.uploadEventPhoto failed: \(error)")
+        }
+        return nil
+    }
+
+    func deleteEventPhoto(eventId: String, photoUrl: String) async {
+        do {
+            let updated: CalendarEvent = try await APIClient.shared.request(
+                "DELETE", "/calendar/\(eventId)/photos",
+                query: ["photo_url": photoUrl]
+            )
+            if let idx = events.firstIndex(where: { $0.id == eventId }) {
+                events[idx].photos = updated.photos
+                saveLocal()
+            }
+        } catch {
+            print("CalendarStore.deleteEventPhoto failed: \(error)")
         }
     }
 

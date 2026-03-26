@@ -260,3 +260,38 @@ async def upload_event_photo(
     await db.commit()
     await db.refresh(event)
     return _event_to_response(event)
+
+
+@router.delete("/{event_id}/photos", response_model=CalendarEventResponse)
+async def delete_event_photo(
+    event_id: uuid.UUID,
+    photo_url: str = Query(...),
+    user_id: uuid.UUID = Depends(get_current_user_id),
+    db: AsyncSession = Depends(get_db),
+):
+    result = await db.execute(
+        select(CalendarEvent)
+        .options(joinedload(CalendarEvent.pet))
+        .where(CalendarEvent.id == event_id, CalendarEvent.user_id == user_id)
+    )
+    event = result.scalar_one_or_none()
+    if not event:
+        raise HTTPException(status_code=404, detail="Event not found")
+
+    current_photos = event.photos or []
+    if photo_url not in current_photos:
+        raise HTTPException(status_code=404, detail="Photo not found on event")
+
+    current_photos.remove(photo_url)
+    event.photos = current_photos
+    flag_modified(event, "photos")
+
+    # Delete file from disk
+    filename = photo_url.split("/")[-1]
+    filepath = PHOTO_DIR / filename
+    if filepath.exists():
+        filepath.unlink()
+
+    await db.commit()
+    await db.refresh(event)
+    return _event_to_response(event)
