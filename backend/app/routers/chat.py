@@ -159,7 +159,9 @@ def _build_context_with_images(context_messages: list[Chat]) -> list[dict]:
     for i, m in enumerate(context_messages):
         if i in image_msg_indices and m.image_urls:
             # Load images from disk and build multimodal content
-            content_parts: list[dict] = [{"type": "text", "text": m.content}]
+            # Include photo URLs as text so LLM can reference them in tool calls
+            url_hint = " ".join(f"[photo_url: {u}]" for u in m.image_urls)
+            content_parts: list[dict] = [{"type": "text", "text": f"{m.content}\n{url_hint}"}]
             for url in m.image_urls:
                 # url is like "/api/v1/calendar/photos/xxx.jpg"
                 filename = url.split("/")[-1]

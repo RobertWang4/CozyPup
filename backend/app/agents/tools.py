@@ -569,8 +569,8 @@ _BASE_TOOL_DEFINITIONS = [
             "description": (
                 "设置宠物头像。\n"
                 "当用户发了照片并说要用作宠物头像时使用。\n"
-                "不要用于: 给事件附加照片 (用 upload_event_photo)。\n"
-                "照片自动从用户消息中获取。"
+                "如果用户要求用之前发过的照片设置头像，从对话上下文中找到该图片的 photo_url（格式如 /api/v1/calendar/photos/xxx.jpg）传入即可，无需用户重新发送。\n"
+                "不要用于: 给事件附加照片 (用 upload_event_photo)。"
             ),
             "parameters": {
                 "type": "object",
@@ -578,6 +578,10 @@ _BASE_TOOL_DEFINITIONS = [
                     "pet_id": {
                         "type": "string",
                         "description": "UUID of the pet.",
+                    },
+                    "photo_url": {
+                        "type": "string",
+                        "description": "URL of a previously uploaded photo (e.g. /api/v1/calendar/photos/xxx.jpg). Use when referencing a photo from earlier in the conversation instead of a newly attached image.",
                     },
                 },
                 "required": ["pet_id"],
@@ -1677,17 +1681,30 @@ async def _set_pet_avatar(
     if not pet:
         return {"success": False, "error": "Pet not found"}
 
-    # Prefer image from user's attached photos, fall back to arguments
+    # Priority: 1) current message images, 2) photo_url from previous upload, 3) inline base64
     img_b64 = (images[0] if images else None) or arguments.get("image_base64")
+    photo_url = arguments.get("photo_url")
+    image_data: bytes | None = None
+
+    if img_b64:
+        image_data = base64.b64decode(img_b64)
+    elif photo_url:
+        # Read from previously saved photo on disk
+        filename = photo_url.split("/")[-1]
+        filepath = PHOTO_DIR / filename
+        if not filepath.exists():
+            return {"success": False, "error": f"Photo not found: {photo_url}"}
+        image_data = filepath.read_bytes()
+
     logger.info("set_pet_avatar_debug", extra={
         "pet_id": str(pet_id),
         "has_images": bool(images),
         "images_count": len(images) if images else 0,
-        "img_b64_len": len(img_b64) if img_b64 else 0,
+        "photo_url": photo_url,
+        "image_data_len": len(image_data) if image_data else 0,
     })
-    if not img_b64:
+    if not image_data:
         return {"success": False, "error": "No image provided. Ask the user to attach a photo."}
-    image_data = base64.b64decode(img_b64)
     if len(image_data) > 5 * 1024 * 1024:
         return {"success": False, "error": "Image must be under 5MB"}
 
