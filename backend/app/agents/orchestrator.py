@@ -84,7 +84,10 @@ _FALLBACK_MSGS = {
 
 
 async def _ensure_response(result, on_token, lang: str = "zh"):
-    """Ensure response_text is never empty — stream fallback if needed."""
+    """Ensure response_text is never empty — stream fallback if needed.
+    Skip fallback when confirm cards are pending (empty text is expected)."""
+    if result.confirm_cards:
+        return
     if not result.response_text.strip():
         fallback = _FALLBACK_MSGS.get(lang, _FALLBACK_MSGS["zh"])
         result.response_text = fallback
@@ -699,6 +702,11 @@ async def _handle_multi_task(
 
         else:
             summaries.append(f"❌ {exec_result.error or '执行失败'}")
+
+    # If ALL tasks need confirmation, skip LLM summary — just return with confirm cards
+    all_confirm = result.confirm_cards and not result.cards
+    if all_confirm:
+        return result
 
     # Generate natural language summary via LLM (not raw technical output)
     if summaries:
