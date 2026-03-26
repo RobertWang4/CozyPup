@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     jwt_secret: str = "change-me-in-production"
     jwt_access_expire_minutes: int = 60
     jwt_refresh_expire_days: int = 30
+    deepgram_api_key: str = ""
 
     # APNs push notifications
     apns_key_path: str = ""        # Path to .p8 key file
