@@ -544,6 +544,11 @@ struct ChatView: View {
                         }
                         if case .record(let r) = c, let comps = parseYearMonth(r.date) {
                             Task { await calendarStore.fetchMonth(year: comps.0, month: comps.1) }
+                            // Also refresh old month if event was moved across months
+                            if let oldDate = r.old_date, let oldComps = parseYearMonth(oldDate),
+                               (oldComps.0, oldComps.1) != (comps.0, comps.1) {
+                                Task { await calendarStore.fetchMonth(year: oldComps.0, month: oldComps.1) }
+                            }
                         }
                     case .emergency(let e):
                         emergency = e

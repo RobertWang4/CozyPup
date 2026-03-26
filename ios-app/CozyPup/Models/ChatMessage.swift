@@ -9,6 +9,7 @@ struct RecordCardData: Codable, Equatable {
     let pet_name: String
     let date: String
     let category: String
+    let old_date: String?  // present when event was moved to a different date
 }
 
 struct MapItem: Codable, Equatable {

@@ -786,6 +786,7 @@ async def _update_calendar_event(
     if not event:
         return {"success": False, "error": "Event not found"}
 
+    old_date = event.event_date.isoformat()
     if "event_date" in arguments:
         event.event_date = date.fromisoformat(arguments["event_date"])
     if "event_time" in arguments:
@@ -809,6 +810,7 @@ async def _update_calendar_event(
         "date": event.event_date.isoformat(),
         "category": event.category.value,
         "title": event.title,
+        "old_date": old_date,
     }
 
     return {
