@@ -6,3 +6,4 @@ logs/
 server.log
 .env
 tests/
+uploads/
