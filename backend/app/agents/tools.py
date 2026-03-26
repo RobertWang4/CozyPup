@@ -886,10 +886,23 @@ async def _create_pet(
     )
     existing_pet = dup_result.scalar_one_or_none()
     if existing_pet:
+        # Auto-redirect: convert create_pet → update_pet_profile for existing pet
+        update_info = {}
+        for key in ("gender", "breed", "neutered", "coat_color", "diet", "temperament", "allergies"):
+            if key in arguments:
+                update_info[key] = arguments[key]
+        if "birthday" in arguments:
+            update_info["birthday"] = arguments["birthday"]
+        if "weight" in arguments:
+            update_info["weight"] = arguments["weight"]
+        if update_info:
+            return await _update_pet_profile(
+                {"pet_id": str(existing_pet.id), "info": update_info}, db, user_id
+            )
         return {
-            "error": f"用户已经有一只叫 {name} 的宠物 (pet_id: {existing_pet.id})。"
-                     f"请使用 update_pet_profile 来更新它的信息，不要重复创建。",
-            "existing_pet_id": str(existing_pet.id),
+            "success": True,
+            "message": f"宠物「{name}」已存在，无需重复创建。",
+            "card": {"type": "pet_updated", "pet_id": str(existing_pet.id), "name": name},
         }
     breed = arguments.get("breed", "")
     birthday_str = arguments.get("birthday")
