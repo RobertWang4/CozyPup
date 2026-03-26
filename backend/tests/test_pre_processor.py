@@ -87,12 +87,13 @@ class TestPreProcess:
         actions = pre_process("你好", pets, today=date(2026, 3, 22))
         assert len(actions) == 0
 
-    def test_multi_pet_creates_multiple_actions(self):
+    def test_multi_pet_no_name_creates_shared_event(self):
+        """When no pet name is mentioned with multiple pets, create one shared event."""
         pets = [_make_pet("Winnie"), _make_pet("Summer")]
         actions = pre_process("吃了狗粮", pets, today=date(2026, 3, 22))
         calendar_actions = [a for a in actions if a.tool_name == "create_calendar_event"]
-        assert len(calendar_actions) == 2
-        assert all(a.tool_name == "create_calendar_event" for a in calendar_actions)
+        assert len(calendar_actions) == 1
+        assert "pet_id" not in calendar_actions[0].arguments
 
     def test_tomorrow_date(self):
         pets = [_make_pet("Buddy")]
