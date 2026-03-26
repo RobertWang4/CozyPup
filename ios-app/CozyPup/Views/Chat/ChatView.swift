@@ -537,7 +537,7 @@ struct ChatView: View {
                             if ["pet_deleted", "pet_updated"].contains(data.type) {
                                 Task { await petStore.fetchFromAPI() }
                             }
-                            if ["event_deleted", "reminder_deleted"].contains(data.type) {
+                            if ["pet_deleted", "event_deleted", "reminder_deleted"].contains(data.type) {
                                 let comps = Calendar.current.dateComponents([.year, .month], from: Date())
                                 Task { await calendarStore.fetchMonth(year: comps.year!, month: comps.month!) }
                             }
