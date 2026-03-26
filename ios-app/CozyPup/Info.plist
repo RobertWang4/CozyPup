@@ -42,9 +42,7 @@
 	<string>CozyPup needs microphone access for voice input</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>CozyPup needs photo library access to attach pet photos</string>
-	<key>NSSpeechRecognitionUsageDescription</key>
-	<string>CozyPup uses speech recognition for voice input</string>
-	<key>UILaunchScreen</key>
+<key>UILaunchScreen</key>
 	<dict/>
 	<key>UIRequiresFullScreen</key>
 	<true/>
