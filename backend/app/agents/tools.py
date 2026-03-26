@@ -16,10 +16,10 @@ from app.models import (
     Pet, Reminder, Species,
 )
 
-UPLOAD_DIR = Path(__file__).resolve().parent.parent / "uploads" / "avatars"
+UPLOAD_DIR = Path("/app/uploads/avatars") if Path("/app/uploads").exists() else Path(__file__).resolve().parent.parent / "uploads" / "avatars"
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
-PHOTO_DIR = Path(__file__).resolve().parent.parent / "uploads" / "photos"
+PHOTO_DIR = Path("/app/uploads/photos") if Path("/app/uploads").exists() else Path(__file__).resolve().parent.parent / "uploads" / "photos"
 PHOTO_DIR.mkdir(parents=True, exist_ok=True)
 
 logger = logging.getLogger(__name__)
