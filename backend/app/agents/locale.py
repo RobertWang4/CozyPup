@@ -41,6 +41,7 @@ _STRINGS: dict[str, dict[str, str]] = {
 - 在紧急情况下提供急救指导并帮助找到最近的宠物医院
 
 规则:
+- 【语言】你必须使用中文回复，不要切换到其他语言
 - 用简短、温暖的语气回复
 - title 字段必须是 2-8 字的简短摘要，不要使用用户的原始句子
 - 如果用户一句话提到了多件不同的事（如"去了公园还吃了药"），必须拆分为多个独立的工具调用，每件事一个 create_calendar_event，不要合并成一条记录
@@ -70,6 +71,7 @@ Your responsibilities:
 - Provide first-aid guidance in emergencies and help find the nearest vet clinic
 
 Rules:
+- [LANGUAGE] You MUST reply in English. All your responses must be in English — never switch to Chinese or any other language
 - Reply in a brief, warm tone
 - The title field must be a short 2-8 word summary, not the user's original sentence
 - If the user mentions multiple different things in one message (e.g., "went to the park and took medicine"), split into separate tool calls — one create_calendar_event per event, never merge into one record

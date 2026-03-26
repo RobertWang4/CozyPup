@@ -77,12 +77,16 @@ def _describe_tool_call(fn_name: str, fn_args: dict, pets: list | None = None, l
 MAX_TOOL_ROUNDS = 3
 
 
-_FALLBACK_MSG = "抱歉，处理时遇到了问题，请再说一次。"
+_FALLBACK_MSGS = {
+    "zh": "抱歉，处理时遇到了问题，请再说一次。",
+    "en": "Sorry, something went wrong. Please try again.",
+}
 
 
-async def _ensure_response(result, on_token, fallback: str = _FALLBACK_MSG):
+async def _ensure_response(result, on_token, lang: str = "zh"):
     """Ensure response_text is never empty — stream fallback if needed."""
     if not result.response_text.strip():
+        fallback = _FALLBACK_MSGS.get(lang, _FALLBACK_MSGS["zh"])
         result.response_text = fallback
         if on_token:
             await maybe_await(on_token, fallback)
@@ -201,7 +205,7 @@ async def run_orchestrator(
             tool_calls[0], messages, initial_text, use_model,
             db, user_id, session_id, on_token, on_card, **kwargs,
         )
-        await _ensure_response(result, on_token)
+        await _ensure_response(result, on_token, lang=lang)
         return result
 
     # PATH C: Multi task — parallel executors
@@ -210,7 +214,7 @@ async def run_orchestrator(
         on_token, on_card, today, **kwargs,
     )
 
-    await _ensure_response(result, on_token)
+    await _ensure_response(result, on_token, lang=lang)
 
     return result
 
@@ -636,7 +640,7 @@ async def _handle_multi_task(
         })
 
     if not tasks:
-        await _ensure_response(result, on_token)
+        await _ensure_response(result, on_token, lang=lang)
         return result
 
     # Run executors in parallel
