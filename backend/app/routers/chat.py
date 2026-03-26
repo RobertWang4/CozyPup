@@ -1,10 +1,12 @@
 """Chat SSE endpoint — streams LLM responses to the frontend."""
 
 import asyncio
+import base64
 import json
 import logging
 import uuid
 from datetime import date
+from pathlib import Path
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
@@ -29,6 +31,10 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1", tags=["chat"])
 
 MAX_CONTEXT_MESSAGES = 5
+MAX_IMAGE_CONTEXT_MESSAGES = 3  # max past messages with images to inject into LLM context
+
+PHOTO_DIR = Path(__file__).resolve().parent.parent / "uploads" / "photos"
+PHOTO_DIR.mkdir(parents=True, exist_ok=True)
 
 
 # Background task tracking — prevents garbage collection of fire-and-forget tasks
@@ -97,6 +103,23 @@ async def _get_recent_messages(
     return list(reversed(result.scalars().all()))
 
 
+def _save_images_to_disk(images_b64: list[str]) -> list[str]:
+    """Save base64 images to disk, return URL paths."""
+    urls = []
+    for img_b64 in images_b64:
+        try:
+            image_data = base64.b64decode(img_b64)
+            if len(image_data) > 5 * 1024 * 1024:
+                continue
+            photo_id = uuid.uuid4()
+            filename = f"{photo_id}.jpg"
+            (PHOTO_DIR / filename).write_bytes(image_data)
+            urls.append(f"/api/v1/calendar/photos/{filename}")
+        except Exception:
+            continue
+    return urls
+
+
 async def _save_message(
     db: AsyncSession,
     session_id: uuid.UUID,
@@ -104,6 +127,7 @@ async def _save_message(
     role: MessageRole,
     content: str,
     cards_json: str | None = None,
+    image_urls: list[str] | None = None,
 ) -> Chat:
     msg = Chat(
         id=uuid.uuid4(),
@@ -112,10 +136,44 @@ async def _save_message(
         role=role,
         content=content,
         cards_json=cards_json,
+        image_urls=image_urls,
     )
     db.add(msg)
     await db.commit()
     return msg
+
+
+def _build_context_with_images(context_messages: list[Chat]) -> list[dict]:
+    """Build context message list, injecting images for the most recent N messages that have them."""
+    msgs = []
+    # Count image messages from the end to find the most recent ones
+    image_msg_count = 0
+    image_msg_indices: set[int] = set()
+    for i in range(len(context_messages) - 1, -1, -1):
+        m = context_messages[i]
+        if m.image_urls and image_msg_count < MAX_IMAGE_CONTEXT_MESSAGES:
+            image_msg_indices.add(i)
+            image_msg_count += 1
+
+    for i, m in enumerate(context_messages):
+        if i in image_msg_indices and m.image_urls:
+            # Load images from disk and build multimodal content
+            content_parts: list[dict] = [{"type": "text", "text": m.content}]
+            for url in m.image_urls:
+                # url is like "/api/v1/calendar/photos/xxx.jpg"
+                filename = url.split("/")[-1]
+                filepath = PHOTO_DIR / filename
+                if filepath.exists():
+                    img_b64 = base64.b64encode(filepath.read_bytes()).decode()
+                    content_parts.append({
+                        "type": "image_url",
+                        "image_url": {"url": f"data:image/jpeg;base64,{img_b64}"},
+                    })
+            msgs.append({"role": m.role.value, "content": content_parts})
+        else:
+            msgs.append({"role": m.role.value, "content": m.content})
+
+    return msgs
 
 
 _SENTINEL = object()
@@ -128,8 +186,14 @@ async def _event_generator(
     session = await _get_or_create_session(db, user_id)
     session_id = str(session.id)
 
-    # 2. Save user message
-    await _save_message(db, session.id, user_id, MessageRole.user, request.message)
+    # 2. Save user message (with image URLs if present)
+    saved_image_urls = None
+    if request.images:
+        saved_image_urls = _save_images_to_disk(request.images)
+    await _save_message(
+        db, session.id, user_id, MessageRole.user, request.message,
+        image_urls=saved_image_urls or None,
+    )
 
     # --- Phase 1: Parallel preprocessing ---
 
@@ -182,12 +246,9 @@ async def _event_generator(
         today=today_str,
     )
 
-    # Build messages — Step 1: text only (no images). LLM decides if it needs to see images.
-    # Images are passed separately to orchestrator for tool execution + on-demand viewing.
-    has_images = bool(request.images)
-    recent_msgs = [{"role": m.role.value, "content": m.content} for m in context_messages]
-    image_hint = "\n\n[用户附带了图片。如果你需要查看图片内容才能回答，请调用 request_images 工具。如果只是执行操作（换头像、存日记等），直接调用对应工具即可，图片会自动传给工具。]" if has_images else ""
-    messages = build_messages(recent_msgs, request.message + image_hint, images=None)
+    # Build messages — past images already in context via _build_context_with_images
+    recent_msgs = _build_context_with_images(context_messages)
+    messages = build_messages(recent_msgs, request.message, images=None)
 
     # --- Phase 3: Run orchestrator via queue ---
 
@@ -230,6 +291,29 @@ async def _event_generator(
             await queue.put(_SENTINEL)
 
     task = asyncio.create_task(_run_orchestrator_to_queue())
+
+    # Background: profile extractor (parallel with orchestrator)
+    async def _run_profile_extractor():
+        """Extract profile-worthy info and silently write to DB."""
+        try:
+            from app.agents.profile_extractor import extract_profile_info
+            from app.agents.tools import execute_tool
+            from app.database import async_session as make_session
+
+            extracted = await extract_profile_info(request.message, pets)
+            if extracted:
+                async with make_session() as bg_db:
+                    await execute_tool("update_pet_profile", extracted, bg_db, user_id)
+                    await bg_db.commit()
+                    logger.info("profile_extractor_saved", extra={
+                        "keys": list(extracted["info"].keys()),
+                    })
+        except Exception as e:
+            logger.warning("profile_extractor_bg_error", extra={
+                "error": str(e)[:200],
+            })
+
+    extractor_task = asyncio.create_task(_run_profile_extractor())
 
     result = None
     while True:
@@ -276,6 +360,12 @@ async def _event_generator(
         for card in fallback_cards:
             result.cards.append(card)
             yield {"event": "card", "data": json.dumps(card)}
+
+    # Wait for profile extractor to finish (non-blocking for SSE, already done by now)
+    try:
+        await extractor_task
+    except Exception:
+        pass
 
     # Save assistant response
     all_cards = result.cards + result.confirm_cards
