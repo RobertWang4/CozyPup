@@ -23,7 +23,7 @@ from app.schemas.calendar import (
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1/calendar", tags=["calendar"])
 
-PHOTO_DIR = Path(__file__).resolve().parent.parent / "uploads" / "photos"
+PHOTO_DIR = Path("/app/uploads/photos") if Path("/app/uploads").exists() else Path(__file__).resolve().parent.parent / "uploads" / "photos"
 PHOTO_DIR.mkdir(parents=True, exist_ok=True)
 ALLOWED_TYPES = {"image/jpeg", "image/png", "image/webp"}
 MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
