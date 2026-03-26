@@ -10,6 +10,7 @@ from typing import Callable, Optional
 import litellm
 
 from app.agents.base import BaseAgent
+from app.agents.locale import t
 from app.agents.pending_actions import store_action
 from app.agents.post_processor import execute_suggested_actions, response_claims_action
 from app.agents.pre_processor import SuggestedAction, format_actions_for_prompt, pre_process
@@ -28,7 +29,7 @@ MAX_TOOL_ROUNDS = 5
 CONFIRM_TOOLS = {"delete_pet", "delete_calendar_event", "delete_reminder"}
 
 
-def _describe_tool_call(fn_name: str, fn_args: dict, pets: list | None = None) -> str:
+def _describe_tool_call(fn_name: str, fn_args: dict, pets: list | None = None, lang: str = "zh") -> str:
     """Generate human-readable description from LLM's tool call arguments."""
     def _pet_name(pid: str) -> str:
         if not pets:
@@ -45,35 +46,35 @@ def _describe_tool_call(fn_name: str, fn_args: dict, pets: list | None = None) -
     if fn_name == "update_pet_profile":
         info = fn_args.get("info", {})
         if "name" in info:
-            return f"把{label}名字改为「{info['name']}」"
+            return t("desc_rename", lang).format(label=label, name=info['name'])
         keys = ", ".join(info.keys())
-        return f"更新{label}宠物信息: {keys}"
+        return t("desc_update_pet", lang).format(label=label, keys=keys)
     if fn_name == "create_pet":
-        return f"添加新宠物「{fn_args.get('name', '')}」"
+        return t("desc_create_pet", lang).format(name=fn_args.get('name', ''))
     if fn_name == "delete_pet":
-        return f"删除宠物{label}"
+        return t("desc_delete_pet", lang).format(label=label)
     if fn_name == "create_calendar_event":
         title = fn_args.get("title", "")
         d = fn_args.get("event_date", "")
-        return f"记录「{title}」({d})"
+        return t("desc_create_event", lang).format(title=title, date=d)
     if fn_name == "update_calendar_event":
-        return "修改日历事件"
+        return t("desc_update_event", lang)
     if fn_name == "delete_calendar_event":
-        return "删除日历事件"
+        return t("desc_delete_event", lang)
     if fn_name == "create_reminder":
-        return f"设置提醒: {fn_args.get('title', '')}"
+        return t("desc_create_reminder", lang).format(title=fn_args.get('title', ''))
     if fn_name == "update_reminder":
-        return "修改提醒"
+        return t("desc_update_reminder", lang)
     if fn_name == "delete_reminder":
-        return "删除提醒"
+        return t("desc_delete_reminder", lang)
     if fn_name == "draft_email":
-        return f"草拟邮件: {fn_args.get('subject', '')}"
+        return t("desc_draft_email", lang).format(subject=fn_args.get('subject', ''))
     if fn_name == "save_pet_profile_md":
-        return f"更新{label}个人档案"
+        return t("desc_save_profile", lang).format(label=label)
     if fn_name == "set_pet_avatar":
-        return f"设置{label}头像"
+        return t("desc_set_avatar", lang).format(label=label)
     if fn_name == "upload_event_photo":
-        return "上传事件照片"
+        return t("desc_upload_photo", lang)
     return fn_name
 
 
@@ -112,6 +113,7 @@ class ChatAgent(BaseAgent):
         location = context.get("location")
         system_prompt = context.get("system_prompt", CHAT_SYSTEM_PROMPT)
         pets = context.get("pets", [])
+        lang = context.get("lang", "zh")
 
         # --- Phase 0: Deterministic pre-processing ---
         suggested_actions = pre_process(message, pets)
@@ -214,7 +216,7 @@ class ChatAgent(BaseAgent):
 
                 # --- Confirm gate: only for destructive operations ---
                 if fn_name in CONFIRM_TOOLS and session_id:
-                    description = _describe_tool_call(fn_name, fn_args, pets)
+                    description = _describe_tool_call(fn_name, fn_args, pets, lang=lang)
                     action_id = store_action(
                         user_id=str(user_id),
                         session_id=str(session_id),
@@ -238,7 +240,7 @@ class ChatAgent(BaseAgent):
                         "tool_call_id": tc["id"],
                         "content": json.dumps({
                             "status": "pending_user_confirmation",
-                            "message": "已发送确认卡片给用户，等待用户确认后执行。",
+                            "message": t("confirm_pending", lang),
                         }),
                     })
                     continue

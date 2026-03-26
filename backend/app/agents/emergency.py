@@ -4,6 +4,8 @@ import logging
 import re
 from dataclasses import dataclass
 
+from app.agents.locale import t
+
 logger = logging.getLogger(__name__)
 
 
@@ -88,12 +90,7 @@ def detect_emergency(message: str) -> EmergencyCheckResult:
     return EmergencyCheckResult(detected=bool(unique), keywords=unique)
 
 
-def build_emergency_hint(keywords: list[str]) -> str:
+def build_emergency_hint(keywords: list[str], lang: str = "zh") -> str:
     """Build a prompt hint for the LLM when emergency keywords are detected."""
     kw_str = ", ".join(keywords)
-    return (
-        f"\u26a0\ufe0f 检测到可能的紧急关键词: [{kw_str}].\n"
-        "请仔细判断这是否为真正的宠物紧急情况。\n"
-        "如果是真正的紧急情况（宠物生命受到威胁），请调用 trigger_emergency 工具。\n"
-        "如果用户只是在询问过去的事件、一般性讨论或轻微不适，不要触发紧急操作。"
-    )
+    return t("emergency_hint", lang).format(keywords=kw_str)

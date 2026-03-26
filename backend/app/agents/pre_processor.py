@@ -13,6 +13,8 @@ import uuid
 from dataclasses import dataclass, field
 from datetime import date, datetime, timedelta
 
+from app.agents.locale import t
+
 
 CONFIRM_THRESHOLD = 0.5  # Minimum confidence for confirm card
 
@@ -265,6 +267,7 @@ def pre_process(
     message: str,
     pets: list,
     today: date | None = None,
+    lang: str = "zh",
 ) -> list[SuggestedAction]:
     """Analyze user message and return suggested tool calls with pre-filled arguments.
 
@@ -316,7 +319,7 @@ def pre_process(
                                     "raw_text": message,
                                 },
                                 confidence=confidence,
-                                confirm_description=f"为{pet_name}记录 {category}（{event_date.isoformat()}）",
+                                confirm_description=t("confirm_record_for_pet", lang).format(pet_name=pet_name, category=category, date=event_date.isoformat()),
                             ))
                 elif len(pets) == 1:
                     # Only one pet → assign to that pet
@@ -344,7 +347,7 @@ def pre_process(
                             "raw_text": message,
                         },
                         confidence=confidence,
-                        confirm_description=f"记录 {category}（{event_date.isoformat()}）",
+                        confirm_description=t("confirm_record", lang).format(category=category, date=event_date.isoformat()),
                     ))
 
     # --- Create pet ---
@@ -388,7 +391,7 @@ def pre_process(
                 tool_name="create_pet",
                 arguments=args,
                 confidence=conf,
-                confirm_description=f"添加新宠物「{name}」",
+                confirm_description=t("confirm_add_pet", lang).format(name=name),
             ))
 
     # --- Reminders ---
@@ -418,7 +421,7 @@ def pre_process(
                             "trigger_at": trigger_at,
                         },
                         confidence=confidence,
-                        confirm_description=f"为{pet_name}设置{reminder_type}提醒（{trigger_date.isoformat()}）",
+                        confirm_description=t("confirm_reminder_for_pet", lang).format(pet_name=pet_name, type=reminder_type, date=trigger_date.isoformat()),
                     ))
             else:
                 actions.append(SuggestedAction(
@@ -429,7 +432,7 @@ def pre_process(
                         "trigger_at": trigger_at,
                     },
                     confidence=confidence,
-                    confirm_description=f"设置{reminder_type}提醒（{trigger_date.isoformat()}）",
+                    confirm_description=t("confirm_reminder", lang).format(type=reminder_type, date=trigger_date.isoformat()),
                 ))
             break  # Only match first reminder pattern
 
@@ -440,7 +443,7 @@ def pre_process(
             tool_name="search_places",
             arguments={"query": message[:100]},
             confidence=0.85,
-            confirm_description="搜索附近相关地点",
+            confirm_description=t("confirm_search_places", lang),
         ))
 
     # --- Draft email ---
@@ -449,7 +452,7 @@ def pre_process(
             tool_name="draft_email",
             arguments={"subject": message[:50], "body": message},
             confidence=0.8,
-            confirm_description="草拟邮件",
+            confirm_description=t("confirm_draft_email", lang),
         ))
 
     # --- Summarize pet profile ---
@@ -460,7 +463,7 @@ def pre_process(
                 tool_name="summarize_pet_profile",
                 arguments={"pet_id": pet_id},
                 confidence=0.85,
-                confirm_description=f"生成{pet_name}的档案总结",
+                confirm_description=t("confirm_summarize_profile", lang).format(pet_name=pet_name),
             ))
 
     # --- Set pet avatar ---
@@ -472,7 +475,7 @@ def pre_process(
                 tool_name="set_pet_avatar",
                 arguments={"pet_id": pet_id},
                 confidence=0.85,
-                confirm_description=f"设置{pet_name}的头像",
+                confirm_description=t("confirm_set_avatar", lang).format(pet_name=pet_name),
             ))
 
     # --- Update pet profile ---
@@ -490,15 +493,15 @@ def pre_process(
                     if extracted is not None:
                         # We have a concrete value — can be used for confirm card
                         args = {"pet_id": pet_id, "info": {key: extracted}}
-                        desc = f"把{pet_name}的{key}改为「{extracted}」"
+                        desc = t("confirm_update_pet_key", lang).format(pet_name=pet_name, key=key, value=extracted)
                     elif key in FREE_TEXT_FIELDS:
                         # Free-text: use raw message, keep confidence high
                         args = {"pet_id": pet_id, "info": {key: message[:200]}}
-                        desc = f"更新{pet_name}的{key}"
+                        desc = t("confirm_update_pet", lang).format(pet_name=pet_name, key=key)
                     else:
                         # Structured fields without extractor — need LLM
                         args = {"pet_id": pet_id, "info": {key: message}}
-                        desc = f"更新{pet_name}的{key}"
+                        desc = t("confirm_update_pet", lang).format(pet_name=pet_name, key=key)
                         conf = min(conf, 0.7)
 
                     actions.append(SuggestedAction(
@@ -521,19 +524,19 @@ def get_confirmable_actions(actions: list[SuggestedAction]) -> list[SuggestedAct
     ]
 
 
-def format_actions_for_prompt(actions: list[SuggestedAction]) -> str:
+def format_actions_for_prompt(actions: list[SuggestedAction], lang: str = "zh") -> str:
     """Format high-confidence actions as a system prompt section.
 
     .. deprecated:: Use :func:`format_hints` instead. This function is kept
        for backward compatibility but now delegates to the hint format.
     """
-    hints = format_hints(actions)
+    hints = format_hints(actions, lang=lang)
     if not hints:
         return ""
     return "## Suggested actions (hints)\n" + "\n".join(hints)
 
 
-def format_hints(actions: list[SuggestedAction]) -> list[str]:
+def format_hints(actions: list[SuggestedAction], lang: str = "zh") -> list[str]:
     """Convert suggested actions to hint strings for prompt injection.
 
     Hints are advisory — LLM decides whether to act on them.
@@ -545,5 +548,5 @@ def format_hints(actions: list[SuggestedAction]) -> list[str]:
     for action in actions:
         if action.confidence >= 0.5:
             args_str = json.dumps(action.arguments, ensure_ascii=False)
-            hints.append(f"{action.tool_name}({args_str}) [置信度: {action.confidence:.1f}]")
+            hints.append(f"{action.tool_name}({args_str}) [{t('confidence_label', lang)}: {action.confidence:.1f}]")
     return hints

@@ -63,6 +63,7 @@ async def run_orchestrator(
     Streams text via on_token callback, pushes cards via on_card callback.
     Returns structured result with all cards and executor outputs.
     """
+    lang = kwargs.get("lang", "zh")
     result = OrchestratorResult()
     use_model = model or settings.orchestrator_model
 
@@ -179,6 +180,7 @@ async def _handle_single_task(
     **kwargs,
 ) -> OrchestratorResult:
     """Fast path: orchestrator handles single tool call directly."""
+    lang = kwargs.get("lang", "zh")
     result = OrchestratorResult()
     text_parts = [initial_text] if initial_text else []
 
@@ -231,7 +233,7 @@ async def _handle_single_task(
     # Confirm gate
     if fn_name in CONFIRM_TOOLS:
         if session_id:
-            desc = _describe_tool_call(fn_name, fn_args)
+            desc = _describe_tool_call(fn_name, fn_args, lang=lang)
             action_id = store_action(
                 user_id=str(user_id),
                 session_id=str(session_id),
@@ -311,6 +313,7 @@ async def _handle_request_images_then_continue(
     **kwargs,
 ) -> OrchestratorResult:
     """Handle request_images, then allow LLM to call follow-up tools (e.g. create_calendar_event)."""
+    lang = kwargs.get("lang", "zh")
     result = OrchestratorResult()
     text_parts = [initial_text] if initial_text else []
 
@@ -375,12 +378,12 @@ async def _handle_request_images_then_continue(
                             session_id=str(session_id),
                             tool_name=fn_name,
                             arguments=fn_args,
-                            description=_describe_tool_call(fn_name, fn_args),
+                            description=_describe_tool_call(fn_name, fn_args, lang=lang),
                         )
                         confirm_card = {
                             "type": "confirm_action",
                             "action_id": action_id,
-                            "message": _describe_tool_call(fn_name, fn_args),
+                            "message": _describe_tool_call(fn_name, fn_args, lang=lang),
                         }
                         result.confirm_cards.append(confirm_card)
                         if on_card:
@@ -445,6 +448,7 @@ async def _handle_multi_task(
     **kwargs,
 ) -> OrchestratorResult:
     """Multi-task path: dispatch parallel executors."""
+    lang = kwargs.get("lang", "zh")
     result = OrchestratorResult()
     result.response_text = initial_text or ""
 

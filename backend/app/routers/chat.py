@@ -15,6 +15,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sse_starlette.sse import EventSourceResponse
 
 from app.agents.emergency import build_emergency_hint, detect_emergency
+from app.agents.locale import detect_language
 from app.agents.orchestrator import run_orchestrator
 from app.agents.pending_actions import pop_action
 from app.agents.post_processor import response_claims_action, execute_suggested_actions
@@ -202,8 +203,9 @@ async def _event_generator(
     await db.refresh(session)  # ensure context_summary is loaded
 
     # Stage 2: Sync operations (fast, no await needed)
+    lang = request.language or detect_language(request.message)
     emergency_result = detect_emergency(request.message)
-    suggested_actions = pre_process(request.message, pets)
+    suggested_actions = pre_process(request.message, pets, lang=lang)
 
     if emergency_result.detected:
         logger.info("emergency_keywords_detected", extra={
@@ -219,7 +221,7 @@ async def _event_generator(
 
     # Build emergency hint
     emergency_hint = (
-        build_emergency_hint(emergency_result.keywords)
+        build_emergency_hint(emergency_result.keywords, lang=lang)
         if emergency_result.detected
         else None
     )
@@ -244,6 +246,7 @@ async def _event_generator(
         emergency_hint=emergency_hint,
         preprocessor_hints=preprocessor_hints if preprocessor_hints else None,
         today=today_str,
+        lang=lang,
     )
 
     # Build messages — past images already in context via _build_context_with_images
@@ -276,6 +279,7 @@ async def _event_generator(
                 today=today_str,
                 location=request.location,
                 images=request.images,
+                lang=lang,
             )
             await queue.put(("_result", result))
         except Exception as e:
@@ -297,7 +301,7 @@ async def _event_generator(
         """Extract profile-worthy info via LLM (no DB access)."""
         try:
             from app.agents.profile_extractor import extract_profile_info
-            return await extract_profile_info(request.message, pets)
+            return await extract_profile_info(request.message, pets, lang=lang)
         except Exception as e:
             logger.warning("profile_extractor_bg_error", extra={"error": str(e)[:200]})
             return None
@@ -376,7 +380,7 @@ async def _event_generator(
     from app.database import async_session
     async def _summarize_bg():
         async with async_session() as bg_db:
-            await trigger_summary_if_needed(session.id, bg_db)
+            await trigger_summary_if_needed(session.id, bg_db, lang=lang)
     _track_task(_summarize_bg())
 
     # Done event

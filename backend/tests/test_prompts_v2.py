@@ -6,8 +6,8 @@ from unittest.mock import patch
 
 import pytest
 
+from app.agents.locale import t
 from app.agents.prompts_v2 import (
-    BASE_SYSTEM_PROMPT,
     build_messages,
     build_system_prompt,
     _build_pet_context,
@@ -30,6 +30,7 @@ def _make_pet(**overrides):
         id="pet-001",
         name="豆豆",
         species=FakeSpecies("dog"),
+        species_locked=False,
         breed="柴犬",
         weight=10.5,
         birthday=date(2023, 6, 15),
@@ -120,7 +121,7 @@ class TestPetContext:
     def test_profile_md_included(self):
         pet = _make_pet(profile_md="# 豆豆档案\n性格活泼")
         ctx = _build_pet_context([pet])
-        assert "豆豆 的档案" in ctx
+        assert "豆豆的档案" in ctx
         assert "性格活泼" in ctx
 
     def test_profile_json_fallback(self):
@@ -246,10 +247,7 @@ class TestBuildMessages:
         import base64
 
         fake_img = base64.b64encode(b"fake-image-data").decode()
-
-        with patch("app.config.settings") as mock_settings:
-            mock_settings.server_public_url = "http://localhost:8000"
-            msgs = build_messages([], "看看这张照片", images=[fake_img])
+        msgs = build_messages([], "看看这张照片", images=[fake_img])
 
         assert len(msgs) == 1
         content = msgs[0]["content"]
@@ -257,16 +255,13 @@ class TestBuildMessages:
         assert content[0]["type"] == "text"
         assert content[0]["text"] == "看看这张照片"
         assert content[1]["type"] == "image_url"
-        assert "http://localhost:8000/temp-images/" in content[1]["image_url"]["url"]
+        assert "data:image/jpeg;base64," in content[1]["image_url"]["url"]
 
     def test_multiple_images(self):
         import base64
 
         fake_img = base64.b64encode(b"img").decode()
-
-        with patch("app.config.settings") as mock_settings:
-            mock_settings.server_public_url = "http://localhost:8000"
-            msgs = build_messages([], "两张照片", images=[fake_img, fake_img])
+        msgs = build_messages([], "两张照片", images=[fake_img, fake_img])
 
         content = msgs[0]["content"]
         assert len(content) == 3  # 1 text + 2 images

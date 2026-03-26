@@ -12,6 +12,7 @@ from dataclasses import dataclass, field
 import litellm
 
 from app.agents import llm_extra_kwargs
+from app.agents.locale import t
 from app.config import settings
 from app.agents.tools import TOOL_DEFINITIONS, execute_tool
 from app.agents.validation import validate_tool_args
@@ -19,16 +20,6 @@ from app.agents.validation import validate_tool_args
 logger = logging.getLogger(__name__)
 
 CONFIRM_TOOLS = {"delete_pet", "delete_calendar_event", "delete_reminder"}
-
-EXECUTOR_SYSTEM_PROMPT = """你是一个工具执行助手。你的任务是根据用户的请求调用合适的工具。
-
-规则:
-1. 仔细分析任务描述，选择正确的工具
-2. 填写完整准确的参数
-3. title 字段必须是 2-8 字的简短摘要
-4. 只调用一个工具，不要多次调用
-5. 如果任务不需要工具，返回空内容
-6. 【禁止捏造】只传任务描述中明确提到的字段值，绝对不要自己发明数据（如体重、生日等）。同时，任务描述中提到的每个信息都必须传到参数里，不能遗漏"""
 
 
 @dataclass
@@ -51,6 +42,7 @@ async def run_executor(
     db=None,
     user_id=None,
     today: str = "",
+    lang: str = "zh",
     **kwargs,
 ) -> ExecutorResult:
     """
@@ -63,13 +55,14 @@ async def run_executor(
         db: Database session for tool execution
         user_id: User ID for ownership checks
         today: Today's date string (YYYY-MM-DD)
+        lang: Language code for i18n ("zh" or "en")
 
     Returns:
         ExecutorResult with structured data
     """
     # Filter tools if specified
     if available_tools:
-        tools = [t for t in TOOL_DEFINITIONS if t["function"]["name"] in available_tools]
+        tools = [td for td in TOOL_DEFINITIONS if td["function"]["name"] in available_tools]
     else:
         tools = TOOL_DEFINITIONS
 
@@ -77,12 +70,12 @@ async def run_executor(
         return ExecutorResult(success=False, error="No matching tools available")
 
     # Build minimal messages
-    user_content = f"今天日期: {today}\n\n任务: {task_description}"
+    user_content = f"{t('executor_date_label', lang)}: {today}\n\n{t('executor_task_label', lang)}: {task_description}"
     if context:
-        user_content += f"\n\n上下文: {context}"
+        user_content += f"\n\n{t('executor_context_label', lang)}: {context}"
 
     messages = [
-        {"role": "system", "content": EXECUTOR_SYSTEM_PROMPT},
+        {"role": "system", "content": t("executor_system_prompt", lang)},
         {"role": "user", "content": user_content},
     ]
 
@@ -105,7 +98,7 @@ async def run_executor(
             # LLM decided no tool needed
             return ExecutorResult(
                 success=True,
-                summary=message.content or "任务不需要工具执行",
+                summary=message.content or t("executor_no_tool", lang),
             )
 
         # Process first tool call only
@@ -173,7 +166,7 @@ async def run_executor(
                 needs_confirm=True,
                 tool=fn_name,
                 arguments=fn_args,
-                description=f"确认执行: {fn_name}",
+                description=f"{t('executor_confirm', lang)}: {fn_name}",
             )
 
         # Execute tool
@@ -194,7 +187,7 @@ async def run_executor(
             tool=fn_name,
             arguments=fn_args,
             card=card,
-            summary=f"已执行 {fn_name}",
+            summary=f"{t('executor_done', lang)} {fn_name}",
         )
 
     except Exception as exc:

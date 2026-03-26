@@ -8,42 +8,26 @@ from datetime import datetime
 
 import litellm
 
+from app.agents.locale import t
 from app.config import settings
 
 logger = logging.getLogger(__name__)
-
-SUMMARY_PROMPT = """你是一个对话摘要助手。请将以下对话历史压缩为结构化摘要。
-
-要求:
-1. 提取关键话题和事实
-2. 记录未完成的事项
-3. 捕捉用户的情绪状态
-4. 保留重要的具体信息（数字、日期、宠物名等）
-
-输出 JSON 格式:
-{
-  "topics": ["话题1", "话题2"],
-  "pending": "未完成的事项描述，如果没有则为null",
-  "mood": "用户情绪描述",
-  "key_facts": ["事实1", "事实2", ...]
-}
-
-只输出 JSON，不要其他内容。"""
 
 
 async def summarize_context(
     messages: list[dict],
     previous_summary: dict | None = None,
+    lang: str = "zh",
 ) -> dict:
     """Call cheap LLM to summarize messages into structured format."""
 
     user_content = ""
     if previous_summary:
-        user_content += f"上次摘要:\n{json.dumps(previous_summary, ensure_ascii=False)}\n\n"
+        user_content += f"{t('previous_summary_label', lang)}:\n{json.dumps(previous_summary, ensure_ascii=False)}\n\n"
 
-    user_content += "新的对话记录:\n"
+    user_content += f"{t('new_messages_label', lang)}:\n"
     for msg in messages:
-        role = "用户" if msg.get("role") == "user" else "助手"
+        role = t("role_user", lang) if msg.get("role") == "user" else t("role_assistant", lang)
         content = msg.get("content", "")
         if isinstance(content, list):  # multimodal message
             content = " ".join(
@@ -57,7 +41,7 @@ async def summarize_context(
         response = await litellm.acompletion(
             model=settings.context_model,
             messages=[
-                {"role": "system", "content": SUMMARY_PROMPT},
+                {"role": "system", "content": t("summary_system_prompt", lang)},
                 {"role": "user", "content": user_content},
             ],
             temperature=0.1,
@@ -103,6 +87,7 @@ async def trigger_summary_if_needed(
     session_id,
     db,
     threshold: int = 5,
+    lang: str = "zh",
 ):
     """
     Check if summary is needed and run it async (non-blocking).
@@ -146,7 +131,7 @@ async def trigger_summary_if_needed(
 
     # Summarize
     previous = session.context_summary
-    summary = await summarize_context(messages, previous)
+    summary = await summarize_context(messages, previous, lang=lang)
 
     # Update session
     session.context_summary = summary
