@@ -26,9 +26,7 @@ actor APIClient {
         guard !path.isEmpty else { return nil }
         // path is like "/api/v1/pets/{id}/avatar", baseURL already has "/api/v1"
         let base = baseURL.replacingOccurrences(of: "/api/v1", with: "")
-        // Cache-busting: iOS caches images by URL, so append timestamp to force reload after avatar update
-        let ts = Int(Date().timeIntervalSince1970)
-        return URL(string: "\(base)\(path)?t=\(ts)")
+        return URL(string: "\(base)\(path)")
     }
 
     // MARK: - Token management

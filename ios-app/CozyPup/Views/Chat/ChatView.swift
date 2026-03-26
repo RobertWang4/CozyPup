@@ -20,6 +20,7 @@ struct ChatView: View {
     @State private var scrollOffset: CGFloat = 0
     @State private var contentHeight: CGFloat = 0
     @State private var containerHeight: CGFloat = 0
+    @State private var fullScreenImage: UIImage?
 
     private var drawerWidth: CGFloat { UIScreen.main.bounds.width * 0.90 }
 
@@ -229,6 +230,18 @@ struct ChatView: View {
             if !val {
                 settingsDrag = 0
                 settingsDeepLinkPetId = nil
+            }
+        }
+        .fullScreenCover(isPresented: Binding(
+            get: { fullScreenImage != nil },
+            set: { if !$0 { fullScreenImage = nil } }
+        )) {
+            if let img = fullScreenImage {
+                FullScreenImageViewer(image: img) {
+                    fullScreenImage = nil
+                }
+                .ignoresSafeArea()
+                .presentationBackground(.clear)
             }
         }
         .task {
@@ -511,8 +524,11 @@ struct ChatView: View {
                         if case .petCreated = c {
                             Task { await petStore.fetchFromAPI() }
                         }
-                        if case .petUpdated = c {
+                        if case .petUpdated(let data) = c {
                             Task { await petStore.fetchFromAPI() }
+                            if data.saved_keys?.contains("avatar") == true {
+                                petStore.avatarRevision += 1
+                            }
                         }
                         if case .setLanguage(let data) = c {
                             Lang.shared.code = data.language
@@ -693,6 +709,7 @@ struct ChatView: View {
                         .scaledToFill()
                         .frame(width: size, height: size)
                         .clipShape(RoundedRectangle(cornerRadius: Tokens.radiusSmall))
+                        .onTapGesture { fullScreenImage = img }
                         .contextMenu {
                             Button {
                                 UIPasteboard.general.image = img
