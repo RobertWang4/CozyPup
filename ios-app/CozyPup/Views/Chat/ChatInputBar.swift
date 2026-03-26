@@ -211,9 +211,8 @@ struct ChatInputBar: View {
         for item in items {
             guard pendingPhotos.count < maxPhotos else { break }
             if let data = try? await item.loadTransferable(type: Data.self) {
-                // Compress to JPEG
                 if let uiImage = UIImage(data: data),
-                   let jpeg = uiImage.jpegData(compressionQuality: 0.7) {
+                   let jpeg = uiImage.resizedForUpload().jpegData(compressionQuality: 0.7) {
                     await MainActor.run { pendingPhotos.append(jpeg) }
                 }
             }

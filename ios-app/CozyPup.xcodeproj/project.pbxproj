@@ -36,7 +36,9 @@
 		AA975912E3F04EB8812D4212 /* CustomScrollIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomScrollIndicator.swift; sourceTree = "<group>"; };
 		B1C2D3E4F5A6B7C8D9E0F1A2 /* PinchGestureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2D3E4F5A6B7C8D9E0F1A2B3 /* PinchGestureView.swift */; };
 		D4E5F6A7B8C9D0E1F2A3B4C5 /* PhotoCropSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5F6A7B8C9D0E1F2A3B4C5D6 /* PhotoCropSheet.swift */; };
+		619BD69CA685E555621478E4 /* UIImage+Resize.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABD7C0E0AE37422A5D8F7209 /* UIImage+Resize.swift */; };
 		E5F6A7B8C9D0E1F2A3B4C5D6 /* PhotoCropSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCropSheet.swift; sourceTree = "<group>"; };
+		ABD7C0E0AE37422A5D8F7209 /* UIImage+Resize.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Resize.swift"; sourceTree = "<group>"; };
 		ACC8DEDAA3BCE7642D22C250 /* ChatStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50750BC93A661BAE576D418E /* ChatStore.swift */; };
 		B0BE23343ADC65DAF3EEF9A3 /* AuthStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 913C15A464B82E869A8EA6E8 /* AuthStore.swift */; };
 		B26546A329CCAA0E29AF43B5 /* ConfirmActionCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDD76A395C37067B90C0DFD7 /* ConfirmActionCard.swift */; };
@@ -239,6 +241,14 @@
 			path = Shared;
 			sourceTree = "<group>";
 		};
+		E43759F296C9BC21C81E1C1B /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				ABD7C0E0AE37422A5D8F7209 /* UIImage+Resize.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
 		AB05AA687060A2ADDA2BA81E /* Settings */ = {
 			isa = PBXGroup;
 			children = (
@@ -260,6 +270,7 @@
 				B4F5C5C94DD235615FE4F6D9 /* Chat */,
 				AB05AA687060A2ADDA2BA81E /* Settings */,
 				A1AD7054EED742146144B174 /* Shared */,
+				E43759F296C9BC21C81E1C1B /* Extensions */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -424,7 +435,8 @@
 				C71076A367C99C70DB2FA10D /* Tokens.swift in Sources */,
 				600AE8F5403DCE039100D03C /* TypingIndicator.swift in Sources */,
 				B88F419864D7ACC602B34023 /* VoiceInputOverlay.swift in Sources */,
-			);
+			
+				619BD69CA685E555621478E4 /* UIImage+Resize.swift in Sources */,);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
