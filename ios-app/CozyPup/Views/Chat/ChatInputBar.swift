@@ -167,7 +167,9 @@ struct ChatInputBar: View {
                         // Mic button (always available when no text)
                         Button {
                             Haptics.light()
-                            withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                            // Dismiss keyboard first, then switch to voice mode smoothly
+                            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                            withAnimation(.spring(response: 0.4, dampingFraction: 0.85)) {
                                 voiceMode = true
                             }
                         } label: {

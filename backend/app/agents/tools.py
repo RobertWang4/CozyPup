@@ -851,6 +851,18 @@ async def _create_pet(
     """Create a new pet profile."""
     name = arguments["name"]
     species = Species(arguments["species"])
+
+    # Check for duplicate pet name
+    dup_result = await db.execute(
+        select(Pet).where(Pet.user_id == user_id, func.lower(Pet.name) == name.lower())
+    )
+    existing_pet = dup_result.scalar_one_or_none()
+    if existing_pet:
+        return {
+            "error": f"用户已经有一只叫 {name} 的宠物 (pet_id: {existing_pet.id})。"
+                     f"请使用 update_pet_profile 来更新它的信息，不要重复创建。",
+            "existing_pet_id": str(existing_pet.id),
+        }
     breed = arguments.get("breed", "")
     birthday_str = arguments.get("birthday")
     weight = arguments.get("weight")

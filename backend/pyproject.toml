@@ -15,7 +15,7 @@ dependencies = [
     "pyjwt>=2.9.0",
     "httpx>=0.28.0",
     "python-jose[cryptography]>=3.3.0",
-    "litellm>=1.50.0",
+    "litellm>=1.50.0,!=1.82.7,!=1.82.8",
     "python-multipart>=0.0.9",
     "pgvector>=0.3.0",
 ]

@@ -146,6 +146,11 @@ async def run_orchestrator(
             tool_calls[0], messages, initial_text, use_model,
             db, user_id, session_id, on_token, on_card, **kwargs,
         )
+        if not result.response_text.strip():
+            fallback = "抱歉，处理时遇到了问题，请再说一次。"
+            result.response_text = fallback
+            if on_token:
+                await _maybe_await(on_token, fallback)
         return result
 
     # PATH C: Multi task — parallel executors
@@ -153,6 +158,14 @@ async def run_orchestrator(
         tool_calls, initial_text, use_model, db, user_id, session_id,
         on_token, on_card, today, **kwargs,
     )
+
+    # Final safeguard: never return empty response
+    if not result.response_text.strip():
+        fallback = "抱歉，处理时遇到了问题，请再说一次。"
+        result.response_text = fallback
+        if on_token:
+            await _maybe_await(on_token, fallback)
+
     return result
 
 
@@ -451,6 +464,11 @@ async def _handle_multi_task(
         })
 
     if not tasks:
+        if not result.response_text.strip():
+            fallback = "抱歉，我没能理解你的请求，请再试一次。"
+            result.response_text = fallback
+            if on_token:
+                await _maybe_await(on_token, fallback)
         return result
 
     # Run executors in parallel

@@ -195,6 +195,29 @@ Add `.weight(.semibold)` etc. as needed: `Tokens.fontBody.weight(.semibold)`
 7. **Extract reusable views** when used 2+ times (not prematurely)
 8. AI-generated iOS code quality is lower than web — review more carefully
 
+## Deployment
+
+**Server**: Oracle Cloud VM, Docker Compose
+
+```bash
+# SSH
+ssh -i ~/Projects/OracleCloud/ssh-key-2026-03-12.key ubuntu@168.138.75.153
+
+# Project path on server
+/home/ubuntu/cozypup/backend
+
+# Deploy (from local machine)
+git push origin main
+ssh -i ~/Projects/OracleCloud/ssh-key-2026-03-12.key ubuntu@168.138.75.153 \
+  "cd /home/ubuntu/cozypup && git pull && cd backend && docker compose up -d --build"
+
+# Server logs
+ssh -i ~/Projects/OracleCloud/ssh-key-2026-03-12.key ubuntu@168.138.75.153 \
+  "cd /home/ubuntu/cozypup/backend && docker compose logs --tail 50 backend"
+```
+
+**Public URL**: `http://168.138.75.153:8000`
+
 ## Environment
 
 Backend `.env` requires: `DATABASE_URL` (Neon PostgreSQL), `JWT_SECRET`, `MODEL_API_BASE`, `MODEL_API_KEY`. See `.env.example`.
