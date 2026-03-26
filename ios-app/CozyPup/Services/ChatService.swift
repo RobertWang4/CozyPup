@@ -23,8 +23,9 @@ enum SSEEvent {
 class ChatService {
     static func streamChat(message: String, sessionId: String?,
                            location: (lat: Double, lng: Double)?,
-                           images: [Data] = []) -> AsyncThrowingStream<SSEEvent, Error> {
-        let lang = UserDefaults.standard.string(forKey: "cozypup_language") ?? "zh"
+                           images: [Data] = [],
+                           detectedLanguage: String? = nil) -> AsyncThrowingStream<SSEEvent, Error> {
+        let lang = detectedLanguage ?? UserDefaults.standard.string(forKey: "cozypup_language") ?? "zh"
         let base64Images: [String]? = images.isEmpty ? nil : images.map { $0.base64EncodedString() }
         return AsyncThrowingStream { continuation in
             Task {

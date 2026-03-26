@@ -17,6 +17,7 @@ struct ChatView: View {
     @State private var settingsDrag: CGFloat = 0
     @State private var voiceDragOffset: CGFloat = 0
     @State private var pendingPhotos: [Data] = []
+    @State private var voiceDetectedLanguage: String?
     @State private var scrollOffset: CGFloat = 0
     @State private var contentHeight: CGFloat = 0
     @State private var containerHeight: CGFloat = 0
@@ -510,8 +511,9 @@ struct ChatView: View {
             let loc = coord.map { (lat: $0.latitude, lng: $0.longitude) }
             let stream = ChatService.streamChat(
                 message: text, sessionId: chatStore.sessionId, location: loc,
-                images: photos
+                images: photos, detectedLanguage: voiceDetectedLanguage
             )
+            voiceDetectedLanguage = nil
 
             do {
                 for try await event in stream {
@@ -695,9 +697,11 @@ struct ChatView: View {
         guard speech.isListening else { return }
         Haptics.light()
         let text = speech.transcript.trimmingCharacters(in: .whitespaces)
+        let lang = speech.detectedLanguage
         speech.stopListening()
         if !text.isEmpty {
             inputText = text
+            voiceDetectedLanguage = lang.isEmpty ? nil : lang
             sendMessage()
         }
     }
