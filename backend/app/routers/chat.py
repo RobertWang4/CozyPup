@@ -292,28 +292,17 @@ async def _event_generator(
 
     task = asyncio.create_task(_run_orchestrator_to_queue())
 
-    # Background: profile extractor (parallel with orchestrator)
-    async def _run_profile_extractor():
-        """Extract profile-worthy info and silently write to DB."""
+    # Background: profile extractor (LLM call runs parallel, DB write deferred)
+    async def _run_profile_extractor_llm():
+        """Extract profile-worthy info via LLM (no DB access)."""
         try:
             from app.agents.profile_extractor import extract_profile_info
-            from app.agents.tools import execute_tool
-            from app.database import async_session as make_session
-
-            extracted = await extract_profile_info(request.message, pets)
-            if extracted:
-                async with make_session() as bg_db:
-                    await execute_tool("update_pet_profile", extracted, bg_db, user_id)
-                    await bg_db.commit()
-                    logger.info("profile_extractor_saved", extra={
-                        "keys": list(extracted["info"].keys()),
-                    })
+            return await extract_profile_info(request.message, pets)
         except Exception as e:
-            logger.warning("profile_extractor_bg_error", extra={
-                "error": str(e)[:200],
-            })
+            logger.warning("profile_extractor_bg_error", extra={"error": str(e)[:200]})
+            return None
 
-    extractor_task = asyncio.create_task(_run_profile_extractor())
+    extractor_task = asyncio.create_task(_run_profile_extractor_llm())
 
     result = None
     while True:
@@ -361,11 +350,18 @@ async def _event_generator(
             result.cards.append(card)
             yield {"event": "card", "data": json.dumps(card)}
 
-    # Wait for profile extractor to finish (non-blocking for SSE, already done by now)
+    # Wait for profile extractor LLM call to finish, then write to DB
     try:
-        await extractor_task
-    except Exception:
-        pass
+        extracted = await extractor_task
+        if extracted:
+            from app.agents.tools import execute_tool
+            await execute_tool("update_pet_profile", extracted, db, user_id)
+            await db.commit()
+            logger.info("profile_extractor_saved", extra={
+                "keys": list(extracted["info"].keys()),
+            })
+    except Exception as e:
+        logger.warning("profile_extractor_save_error", extra={"error": str(e)[:200]})
 
     # Save assistant response
     all_cards = result.cards + result.confirm_cards
