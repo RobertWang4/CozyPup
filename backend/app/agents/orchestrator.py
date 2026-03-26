@@ -17,7 +17,7 @@ import litellm
 from app.agents import llm_extra_kwargs
 from app.config import settings
 from app.agents.executor import run_executor, ExecutorResult
-from app.agents.tools import TOOL_DEFINITIONS, execute_tool
+from app.agents.tools import TOOL_DEFINITIONS, execute_tool, get_tool_definitions
 from app.agents.validation import validate_tool_args
 from app.agents.pending_actions import store_action
 from app.agents.chat_agent import _describe_tool_call
@@ -66,6 +66,7 @@ async def run_orchestrator(
     lang = kwargs.get("lang", "zh")
     result = OrchestratorResult()
     use_model = model or settings.orchestrator_model
+    tool_defs = get_tool_definitions(lang)
 
     # Build messages
     messages = [{"role": "system", "content": system_prompt}]
@@ -79,7 +80,7 @@ async def run_orchestrator(
         response = await litellm.acompletion(
             model=use_model,
             messages=messages,
-            tools=TOOL_DEFINITIONS,
+            tools=tool_defs,
             tool_choice="auto",
             temperature=0.3,
             stream=True,
@@ -209,7 +210,7 @@ async def _handle_single_task(
 
         # Retry with streaming
         retry_text, retry_tools = await _stream_completion(
-            messages, model, on_token
+            messages, model, on_token, lang=lang
         )
 
         if retry_tools:
@@ -329,7 +330,7 @@ async def _handle_single_task(
 
             # Get follow-up — may include more tool calls
             followup_text, followup_tools = await _stream_completion(
-                messages, model, on_token
+                messages, model, on_token, lang=lang
             )
             text_parts.append(followup_text)
 
@@ -444,7 +445,7 @@ async def _handle_request_images_then_continue(
         })
 
     # Follow-up: LLM sees the image and may call tools (e.g. create_calendar_event)
-    followup_text, followup_tools = await _stream_completion(messages, model, on_token)
+    followup_text, followup_tools = await _stream_completion(messages, model, on_token, lang=lang)
     text_parts.append(followup_text)
 
     # If LLM wants to call tools after seeing the image, execute them
@@ -526,9 +527,36 @@ async def _handle_request_images_then_continue(
                             "content": json.dumps({"error": str(exc)}),
                         })
 
-            # Generate final summary after tool execution
-            final_text, _ = await _stream_completion(messages, model, on_token)
+            # Generate final summary — may include more tool calls
+            final_text, final_tools = await _stream_completion(messages, model, on_token, lang=lang)
             text_parts.append(final_text)
+
+            # Execute any follow-up tools after image viewing
+            if final_tools and db and user_id:
+                for ft in final_tools:
+                    ft_name = ft["function"]["name"]
+                    try:
+                        ft_args = json.loads(ft["function"]["arguments"])
+                    except json.JSONDecodeError:
+                        continue
+                    if ft_name in CONFIRM_TOOLS and session_id:
+                        desc = _describe_tool_call(ft_name, ft_args, lang=lang)
+                        aid = store_action(user_id=str(user_id), session_id=str(session_id),
+                                           tool_name=ft_name, arguments=ft_args, description=desc)
+                        cc = {"type": "confirm_action", "action_id": aid, "message": desc}
+                        result.confirm_cards.append(cc)
+                        if on_card:
+                            await _maybe_await(on_card, cc)
+                        continue
+                    try:
+                        tr = await execute_tool(ft_name, ft_args, db, user_id, **kwargs)
+                        await db.commit()
+                        if tr.get("card"):
+                            result.cards.append(tr["card"])
+                            if on_card:
+                                await _maybe_await(on_card, tr["card"])
+                    except Exception as exc:
+                        logger.error("image_followup_extra_error", extra={"tool": ft_name, "error": str(exc)[:200]})
 
     result.response_text = "".join(text_parts)
     return result
@@ -635,7 +663,8 @@ async def _handle_multi_task(
             *[{"role": "system", "content": "用简短温暖的语气总结操作结果，不要列出工具名称。"}],
             {"role": "user", "content": summary_prompt},
         ]
-        followup_text, _ = await _stream_completion(followup_msgs, model, on_token)
+        # Summary-only call — tool_calls intentionally discarded (all tools already executed)
+        followup_text, _ = await _stream_completion(followup_msgs, model, on_token, lang=lang)
         result.response_text += followup_text
 
     return result
@@ -645,6 +674,7 @@ async def _stream_completion(
     messages: list[dict],
     model: str,
     on_token=None,
+    lang: str = "zh",
 ) -> tuple[str, list[dict]]:
     """Stream a completion, return (text, tool_calls)."""
     text_parts = []
@@ -653,7 +683,7 @@ async def _stream_completion(
     response = await litellm.acompletion(
         model=model,
         messages=messages,
-        tools=TOOL_DEFINITIONS,
+        tools=get_tool_definitions(lang),
         tool_choice="auto",
         temperature=0.3,
         **llm_extra_kwargs(),
