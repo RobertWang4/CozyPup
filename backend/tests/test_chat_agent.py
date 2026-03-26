@@ -72,19 +72,20 @@ async def test_pet(db: AsyncSession, test_user):
 class TestToolDefinitions:
     def test_definitions_are_list(self):
         assert isinstance(TOOL_DEFINITIONS, list)
-        assert len(TOOL_DEFINITIONS) == 19
+        assert len(TOOL_DEFINITIONS) == 21
 
     def test_all_tool_names(self):
-        names = [t["function"]["name"] for t in TOOL_DEFINITIONS]
+        names = [td["function"]["name"] for td in TOOL_DEFINITIONS]
         expected = [
             "create_calendar_event", "query_calendar_events",
             "update_calendar_event",
             "create_pet", "update_pet_profile", "save_pet_profile_md",
-            "list_pets",
+            "summarize_pet_profile", "list_pets",
             "create_reminder", "search_places", "draft_email",
             "delete_pet", "delete_calendar_event", "list_reminders",
             "update_reminder", "delete_reminder", "upload_event_photo",
             "set_language", "set_pet_avatar", "trigger_emergency",
+            "request_images",
         ]
         assert names == expected
 

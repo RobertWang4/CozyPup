@@ -107,9 +107,9 @@ def _build_pet_context(pets: list, lang: str = "zh") -> str:
         info = [f"- **{name}** (id: {pet_id}): {species_val}"]
 
         # Show locked field status
-        profile = p.profile if hasattr(p, "profile") else p.get("profile")
+        profile = p.profile if hasattr(p, "profile") else (p.get("profile") if hasattr(p, "get") else None)
         profile_dict = profile if isinstance(profile, dict) else {}
-        species_locked = p.species_locked if hasattr(p, "species_locked") else p.get("species_locked", False)
+        species_locked = p.species_locked if hasattr(p, "species_locked") else (p.get("species_locked", False) if hasattr(p, "get") else False)
         gender = profile_dict.get("gender")
         gender_locked = profile_dict.get("gender_locked", False)
         if gender:

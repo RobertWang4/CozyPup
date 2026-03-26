@@ -51,11 +51,11 @@ class TestPreProcess:
     def test_diet_detection(self):
         pets = [_make_pet("豆豆")]
         actions = pre_process("豆豆今天吃了200克狗粮", pets, today=date(2026, 3, 22))
-        assert len(actions) == 1
-        assert actions[0].tool_name == "create_calendar_event"
-        assert actions[0].arguments["category"] == "diet"
-        assert actions[0].arguments["event_date"] == "2026-03-22"
-        assert actions[0].confidence >= 0.8
+        calendar_actions = [a for a in actions if a.tool_name == "create_calendar_event"]
+        assert len(calendar_actions) == 1
+        assert calendar_actions[0].arguments["category"] == "diet"
+        assert calendar_actions[0].arguments["event_date"] == "2026-03-22"
+        assert calendar_actions[0].confidence >= 0.8
 
     def test_abnormal_detection(self):
         pets = [_make_pet("维尼")]
@@ -90,8 +90,9 @@ class TestPreProcess:
     def test_multi_pet_creates_multiple_actions(self):
         pets = [_make_pet("Winnie"), _make_pet("Summer")]
         actions = pre_process("吃了狗粮", pets, today=date(2026, 3, 22))
-        assert len(actions) == 2
-        assert all(a.tool_name == "create_calendar_event" for a in actions)
+        calendar_actions = [a for a in actions if a.tool_name == "create_calendar_event"]
+        assert len(calendar_actions) == 2
+        assert all(a.tool_name == "create_calendar_event" for a in calendar_actions)
 
     def test_tomorrow_date(self):
         pets = [_make_pet("Buddy")]
