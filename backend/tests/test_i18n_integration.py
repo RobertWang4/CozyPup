@@ -1,7 +1,6 @@
 import re
 from app.agents.locale import t, detect_language
 from app.agents.prompts_v2 import build_system_prompt
-from app.agents.tool_guide import get_tool_decision_tree
 from app.agents.emergency import build_emergency_hint
 from app.agents.tools import get_tool_definitions
 
@@ -27,7 +26,7 @@ def test_english_system_prompt_has_key_content():
 
 
 def test_tool_decision_tree_english():
-    tree = get_tool_decision_tree("en")
+    tree = t("tool_decision_tree", "en")
     assert "Tool Selection Guide" in tree
     assert "工具选择指南" not in tree
 

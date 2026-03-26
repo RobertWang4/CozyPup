@@ -39,7 +39,7 @@ async def summarize_context(
     try:
         from app.agents import llm_extra_kwargs
         response = await litellm.acompletion(
-            model=settings.context_model,
+            model=settings.model,
             messages=[
                 {"role": "system", "content": t("summary_system_prompt", lang)},
                 {"role": "user", "content": user_content},

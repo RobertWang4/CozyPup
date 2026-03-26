@@ -15,17 +15,77 @@ from typing import Callable, Awaitable
 import litellm
 
 from app.agents import llm_extra_kwargs
+from app.agents.constants import CONFIRM_TOOLS, maybe_await
 from app.config import settings
 from app.agents.executor import run_executor, ExecutorResult
-from app.agents.tools import TOOL_DEFINITIONS, execute_tool, get_tool_definitions
+from app.agents.locale import t
+from app.agents.tools import execute_tool, get_tool_definitions
 from app.agents.validation import validate_tool_args
 from app.agents.pending_actions import store_action
-from app.agents.chat_agent import _describe_tool_call
 
 logger = logging.getLogger(__name__)
 
-CONFIRM_TOOLS = {"delete_pet", "delete_calendar_event", "delete_reminder"}
+
+def _describe_tool_call(fn_name: str, fn_args: dict, pets: list | None = None, lang: str = "zh") -> str:
+    """Generate human-readable description from LLM's tool call arguments."""
+    def _pet_name(pid: str) -> str:
+        if not pets:
+            return ""
+        for p in pets:
+            if str(p.id if hasattr(p, "id") else p.get("id", "")) == pid:
+                return p.name if hasattr(p, "name") else p.get("name", "")
+        return ""
+
+    pid = fn_args.get("pet_id", "")
+    name = _pet_name(pid)
+    label = f"「{name}」" if name else ""
+
+    if fn_name == "update_pet_profile":
+        info = fn_args.get("info", {})
+        if "name" in info:
+            return t("desc_rename", lang).format(label=label, name=info['name'])
+        keys = ", ".join(info.keys())
+        return t("desc_update_pet", lang).format(label=label, keys=keys)
+    if fn_name == "create_pet":
+        return t("desc_create_pet", lang).format(name=fn_args.get('name', ''))
+    if fn_name == "delete_pet":
+        return t("desc_delete_pet", lang).format(label=label)
+    if fn_name == "create_calendar_event":
+        title = fn_args.get("title", "")
+        d = fn_args.get("event_date", "")
+        return t("desc_create_event", lang).format(title=title, date=d)
+    if fn_name == "update_calendar_event":
+        return t("desc_update_event", lang)
+    if fn_name == "delete_calendar_event":
+        return t("desc_delete_event", lang)
+    if fn_name == "create_reminder":
+        return t("desc_create_reminder", lang).format(title=fn_args.get('title', ''))
+    if fn_name == "update_reminder":
+        return t("desc_update_reminder", lang)
+    if fn_name == "delete_reminder":
+        return t("desc_delete_reminder", lang)
+    if fn_name == "draft_email":
+        return t("desc_draft_email", lang).format(subject=fn_args.get('subject', ''))
+    if fn_name == "save_pet_profile_md":
+        return t("desc_save_profile", lang).format(label=label)
+    if fn_name == "set_pet_avatar":
+        return t("desc_set_avatar", lang).format(label=label)
+    if fn_name == "upload_event_photo":
+        return t("desc_upload_photo", lang)
+    return fn_name
+
 MAX_TOOL_ROUNDS = 3
+
+
+_FALLBACK_MSG = "抱歉，处理时遇到了问题，请再说一次。"
+
+
+async def _ensure_response(result, on_token, fallback: str = _FALLBACK_MSG):
+    """Ensure response_text is never empty — stream fallback if needed."""
+    if not result.response_text.strip():
+        result.response_text = fallback
+        if on_token:
+            await maybe_await(on_token, fallback)
 
 
 @dataclass
@@ -35,13 +95,6 @@ class OrchestratorResult:
     cards: list[dict] = field(default_factory=list)
     confirm_cards: list[dict] = field(default_factory=list)
     executor_results: list[ExecutorResult] = field(default_factory=list)
-
-
-async def _maybe_await(fn, *args):
-    result = fn(*args)
-    if asyncio.iscoroutine(result):
-        return await result
-    return result
 
 
 async def run_orchestrator(
@@ -65,7 +118,7 @@ async def run_orchestrator(
     """
     lang = kwargs.get("lang", "zh")
     result = OrchestratorResult()
-    use_model = model or settings.orchestrator_model
+    use_model = model or settings.model
     tool_defs = get_tool_definitions(lang)
 
     # Build messages
@@ -93,7 +146,7 @@ async def run_orchestrator(
             if delta.content:
                 text_parts.append(delta.content)
                 if on_token:
-                    await _maybe_await(on_token, delta.content)
+                    await maybe_await(on_token, delta.content)
 
             if delta.tool_calls:
                 for tc_delta in delta.tool_calls:
@@ -116,7 +169,7 @@ async def run_orchestrator(
         logger.error("orchestrator_stream_error", extra={"error": str(exc)})
         error_msg = "抱歉，处理请求时出现错误，请稍后重试。"
         if on_token:
-            await _maybe_await(on_token, error_msg)
+            await maybe_await(on_token, error_msg)
         result.response_text = error_msg
         return result
 
@@ -148,11 +201,7 @@ async def run_orchestrator(
             tool_calls[0], messages, initial_text, use_model,
             db, user_id, session_id, on_token, on_card, **kwargs,
         )
-        if not result.response_text.strip():
-            fallback = "抱歉，处理时遇到了问题，请再说一次。"
-            result.response_text = fallback
-            if on_token:
-                await _maybe_await(on_token, fallback)
+        await _ensure_response(result, on_token)
         return result
 
     # PATH C: Multi task — parallel executors
@@ -161,12 +210,7 @@ async def run_orchestrator(
         on_token, on_card, today, **kwargs,
     )
 
-    # Final safeguard: never return empty response
-    if not result.response_text.strip():
-        fallback = "抱歉，处理时遇到了问题，请再说一次。"
-        result.response_text = fallback
-        if on_token:
-            await _maybe_await(on_token, fallback)
+    await _ensure_response(result, on_token)
 
     return result
 
@@ -249,7 +293,7 @@ async def _handle_single_task(
             }
             result.confirm_cards.append(confirm_card)
             if on_card:
-                await _maybe_await(on_card, confirm_card)
+                await maybe_await(on_card, confirm_card)
 
         result.response_text = "".join(text_parts)
         return result
@@ -297,7 +341,7 @@ async def _handle_single_task(
                 }
                 result.confirm_cards.append(confirm_card)
                 if on_card:
-                    await _maybe_await(on_card, confirm_card)
+                    await maybe_await(on_card, confirm_card)
                 messages.append({
                     "role": "assistant",
                     "content": current_text or None,
@@ -314,7 +358,7 @@ async def _handle_single_task(
             if card:
                 result.cards.append(card)
                 if on_card:
-                    await _maybe_await(on_card, card)
+                    await maybe_await(on_card, card)
 
             # Feed tool result back to LLM
             messages.append({
@@ -378,7 +422,7 @@ async def _handle_single_task(
                     }
                     result.confirm_cards.append(confirm_card)
                     if on_card:
-                        await _maybe_await(on_card, confirm_card)
+                        await maybe_await(on_card, confirm_card)
                 break
 
             # Continue loop with next tool
@@ -484,7 +528,7 @@ async def _handle_request_images_then_continue(
                         }
                         result.confirm_cards.append(confirm_card)
                         if on_card:
-                            await _maybe_await(on_card, confirm_card)
+                            await maybe_await(on_card, confirm_card)
                     messages.append({
                         "role": "tool",
                         "tool_call_id": tc["id"],
@@ -511,7 +555,7 @@ async def _handle_request_images_then_continue(
                         if card:
                             result.cards.append(card)
                             if on_card:
-                                await _maybe_await(on_card, card)
+                                await maybe_await(on_card, card)
                         messages.append({
                             "role": "tool",
                             "tool_call_id": tc["id"],
@@ -546,7 +590,7 @@ async def _handle_request_images_then_continue(
                         cc = {"type": "confirm_action", "action_id": aid, "message": desc}
                         result.confirm_cards.append(cc)
                         if on_card:
-                            await _maybe_await(on_card, cc)
+                            await maybe_await(on_card, cc)
                         continue
                     try:
                         tr = await execute_tool(ft_name, ft_args, db, user_id, **kwargs)
@@ -554,7 +598,7 @@ async def _handle_request_images_then_continue(
                         if tr.get("card"):
                             result.cards.append(tr["card"])
                             if on_card:
-                                await _maybe_await(on_card, tr["card"])
+                                await maybe_await(on_card, tr["card"])
                     except Exception as exc:
                         logger.error("image_followup_extra_error", extra={"tool": ft_name, "error": str(exc)[:200]})
 
@@ -592,11 +636,7 @@ async def _handle_multi_task(
         })
 
     if not tasks:
-        if not result.response_text.strip():
-            fallback = "抱歉，我没能理解你的请求，请再试一次。"
-            result.response_text = fallback
-            if on_token:
-                await _maybe_await(on_token, fallback)
+        await _ensure_response(result, on_token)
         return result
 
     # Run executors in parallel
@@ -643,14 +683,14 @@ async def _handle_multi_task(
                 }
                 result.confirm_cards.append(confirm_card)
                 if on_card:
-                    await _maybe_await(on_card, confirm_card)
+                    await maybe_await(on_card, confirm_card)
             summaries.append(f"⏳ {exec_result.description} (等待确认)")
 
         elif exec_result.success:
             if exec_result.card:
                 result.cards.append(exec_result.card)
                 if on_card:
-                    await _maybe_await(on_card, exec_result.card)
+                    await maybe_await(on_card, exec_result.card)
             summaries.append(f"✅ {exec_result.summary}")
 
         else:
@@ -696,7 +736,7 @@ async def _stream_completion(
         if delta.content:
             text_parts.append(delta.content)
             if on_token:
-                await _maybe_await(on_token, delta.content)
+                await maybe_await(on_token, delta.content)
 
         if delta.tool_calls:
             for tc_delta in delta.tool_calls:

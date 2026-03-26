@@ -92,24 +92,29 @@ def build_messages(
     return messages
 
 
+def _pet_attr(p, key, default=None):
+    """Get attribute from a Pet ORM object, dict, or SimpleNamespace."""
+    if hasattr(p, key):
+        return getattr(p, key)
+    if isinstance(p, dict):
+        return p.get(key, default)
+    return default
+
+
 def _build_pet_context(pets: list, lang: str = "zh") -> str:
     """Build pet context section for system prompt."""
     lines = [t("pet_section_header", lang)]
     for p in pets:
-        name = p.name if hasattr(p, "name") else p.get("name", "")
-        pet_id = p.id if hasattr(p, "id") else p.get("id", "")
-        species_val = (
-            p.species.value
-            if hasattr(p, "species") and hasattr(p.species, "value")
-            else str(p.get("species", ""))
-        )
+        name = _pet_attr(p, "name", "")
+        pet_id = _pet_attr(p, "id", "")
+        species = _pet_attr(p, "species", "")
+        species_val = species.value if hasattr(species, "value") else str(species)
 
         info = [f"- **{name}** (id: {pet_id}): {species_val}"]
 
-        # Show locked field status
-        profile = p.profile if hasattr(p, "profile") else (p.get("profile") if hasattr(p, "get") else None)
+        profile = _pet_attr(p, "profile")
         profile_dict = profile if isinstance(profile, dict) else {}
-        species_locked = p.species_locked if hasattr(p, "species_locked") else (p.get("species_locked", False) if hasattr(p, "get") else False)
+        species_locked = _pet_attr(p, "species_locked", False)
         gender = profile_dict.get("gender")
         gender_locked = profile_dict.get("gender_locked", False)
         if gender:
@@ -118,29 +123,27 @@ def _build_pet_context(pets: list, lang: str = "zh") -> str:
         if species_locked:
             info.append(t("species_locked", lang))
 
-        breed = p.breed if hasattr(p, "breed") else p.get("breed")
+        breed = _pet_attr(p, "breed")
         if breed:
             info.append(f"{t('breed_label', lang)}={breed}")
 
-        weight = p.weight if hasattr(p, "weight") else p.get("weight")
+        weight = _pet_attr(p, "weight")
         if weight:
             info.append(f"{t('weight_label', lang)}={weight}kg")
 
-        birthday = p.birthday if hasattr(p, "birthday") else p.get("birthday")
+        birthday = _pet_attr(p, "birthday")
         if birthday:
             bday_str = birthday.isoformat() if hasattr(birthday, "isoformat") else str(birthday)
             info.append(f"{t('birthday_label', lang)}={bday_str}")
 
         lines.append(", ".join(info))
 
-        profile_md = p.profile_md if hasattr(p, "profile_md") else p.get("profile_md")
+        profile_md = _pet_attr(p, "profile_md")
         if profile_md:
             lines.append(f"\n### {name}{t('profile_header', lang)}\n{profile_md}")
-        else:
-            profile = p.profile if hasattr(p, "profile") else p.get("profile")
-            if profile:
-                profile_str = json.dumps(profile, ensure_ascii=False)
-                lines.append(f"  {t('profile_label', lang)}: {profile_str}")
+        elif profile:
+            profile_str = json.dumps(profile, ensure_ascii=False)
+            lines.append(f"  {t('profile_label', lang)}: {profile_str}")
 
     return "\n".join(lines)
 

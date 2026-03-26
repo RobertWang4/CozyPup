@@ -12,14 +12,13 @@ from dataclasses import dataclass, field
 import litellm
 
 from app.agents import llm_extra_kwargs
+from app.agents.constants import CONFIRM_TOOLS
 from app.agents.locale import t
 from app.config import settings
-from app.agents.tools import TOOL_DEFINITIONS, execute_tool, get_tool_definitions
+from app.agents.tools import execute_tool, get_tool_definitions
 from app.agents.validation import validate_tool_args
 
 logger = logging.getLogger(__name__)
-
-CONFIRM_TOOLS = {"delete_pet", "delete_calendar_event", "delete_reminder"}
 
 
 @dataclass
@@ -83,7 +82,7 @@ async def run_executor(
     try:
         # Non-streaming call (faster for short outputs)
         response = await litellm.acompletion(
-            model=settings.executor_model,
+            model=settings.model,
             messages=messages,
             tools=tools,
             tool_choice="auto",
@@ -129,7 +128,7 @@ async def run_executor(
             })
 
             retry_response = await litellm.acompletion(
-                model=settings.executor_model,
+                model=settings.model,
                 messages=messages,
                 tools=tools,
                 tool_choice="auto",

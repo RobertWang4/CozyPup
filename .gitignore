@@ -7,6 +7,7 @@ __pycache__/
 # Node
 node_modules/
 dist/
+.vite/
 
 # Logs (keep structure, ignore content)
 backend/logs/error_snapshots/*.json

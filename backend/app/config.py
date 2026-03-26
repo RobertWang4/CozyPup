@@ -3,11 +3,12 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     database_url: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/cozypup"
-    default_model: str = "openai/qwen3.5-plus-2026-02-15"
+    # Main model — used for chat orchestration, tool execution, profile extraction, and context summary.
+    # Change this ONE value to test a different model for all normal operations.
+    model: str = "openai/grok-4-1-fast-non-reasoning"
+    # Emergency model — only used when emergency keywords are detected (e.g. seizure, poisoning).
+    # Typically a more capable/accurate model for safety-critical responses.
     emergency_model: str = "openai/kimi-k2.5"
-    executor_model: str = "deepseek/deepseek-chat"  # cheap model for tool execution
-    orchestrator_model: str = "deepseek/deepseek-chat"  # fast model for orchestration
-    context_model: str = "deepseek/deepseek-chat"  # cheap model for context summarization
     model_api_base: str = ""   # Proxy base URL (e.g. https://api.shubiaobiao.cn/v1)
     model_api_key: str = ""    # Proxy API key
     google_places_api_key: str = ""

@@ -14,13 +14,12 @@ import pytest
 from app.agents.emergency import EmergencyCheckResult, build_emergency_hint, detect_emergency
 from app.agents.executor import ExecutorResult, run_executor
 from app.agents.orchestrator import OrchestratorResult, run_orchestrator
+from app.agents.locale import t
 from app.agents.pre_processor import (
     SuggestedAction,
-    format_actions_for_prompt,
     pre_process,
 )
 from app.agents.prompts_v2 import build_system_prompt
-from app.agents.tool_guide import TOOL_DECISION_TREE
 from app.agents.tools import TOOL_DEFINITIONS
 from app.agents.context_agent import should_summarize, summarize_context
 
@@ -619,12 +618,13 @@ async def test_executor_confirm_gate_delete():
 # Test 11: Tool Decision Tree Exists
 # ============================================
 def test_tool_decision_tree_loaded():
-    """Verify tool_guide.py has the decision tree with all key tools."""
-    assert "create_calendar_event" in TOOL_DECISION_TREE
-    assert "query_calendar_events" in TOOL_DECISION_TREE
-    assert "trigger_emergency" in TOOL_DECISION_TREE
-    assert "create_reminder" in TOOL_DECISION_TREE
-    assert "update_pet_profile" in TOOL_DECISION_TREE
+    """Verify locale has the decision tree with all key tools."""
+    tree = t("tool_decision_tree", "zh")
+    assert "create_calendar_event" in tree
+    assert "query_calendar_events" in tree
+    assert "trigger_emergency" in tree
+    assert "create_reminder" in tree
+    assert "update_pet_profile" in tree
 
 
 # ============================================
@@ -662,10 +662,6 @@ def test_preprocessor_hint_format():
     assert actions[0].tool_name == "create_calendar_event"
     assert actions[0].confidence >= 0.8
     assert actions[0].arguments["category"] == "diet"
-
-    # format_actions_for_prompt should produce actionable text
-    prompt_section = format_actions_for_prompt(actions)
-    assert "create_calendar_event" in prompt_section
 
 
 def test_preprocessor_question_no_action():
@@ -708,10 +704,10 @@ async def test_full_pipeline_preprocessor_to_orchestrator():
     assert emergency.detected is False
 
     # Step 3: Build prompt
-    prompt_section = format_actions_for_prompt(actions)
+    hints = [f"{a.tool_name}({json.dumps(a.arguments, ensure_ascii=False)})" for a in actions if a.confidence >= 0.5]
     system_prompt = build_system_prompt(
         pets=[pet],
-        preprocessor_hints=[prompt_section] if prompt_section else None,
+        preprocessor_hints=hints if hints else None,
         today=today_str,
     )
     assert "三妹" in system_prompt

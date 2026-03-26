@@ -4,7 +4,7 @@ import uuid
 from datetime import date
 from types import SimpleNamespace
 
-from app.agents.pre_processor import pre_process, format_actions_for_prompt, _resolve_date, _resolve_pets
+from app.agents.pre_processor import pre_process, _resolve_date, _resolve_pets
 
 
 def _make_pet(name, pet_id=None):
@@ -102,33 +102,3 @@ class TestPreProcess:
         assert actions[0].arguments["event_date"] == "2026-03-23"
 
 
-class TestFormatActionsForPrompt:
-    def test_formats_high_confidence(self):
-        from app.agents.pre_processor import SuggestedAction
-        actions = [
-            SuggestedAction("create_calendar_event", {"pet_id": "abc", "title": "吃了"}, 0.9),
-        ]
-        result = format_actions_for_prompt(actions)
-        assert "Suggested actions" in result
-        assert "create_calendar_event" in result
-
-    def test_includes_medium_confidence(self):
-        from app.agents.pre_processor import SuggestedAction
-        actions = [
-            SuggestedAction("create_pet", {"name": "Luna"}, 0.6),
-        ]
-        result = format_actions_for_prompt(actions)
-        assert "create_pet" in result
-        assert "置信度: 0.6" in result
-
-    def test_skips_low_confidence(self):
-        from app.agents.pre_processor import SuggestedAction
-        actions = [
-            SuggestedAction("create_pet", {"name": "Luna"}, 0.4),
-        ]
-        result = format_actions_for_prompt(actions)
-        assert result == ""
-
-    def test_empty_actions(self):
-        result = format_actions_for_prompt([])
-        assert result == ""

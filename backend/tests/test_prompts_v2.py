@@ -13,7 +13,7 @@ from app.agents.prompts_v2 import (
     _build_pet_context,
     _build_summary_section,
 )
-from app.agents.tool_guide import TOOL_DECISION_TREE
+from app.agents.locale import t
 
 
 # ---------------------------------------------------------------------------

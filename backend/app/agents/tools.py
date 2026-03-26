@@ -639,19 +639,27 @@ _BASE_TOOL_DEFINITIONS = [
 TOOL_DEFINITIONS = _BASE_TOOL_DEFINITIONS
 
 
+_tool_defs_cache: dict[str, list[dict]] = {}
+
+
 def get_tool_definitions(lang: str = "zh") -> list[dict]:
-    """Return tool definitions with localized descriptions."""
+    """Return tool definitions with localized descriptions (cached per lang)."""
+    if lang in _tool_defs_cache:
+        return _tool_defs_cache[lang]
+
     from app.agents.locale import t
 
     if lang == "zh":
-        return _BASE_TOOL_DEFINITIONS  # no copy needed for default
+        _tool_defs_cache[lang] = _BASE_TOOL_DEFINITIONS
+        return _BASE_TOOL_DEFINITIONS
     tools = copy.deepcopy(_BASE_TOOL_DEFINITIONS)
     for tool in tools:
         fn = tool["function"]
         key = f"tool_desc_{fn['name']}"
         desc = t(key, lang)
-        if desc != key:  # found translation
+        if desc != key:
             fn["description"] = desc
+    _tool_defs_cache[lang] = tools
     return tools
 
 

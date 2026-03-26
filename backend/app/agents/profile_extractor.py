@@ -48,7 +48,7 @@ async def extract_profile_info(
 
     try:
         response = await litellm.acompletion(
-            model=settings.executor_model,
+            model=settings.model,
             messages=[
                 {"role": "system", "content": t("extraction_prompt", lang)},
                 {"role": "user", "content": f"{pet_context}\n\n{t('extractor_message_label', lang)}: {message}"},

@@ -236,7 +236,7 @@ async def _event_generator(
 
     # Model selection
     is_emergency = emergency_result.detected
-    model = settings.emergency_model if is_emergency else settings.orchestrator_model
+    model = settings.emergency_model if is_emergency else settings.model
 
     # Build system prompt (cache-friendly order)
     today_str = date.today().isoformat()
