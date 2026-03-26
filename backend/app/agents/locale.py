@@ -101,18 +101,30 @@ Image handling rules:
 - 用户要【找附近医院/宠物店】→ search_places
 - 用户描述【紧急症状】→ trigger_emergency
 - 用户要求【总结/更新宠物档案】→ summarize_pet_profile
-- 用户只是聊天/问问题 → 不调工具，直接回复""",
+- 用户只是聊天/问问题 → 不调工具，直接回复
+
+### 【重要】create_pet vs update_pet_profile
+- create_pet 仅用于用户明确说"我有了一只新宠物"或"我养了一只新的"等场景
+- 如果用户提到的宠物名字已经在上面的宠物列表中，说明这只宠物已经存在。此时必须用 update_pet_profile，绝对不要再次调用 create_pet 创建重复的宠物
+- 用户补充已有宠物的信息（性别、体重、生日等）→ update_pet_profile
+- 用户纠正已有宠物的信息 → update_pet_profile""",
 
         "en": """## Tool Selection Guide
 - User describes something that [already happened] → create_calendar_event
 - User [asks] about past records → query_calendar_events
 - User asks to be [reminded in the future] → create_reminder
-- User provides [pet info] (weight/birthday/allergies/breed) → update_pet_profile (note: gender and species are locked once set)
+- User provides [pet info] (weight/birthday/allergies/breed/gender) → update_pet_profile (note: gender and species are locked once set)
 - User wants to [delete] something → corresponding delete_* tool
 - User wants to [find nearby vet/pet store] → search_places
 - User describes [emergency symptoms] → trigger_emergency
 - User asks to [summarize/update pet profile] → summarize_pet_profile
-- User is just chatting / asking questions → no tool, reply directly""",
+- User is just chatting / asking questions → no tool, reply directly
+
+### [IMPORTANT] create_pet vs update_pet_profile
+- create_pet is ONLY for when the user explicitly says "I have a new pet" or "I just got a new pet"
+- If the pet name the user mentions already exists in the pet list above, the pet already exists. You MUST use update_pet_profile — NEVER call create_pet to create a duplicate
+- User provides additional info about an existing pet (gender, weight, birthday, etc.) → update_pet_profile
+- User corrects info about an existing pet → update_pet_profile""",
     },
 
     "no_pets": {
@@ -465,5 +477,186 @@ Notes:
     "confirm_update_pet": {
         "zh": "更新{pet_name}的{key}",
         "en": "Update {pet_name}'s {key}",
+    },
+
+    # ---------- Tool descriptions (function calling schemas) ----------
+
+    "tool_desc_create_calendar_event": {
+        "en": (
+            "Record a pet health/life event that already happened.\n"
+            "Use when the user reports something that already occurred (ate/pooped/got vaccinated/walked/bathed).\n"
+            "For events shared by all pets or owner-only (bought kibble/visited pet store), call once without pet_id.\n"
+            "Do NOT use for: asking about past events (use query_calendar_events).\n"
+            "Do NOT use for: setting future reminders (use create_reminder).\n"
+            "Do NOT use for: emergency symptoms (use trigger_emergency).\n"
+            "title must be a 2-8 word summary, not the original sentence."
+        ),
+    },
+    "tool_desc_query_calendar_events": {
+        "en": (
+            "Query past pet event records.\n"
+            "Use when the user asks about past events (when was the last vaccine? what did they eat recently?).\n"
+            "Do NOT use for: recording new events (use create_calendar_event).\n"
+            "Do NOT use for: viewing reminders (use list_reminders).\n"
+            "Can filter by pet_id, date range, and category."
+        ),
+    },
+    "tool_desc_update_calendar_event": {
+        "en": (
+            "Modify an existing calendar event.\n"
+            "Use when the user wants to correct/modify a previously recorded event (wrong date/change title).\n"
+            "Do NOT use for: recording new events (use create_calendar_event).\n"
+            "Must first call query_calendar_events to get the event_id."
+        ),
+    },
+    "tool_desc_create_pet": {
+        "en": (
+            "Create a new pet profile for the user.\n"
+            "Use when the user says they have a new pet to add (I got a cat/I just bought a dog).\n"
+            "Do NOT use for: updating existing pet info (use update_pet_profile).\n"
+            "Do NOT use for: renaming (use update_pet_profile with name).\n"
+            "Requires at least name and species."
+        ),
+    },
+    "tool_desc_update_pet_profile": {
+        "en": (
+            "Update pet profile information, including renaming.\n"
+            "Use when the user mentions any pet attribute (weight/birthday/allergies/breed/gender/diet/personality/vet, etc.).\n"
+            "Renaming: pass {\"name\": \"new name\"} in info.\n"
+            "Do NOT use for: adding a new pet (use create_pet).\n"
+            "Do NOT use for: recording events (use create_calendar_event).\n"
+            "Proactively call to gradually build the pet's profile. info is flexible key-value pairs."
+        ),
+    },
+    "tool_desc_save_pet_profile_md": {
+        "en": (
+            "Save/update a pet's narrative profile document (markdown).\n"
+            "Silently call when new pet info is learned from conversation (personality/medical history/routines/preferences).\n"
+            "Do NOT use for: updating structured fields like weight/birthday (use update_pet_profile).\n"
+            "Must pass the complete document (not a diff), under 500 words, with markdown sections.\n"
+            "Write in the user's language."
+        ),
+    },
+    "tool_desc_summarize_pet_profile": {
+        "en": (
+            "Call when the user explicitly asks to summarize/update a pet's profile.\n"
+            "Review all known information and chat history to generate a complete pet profile document.\n"
+            "Only call when the user explicitly requests it (summarize my pet's info/update the profile/organize pet info).\n"
+            "Must pass the complete document (not a diff), under 800 words, with markdown sections.\n"
+            "Write in the user's language, be thorough and detailed."
+        ),
+    },
+    "tool_desc_list_pets": {
+        "en": (
+            "List all registered pets and their profiles for the user.\n"
+            "Use when the user asks what pets they have, or when you need to look up a pet_id.\n"
+            "Do NOT use for: creating a new pet (use create_pet).\n"
+            "No parameters, returns the full pet list."
+        ),
+    },
+    "tool_desc_create_reminder": {
+        "en": (
+            "Create a scheduled push notification reminder.\n"
+            "Use when the user asks to be reminded about something in the future (remind me to give medicine tomorrow/take for vaccine next Tuesday).\n"
+            "Do NOT use for: recording past events (use create_calendar_event).\n"
+            "Do NOT use for: viewing existing reminders (use list_reminders).\n"
+            "trigger_at must be a future time in ISO 8601 format."
+        ),
+    },
+    "tool_desc_search_places": {
+        "en": (
+            "Search for nearby pet-related places (vet clinics/pet stores/dog parks/grooming/24h emergency).\n"
+            "Use when the user asks where nearby.../help me find...\n"
+            "Do NOT use for: recording visited places (use create_calendar_event).\n"
+            "Requires user location authorization."
+        ),
+    },
+    "tool_desc_draft_email": {
+        "en": (
+            "Generate an email draft card for the user to review and send.\n"
+            "Use when the user wants to write an email to a vet or pet service provider.\n"
+            "Do NOT use for: chat replies (just reply directly).\n"
+            "Compose the email content based on conversation context, then call this tool."
+        ),
+    },
+    "tool_desc_delete_pet": {
+        "en": (
+            "Delete a pet profile.\n"
+            "Use when the user explicitly asks to remove a pet.\n"
+            "Do NOT use for: updating pet info (use update_pet_profile).\n"
+            "This is irreversible — confirm user intent."
+        ),
+    },
+    "tool_desc_delete_calendar_event": {
+        "en": (
+            "Delete a calendar event record.\n"
+            "Use when the user asks to delete a previously recorded event.\n"
+            "Do NOT use for: modifying events (use update_calendar_event).\n"
+            "Must first call query_calendar_events to get the event_id."
+        ),
+    },
+    "tool_desc_list_reminders": {
+        "en": (
+            "List all unsent reminders for the user.\n"
+            "Use when the user asks what reminders/scheduled tasks they have.\n"
+            "Do NOT use for: viewing past events (use query_calendar_events).\n"
+            "No parameters, returns all active reminders."
+        ),
+    },
+    "tool_desc_update_reminder": {
+        "en": (
+            "Modify an existing reminder.\n"
+            "Use when the user wants to change a reminder's time/title/content.\n"
+            "Do NOT use for: creating new reminders (use create_reminder).\n"
+            "Must first call list_reminders to get the reminder_id."
+        ),
+    },
+    "tool_desc_delete_reminder": {
+        "en": (
+            "Delete/cancel a reminder.\n"
+            "Use when the user wants to cancel a previously set reminder.\n"
+            "Do NOT use for: modifying reminders (use update_reminder).\n"
+            "Must first call list_reminders to get the reminder_id."
+        ),
+    },
+    "tool_desc_upload_event_photo": {
+        "en": (
+            "Attach a user's photo to a calendar event.\n"
+            "Use when the user sends a photo and asks to associate it with a record.\n"
+            "Do NOT use for: setting pet avatars (use set_pet_avatar).\n"
+            "Photos are automatically retrieved from the user's message; requires an event_id."
+        ),
+    },
+    "tool_desc_set_language": {
+        "en": (
+            "Switch the app display language.\n"
+            "Use when the user asks to switch language (speak English/switch to English).\n"
+            "Do NOT use for: translating content (just reply in the target language).\n"
+            "Supports zh and en."
+        ),
+    },
+    "tool_desc_set_pet_avatar": {
+        "en": (
+            "Set a pet's avatar photo.\n"
+            "Use when the user sends a photo and says to use it as a pet's avatar.\n"
+            "Do NOT use for: attaching photos to events (use upload_event_photo).\n"
+            "Photos are automatically retrieved from the user's message."
+        ),
+    },
+    "tool_desc_trigger_emergency": {
+        "en": (
+            "Call when you determine the user is describing a real pet emergency.\n"
+            "Use for: pet poisoning, seizures, severe bleeding, difficulty breathing, unconsciousness, and other life-threatening situations.\n"
+            "Do NOT use for: user asking about past emergency events, general health questions, minor discomfort.\n"
+            "Carefully assess whether it's truly an emergency before calling."
+        ),
+    },
+    "tool_desc_request_images": {
+        "en": (
+            "Request to view images attached by the user.\n"
+            "Call when you need to see image content to answer the user's question (what color/what breed/what's in the image).\n"
+            "Do NOT use for: changing avatars, saving to diary, etc. (those tools receive images automatically).\n"
+            "After calling, images will be returned to you, then answer the user based on image content."
+        ),
     },
 }

@@ -2,6 +2,7 @@
 
 import asyncio
 import base64
+import copy
 import json
 import logging
 import uuid
@@ -29,7 +30,7 @@ _bg_tasks: set[asyncio.Task] = set()
 
 # ---------- Tool Definitions (OpenAI function calling format) ----------
 
-TOOL_DEFINITIONS = [
+_BASE_TOOL_DEFINITIONS = [
     {
         "type": "function",
         "function": {
@@ -633,6 +634,25 @@ TOOL_DEFINITIONS = [
         },
     },
 ]
+
+# Backward compatibility alias
+TOOL_DEFINITIONS = _BASE_TOOL_DEFINITIONS
+
+
+def get_tool_definitions(lang: str = "zh") -> list[dict]:
+    """Return tool definitions with localized descriptions."""
+    from app.agents.locale import t
+
+    if lang == "zh":
+        return _BASE_TOOL_DEFINITIONS  # no copy needed for default
+    tools = copy.deepcopy(_BASE_TOOL_DEFINITIONS)
+    for tool in tools:
+        fn = tool["function"]
+        key = f"tool_desc_{fn['name']}"
+        desc = t(key, lang)
+        if desc != key:  # found translation
+            fn["description"] = desc
+    return tools
 
 
 # ---------- Tool Execution ----------

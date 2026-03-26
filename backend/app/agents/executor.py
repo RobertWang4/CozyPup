@@ -14,7 +14,7 @@ import litellm
 from app.agents import llm_extra_kwargs
 from app.agents.locale import t
 from app.config import settings
-from app.agents.tools import TOOL_DEFINITIONS, execute_tool
+from app.agents.tools import TOOL_DEFINITIONS, execute_tool, get_tool_definitions
 from app.agents.validation import validate_tool_args
 
 logger = logging.getLogger(__name__)
@@ -61,10 +61,11 @@ async def run_executor(
         ExecutorResult with structured data
     """
     # Filter tools if specified
+    all_tools = get_tool_definitions(lang)
     if available_tools:
-        tools = [td for td in TOOL_DEFINITIONS if td["function"]["name"] in available_tools]
+        tools = [td for td in all_tools if td["function"]["name"] in available_tools]
     else:
-        tools = TOOL_DEFINITIONS
+        tools = all_tools
 
     if not tools:
         return ExecutorResult(success=False, error="No matching tools available")

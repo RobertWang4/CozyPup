@@ -15,7 +15,7 @@ from app.agents.pending_actions import store_action
 from app.agents.post_processor import execute_suggested_actions, response_claims_action
 from app.agents.pre_processor import SuggestedAction, format_actions_for_prompt, pre_process
 from app.agents.prompts import CHAT_SYSTEM_PROMPT
-from app.agents.tools import TOOL_DEFINITIONS, execute_tool
+from app.agents.tools import TOOL_DEFINITIONS, execute_tool, get_tool_definitions
 from app.agents.validation import validate_tool_args
 from app.config import settings
 
@@ -114,6 +114,7 @@ class ChatAgent(BaseAgent):
         system_prompt = context.get("system_prompt", CHAT_SYSTEM_PROMPT)
         pets = context.get("pets", [])
         lang = context.get("lang", "zh")
+        self._lang = lang  # store for _stream_completion
 
         # --- Phase 0: Deterministic pre-processing ---
         suggested_actions = pre_process(message, pets)
@@ -320,13 +321,6 @@ class ChatAgent(BaseAgent):
             )
             cards.extend(fallback_cards)
 
-        # Clean up temp images
-        for p in temp_image_paths:
-            try:
-                p.unlink(missing_ok=True)
-            except Exception:
-                pass
-
         return {
             "response": full_response,
             "intent": "chat",
@@ -349,10 +343,13 @@ class ChatAgent(BaseAgent):
         is_qwen = "qwen" in (model or "").lower()
         force_non_stream = is_qwen and tool_choice == "required"
 
+        lang = getattr(self, "_lang", "zh")
+        tool_defs = get_tool_definitions(lang)
+
         completion_kwargs: dict = dict(
             model=model,
             messages=messages,
-            tools=TOOL_DEFINITIONS,
+            tools=tool_defs,
             tool_choice=tool_choice,
             stream=not force_non_stream,
             temperature=0.3,
