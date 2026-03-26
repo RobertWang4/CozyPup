@@ -262,11 +262,52 @@ async def _handle_single_task(
         )
         return result
 
-    # Execute tool
-    if db and user_id:
+    # Execute tool with multi-round loop (like chat_agent)
+    current_tool_call = tool_call
+    current_fn_name = fn_name
+    current_fn_args = fn_args
+    current_text = initial_text
+
+    for _round in range(MAX_TOOL_ROUNDS):
+        if not (db and user_id):
+            break
+
         try:
-            tool_result = await execute_tool(fn_name, fn_args, db, user_id, **kwargs)
+            # Execute the tool
+            tool_result = await execute_tool(current_fn_name, current_fn_args, db, user_id, **kwargs)
             await db.commit()
+
+            # Handle needs_confirm (e.g. gender/species first-time set)
+            if tool_result.get("needs_confirm") and session_id:
+                confirm_tool = tool_result.get("confirm_tool", current_fn_name)
+                confirm_args = tool_result.get("confirm_arguments", current_fn_args)
+                confirm_desc = tool_result.get("confirm_description", f"确认执行 {current_fn_name}")
+                action_id = store_action(
+                    user_id=str(user_id),
+                    session_id=str(session_id),
+                    tool_name=confirm_tool,
+                    arguments=confirm_args,
+                    description=confirm_desc,
+                )
+                confirm_card = {
+                    "type": "confirm_action",
+                    "action_id": action_id,
+                    "message": confirm_desc,
+                }
+                result.confirm_cards.append(confirm_card)
+                if on_card:
+                    await _maybe_await(on_card, confirm_card)
+                messages.append({
+                    "role": "assistant",
+                    "content": current_text or None,
+                    "tool_calls": [current_tool_call],
+                })
+                messages.append({
+                    "role": "tool",
+                    "tool_call_id": current_tool_call["id"],
+                    "content": json.dumps({"status": "pending_user_confirmation", "message": confirm_desc}),
+                })
+                break
 
             card = tool_result.get("card")
             if card:
@@ -274,29 +315,84 @@ async def _handle_single_task(
                 if on_card:
                     await _maybe_await(on_card, card)
 
-            # Generate follow-up response with tool result
+            # Feed tool result back to LLM
             messages.append({
                 "role": "assistant",
-                "content": initial_text or None,
-                "tool_calls": [tool_call],
+                "content": current_text or None,
+                "tool_calls": [current_tool_call],
             })
             messages.append({
                 "role": "tool",
-                "tool_call_id": tool_call["id"],
+                "tool_call_id": current_tool_call["id"],
                 "content": json.dumps(tool_result, ensure_ascii=False, default=str),
             })
 
-            followup_text, _ = await _stream_completion(
+            # Get follow-up — may include more tool calls
+            followup_text, followup_tools = await _stream_completion(
                 messages, model, on_token
             )
             text_parts.append(followup_text)
 
+            if not followup_tools:
+                break  # No more tools, done
+
+            # Process next tool call
+            next_tc = followup_tools[0]
+            next_fn = next_tc["function"]["name"]
+            try:
+                next_args = json.loads(next_tc["function"]["arguments"])
+            except json.JSONDecodeError:
+                break
+
+            # Validate next tool
+            next_errors = validate_tool_args(next_fn, next_args)
+            if next_errors:
+                messages.append({
+                    "role": "assistant",
+                    "content": followup_text or None,
+                    "tool_calls": [next_tc],
+                })
+                messages.append({
+                    "role": "tool",
+                    "tool_call_id": next_tc["id"],
+                    "content": json.dumps({"error": "; ".join(next_errors)}),
+                })
+                break
+
+            # Confirm gate for next tool
+            if next_fn in CONFIRM_TOOLS:
+                if session_id:
+                    desc = _describe_tool_call(next_fn, next_args, lang=lang)
+                    action_id = store_action(
+                        user_id=str(user_id),
+                        session_id=str(session_id),
+                        tool_name=next_fn,
+                        arguments=next_args,
+                        description=desc,
+                    )
+                    confirm_card = {
+                        "type": "confirm_action",
+                        "action_id": action_id,
+                        "message": desc,
+                    }
+                    result.confirm_cards.append(confirm_card)
+                    if on_card:
+                        await _maybe_await(on_card, confirm_card)
+                break
+
+            # Continue loop with next tool
+            current_tool_call = next_tc
+            current_fn_name = next_fn
+            current_fn_args = next_args
+            current_text = followup_text
+
         except Exception as exc:
             logger.error("orchestrator_tool_error", extra={
-                "tool": fn_name, "error": str(exc)
+                "tool": current_fn_name, "error": str(exc), "round": _round,
             })
             error_text = f"\n工具执行出错: {exc}"
             text_parts.append(error_text)
+            break
 
     result.response_text = "".join(text_parts)
     return result
