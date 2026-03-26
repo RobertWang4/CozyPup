@@ -533,9 +533,14 @@ struct ChatView: View {
                         if case .setLanguage(let data) = c {
                             Lang.shared.code = data.language
                         }
-                        if case .genericAction(let data) = c,
-                           ["pet_deleted", "pet_updated"].contains(data.type) {
-                            Task { await petStore.fetchFromAPI() }
+                        if case .genericAction(let data) = c {
+                            if ["pet_deleted", "pet_updated"].contains(data.type) {
+                                Task { await petStore.fetchFromAPI() }
+                            }
+                            if ["event_deleted", "reminder_deleted"].contains(data.type) {
+                                let comps = Calendar.current.dateComponents([.year, .month], from: Date())
+                                Task { await calendarStore.fetchMonth(year: comps.year!, month: comps.month!) }
+                            }
                         }
                         if case .record(let r) = c, let comps = parseYearMonth(r.date) {
                             Task { await calendarStore.fetchMonth(year: comps.0, month: comps.1) }
@@ -635,6 +640,9 @@ struct ChatView: View {
                 }
 
                 Task { await petStore.fetchFromAPI() }
+                // Also refresh calendar (delete/update events)
+                let comps = Calendar.current.dateComponents([.year, .month], from: Date())
+                Task { await calendarStore.fetchMonth(year: comps.year!, month: comps.month!) }
             } catch {
                 updateConfirmCardStatus(actionId: actionId, status: .pending)
             }
