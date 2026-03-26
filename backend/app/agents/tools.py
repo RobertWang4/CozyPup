@@ -947,6 +947,7 @@ async def _update_pet_profile(
             pet.species_locked = True
         existing.update(info)
         pet.profile = existing
+        pet.profile_md = _sync_profile_md(pet)
         await db.flush()
         return {
             "success": True,
@@ -1025,6 +1026,9 @@ async def _update_pet_profile(
     existing.update(info)
     pet.profile = existing
 
+    # Auto-sync profile_md from structured data
+    pet.profile_md = _sync_profile_md(pet)
+
     await db.flush()
 
     card = {
@@ -1040,6 +1044,78 @@ async def _update_pet_profile(
         "saved_keys": list(info.keys()),
         "card": card,
     }
+
+
+def _sync_profile_md(pet) -> str:
+    """Regenerate profile_md from pet columns + profile JSON.
+
+    Preserves any LLM-written sections (性格/健康/日常) while syncing
+    structured data from profile JSON into the document.
+    """
+    profile = dict(pet.profile) if pet.profile else {}
+    species_zh = _SPECIES_ZH.get(
+        pet.species.value if hasattr(pet.species, "value") else str(pet.species),
+        str(pet.species),
+    )
+    gender_map = {"male": "公", "female": "母"}
+
+    # Build 基本信息 section from structured fields
+    basics = [f"# {pet.name}", "", "## 基本信息", f"- 类型：{species_zh}"]
+    if pet.breed:
+        basics.append(f"- 品种：{pet.breed}")
+    gender = profile.get("gender")
+    if gender:
+        basics.append(f"- 性别：{gender_map.get(gender, gender)}")
+    if pet.birthday:
+        basics.append(f"- 生日：{pet.birthday.isoformat()}")
+    if pet.weight and pet.weight > 0:
+        basics.append(f"- 体重：{pet.weight:.1f} kg")
+    if profile.get("neutered"):
+        basics.append("- 已绝育")
+    if profile.get("coat_color"):
+        basics.append(f"- 毛色：{profile['coat_color']}")
+
+    # Build sections from free-text profile fields
+    sections = {}
+    FIELD_SECTIONS = {
+        "diet": ("日常", "饮食"),
+        "allergies": ("健康", "过敏"),
+        "vet": ("健康", "兽医"),
+        "temperament": ("性格", "性格特点"),
+        "medication": ("健康", "用药"),
+    }
+    for key, (section, label) in FIELD_SECTIONS.items():
+        val = profile.get(key)
+        if val:
+            sections.setdefault(section, []).append(f"- {label}：{val}")
+
+    # Preserve existing LLM-written content from current profile_md
+    existing_md = pet.profile_md or ""
+    preserved = {}
+    current_section = None
+    for line in existing_md.split("\n"):
+        if line.startswith("## "):
+            current_section = line[3:].strip()
+        elif current_section and line.strip() and not line.startswith("# "):
+            # Don't preserve lines we're about to regenerate
+            if current_section not in ("基本信息",):
+                preserved.setdefault(current_section, []).append(line)
+
+    # Assemble final document
+    lines = basics
+    for section_name in ("性格", "健康", "日常"):
+        lines.extend(["", f"## {section_name}"])
+        # Add structured data first
+        if section_name in sections:
+            lines.extend(sections[section_name])
+        # Then preserved LLM content (skip duplicates)
+        if section_name in preserved:
+            structured_texts = {l for l in sections.get(section_name, [])}
+            for line in preserved[section_name]:
+                if line not in structured_texts:
+                    lines.append(line)
+
+    return "\n".join(lines)
 
 
 def _sanitize_info(info: dict) -> tuple[dict, list[str]]:
