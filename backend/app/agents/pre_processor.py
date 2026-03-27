@@ -49,6 +49,16 @@ _WEEKDAY_LAST_WEEK = {
     "上周五": 4, "上周六": 5, "上周日": 6, "上周天": 6,
 }
 
+# English "last Monday" → weekday index
+_WEEKDAY_LAST_WEEK_EN = re.compile(
+    r"last\s+(monday|tuesday|wednesday|thursday|friday|saturday|sunday)",
+    re.I,
+)
+_EN_WEEKDAY_MAP = {
+    "monday": 0, "tuesday": 1, "wednesday": 2, "thursday": 3,
+    "friday": 4, "saturday": 5, "sunday": 6,
+}
+
 
 def _resolve_date(message: str, today: date) -> date | None:
     """Extract a date from the message.
@@ -63,6 +73,13 @@ def _resolve_date(message: str, today: date) -> date | None:
         if keyword in msg_lower:
             days_back = (today.weekday() - weekday) % 7 + 7
             return today - timedelta(days=days_back)
+
+    # "last Friday" → exact date
+    en_match = _WEEKDAY_LAST_WEEK_EN.search(msg_lower)
+    if en_match:
+        weekday = _EN_WEEKDAY_MAP[en_match.group(1).lower()]
+        days_back = (today.weekday() - weekday) % 7 + 7
+        return today - timedelta(days=days_back)
 
     # Ambiguous dates → return None (caller should ask user)
     if _AMBIGUOUS_DATE.search(msg_lower):
@@ -229,6 +246,12 @@ _REMINDER_TYPES_MAP = [
     (re.compile(r"洗澡|美容|grooming|groom|bath", re.I), "grooming"),
 ]
 
+_MULTI_EVENT_SPLITTER = re.compile(
+    r"还|又|以及|并且|同时|然后|和(?=.*了)|且"
+    r"|and also|and then|also|as well as|plus",
+    re.I,
+)
+
 _SEARCH_PLACES_PATTERN = re.compile(
     r"附近|哪里有|找一[下个家]|最近的|推荐.*(?:医院|宠物店|宠物医院|公园|狗公园)"
     r"|nearby|find.*(?:vet|clinic|pet store|park|hospital)"
@@ -238,6 +261,14 @@ _SEARCH_PLACES_PATTERN = re.compile(
 
 _DRAFT_EMAIL_PATTERN = re.compile(
     r"写.*邮件|草拟.*邮件|发.*邮件|帮我.*邮件|email|draft.*email|write.*email|compose.*email",
+    re.I,
+)
+
+_SWITCH_LANGUAGE_PATTERN = re.compile(
+    r"switch\s+to\s+(?:english|chinese|中文|英文)"
+    r"|切换(?:成|到|为)?(?:中文|英文|english|chinese)"
+    r"|(?:说|用|讲)(?:中文|英文|english|chinese)"
+    r"|speak\s+(?:english|chinese)",
     re.I,
 )
 
@@ -289,8 +320,20 @@ def pre_process(
 
     # --- Calendar events ---
     if not is_question:
+        matched_categories = []
         for pattern, category, confidence in _CALENDAR_PATTERNS:
             if pattern.search(message):
+                matched_categories.append((category, confidence))
+
+        # Deduplicate: if multiple patterns match, each gets its own event suggestion
+        seen_cats = set()
+        unique_matches = []
+        for cat, conf in matched_categories:
+            if cat not in seen_cats:
+                seen_cats.add(cat)
+                unique_matches.append((cat, conf))
+
+        for category, confidence in unique_matches:
                 event_date = _resolve_date(message, today)
                 resolved_pets = _resolve_pets(message, pets)
 
@@ -477,6 +520,19 @@ def pre_process(
                 confidence=0.85,
                 confirm_description=t("confirm_set_avatar", lang).format(pet_name=pet_name),
             ))
+
+    # --- Switch language ---
+    if _SWITCH_LANGUAGE_PATTERN.search(message):
+        # Determine target language
+        target = "en"
+        if re.search(r"中文|chinese", message, re.I):
+            target = "zh"
+        actions.append(SuggestedAction(
+            tool_name="set_language",
+            arguments={"language": target},
+            confidence=0.9,
+            confirm_description=f"Switch language to {'English' if target == 'en' else '中文'}",
+        ))
 
     # --- Update pet profile ---
     if not is_question and pets:

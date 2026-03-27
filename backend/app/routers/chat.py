@@ -236,6 +236,14 @@ async def _event_generator(
                 f"{action.tool_name}({json.dumps(action.arguments, ensure_ascii=False)})"
             )
 
+    # Multi-event detection: if multiple calendar/reminder actions suggested, add split hint
+    event_count = sum(1 for a in suggested_actions if a.tool_name == "create_calendar_event")
+    reminder_count = sum(1 for a in suggested_actions if a.tool_name == "create_reminder")
+    total_actions = event_count + reminder_count
+    if total_actions >= 2:
+        hint = "⚠️ 检测到多个事件/提醒意图，请确保每件事单独调用一次工具" if lang == "zh" else "⚠️ Multiple events/reminders detected — make a separate tool call for each"
+        preprocessor_hints.append(hint)
+
     # Model selection
     is_emergency = emergency_result.detected
     model = settings.emergency_model if is_emergency else settings.model
@@ -263,8 +271,11 @@ async def _event_generator(
         await queue.put({"event": "token", "data": json.dumps({"text": text})})
 
     async def on_card(card_data):
-        logger.info("card_event_queued", extra={"card_type": card_data.get("type", "unknown")})
-        await queue.put({"event": "card", "data": json.dumps(card_data)})
+        card_type = card_data.get("type", "unknown")
+        logger.info("card_event_queued", extra={"card_type": card_type})
+        # Emergency cards use a dedicated SSE event type so the client can handle them separately
+        sse_event = "emergency" if card_type == "emergency" else "card"
+        await queue.put({"event": sse_event, "data": json.dumps(card_data)})
 
     async def _run_orchestrator_to_queue():
         try:
