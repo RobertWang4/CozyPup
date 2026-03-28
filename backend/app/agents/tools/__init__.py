@@ -17,6 +17,7 @@ import app.agents.tools.calendar  # noqa: F401
 import app.agents.tools.pets      # noqa: F401
 import app.agents.tools.reminders # noqa: F401
 import app.agents.tools.misc      # noqa: F401
+import app.agents.tools.tasks     # noqa: F401
 
 from app.agents.tools.registry import get_registered_tools
 

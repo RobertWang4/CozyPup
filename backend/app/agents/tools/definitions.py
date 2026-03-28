@@ -590,6 +590,62 @@ _BASE_TOOL_DEFINITIONS = [
     {
         "type": "function",
         "function": {
+            "name": "create_daily_task",
+            "description": (
+                "创建每日待办任务。\n"
+                "当用户想设置每天要做的事情时使用。\n"
+                "type='routine' 表示每天重复的常规任务（遛狗、喂食）。\n"
+                "type='special' 表示有起止日期的特殊任务（接下来7天吃益生菌）。\n"
+                "不要用于: 一次性提醒 (用 create_reminder)。\n"
+                "不要用于: 记录已发生的事 (用 create_calendar_event)。"
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "title": {"type": "string", "description": "Task title, e.g. '遛狗', '吃益生菌'."},
+                    "type": {"type": "string", "enum": ["routine", "special"], "description": "routine = daily forever, special = date-bounded."},
+                    "daily_target": {"type": "integer", "description": "How many times per day (default 1)."},
+                    "pet_id": {"type": "string", "description": "Optional UUID of the pet this task is for."},
+                    "start_date": {"type": "string", "description": "Start date for special tasks (YYYY-MM-DD)."},
+                    "end_date": {"type": "string", "description": "End date for special tasks (YYYY-MM-DD)."},
+                },
+                "required": ["title", "type"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "manage_daily_task",
+            "description": (
+                "编辑或删除已有的每日待办任务。\n"
+                "当用户想修改待办的标题、频次、日期，或删除/暂停待办时使用。\n"
+                "可以通过 task_id 精确匹配，或通过 title 关键词模糊匹配。\n"
+                "不要用于: 创建新待办 (用 create_daily_task)。"
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "action": {"type": "string", "enum": ["update", "delete", "deactivate"], "description": "update=修改, delete=删除, deactivate=暂停."},
+                    "task_id": {"type": "string", "description": "UUID of the task (if known)."},
+                    "title": {"type": "string", "description": "Task title keyword for fuzzy matching."},
+                    "updates": {
+                        "type": "object",
+                        "description": "Fields to update: title, daily_target, end_date.",
+                        "properties": {
+                            "title": {"type": "string"},
+                            "daily_target": {"type": "integer"},
+                            "end_date": {"type": "string"},
+                        },
+                    },
+                },
+                "required": ["action"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
             "name": "request_images",
             "description": (
                 "请求查看用户附带的图片。\n"

@@ -1,0 +1,180 @@
+"""Daily task tool handlers."""
+
+import uuid
+from datetime import date
+
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.models import DailyTask, Pet, TaskType
+from app.agents.tools.registry import register_tool
+
+
+@register_tool("create_daily_task")
+async def create_daily_task(
+    arguments: dict,
+    db: AsyncSession,
+    user_id: uuid.UUID,
+) -> dict:
+    """Create a daily task for the user."""
+    title = arguments["title"]
+    task_type = TaskType(arguments["type"])
+    daily_target = arguments.get("daily_target", 1)
+    pet_id_str = arguments.get("pet_id")
+    start_date_str = arguments.get("start_date")
+    end_date_str = arguments.get("end_date")
+
+    pet = None
+    if pet_id_str:
+        pet_id = uuid.UUID(pet_id_str)
+        pet_result = await db.execute(
+            select(Pet).where(Pet.id == pet_id, Pet.user_id == user_id)
+        )
+        pet = pet_result.scalar_one_or_none()
+        if not pet:
+            return {"success": False, "error": "Pet not found or does not belong to you"}
+    else:
+        pet_id = None
+
+    # For special tasks, default start_date to today if not provided
+    if task_type == TaskType.special and not start_date_str:
+        start_date_str = date.today().isoformat()
+
+    task = DailyTask(
+        id=uuid.uuid4(),
+        user_id=user_id,
+        pet_id=pet_id,
+        title=title,
+        type=task_type,
+        daily_target=daily_target,
+        start_date=date.fromisoformat(start_date_str) if start_date_str else None,
+        end_date=date.fromisoformat(end_date_str) if end_date_str else None,
+        active=True,
+    )
+    db.add(task)
+    await db.flush()
+
+    card = {
+        "type": "daily_task_created",
+        "task_id": str(task.id),
+        "title": title,
+        "task_type": task_type.value,
+        "daily_target": daily_target,
+        "pet_name": pet.name if pet else None,
+        "start_date": start_date_str,
+        "end_date": end_date_str,
+    }
+
+    return {
+        "success": True,
+        "task_id": str(task.id),
+        "title": title,
+        "type": task_type.value,
+        "daily_target": daily_target,
+        "card": card,
+    }
+
+
+@register_tool("manage_daily_task")
+async def manage_daily_task(
+    arguments: dict,
+    db: AsyncSession,
+    user_id: uuid.UUID,
+) -> dict:
+    """Update, delete, or deactivate a daily task."""
+    action = arguments["action"]
+    task_id_str = arguments.get("task_id")
+    title_keyword = arguments.get("title")
+
+    task = None
+
+    if task_id_str:
+        task_id = uuid.UUID(task_id_str)
+        result = await db.execute(
+            select(DailyTask).where(
+                DailyTask.id == task_id,
+                DailyTask.user_id == user_id,
+            )
+        )
+        task = result.scalar_one_or_none()
+        if not task:
+            return {"success": False, "error": "Task not found or does not belong to you"}
+    elif title_keyword:
+        result = await db.execute(
+            select(DailyTask).where(
+                DailyTask.user_id == user_id,
+                DailyTask.active == True,  # noqa: E712
+                DailyTask.title.ilike(f"%{title_keyword}%"),
+            )
+        )
+        matches = result.scalars().all()
+        if not matches:
+            return {"success": False, "error": f"No active task found matching '{title_keyword}'"}
+        if len(matches) > 1:
+            return {
+                "success": False,
+                "error": "Multiple tasks matched. Please specify task_id.",
+                "matches": [
+                    {"task_id": str(t.id), "title": t.title, "type": t.type.value}
+                    for t in matches
+                ],
+            }
+        task = matches[0]
+    else:
+        return {"success": False, "error": "Either task_id or title is required to identify the task"}
+
+    original_title = task.title
+
+    if action == "delete":
+        await db.delete(task)
+        await db.flush()
+        return {
+            "success": True,
+            "action": "deleted",
+            "task_id": str(task.id),
+            "title": original_title,
+            "card": {
+                "type": "daily_task_deleted",
+                "title": original_title,
+            },
+        }
+
+    if action == "deactivate":
+        task.active = False
+        await db.flush()
+        return {
+            "success": True,
+            "action": "deactivated",
+            "task_id": str(task.id),
+            "title": task.title,
+            "card": {
+                "type": "daily_task_updated",
+                "task_id": str(task.id),
+                "title": task.title,
+                "active": False,
+            },
+        }
+
+    if action == "update":
+        updates = arguments.get("updates", {})
+        if "title" in updates:
+            task.title = updates["title"]
+        if "daily_target" in updates:
+            task.daily_target = updates["daily_target"]
+        if "end_date" in updates:
+            task.end_date = date.fromisoformat(updates["end_date"]) if updates["end_date"] else None
+        await db.flush()
+        return {
+            "success": True,
+            "action": "updated",
+            "task_id": str(task.id),
+            "title": task.title,
+            "card": {
+                "type": "daily_task_updated",
+                "task_id": str(task.id),
+                "title": task.title,
+                "daily_target": task.daily_target,
+            },
+        }
+
+    return {"success": False, "error": f"Unknown action: {action}"}

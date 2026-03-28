@@ -12,6 +12,7 @@ from datetime import date, datetime
 _CATEGORIES = {"diet", "excretion", "abnormal", "vaccine", "deworming", "medical", "daily"}
 _SPECIES = {"dog", "cat", "other"}
 _REMINDER_TYPES = {"medication", "vaccine", "checkup", "feeding", "grooming", "other"}
+_TASK_TYPES = {"routine", "special"}
 
 _DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 _TIME_RE = re.compile(r"^\d{2}:\d{2}$")
@@ -221,6 +222,29 @@ def _validate_list_reminders(args: dict) -> list[str]:
 @_register("trigger_emergency")
 def _validate_trigger_emergency(args: dict) -> list[str]:
     return _check_required(args, ["message"])
+
+
+@_register("create_daily_task")
+def _validate_create_daily_task(args: dict) -> list[str]:
+    errors = _check_required(args, ["title", "type"])
+    errors += _check_enum(args, "type", _TASK_TYPES, "task type")
+    errors += _check_uuid(args, "pet_id")
+    errors += _check_date(args, "start_date")
+    errors += _check_date(args, "end_date")
+    target = args.get("daily_target")
+    if target is not None and (not isinstance(target, int) or target < 1):
+        errors.append(f"daily_target must be a positive integer, got: {target!r}")
+    return errors
+
+
+@_register("manage_daily_task")
+def _validate_manage_daily_task(args: dict) -> list[str]:
+    errors = _check_required(args, ["action"])
+    errors += _check_enum(args, "action", {"update", "delete", "deactivate"}, "action")
+    errors += _check_uuid(args, "task_id")
+    if not args.get("task_id") and not args.get("title"):
+        errors.append("Either task_id or title is required to identify the task")
+    return errors
 
 
 def validate_tool_args(tool_name: str, arguments: dict) -> list[str]:

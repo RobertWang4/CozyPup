@@ -5,6 +5,7 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 from app.models import DailyTask, DailyTaskCompletion, TaskType
+from app.agents.tools import execute_tool
 
 
 def test_daily_task_model_fields():
@@ -45,6 +46,40 @@ def mock_db():
     db.delete = AsyncMock()
     db.commit = AsyncMock()
     return db
+
+
+@pytest.mark.asyncio
+async def test_create_daily_task_tool_routine(mock_db):
+    pet_id = uuid.uuid4()
+    mock_pet = MagicMock()
+    mock_pet.id = pet_id
+    mock_pet.name = "豆豆"
+    mock_pet.color_hex = "E8835C"
+    mock_result = MagicMock()
+    mock_result.scalar_one_or_none.return_value = mock_pet
+    mock_db.execute.return_value = mock_result
+    result = await execute_tool("create_daily_task", {
+        "title": "遛狗", "type": "routine", "daily_target": 2, "pet_id": str(pet_id),
+    }, mock_db, uuid.uuid4())
+    assert result["success"] is True
+    assert result["title"] == "遛狗"
+    assert result["daily_target"] == 2
+    assert "card" in result
+
+
+@pytest.mark.asyncio
+async def test_create_daily_task_tool_special(mock_db):
+    # No pet_id — don't need to mock pet lookup
+    # But execute_tool may still call db.execute for flush, so set up return
+    mock_result = MagicMock()
+    mock_result.scalar_one_or_none.return_value = None
+    mock_db.execute.return_value = mock_result
+    result = await execute_tool("create_daily_task", {
+        "title": "吃益生菌", "type": "special", "daily_target": 1,
+        "start_date": "2026-03-28", "end_date": "2026-04-03",
+    }, mock_db, uuid.uuid4())
+    assert result["success"] is True
+    assert result["type"] == "special"
 
 
 @pytest.mark.asyncio
