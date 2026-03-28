@@ -40,6 +40,12 @@ struct CalendarEvent: Identifiable, Codable, Equatable {
     var petColorHex: String?
     var petTags: [PetTag]
 
+    var locationName: String?
+    var locationAddress: String?
+    var locationLat: Double?
+    var locationLng: Double?
+    var placeId: String?
+
     enum CodingKeys: String, CodingKey {
         case id, title, type, category, source, edited, photos
         case petId = "pet_id"
@@ -50,6 +56,11 @@ struct CalendarEvent: Identifiable, Codable, Equatable {
         case petName = "pet_name"
         case petColorHex = "pet_color_hex"
         case petTags = "pet_tags"
+        case locationName = "location_name"
+        case locationAddress = "location_address"
+        case locationLat = "location_lat"
+        case locationLng = "location_lng"
+        case placeId = "place_id"
     }
 
     init(from decoder: Decoder) throws {
@@ -69,6 +80,11 @@ struct CalendarEvent: Identifiable, Codable, Equatable {
         petName = try c.decodeIfPresent(String.self, forKey: .petName)
         petColorHex = try c.decodeIfPresent(String.self, forKey: .petColorHex)
         petTags = (try? c.decode([PetTag].self, forKey: .petTags)) ?? []
+        locationName = try c.decodeIfPresent(String.self, forKey: .locationName)
+        locationAddress = try c.decodeIfPresent(String.self, forKey: .locationAddress)
+        locationLat = try c.decodeIfPresent(Double.self, forKey: .locationLat)
+        locationLng = try c.decodeIfPresent(Double.self, forKey: .locationLng)
+        placeId = try c.decodeIfPresent(String.self, forKey: .placeId)
     }
 
     init(petId: String?, eventDate: String, eventTime: String?, title: String,
@@ -89,5 +105,10 @@ struct CalendarEvent: Identifiable, Codable, Equatable {
         self.petName = nil
         self.petColorHex = nil
         self.petTags = []
+        self.locationName = nil
+        self.locationAddress = nil
+        self.locationLat = nil
+        self.locationLng = nil
+        self.placeId = nil
     }
 }

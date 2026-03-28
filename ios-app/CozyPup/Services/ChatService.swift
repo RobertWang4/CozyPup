@@ -16,6 +16,7 @@ struct ChatRequest: Encodable {
 enum SSEEvent {
     case token(String)
     case card(CardData)
+    case locationCard(LocationPickerCardData)
     case emergency(EmergencyData)
     case done(intent: String, sessionId: String)
 }
@@ -50,6 +51,10 @@ class ChatService {
                         case "card":
                             if let card = try? JSONDecoder().decode(CardData.self, from: json) {
                                 continuation.yield(.card(card))
+                            }
+                        case "location_card":
+                            if let data = try? JSONDecoder().decode(LocationPickerCardData.self, from: json) {
+                                continuation.yield(.locationCard(data))
                             }
                         case "emergency":
                             if let obj = try? JSONDecoder().decode([String: String].self, from: json),

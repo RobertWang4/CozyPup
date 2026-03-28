@@ -88,6 +88,21 @@ struct ConfirmActionCardData: Codable, Equatable {
     }
 }
 
+struct LocationOption: Codable, Equatable {
+    let name: String
+    let address: String
+    let distance_m: Int?
+    let place_id: String
+    let lat: Double
+    let lng: Double
+}
+
+struct LocationPickerCardData: Codable, Equatable {
+    let type: String  // "location_picker"
+    let event_id: String
+    let options: [LocationOption]
+}
+
 enum CardData: Codable, Equatable {
     case record(RecordCardData)
     case map(MapCardData)
@@ -98,6 +113,7 @@ enum CardData: Codable, Equatable {
     case confirmAction(ConfirmActionCardData)
     case setLanguage(SetLanguageCardData)
     case genericAction(GenericActionCardData)
+    case locationPicker(LocationPickerCardData)
 
     init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
@@ -117,6 +133,8 @@ enum CardData: Codable, Equatable {
             self = .confirmAction(d)
         } else if let d = try? container.decode(SetLanguageCardData.self), d.type == "set_language" {
             self = .setLanguage(d)
+        } else if let d = try? container.decode(LocationPickerCardData.self), d.type == "location_picker" {
+            self = .locationPicker(d)
         } else if let d = try? container.decode(GenericActionCardData.self) {
             // Catch-all for pet_deleted, event_deleted, reminder_deleted, profile_summarized, etc.
             self = .genericAction(d)
@@ -138,6 +156,7 @@ enum CardData: Codable, Equatable {
         case .confirmAction(let d): try container.encode(d)
         case .setLanguage(let d): try container.encode(d)
         case .genericAction(let d): try container.encode(d)
+        case .locationPicker(let d): try container.encode(d)
         }
     }
 }
