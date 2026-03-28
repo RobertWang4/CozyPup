@@ -1,0 +1,638 @@
+"""Tool definitions (OpenAI function calling format) for the Chat Agent."""
+
+import copy
+
+_BASE_TOOL_DEFINITIONS = [
+    {
+        "type": "function",
+        "function": {
+            "name": "create_calendar_event",
+            "description": (
+                "记录宠物已发生的健康/生活事件。\n"
+                "当用户报告已经发生的事情时使用 (吃了/拉了/打了疫苗/遛了/洗澡了)。\n"
+                "对于所有宠物或主人共有的事件 (买狗粮/逛宠物店)，只调用一次且不传 pet_id。\n"
+                "不要用于: 用户询问过去的事 (用 query_calendar_events)。\n"
+                "不要用于: 用户想设未来提醒 (用 create_reminder)。\n"
+                "不要用于: 紧急症状 (用 trigger_emergency)。\n"
+                "title 必须是 2-8 字摘要，不要用原始句子。"
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "pet_id": {
+                        "type": "string",
+                        "description": "UUID of a single pet. Use pet_ids for multi-pet events.",
+                    },
+                    "pet_ids": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "description": (
+                            "List of pet UUIDs this event applies to. Use for multi-pet events "
+                            "(e.g. both dogs went for a walk). OMIT for owner-only events. "
+                            "If only one pet, you can use pet_id instead."
+                        ),
+                    },
+                    "event_date": {
+                        "type": "string",
+                        "description": "Date of the event in YYYY-MM-DD format.",
+                    },
+                    "title": {
+                        "type": "string",
+                        "description": "Short description of the event, e.g. 'Fed 200g kibble' or 'Vomited twice'.",
+                    },
+                    "category": {
+                        "type": "string",
+                        "enum": ["diet", "excretion", "abnormal", "vaccine", "deworming", "medical", "daily"],
+                        "description": "Category of the health event.",
+                    },
+                    "event_time": {
+                        "type": "string",
+                        "description": "Optional time in HH:MM format.",
+                    },
+                    "raw_text": {
+                        "type": "string",
+                        "description": "Optional original user text that triggered this record.",
+                    },
+                    "photo_urls": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "description": "URLs of photos to attach to this event (if user sent images)",
+                    },
+                },
+                "required": ["event_date", "title", "category"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "query_calendar_events",
+            "description": (
+                "查询宠物的历史事件记录。\n"
+                "当用户询问过去发生的事情时使用 (上次打疫苗是什么时候？最近吃了什么？)。\n"
+                "不要用于: 记录新发生的事 (用 create_calendar_event)。\n"
+                "不要用于: 查看提醒 (用 list_reminders)。\n"
+                "可按 pet_id、日期范围、category 过滤。"
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "pet_id": {
+                        "type": "string",
+                        "description": "Optional UUID of the pet to filter by.",
+                    },
+                    "start_date": {
+                        "type": "string",
+                        "description": "Optional start date in YYYY-MM-DD format.",
+                    },
+                    "end_date": {
+                        "type": "string",
+                        "description": "Optional end date in YYYY-MM-DD format.",
+                    },
+                    "category": {
+                        "type": "string",
+                        "enum": ["diet", "excretion", "abnormal", "vaccine", "deworming", "medical", "daily"],
+                        "description": "Optional category filter.",
+                    },
+                },
+                "required": [],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "update_calendar_event",
+            "description": (
+                "修改已有的日历事件。\n"
+                "当用户想更正/修改之前记录的事件时使用 (日期写错了/标题要改)。\n"
+                "不要用于: 记录新事件 (用 create_calendar_event)。\n"
+                "必须先调 query_calendar_events 获取 event_id。"
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "event_id": {
+                        "type": "string",
+                        "description": "UUID of the event to update (from query_calendar_events results).",
+                    },
+                    "event_date": {
+                        "type": "string",
+                        "description": "New date in YYYY-MM-DD format.",
+                    },
+                    "event_time": {
+                        "type": "string",
+                        "description": "New time in HH:MM format.",
+                    },
+                    "title": {
+                        "type": "string",
+                        "description": "New title/description.",
+                    },
+                    "category": {
+                        "type": "string",
+                        "enum": ["diet", "excretion", "abnormal", "vaccine", "deworming", "medical", "daily"],
+                        "description": "New category.",
+                    },
+                },
+                "required": ["event_id"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "create_pet",
+            "description": (
+                "为用户创建新的宠物档案。\n"
+                "当用户说有新宠物要添加时使用 (我养了一只猫/我新买了一只狗)。\n"
+                "不要用于: 更新已有宠物信息 (用 update_pet_profile)。\n"
+                "不要用于: 改名 (用 update_pet_profile 传 name)。\n"
+                "至少需要 name 和 species。"
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "name": {"type": "string", "description": "The pet's name."},
+                    "species": {"type": "string", "enum": ["dog", "cat", "other"], "description": "The type of animal."},
+                    "breed": {"type": "string", "description": "Breed, e.g. 'Golden Retriever'. Empty string if unknown."},
+                    "birthday": {"type": "string", "description": "Optional birthday in YYYY-MM-DD format."},
+                    "weight": {"type": "number", "description": "Optional weight in kg."},
+                    "gender": {"type": "string", "enum": ["male", "female", "unknown"], "description": "Optional gender."},
+                    "neutered": {"type": "boolean", "description": "Optional neutered/spayed status."},
+                    "coat_color": {"type": "string", "description": "Optional coat color."},
+                },
+                "required": ["name", "species"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "update_pet_profile",
+            "description": (
+                "更新宠物档案信息，包括改名。\n"
+                "当用户提到宠物的任何属性时使用 (体重/生日/过敏/品种/性别/饮食/性格/兽医等)。\n"
+                "改名: 在 info 里传 {\"name\": \"新名字\"}。\n"
+                "不要用于: 添加新宠物 (用 create_pet)。\n"
+                "不要用于: 记录事件 (用 create_calendar_event)。\n"
+                "主动调用以逐步完善宠物画像。info 是灵活的 key-value 对。"
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "pet_id": {
+                        "type": "string",
+                        "description": "UUID of the pet.",
+                    },
+                    "info": {
+                        "type": "object",
+                        "description": (
+                            "Key-value pairs of pet info to save. Any keys are allowed. "
+                            "Examples: {\"gender\": \"male\", \"weight_kg\": 5.2, \"allergies\": [\"chicken\"], "
+                            "\"diet\": \"Royal Canin 200g 2x/day\", \"neutered\": true, \"vet\": \"瑞鹏医院\", "
+                            "\"temperament\": \"friendly but anxious\", \"coat_color\": \"golden\"}"
+                        ),
+                    },
+                },
+                "required": ["pet_id", "info"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "save_pet_profile_md",
+            "description": (
+                "保存/更新宠物的叙事性档案文档 (markdown)。\n"
+                "当从对话中了解到宠物新信息时静默调用 (性格/病史/日常习惯/偏好)。\n"
+                "不要用于: 更新结构化字段如体重/生日 (用 update_pet_profile)。\n"
+                "必须传完整文档 (非 diff)，500 字以内，用 markdown 分节。\n"
+                "用用户的语言撰写。"
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "pet_id": {
+                        "type": "string",
+                        "description": "UUID of the pet.",
+                    },
+                    "profile_md": {
+                        "type": "string",
+                        "description": (
+                            "The FULL markdown profile document. Include all previously known info "
+                            "plus new info. Sections: basics, personality, health, daily routine."
+                        ),
+                    },
+                },
+                "required": ["pet_id", "profile_md"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "summarize_pet_profile",
+            "description": (
+                "用户主动要求总结/更新宠物档案时调用。\n"
+                "回顾所有已知信息和聊天历史，生成完整的宠物档案文档。\n"
+                "仅在用户明确要求时调用 (帮我总结一下XX的信息/更新一下档案/整理一下宠物资料)。\n"
+                "必须传完整文档 (非 diff)，800 字以内，用 markdown 分节。\n"
+                "用用户的语言撰写，尽量丰富详实。"
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "pet_id": {
+                        "type": "string",
+                        "description": "UUID of the pet.",
+                    },
+                    "profile_md": {
+                        "type": "string",
+                        "description": (
+                            "The FULL markdown profile document. Summarize ALL known info about the pet "
+                            "from conversation history and existing profile. Sections: basics, personality, "
+                            "health, daily routine, notes. Be thorough and detailed."
+                        ),
+                    },
+                },
+                "required": ["pet_id", "profile_md"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "list_pets",
+            "description": (
+                "列出用户所有已注册的宠物及其档案。\n"
+                "当用户问自己有哪些宠物、或你需要查 pet_id 时使用。\n"
+                "不要用于: 创建新宠物 (用 create_pet)。\n"
+                "无参数，返回全部宠物列表。"
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {},
+                "required": [],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "create_reminder",
+            "description": (
+                "创建一个定时推送提醒。\n"
+                "当用户要求未来某时提醒他做某事时使用 (明天提醒我喂药/下周二带去打疫苗)。\n"
+                "不要用于: 记录已发生的事 (用 create_calendar_event)。\n"
+                "不要用于: 查看已有提醒 (用 list_reminders)。\n"
+                "trigger_at 必须是未来时间，ISO 8601 格式。"
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "pet_id": {
+                        "type": "string",
+                        "description": "UUID of the pet this reminder is for.",
+                    },
+                    "type": {
+                        "type": "string",
+                        "enum": ["medication", "vaccine", "checkup", "feeding", "grooming", "other"],
+                        "description": "Type of reminder.",
+                    },
+                    "title": {
+                        "type": "string",
+                        "description": "Short reminder title, e.g. 'Give heartworm medication'.",
+                    },
+                    "body": {
+                        "type": "string",
+                        "description": "Optional detailed description.",
+                    },
+                    "trigger_at": {
+                        "type": "string",
+                        "description": "When to send the reminder, in ISO 8601 format (YYYY-MM-DDTHH:MM:SS).",
+                    },
+                },
+                "required": ["pet_id", "type", "title", "trigger_at"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "search_places",
+            "description": (
+                "搜索附近的宠物相关地点 (宠物医院/宠物店/狗公园/美容店/24h急诊)。\n"
+                "当用户问附近哪里有…/帮我找…时使用。\n"
+                "不要用于: 记录去过的地方 (用 create_calendar_event)。\n"
+                "需要用户授权位置信息才能使用。"
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "query": {
+                        "type": "string",
+                        "description": (
+                            "Search query for Google Places, e.g. 'veterinary clinic', "
+                            "'dog park', '24 hour emergency vet'."
+                        ),
+                    },
+                },
+                "required": ["query"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "draft_email",
+            "description": (
+                "生成邮件草稿卡片供用户审阅和发送。\n"
+                "当用户要写邮件给兽医或宠物服务商时使用。\n"
+                "不要用于: 聊天回复 (直接回复即可)。\n"
+                "你来根据对话上下文撰写邮件内容，然后调用此工具。"
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "subject": {
+                        "type": "string",
+                        "description": "Email subject line.",
+                    },
+                    "body": {
+                        "type": "string",
+                        "description": "Full email body text.",
+                    },
+                },
+                "required": ["subject", "body"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "delete_pet",
+            "description": (
+                "删除宠物档案。\n"
+                "当用户明确要求移除某个宠物时使用。\n"
+                "不要用于: 更新宠物信息 (用 update_pet_profile)。\n"
+                "此操作不可逆，需确认用户意图。"
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "pet_id": {
+                        "type": "string",
+                        "description": "UUID of the pet to delete.",
+                    },
+                },
+                "required": ["pet_id"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "delete_calendar_event",
+            "description": (
+                "删除日历事件记录。\n"
+                "当用户要求删除之前记录的事件时使用。\n"
+                "不要用于: 修改事件 (用 update_calendar_event)。\n"
+                "必须先调 query_calendar_events 获取 event_id。"
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "event_id": {
+                        "type": "string",
+                        "description": "UUID of the event to delete (from query_calendar_events results).",
+                    },
+                },
+                "required": ["event_id"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "list_reminders",
+            "description": (
+                "列出用户所有未发送的提醒。\n"
+                "当用户问有哪些提醒/定时任务时使用。\n"
+                "不要用于: 查看历史事件 (用 query_calendar_events)。\n"
+                "无参数，返回全部活跃提醒。"
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {},
+                "required": [],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "update_reminder",
+            "description": (
+                "修改已有的提醒。\n"
+                "当用户要改提醒的时间/标题/内容时使用。\n"
+                "不要用于: 创建新提醒 (用 create_reminder)。\n"
+                "必须先调 list_reminders 获取 reminder_id。"
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "reminder_id": {
+                        "type": "string",
+                        "description": "UUID of the reminder to update (from list_reminders results).",
+                    },
+                    "title": {
+                        "type": "string",
+                        "description": "New reminder title.",
+                    },
+                    "body": {
+                        "type": "string",
+                        "description": "New reminder body/description.",
+                    },
+                    "trigger_at": {
+                        "type": "string",
+                        "description": "New trigger time in ISO 8601 format (YYYY-MM-DDTHH:MM:SS).",
+                    },
+                    "type": {
+                        "type": "string",
+                        "enum": ["medication", "vaccine", "checkup", "feeding", "grooming", "other"],
+                        "description": "New reminder type.",
+                    },
+                },
+                "required": ["reminder_id"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "delete_reminder",
+            "description": (
+                "删除/取消一个提醒。\n"
+                "当用户要取消已设定的提醒时使用。\n"
+                "不要用于: 修改提醒 (用 update_reminder)。\n"
+                "必须先调 list_reminders 获取 reminder_id。"
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "reminder_id": {
+                        "type": "string",
+                        "description": "UUID of the reminder to delete (from list_reminders results).",
+                    },
+                },
+                "required": ["reminder_id"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "upload_event_photo",
+            "description": (
+                "将用户的照片附加到日历事件。\n"
+                "当用户发了照片并要求关联到某条记录时使用。\n"
+                "不要用于: 设置宠物头像 (用 set_pet_avatar)。\n"
+                "照片自动从用户消息中获取，需要先有 event_id。"
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "event_id": {
+                        "type": "string",
+                        "description": "UUID of the event to attach the photo to.",
+                    },
+                },
+                "required": ["event_id"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "set_language",
+            "description": (
+                "切换应用显示语言。\n"
+                "当用户要求切换语言时使用 (说英文/switch to English)。\n"
+                "不要用于: 翻译内容 (直接用目标语言回复)。\n"
+                "支持 zh 和 en。"
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "language": {
+                        "type": "string",
+                        "enum": ["zh", "en"],
+                        "description": "Language code to switch to.",
+                    },
+                },
+                "required": ["language"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "set_pet_avatar",
+            "description": (
+                "设置宠物头像。\n"
+                "当用户发了照片并说要用作宠物头像时使用。\n"
+                "如果用户要求用之前发过的照片设置头像，从对话上下文中找到该图片的 photo_url（格式如 /api/v1/calendar/photos/xxx.jpg）传入即可，无需用户重新发送。\n"
+                "不要用于: 给事件附加照片 (用 upload_event_photo)。"
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "pet_id": {
+                        "type": "string",
+                        "description": "UUID of the pet.",
+                    },
+                    "photo_url": {
+                        "type": "string",
+                        "description": "URL of a previously uploaded photo (e.g. /api/v1/calendar/photos/xxx.jpg). Use when referencing a photo from earlier in the conversation instead of a newly attached image.",
+                    },
+                },
+                "required": ["pet_id"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "trigger_emergency",
+            "description": (
+                "当判断用户描述的是真正的宠物紧急情况时调用。\n"
+                "使用场景: 宠物中毒、抽搐、大出血、呼吸困难、昏迷等危及生命的状况。\n"
+                "不要用于: 用户询问过去的紧急事件、一般性健康咨询、轻微不适。\n"
+                "调用前请仔细判断是否真的紧急。"
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "description": "给用户的紧急提示消息",
+                    },
+                    "action": {
+                        "type": "string",
+                        "enum": ["find_er", "call_vet", "first_aid"],
+                        "description": "建议的紧急操作类型",
+                    },
+                },
+                "required": ["message", "action"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "request_images",
+            "description": (
+                "请求查看用户附带的图片。\n"
+                "当你需要看图片内容才能回答用户问题时调用（什么颜色/什么品种/图片里是什么）。\n"
+                "不要用于: 换头像、存日记等操作（那些工具会自动接收图片，不需要你先看）。\n"
+                "调用后图片会返回给你，你再根据图片内容回答用户。"
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "reason": {
+                        "type": "string",
+                        "description": "为什么需要看图片，例如'用户问宠物颜色'",
+                    },
+                },
+                "required": ["reason"],
+            },
+        },
+    },
+]
+
+# Backward compatibility alias
+TOOL_DEFINITIONS = _BASE_TOOL_DEFINITIONS
+
+_tool_defs_cache: dict[str, list[dict]] = {}
+
+
+def get_tool_definitions(lang: str = "zh") -> list[dict]:
+    """Return tool definitions with localized descriptions (cached per lang)."""
+    if lang in _tool_defs_cache:
+        return _tool_defs_cache[lang]
+
+    from app.agents.locale import t
+
+    if lang == "zh":
+        _tool_defs_cache[lang] = _BASE_TOOL_DEFINITIONS
+        return _BASE_TOOL_DEFINITIONS
+    tools = copy.deepcopy(_BASE_TOOL_DEFINITIONS)
+    for tool in tools:
+        fn = tool["function"]
+        key = f"tool_desc_{fn['name']}"
+        desc = t(key, lang)
+        if desc != key:
+            fn["description"] = desc
+    _tool_defs_cache[lang] = tools
+    return tools
