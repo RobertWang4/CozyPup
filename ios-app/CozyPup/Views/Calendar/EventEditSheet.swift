@@ -33,57 +33,108 @@ struct EventEditSheet: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: Tokens.spacing.md) {
-                    field(label: L.title) {
-                        TextField(L.title, text: $title)
-                            .textFieldStyle(.plain)
-                            .foregroundColor(Tokens.text)
-                    }
-
-                    HStack(spacing: 12) {
-                        field(label: L.date) {
-                            TextField("YYYY-MM-DD", text: $date)
-                                .textFieldStyle(.plain)
+                VStack(spacing: Tokens.spacing.lg) {
+                    // Card 1: Title + Date/Time
+                    formCard {
+                        cardField(label: L.title) {
+                            TextField(L.title, text: $title)
+                                .font(Tokens.fontBody)
                                 .foregroundColor(Tokens.text)
                         }
-                        field(label: L.time) {
-                            TextField("HH:MM", text: $time)
-                                .textFieldStyle(.plain)
-                                .foregroundColor(Tokens.text)
+
+                        cardDivider
+
+                        HStack(spacing: 0) {
+                            cardField(label: L.date) {
+                                TextField("YYYY-MM-DD", text: $date)
+                                    .font(Tokens.fontBody)
+                                    .foregroundColor(Tokens.text)
+                            }
+
+                            Rectangle()
+                                .fill(Tokens.divider)
+                                .frame(width: 0.5)
+                                .padding(.vertical, Tokens.spacing.sm)
+
+                            cardField(label: L.time) {
+                                TextField("HH:MM", text: $time)
+                                    .font(Tokens.fontBody)
+                                    .foregroundColor(Tokens.text)
+                            }
                         }
                     }
 
-                    VStack(alignment: .leading, spacing: 6) {
+                    // Card 2: Category
+                    VStack(alignment: .leading, spacing: Tokens.spacing.sm) {
                         Text(Lang.shared.isZh ? "分类" : "Category")
-                            .font(Tokens.fontSubheadline.weight(.medium))
-                            .foregroundColor(Tokens.textSecondary)
+                            .font(Tokens.fontCaption.weight(.medium))
+                            .foregroundColor(Tokens.textTertiary)
+                            .padding(.leading, Tokens.spacing.xs)
+
                         ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 8) {
+                            HStack(spacing: Tokens.spacing.sm) {
                                 ForEach(EventCategory.allCases, id: \.self) { c in
                                     Button {
-                                        category = c
+                                        withAnimation(.easeInOut(duration: 0.15)) {
+                                            category = c
+                                        }
                                     } label: {
                                         Text(c.label)
-                                            .font(Tokens.fontCaption.weight(.medium))
-                                            .padding(.horizontal, 12)
-                                            .padding(.vertical, 6)
-                                            .background(category == c ? Tokens.accent : Tokens.surface)
-                                            .foregroundColor(category == c ? Tokens.white : Tokens.text)
-                                            .cornerRadius(16)
-                                            .overlay(
-                                                RoundedRectangle(cornerRadius: 16)
-                                                    .stroke(category == c ? Color.clear : Tokens.border)
+                                            .font(Tokens.fontSubheadline.weight(.medium))
+                                            .foregroundColor(category == c ? Tokens.accent : Tokens.textSecondary)
+                                            .padding(.horizontal, 14)
+                                            .padding(.vertical, 8)
+                                            .background(
+                                                category == c ? Tokens.accentSoft : Tokens.surface
                                             )
+                                            .cornerRadius(Tokens.radiusSmall)
                                     }
+                                    .buttonStyle(.plain)
                                 }
                             }
                         }
                     }
 
-                    // Photos section
+                    // Card 3: Photos
                     photoSection
+
+                    // Card 4: Location
+                    if let locName = event.locationName, let lat = event.locationLat, let lng = event.locationLng {
+                        VStack(alignment: .leading, spacing: Tokens.spacing.sm) {
+                            Text(Lang.shared.isZh ? "地点" : "Location")
+                                .font(Tokens.fontCaption.weight(.medium))
+                                .foregroundColor(Tokens.textTertiary)
+                                .padding(.leading, Tokens.spacing.xs)
+
+                            HStack {
+                                Button {
+                                    openGoogleMaps(lat: lat, lng: lng, placeId: event.placeId, name: locName)
+                                } label: {
+                                    HStack(spacing: Tokens.spacing.xs) {
+                                        Image(systemName: "mappin.circle.fill")
+                                            .foregroundColor(Tokens.accent)
+                                        Text(locName)
+                                            .font(Tokens.fontBody)
+                                            .foregroundColor(Tokens.accent)
+                                        if let addr = event.locationAddress, !addr.isEmpty {
+                                            Text(addr)
+                                                .font(Tokens.fontCaption)
+                                                .foregroundColor(Tokens.textSecondary)
+                                                .lineLimit(1)
+                                        }
+                                    }
+                                }
+                                Spacer()
+                            }
+                            .padding(Tokens.spacing.md)
+                            .background(Tokens.surface)
+                            .cornerRadius(Tokens.radius)
+                        }
+                    }
                 }
-                .padding(Tokens.spacing.md)
+                .padding(.horizontal, Tokens.spacing.md)
+                .padding(.top, Tokens.spacing.sm)
+                .padding(.bottom, Tokens.spacing.xl)
             }
             .background(Tokens.bg)
             .navigationTitle(Lang.shared.isZh ? "编辑事件" : "Edit Event")
@@ -161,10 +212,11 @@ struct EventEditSheet: View {
     // MARK: - Photo Section
 
     private var photoSection: some View {
-        VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: .leading, spacing: Tokens.spacing.sm) {
             Text(Lang.shared.isZh ? "照片" : "Photos")
-                .font(Tokens.fontSubheadline.weight(.medium))
-                .foregroundColor(Tokens.textSecondary)
+                .font(Tokens.fontCaption.weight(.medium))
+                .foregroundColor(Tokens.textTertiary)
+                .padding(.leading, Tokens.spacing.xs)
 
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: Tokens.spacing.sm) {
@@ -215,22 +267,53 @@ struct EventEditSheet: View {
         }
     }
 
+    private func openGoogleMaps(lat: Double, lng: Double, placeId: String?, name: String) {
+        let gmapsURL = URL(string: "comgooglemaps://?q=\(lat),\(lng)")!
+        if UIApplication.shared.canOpenURL(gmapsURL) {
+            UIApplication.shared.open(gmapsURL)
+        } else {
+            var urlStr = "https://www.google.com/maps/search/?api=1&query=\(lat),\(lng)"
+            if let pid = placeId, !pid.isEmpty {
+                urlStr += "&query_place_id=\(pid)"
+            }
+            if let url = URL(string: urlStr) {
+                UIApplication.shared.open(url)
+            }
+        }
+    }
+
     private func photoURL(_ path: String) -> URL? {
         if path.hasPrefix("http") { return URL(string: path) }
         return APIClient.shared.avatarURL(path)
     }
 
+    // MARK: - Form Card Components
+
     @ViewBuilder
-    private func field(label: String, @ViewBuilder content: () -> some View) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text(label)
-                .font(Tokens.fontSubheadline.weight(.medium))
-                .foregroundColor(Tokens.textSecondary)
+    private func formCard<Content: View>(@ViewBuilder content: () -> Content) -> some View {
+        VStack(spacing: 0) {
             content()
-                .padding(12)
-                .background(Tokens.surface)
-                .cornerRadius(12)
-                .overlay(RoundedRectangle(cornerRadius: 12).stroke(Tokens.border))
         }
+        .background(Tokens.surface)
+        .cornerRadius(Tokens.radius)
+    }
+
+    private var cardDivider: some View {
+        Rectangle()
+            .fill(Tokens.divider)
+            .frame(height: 0.5)
+            .padding(.leading, Tokens.spacing.md)
+    }
+
+    @ViewBuilder
+    private func cardField<Content: View>(label: String, @ViewBuilder content: () -> Content) -> some View {
+        VStack(alignment: .leading, spacing: Tokens.spacing.xs) {
+            Text(label)
+                .font(Tokens.fontCaption)
+                .foregroundColor(Tokens.textTertiary)
+            content()
+        }
+        .padding(.horizontal, Tokens.spacing.md)
+        .padding(.vertical, Tokens.spacing.sm + 2)
     }
 }
