@@ -165,6 +165,58 @@ class CalendarStore: ObservableObject {
         return nil
     }
 
+    func updateLocation(eventId: String, name: String, address: String, lat: Double, lng: Double, placeId: String) async {
+        // Update local
+        if let idx = events.firstIndex(where: { $0.id == eventId }) {
+            events[idx].locationName = name
+            events[idx].locationAddress = address
+            events[idx].locationLat = lat
+            events[idx].locationLng = lng
+            events[idx].placeId = placeId
+            saveLocal()
+        }
+
+        // Sync to API
+        struct LocationBody: Encodable {
+            let location_name: String
+            let location_address: String
+            let location_lat: Double
+            let location_lng: Double
+            let place_id: String
+        }
+        do {
+            let _: CalendarEvent = try await APIClient.shared.request(
+                "PUT", "/calendar/\(eventId)/location",
+                body: LocationBody(
+                    location_name: name,
+                    location_address: address,
+                    location_lat: lat,
+                    location_lng: lng,
+                    place_id: placeId
+                )
+            )
+        } catch {
+            print("Failed to update location: \(error)")
+        }
+    }
+
+    func removeLocation(eventId: String) async {
+        if let idx = events.firstIndex(where: { $0.id == eventId }) {
+            events[idx].locationName = nil
+            events[idx].locationAddress = nil
+            events[idx].locationLat = nil
+            events[idx].locationLng = nil
+            events[idx].placeId = nil
+            saveLocal()
+        }
+
+        do {
+            let _: CalendarEvent = try await APIClient.shared.request("DELETE", "/calendar/\(eventId)/location")
+        } catch {
+            print("Failed to remove location: \(error)")
+        }
+    }
+
     func deleteEventPhoto(eventId: String, photoUrl: String) async {
         do {
             let updated: CalendarEvent = try await APIClient.shared.request(
