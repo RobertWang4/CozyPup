@@ -51,6 +51,9 @@
 		D7EF6BD5206BF3B30C294354 /* Pet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A64F760C22D68D06ECA76404 /* Pet.swift */; };
 		AA1234561234567890ABCDEF /* DailyTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1234561234567890ABCDEF /* DailyTask.swift */; };
 		CC1234561234567890ABCDEF /* DailyTaskStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1234561234567890ABCDEF /* DailyTaskStore.swift */; };
+		EE1234561234567890ABCDEF /* DailyTaskRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF1234561234567890ABCDEF /* DailyTaskRow.swift */; };
+		EE2234561234567890ABCDEF /* DailyTaskPopover.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF2234561234567890ABCDEF /* DailyTaskPopover.swift */; };
+		EE3234561234567890ABCDEF /* DailyTaskIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF3234561234567890ABCDEF /* DailyTaskIndicator.swift */; };
 		D8425461FC00D2E8DECB8021 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 4B60F559B4A4D8C5CC3A9B42 /* GoogleSignIn */; };
 		DBF96E2B35FB712BC97A1C27 /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2586D01E7C42221ABD72995 /* LocationService.swift */; };
 		DDE0B95A2BBD3D6913475404 /* MapCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = E722C9266BF5B0325E6B52A6 /* MapCard.swift */; };
@@ -99,6 +102,9 @@
 		A64F760C22D68D06ECA76404 /* Pet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Pet.swift; sourceTree = "<group>"; };
 		BB1234561234567890ABCDEF /* DailyTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyTask.swift; sourceTree = "<group>"; };
 		DD1234561234567890ABCDEF /* DailyTaskStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyTaskStore.swift; sourceTree = "<group>"; };
+		FF1234561234567890ABCDEF /* DailyTaskRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyTaskRow.swift; sourceTree = "<group>"; };
+		FF2234561234567890ABCDEF /* DailyTaskPopover.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyTaskPopover.swift; sourceTree = "<group>"; };
+		FF3234561234567890ABCDEF /* DailyTaskIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyTaskIndicator.swift; sourceTree = "<group>"; };
 		A8DFA987EA363F0C2645FD64 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		AE52D72C580AA7D599BDCEAC /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
 		B6F1DE010DA6010A14147BF8 /* SettingsDrawer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsDrawer.swift; sourceTree = "<group>"; };
@@ -268,11 +274,22 @@
 				6B9C5A15A1F1516E4B22A269 /* Calendar */,
 				C45937910DDF031CD4069614 /* Cards */,
 				B4F5C5C94DD235615FE4F6D9 /* Chat */,
+				A2B34561234567890ABCDEF0 /* DailyTasks */,
 				B87F8D61AFFA06F863A975FE /* Extensions */,
 				AB05AA687060A2ADDA2BA81E /* Settings */,
 				A1AD7054EED742146144B174 /* Shared */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		A2B34561234567890ABCDEF0 /* DailyTasks */ = {
+			isa = PBXGroup;
+			children = (
+				FF3234561234567890ABCDEF /* DailyTaskIndicator.swift */,
+				FF2234561234567890ABCDEF /* DailyTaskPopover.swift */,
+				FF1234561234567890ABCDEF /* DailyTaskRow.swift */,
+			);
+			path = DailyTasks;
 			sourceTree = "<group>";
 		};
 		B4F5C5C94DD235615FE4F6D9 /* Chat */ = {
@@ -410,6 +427,9 @@
 				ACC8DEDAA3BCE7642D22C250 /* ChatStore.swift in Sources */,
 				AA1234561234567890ABCDEF /* DailyTask.swift in Sources */,
 				CC1234561234567890ABCDEF /* DailyTaskStore.swift in Sources */,
+				EE3234561234567890ABCDEF /* DailyTaskIndicator.swift in Sources */,
+				EE2234561234567890ABCDEF /* DailyTaskPopover.swift in Sources */,
+				EE1234561234567890ABCDEF /* DailyTaskRow.swift in Sources */,
 				E4CE679EF88093851EBC91E0 /* ChatView.swift in Sources */,
 				B26546A329CCAA0E29AF43B5 /* ConfirmActionCard.swift in Sources */,
 				858DEA8563727562E8ACE8BC /* CozyPupApp.swift in Sources */,

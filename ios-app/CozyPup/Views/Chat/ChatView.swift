@@ -4,6 +4,7 @@ struct ChatView: View {
     @EnvironmentObject var chatStore: ChatStore
     @EnvironmentObject var calendarStore: CalendarStore
     @EnvironmentObject var petStore: PetStore
+    @EnvironmentObject var dailyTaskStore: DailyTaskStore
     @StateObject private var speech = SpeechService()
     @StateObject private var location = LocationService()
 
@@ -22,6 +23,7 @@ struct ChatView: View {
     @State private var contentHeight: CGFloat = 0
     @State private var containerHeight: CGFloat = 0
     @State private var fullScreenImage: UIImage?
+    @State private var showDailyTasks = false
 
     private var drawerWidth: CGFloat { UIScreen.main.bounds.width * 0.90 }
 
@@ -163,6 +165,26 @@ struct ChatView: View {
                 .clipped()
             }
             .background(Tokens.bg.ignoresSafeArea())
+
+            // Daily task popover
+            if showDailyTasks {
+                Color.black.opacity(0.001)
+                    .ignoresSafeArea()
+                    .onTapGesture {
+                        withAnimation(.easeOut(duration: 0.2)) { showDailyTasks = false }
+                    }
+
+                VStack {
+                    DailyTaskPopover(isPresented: $showDailyTasks)
+                        .environmentObject(dailyTaskStore)
+                        .frame(maxHeight: UIScreen.main.bounds.height / 3)
+                        .padding(.horizontal, Tokens.spacing.lg)
+                        .padding(.top, 60)
+                    Spacer()
+                }
+                .transition(.opacity.combined(with: .move(edge: .top)))
+                .zIndex(10)
+            }
         }
         .overlay {
             if speech.isListening {
@@ -248,6 +270,9 @@ struct ChatView: View {
         .task {
             await petStore.fetchFromAPI()
             await location.requestLocation()
+        }
+        .task {
+            await dailyTaskStore.fetchToday()
         }
     }
 
@@ -408,6 +433,10 @@ struct ChatView: View {
             }
 
             Spacer()
+
+            if !dailyTaskStore.tasks.isEmpty {
+                DailyTaskIndicator(showPopover: $showDailyTasks)
+            }
 
             Button {
                 Haptics.light()
