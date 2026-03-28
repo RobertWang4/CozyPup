@@ -730,39 +730,44 @@ async def _stream_completion(
     text_parts = []
     tool_calls_map = {}
 
-    response = await litellm.acompletion(
-        model=model,
-        messages=messages,
-        tools=get_tool_definitions(lang),
-        tool_choice="auto",
-        temperature=0.3,
-        **llm_extra_kwargs(),
-        stream=True,
-    )
+    try:
+        response = await litellm.acompletion(
+            model=model,
+            messages=messages,
+            tools=get_tool_definitions(lang),
+            tool_choice="auto",
+            temperature=0.3,
+            **llm_extra_kwargs(),
+            stream=True,
+        )
 
-    async for chunk in response:
-        delta = chunk.choices[0].delta
+        async for chunk in response:
+            delta = chunk.choices[0].delta
 
-        if delta.content:
-            text_parts.append(delta.content)
-            if on_token:
-                await maybe_await(on_token, delta.content)
+            if delta.content:
+                text_parts.append(delta.content)
+                if on_token:
+                    await maybe_await(on_token, delta.content)
 
-        if delta.tool_calls:
-            for tc_delta in delta.tool_calls:
-                idx = tc_delta.index
-                if idx not in tool_calls_map:
-                    tool_calls_map[idx] = {
-                        "id": tc_delta.id or "",
-                        "type": "function",
-                        "function": {"name": "", "arguments": ""},
-                    }
-                tc = tool_calls_map[idx]
-                if tc_delta.id:
-                    tc["id"] = tc_delta.id
-                if tc_delta.function and tc_delta.function.name:
-                    tc["function"]["name"] += tc_delta.function.name
-                if tc_delta.function and tc_delta.function.arguments:
-                    tc["function"]["arguments"] += tc_delta.function.arguments
+            if delta.tool_calls:
+                for tc_delta in delta.tool_calls:
+                    idx = tc_delta.index
+                    if idx not in tool_calls_map:
+                        tool_calls_map[idx] = {
+                            "id": tc_delta.id or "",
+                            "type": "function",
+                            "function": {"name": "", "arguments": ""},
+                        }
+                    tc = tool_calls_map[idx]
+                    if tc_delta.id:
+                        tc["id"] = tc_delta.id
+                    if tc_delta.function and tc_delta.function.name:
+                        tc["function"]["name"] += tc_delta.function.name
+                    if tc_delta.function and tc_delta.function.arguments:
+                        tc["function"]["arguments"] += tc_delta.function.arguments
+
+    except Exception as exc:
+        logger.error("stream_completion_error", extra={"error": str(exc)})
+        return "".join(text_parts), []
 
     return "".join(text_parts), [tool_calls_map[i] for i in sorted(tool_calls_map)]

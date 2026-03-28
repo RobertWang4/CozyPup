@@ -13,6 +13,7 @@ from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.agents.constants import maybe_await
 from app.agents.pre_processor import SuggestedAction
 from app.agents.tools import execute_tool
 from app.agents.validation import validate_tool_args
@@ -81,9 +82,7 @@ async def execute_suggested_actions(
             if "card" in result:
                 cards.append(result["card"])
                 if on_card:
-                    coro = on_card(result["card"])
-                    if hasattr(coro, "__await__"):
-                        await coro
+                    await maybe_await(on_card, result["card"])
 
             logger.info(
                 "post_processor_executed",

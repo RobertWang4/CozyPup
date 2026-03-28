@@ -82,10 +82,12 @@ async def run_executor(
         {"role": "user", "content": user_content},
     ]
 
+    use_model = kwargs.pop("model", None) or settings.model
+
     try:
         # Non-streaming call (faster for short outputs)
         response = await litellm.acompletion(
-            model=settings.model,
+            model=use_model,
             messages=messages,
             tools=tools,
             tool_choice="auto",
@@ -131,7 +133,7 @@ async def run_executor(
             })
 
             retry_response = await litellm.acompletion(
-                model=settings.model,
+                model=use_model,
                 messages=messages,
                 tools=tools,
                 tool_choice="auto",
