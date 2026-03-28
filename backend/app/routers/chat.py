@@ -369,16 +369,26 @@ async def _event_generator(
             result.cards.append(card)
             yield {"event": "card", "data": json.dumps(card)}
 
-    # Wait for profile extractor LLM call to finish, then write to DB
+    # Wait for profile extractor LLM call to finish, then merge into profile_md
     try:
         extracted = await extractor_task
         if extracted:
-            from app.agents.tools import execute_tool
-            await execute_tool("update_pet_profile", extracted, db, user_id)
-            await db.commit()
-            logger.info("profile_extractor_saved", extra={
-                "keys": list(extracted["info"].keys()),
-            })
+            from app.agents.profile_extractor import merge_into_profile_md
+            # Find the pet object to pass to merge
+            target_pet = next(
+                (p for p in pets if str(p.id) == extracted["pet_id"]), None
+            )
+            if target_pet:
+                new_md = await merge_into_profile_md(
+                    target_pet, extracted["info"], lang=lang,
+                )
+                if new_md:
+                    target_pet.profile_md = new_md
+                    await db.commit()
+                    logger.info("profile_extractor_saved", extra={
+                        "keys": list(extracted["info"].keys()),
+                        "md_length": len(new_md),
+                    })
     except Exception as e:
         logger.warning("profile_extractor_save_error", extra={"error": str(e)[:200]})
 
