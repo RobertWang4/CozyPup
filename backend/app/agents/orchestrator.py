@@ -78,6 +78,75 @@ def _describe_tool_call(fn_name: str, fn_args: dict, pets: list | None = None, l
 MAX_TOOL_ROUNDS = 3
 
 
+async def _execute_tool_call(
+    fn_name: str,
+    fn_args: dict,
+    db,
+    user_id,
+    session_id=None,
+    on_card=None,
+    result: OrchestratorResult | None = None,
+    lang: str = "zh",
+    **kwargs,
+) -> dict | None:
+    """Validate, check confirm gate, execute a single tool call.
+
+    Returns:
+        tool_result dict on success.
+        None if a confirm card was queued (tool not executed).
+    Raises:
+        ValueError if validation fails.
+    """
+    # Confirm gate — destructive tools need user approval
+    if fn_name in CONFIRM_TOOLS and session_id:
+        desc = _describe_tool_call(fn_name, fn_args, lang=lang)
+        action_id = await store_action(
+            db=db, user_id=str(user_id), session_id=str(session_id),
+            tool_name=fn_name, arguments=fn_args, description=desc,
+        )
+        confirm_card = {"type": "confirm_action", "action_id": action_id, "message": desc}
+        if result:
+            result.confirm_cards.append(confirm_card)
+        if on_card:
+            await maybe_await(on_card, confirm_card)
+        return None  # Signal: confirm pending
+
+    # Validate
+    errors = validate_tool_args(fn_name, fn_args)
+    if errors:
+        raise ValueError("; ".join(errors))
+
+    # Execute
+    tool_result = await execute_tool(fn_name, fn_args, db, user_id, **kwargs)
+    await db.commit()
+
+    # Handle needs_confirm (gender/species first-time set)
+    if tool_result.get("needs_confirm") and session_id:
+        confirm_tool = tool_result.get("confirm_tool", fn_name)
+        confirm_args = tool_result.get("confirm_arguments", fn_args)
+        confirm_desc = tool_result.get("confirm_description", f"确认执行 {fn_name}")
+        action_id = await store_action(
+            db=db, user_id=str(user_id), session_id=str(session_id),
+            tool_name=confirm_tool, arguments=confirm_args, description=confirm_desc,
+        )
+        confirm_card = {"type": "confirm_action", "action_id": action_id, "message": confirm_desc}
+        if result:
+            result.confirm_cards.append(confirm_card)
+        if on_card:
+            await maybe_await(on_card, confirm_card)
+        return tool_result  # Return result (may have saved non-lockable fields)
+
+    # Push card
+    card = tool_result.get("card")
+    if card:
+        if result:
+            result.cards.append(card)
+        if on_card:
+            await maybe_await(on_card, card)
+
+    return tool_result
+
+
 _FALLBACK_MSGS = {
     "zh": "抱歉，处理时遇到了问题，请再说一次。",
     "en": "Sorry, something went wrong. Please try again.",
@@ -283,30 +352,6 @@ async def _handle_single_task(
             result.response_text = retry_text
             return result
 
-    # Confirm gate
-    if fn_name in CONFIRM_TOOLS:
-        if session_id:
-            desc = _describe_tool_call(fn_name, fn_args, lang=lang)
-            action_id = await store_action(
-                db=db,
-                user_id=str(user_id),
-                session_id=str(session_id),
-                tool_name=fn_name,
-                arguments=fn_args,
-                description=desc,
-            )
-            confirm_card = {
-                "type": "confirm_action",
-                "action_id": action_id,
-                "message": desc,
-            }
-            result.confirm_cards.append(confirm_card)
-            if on_card:
-                await maybe_await(on_card, confirm_card)
-
-        result.response_text = "".join(text_parts)
-        return result
-
     # Special: request_images — handled by _handle_request_images_then_continue
     # (should not reach here due to early check, but just in case)
     if fn_name == "request_images":
@@ -314,6 +359,18 @@ async def _handle_single_task(
             tool_call, messages, initial_text, model,
             db, user_id, session_id, on_token, on_card, "", **kwargs,
         )
+        return result
+
+    # Confirm gate (pre-execution, before entering the multi-round loop)
+    if fn_name in CONFIRM_TOOLS:
+        try:
+            await _execute_tool_call(
+                fn_name, fn_args, db, user_id,
+                session_id=session_id, on_card=on_card, result=result, lang=lang, **kwargs,
+            )
+        except ValueError:
+            pass  # confirm tools skip validation
+        result.response_text = "".join(text_parts)
         return result
 
     # Execute tool with multi-round loop (like chat_agent)
@@ -327,31 +384,14 @@ async def _handle_single_task(
             break
 
         try:
-            # Execute the tool
-            tool_result = await execute_tool(current_fn_name, current_fn_args, db, user_id, **kwargs)
-            await db.commit()
+            tool_result = await _execute_tool_call(
+                current_fn_name, current_fn_args, db, user_id,
+                session_id=session_id, on_card=on_card, result=result, lang=lang, **kwargs,
+            )
 
-            # Handle needs_confirm (e.g. gender/species first-time set)
-            if tool_result.get("needs_confirm") and session_id:
-                confirm_tool = tool_result.get("confirm_tool", current_fn_name)
-                confirm_args = tool_result.get("confirm_arguments", current_fn_args)
+            # Handle needs_confirm (tool executed partially, pending user confirmation)
+            if tool_result is not None and tool_result.get("needs_confirm"):
                 confirm_desc = tool_result.get("confirm_description", f"确认执行 {current_fn_name}")
-                action_id = await store_action(
-                    db=db,
-                    user_id=str(user_id),
-                    session_id=str(session_id),
-                    tool_name=confirm_tool,
-                    arguments=confirm_args,
-                    description=confirm_desc,
-                )
-                confirm_card = {
-                    "type": "confirm_action",
-                    "action_id": action_id,
-                    "message": confirm_desc,
-                }
-                result.confirm_cards.append(confirm_card)
-                if on_card:
-                    await maybe_await(on_card, confirm_card)
                 messages.append({
                     "role": "assistant",
                     "content": current_text or None,
@@ -363,12 +403,6 @@ async def _handle_single_task(
                     "content": json.dumps({"status": "pending_user_confirmation", "message": confirm_desc}),
                 })
                 break
-
-            card = tool_result.get("card")
-            if card:
-                result.cards.append(card)
-                if on_card:
-                    await maybe_await(on_card, card)
 
             # Feed tool result back to LLM
             messages.append({
@@ -399,7 +433,7 @@ async def _handle_single_task(
             except json.JSONDecodeError:
                 break
 
-            # Validate next tool
+            # Validate next tool (validation errors break the loop, no retry for follow-ups)
             next_errors = validate_tool_args(next_fn, next_args)
             if next_errors:
                 messages.append({
@@ -416,24 +450,13 @@ async def _handle_single_task(
 
             # Confirm gate for next tool
             if next_fn in CONFIRM_TOOLS:
-                if session_id:
-                    desc = _describe_tool_call(next_fn, next_args, lang=lang)
-                    action_id = await store_action(
-                        db=db,
-                        user_id=str(user_id),
-                        session_id=str(session_id),
-                        tool_name=next_fn,
-                        arguments=next_args,
-                        description=desc,
+                try:
+                    await _execute_tool_call(
+                        next_fn, next_args, db, user_id,
+                        session_id=session_id, on_card=on_card, result=result, lang=lang, **kwargs,
                     )
-                    confirm_card = {
-                        "type": "confirm_action",
-                        "action_id": action_id,
-                        "message": desc,
-                    }
-                    result.confirm_cards.append(confirm_card)
-                    if on_card:
-                        await maybe_await(on_card, confirm_card)
+                except ValueError:
+                    pass  # confirm tools skip validation
                 break
 
             # Continue loop with next tool
@@ -442,6 +465,15 @@ async def _handle_single_task(
             current_fn_args = next_args
             current_text = followup_text
 
+        except ValueError as ve:
+            # Validation error from _execute_tool_call — shouldn't happen on first round
+            # (already validated above) but may happen on follow-up rounds
+            logger.error("orchestrator_validation_error", extra={
+                "tool": current_fn_name, "error": str(ve), "round": _round,
+            })
+            error_text = f"\n参数验证失败: {ve}"
+            text_parts.append(error_text)
+            break
         except Exception as exc:
             logger.error("orchestrator_tool_error", extra={
                 "tool": current_fn_name, "error": str(exc), "round": _round,
@@ -522,64 +554,32 @@ async def _handle_request_images_then_continue(
                 except json.JSONDecodeError:
                     continue
 
-                # Confirm gate
-                if fn_name in CONFIRM_TOOLS:
-                    if session_id:
-                        action_id = await store_action(
-                            db=db,
-                            user_id=str(user_id),
-                            session_id=str(session_id),
-                            tool_name=fn_name,
-                            arguments=fn_args,
-                            description=_describe_tool_call(fn_name, fn_args, lang=lang),
-                        )
-                        confirm_card = {
-                            "type": "confirm_action",
-                            "action_id": action_id,
-                            "message": _describe_tool_call(fn_name, fn_args, lang=lang),
-                        }
-                        result.confirm_cards.append(confirm_card)
-                        if on_card:
-                            await maybe_await(on_card, confirm_card)
-                    messages.append({
-                        "role": "tool",
-                        "tool_call_id": tc["id"],
-                        "content": json.dumps({"status": "waiting_confirm"}),
-                    })
-                    continue
-
-                # Validate
-                errors = validate_tool_args(fn_name, fn_args)
-                if errors:
-                    messages.append({
-                        "role": "tool",
-                        "tool_call_id": tc["id"],
-                        "content": json.dumps({"error": "; ".join(errors)}),
-                    })
-                    continue
-
-                # Execute
                 if db and user_id:
                     try:
-                        tool_result = await execute_tool(fn_name, fn_args, db, user_id, **kwargs)
-                        await db.commit()
-                        card = tool_result.get("card")
-                        if card:
-                            result.cards.append(card)
-                            if on_card:
-                                await maybe_await(on_card, card)
+                        tool_result = await _execute_tool_call(
+                            fn_name, fn_args, db, user_id,
+                            session_id=session_id, on_card=on_card, result=result,
+                            lang=lang, **kwargs,
+                        )
+                        if tool_result is not None:
+                            messages.append({
+                                "role": "tool", "tool_call_id": tc["id"],
+                                "content": json.dumps(tool_result, ensure_ascii=False, default=str),
+                            })
+                        else:
+                            messages.append({
+                                "role": "tool", "tool_call_id": tc["id"],
+                                "content": json.dumps({"status": "waiting_confirm"}),
+                            })
+                    except ValueError as ve:
                         messages.append({
-                            "role": "tool",
-                            "tool_call_id": tc["id"],
-                            "content": json.dumps(tool_result, ensure_ascii=False, default=str),
+                            "role": "tool", "tool_call_id": tc["id"],
+                            "content": json.dumps({"error": str(ve)}),
                         })
                     except Exception as exc:
-                        logger.error("image_followup_tool_error", extra={
-                            "tool": fn_name, "error": str(exc)
-                        })
+                        logger.error("image_followup_tool_error", extra={"tool": fn_name, "error": str(exc)})
                         messages.append({
-                            "role": "tool",
-                            "tool_call_id": tc["id"],
+                            "role": "tool", "tool_call_id": tc["id"],
                             "content": json.dumps({"error": str(exc)}),
                         })
 
@@ -595,22 +595,14 @@ async def _handle_request_images_then_continue(
                         ft_args = json.loads(ft["function"]["arguments"])
                     except json.JSONDecodeError:
                         continue
-                    if ft_name in CONFIRM_TOOLS and session_id:
-                        desc = _describe_tool_call(ft_name, ft_args, lang=lang)
-                        aid = await store_action(db=db, user_id=str(user_id), session_id=str(session_id),
-                                                 tool_name=ft_name, arguments=ft_args, description=desc)
-                        cc = {"type": "confirm_action", "action_id": aid, "message": desc}
-                        result.confirm_cards.append(cc)
-                        if on_card:
-                            await maybe_await(on_card, cc)
-                        continue
                     try:
-                        tr = await execute_tool(ft_name, ft_args, db, user_id, **kwargs)
-                        await db.commit()
-                        if tr.get("card"):
-                            result.cards.append(tr["card"])
-                            if on_card:
-                                await maybe_await(on_card, tr["card"])
+                        await _execute_tool_call(
+                            ft_name, ft_args, db, user_id,
+                            session_id=session_id, on_card=on_card, result=result,
+                            lang=lang, **kwargs,
+                        )
+                    except ValueError as ve:
+                        logger.error("image_followup_extra_validation", extra={"tool": ft_name, "error": str(ve)[:200]})
                     except Exception as exc:
                         logger.error("image_followup_extra_error", extra={"tool": ft_name, "error": str(exc)[:200]})
 
