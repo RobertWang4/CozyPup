@@ -677,6 +677,15 @@ Notes:
             "Photos are automatically retrieved from the user's message."
         ),
     },
+    "orchestrator_stream_error_msg": {
+        "zh": "抱歉，处理请求时出现错误，请稍后重试。",
+        "en": "Sorry, something went wrong. Please try again later.",
+    },
+    "tool_execution_error": {
+        "zh": "工具执行出错，请稍后重试。",
+        "en": "Tool execution error. Please try again.",
+    },
+
     "tool_desc_trigger_emergency": {
         "en": (
             "Call when you determine the user is describing a real pet emergency.\n"

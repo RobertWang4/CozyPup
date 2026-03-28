@@ -670,6 +670,16 @@ def get_tool_definitions(lang: str = "zh") -> list[dict]:
 # ---------- Tool Execution ----------
 
 
+async def _verify_pet_ownership(
+    db: AsyncSession, pet_id: str, user_id: uuid.UUID
+) -> Pet | None:
+    """Verify pet belongs to user. Returns Pet or None."""
+    result = await db.execute(
+        select(Pet).where(Pet.id == uuid.UUID(pet_id), Pet.user_id == user_id)
+    )
+    return result.scalar_one_or_none()
+
+
 async def _create_calendar_event(
     arguments: dict,
     db: AsyncSession,
@@ -707,6 +717,9 @@ async def _create_calendar_event(
                 pet_names.append(pet.name)
                 if first_pet_id is None:
                     first_pet_id = pid
+
+    if pet_ids_str and not pet_names:
+        return {"success": False, "error": "No valid pets found for the given pet_id(s)"}
 
     event = CalendarEvent(
         user_id=user_id,

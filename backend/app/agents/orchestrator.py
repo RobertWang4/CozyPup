@@ -244,7 +244,7 @@ async def run_orchestrator(
 
     except Exception as exc:
         logger.error("orchestrator_stream_error", extra={"error": str(exc)})
-        error_msg = "抱歉，处理请求时出现错误，请稍后重试。"
+        error_msg = t("orchestrator_stream_error_msg", lang)
         if on_token:
             await maybe_await(on_token, error_msg)
         result.response_text = error_msg
@@ -478,7 +478,7 @@ async def _handle_single_task(
             logger.error("orchestrator_tool_error", extra={
                 "tool": current_fn_name, "error": str(exc), "round": _round,
             })
-            error_text = f"\n工具执行出错: {exc}"
+            error_text = f"\n{t('tool_execution_error', lang)}"
             text_parts.append(error_text)
             break
 
