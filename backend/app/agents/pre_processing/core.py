@@ -4,7 +4,7 @@ import re
 from datetime import date
 
 from .types import SuggestedAction, CONFIRM_THRESHOLD
-from . import calendar_detect, pet_detect, reminder_detect, misc_detect
+from . import calendar_detect, pet_detect, reminder_detect, misc_detect, task_detect
 
 
 _QUESTION_OVERRIDE = re.compile(
@@ -52,6 +52,9 @@ def pre_process(
 
     # --- Reminders ---
     actions.extend(reminder_detect.detect(message, pets, today, lang))
+
+    # Daily tasks
+    actions.extend(task_detect.detect(message, pets, today, lang, is_question))
 
     # --- Misc: search_places, draft_email, summarize_profile, set_avatar, language ---
     actions.extend(misc_detect.detect(message, pets, today, lang, is_question))

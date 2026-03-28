@@ -91,3 +91,36 @@ async def test_get_today_tasks_empty(mock_db):
     result = await _get_today_tasks(mock_db, uuid.uuid4(), date(2026, 3, 28))
     assert result["tasks"] == []
     assert result["all_completed"] is True
+
+
+from app.agents.pre_processing import pre_process
+
+
+def _make_pet(name: str):
+    pet = MagicMock()
+    pet.id = uuid.uuid4()
+    pet.name = name
+    return pet
+
+
+def test_preprocess_detects_routine_task():
+    pets = [_make_pet("豆豆")]
+    actions = pre_process("帮我设置每天遛狗两次", pets, today=date(2026, 3, 28))
+    task_actions = [a for a in actions if a.tool_name == "create_daily_task"]
+    assert len(task_actions) >= 1
+    assert task_actions[0].arguments["type"] == "routine"
+
+
+def test_preprocess_detects_special_task():
+    pets = [_make_pet("豆豆")]
+    actions = pre_process("接下来一周每天给狗狗吃益生菌", pets, today=date(2026, 3, 28))
+    task_actions = [a for a in actions if a.tool_name == "create_daily_task"]
+    assert len(task_actions) >= 1
+    assert task_actions[0].arguments["type"] == "special"
+
+
+def test_preprocess_does_not_detect_task_for_question():
+    pets = [_make_pet("豆豆")]
+    actions = pre_process("每天要遛几次狗？", pets, today=date(2026, 3, 28))
+    task_actions = [a for a in actions if a.tool_name == "create_daily_task"]
+    assert len(task_actions) == 0
