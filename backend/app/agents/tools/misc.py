@@ -117,3 +117,32 @@ async def trigger_emergency(
             "action": arguments["action"],
         },
     }
+
+
+@register_tool("search_places_text")
+async def search_places_text(
+    arguments: dict,
+    db: AsyncSession,
+    user_id: uuid.UUID,
+    **_kwargs,
+) -> dict:
+    """Search for a place by text query (address or name)."""
+    query = arguments.get("query", "")
+    if not query:
+        return {"success": False, "error": "No query provided."}
+
+    from app.services.places import places_service
+    places = await places_service.search_text(query=query)
+
+    if not places:
+        return {
+            "success": True,
+            "places": [],
+            "message": f"No results found for '{query}'.",
+        }
+
+    return {
+        "success": True,
+        "places": places,
+        "places_count": len(places),
+    }

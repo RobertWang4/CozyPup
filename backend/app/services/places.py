@@ -97,5 +97,41 @@ class PlacesService:
         logger.info("places_search", extra={"query": query, "result_count": len(results)})
         return results
 
+    async def search_text(self, query: str) -> list[dict]:
+        """Search places by text query (address, name). Returns up to 5 results."""
+        if not self.api_key:
+            logger.warning("places_no_api_key", extra={"query": query})
+            return []
+
+        try:
+            async with httpx.AsyncClient(timeout=10.0) as client:
+                resp = await client.get(
+                    "https://maps.googleapis.com/maps/api/place/textsearch/json",
+                    params={"query": query, "key": self.api_key},
+                )
+                resp.raise_for_status()
+                data = resp.json()
+        except Exception as exc:
+            logger.error("places_text_search_error", extra={
+                "error_type": type(exc).__name__,
+                "error_message": str(exc)[:200],
+                "query": query,
+            })
+            return []
+
+        results = []
+        for place in data.get("results", [])[:5]:
+            location = place.get("geometry", {}).get("location", {})
+            results.append({
+                "name": place.get("name", ""),
+                "address": place.get("formatted_address", ""),
+                "place_id": place.get("place_id", ""),
+                "lat": location.get("lat", 0.0),
+                "lng": location.get("lng", 0.0),
+            })
+
+        logger.info("places_text_search", extra={"query": query, "result_count": len(results)})
+        return results
+
 
 places_service = PlacesService(api_key=settings.google_places_api_key)

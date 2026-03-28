@@ -646,6 +646,69 @@ _BASE_TOOL_DEFINITIONS = [
     {
         "type": "function",
         "function": {
+            "name": "add_event_location",
+            "description": (
+                "给日记/日历事件添加地点标记。\n"
+                "当用户选择了一个地点后使用。\n"
+                "需要先有 event_id（来自 create_calendar_event 的返回值）。"
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "event_id": {
+                        "type": "string",
+                        "description": "Calendar event UUID.",
+                    },
+                    "location_name": {
+                        "type": "string",
+                        "description": "Place name, e.g. 'Rideau Park'.",
+                    },
+                    "location_address": {
+                        "type": "string",
+                        "description": "Full address.",
+                    },
+                    "lat": {
+                        "type": "number",
+                        "description": "Latitude.",
+                    },
+                    "lng": {
+                        "type": "number",
+                        "description": "Longitude.",
+                    },
+                    "place_id": {
+                        "type": "string",
+                        "description": "Google Place ID.",
+                    },
+                },
+                "required": ["event_id", "location_name", "lat", "lng"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "search_places_text",
+            "description": (
+                "通过文字查询搜索具体地点（地址或地名）。\n"
+                "当用户说了一个具体地址时使用，如 '302 Rideau St' 或 '朝阳公园'。\n"
+                "返回前5个匹配结果。\n"
+                "不要用于: 搜索附近地点（用 search_places）。"
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "query": {
+                        "type": "string",
+                        "description": "Address or place name to search for.",
+                    },
+                },
+                "required": ["query"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
             "name": "request_images",
             "description": (
                 "请求查看用户附带的图片。\n"

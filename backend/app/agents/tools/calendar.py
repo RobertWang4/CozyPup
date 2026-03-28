@@ -288,3 +288,42 @@ async def upload_event_photo(
             "category": "daily",
         },
     }
+
+
+@register_tool("add_event_location")
+async def add_event_location(
+    arguments: dict,
+    db: AsyncSession,
+    user_id: uuid.UUID,
+) -> dict:
+    """Add location to a calendar event."""
+    event_id = uuid.UUID(arguments["event_id"])
+
+    result = await db.execute(
+        select(CalendarEvent).where(
+            CalendarEvent.id == event_id, CalendarEvent.user_id == user_id
+        )
+    )
+    event = result.scalar_one_or_none()
+    if not event:
+        return {"success": False, "error": "Event not found"}
+
+    event.location_name = arguments.get("location_name", "")
+    event.location_address = arguments.get("location_address", "")
+    event.location_lat = arguments.get("lat")
+    event.location_lng = arguments.get("lng")
+    event.place_id = arguments.get("place_id", "")
+    await db.flush()
+
+    return {
+        "success": True,
+        "event_id": str(event_id),
+        "location_name": event.location_name,
+        "card": {
+            "type": "record",
+            "pet_name": "",
+            "date": event.event_date.isoformat(),
+            "category": event.category.value,
+            "title": event.title,
+        },
+    }
