@@ -1,7 +1,7 @@
 """Tests for daily tasks feature."""
 import uuid
 from datetime import date
-from unittest.mock import MagicMock
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 from app.models import DailyTask, DailyTaskCompletion, TaskType
@@ -34,3 +34,25 @@ def test_daily_task_completion_model_fields():
 def test_task_type_enum():
     assert TaskType.routine.value == "routine"
     assert TaskType.special.value == "special"
+
+
+@pytest.fixture
+def mock_db():
+    db = AsyncMock()
+    db.execute = AsyncMock()
+    db.add = MagicMock()
+    db.flush = AsyncMock()
+    db.delete = AsyncMock()
+    db.commit = AsyncMock()
+    return db
+
+
+@pytest.mark.asyncio
+async def test_get_today_tasks_empty(mock_db):
+    from app.routers.tasks import _get_today_tasks
+    mock_result = MagicMock()
+    mock_result.all.return_value = []
+    mock_db.execute.return_value = mock_result
+    result = await _get_today_tasks(mock_db, uuid.uuid4(), date(2026, 3, 28))
+    assert result["tasks"] == []
+    assert result["all_completed"] is True
