@@ -556,6 +556,9 @@ struct ChatView: View {
                         }
                     case .emergency(let e):
                         emergency = e
+                    case .locationCard(let data):
+                        let card = CardData.locationPicker(data)
+                        chatStore.messages[idx].cards.append(card)
                     case .done(_, let sid):
                         chatStore.saveSession(sid)
                     }

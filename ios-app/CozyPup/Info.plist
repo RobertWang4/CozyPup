@@ -23,7 +23,7 @@
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.googleusercontent.apps.496617144117-73j9krtarupr8as09cka2tg06sn4cke8</string>
+				<string>com.googleusercontent.apps.601329501885-ru8qjq46n4ri34eenkd4g1qkcqho1fm2</string>
 			</array>
 		</dict>
 	</array>
@@ -42,11 +42,9 @@
 	<string>CozyPup needs microphone access for voice input</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>CozyPup needs photo library access to attach pet photos</string>
-	<key>LSApplicationQueriesSchemes</key>
-	<array>
-		<string>comgooglemaps</string>
-	</array>
-<key>UILaunchScreen</key>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>CozyPup uses speech recognition for voice input</string>
+	<key>UILaunchScreen</key>
 	<dict/>
 	<key>UIRequiresFullScreen</key>
 	<true/>

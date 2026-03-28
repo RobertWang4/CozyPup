@@ -140,6 +140,7 @@ struct DayRow: View {
     var onPhotoDelete: ((String, String) -> Void)?
 
     @State private var editingEvent: CalendarEvent?
+    @State private var fullScreenImage: UIImage?
 
     private var cal: Calendar { Calendar.current }
     private var dayNum: Int { cal.component(.day, from: date) }
@@ -167,6 +168,18 @@ struct DayRow: View {
                     .padding(.horizontal, Tokens.spacing.sm)
                 : nil
         )
+        .fullScreenCover(isPresented: Binding(
+            get: { fullScreenImage != nil },
+            set: { if !$0 { fullScreenImage = nil } }
+        )) {
+            if let img = fullScreenImage {
+                FullScreenImageViewer(image: img) {
+                    fullScreenImage = nil
+                }
+                .ignoresSafeArea()
+                .presentationBackground(.clear)
+            }
+        }
         .sheet(item: $editingEvent) { evt in
             if let onUpdate {
                 EventEditSheet(
@@ -263,6 +276,9 @@ struct DayRow: View {
                                         .frame(width: 48, height: 36)
                                         .clipped()
                                         .cornerRadius(6)
+                                        .onTapGesture {
+                                            loadFullScreenImage(from: urlStr)
+                                        }
                                     }
                                 }
                                 .padding(.leading, Tokens.spacing.md)
@@ -298,6 +314,16 @@ struct DayRow: View {
         if let hex = event.petColorHex, !hex.isEmpty { return Color(hex: hex) }
         if let pet = pets.first(where: { $0.id == event.petId }) { return pet.color }
         return Tokens.accent
+    }
+
+    private func loadFullScreenImage(from urlStr: String) {
+        guard let url = APIClient.shared.avatarURL(urlStr) else { return }
+        Task {
+            if let (data, _) = try? await URLSession.shared.data(from: url),
+               let uiImage = UIImage(data: data) {
+                await MainActor.run { fullScreenImage = uiImage }
+            }
+        }
     }
 
     private func categoryColor(_ category: EventCategory) -> Color {

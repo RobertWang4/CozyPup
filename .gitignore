@@ -34,5 +34,9 @@ xcuserdata/
 # Server logs
 backend/server.log
 
+# E2E test reports (generated, not tracked)
+backend/tests/e2e/reports/*.md
+backend/tests/e2e/reports/failures/
+
 # Superpowers plans/specs (Claude Code working docs)
 docs/superpowers/
