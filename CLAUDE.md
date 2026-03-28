@@ -197,30 +197,37 @@ Add `.weight(.semibold)` etc. as needed: `Tokens.fontBody.weight(.semibold)`
 
 ## Deployment
 
-**Server**: Oracle Cloud VM, Docker Compose
+**Server**: Google Cloud Run (asia-east1), auto-deployed via Cloud Build on push to main.
 
 ```bash
-# SSH
-ssh -i ~/Projects/OracleCloud/ssh-key-2026-03-12.key ubuntu@168.138.75.153
-
-# Project path on server
-/home/ubuntu/cozypup/backend
-
-# Deploy (from local machine)
+# Auto-deploy: just push backend changes
 git push origin main
-ssh -i ~/Projects/OracleCloud/ssh-key-2026-03-12.key ubuntu@168.138.75.153 \
-  "cd /home/ubuntu/cozypup && git pull && cd backend && docker compose up -d --build"
+# Cloud Build triggers on backend/** changes → builds Docker → deploys to Cloud Run
 
-# Server logs
-ssh -i ~/Projects/OracleCloud/ssh-key-2026-03-12.key ubuntu@168.138.75.153 \
-  "cd /home/ubuntu/cozypup/backend && docker compose logs --tail 50 backend"
+# Manual deploy (if needed)
+cd backend
+gcloud builds submit --tag asia-east1-docker.pkg.dev/cozypup-39487/cozypup/backend:latest --project=cozypup-39487
+gcloud run deploy backend --image=asia-east1-docker.pkg.dev/cozypup-39487/cozypup/backend:latest --region=asia-east1 --project=cozypup-39487
+
+# View logs
+gcloud logging read "resource.type=cloud_run_revision AND resource.labels.service_name=backend" --limit=20 --project=cozypup-39487
+
+# View user login/registration events
+gcloud logging read 'jsonPayload.message="user_login" OR jsonPayload.message="user_created"' --limit=10 --project=cozypup-39487
+
+# Check service status
+gcloud run services describe backend --region=asia-east1 --project=cozypup-39487
 ```
 
-**Public URL**: `http://168.138.75.153:8000`
+**Public URL**: `https://backend-601329501885.asia-east1.run.app`
+
+**Avatars**: GCS bucket `cozypup-avatars` (public read)
+
+**Secrets**: Managed via Secret Manager (DATABASE_URL, JWT_SECRET, MODEL_API_BASE, MODEL_API_KEY, GOOGLE_PLACES_API_KEY, DEEPGRAM_API_KEY)
 
 ## Environment
 
-Backend `.env` requires: `DATABASE_URL` (Neon PostgreSQL), `JWT_SECRET`, `MODEL_API_BASE`, `MODEL_API_KEY`. See `.env.example`.
+Backend env vars are managed via Cloud Run (secrets in Secret Manager, plain vars in service config). For local dev, use `.env` file — see `.env.example`.
 
 ## Implementation Status
 
