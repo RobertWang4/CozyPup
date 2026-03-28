@@ -488,6 +488,14 @@ Notes:
         "zh": "设置{type}提醒（{date}）",
         "en": "Set {type} reminder ({date})",
     },
+    "confirm_create_daily_task": {
+        "zh": "设置每日待办：{title}（每天{target}次）",
+        "en": "Create daily task: {title} ({target}x/day)",
+    },
+    "confirm_create_special_task": {
+        "zh": "设置待办：{title}（{start}至{end}，每天{target}次）",
+        "en": "Create task: {title} ({start} to {end}, {target}x/day)",
+    },
     "confirm_search_places": {
         "zh": "搜索附近相关地点",
         "en": "Search nearby places",
@@ -721,5 +729,26 @@ Notes:
     "execution_failed": {
         "zh": "执行失败",
         "en": "Execution failed",
+    },
+
+    "location_hint": {
+        "zh": (
+            "\n## 地点标记规则\n"
+            "当你用 create_calendar_event 创建了带照片的日记后：\n"
+            "1. 如果用户授权了位置信息，自动调用 search_places 搜索5个附近相关地点\n"
+            "2. 在回复中主动问用户'要记录地点吗？'并列出搜索到的地点选项\n"
+            "3. 用户选择后调用 add_event_location 添加地点\n"
+            "4. 用户说具体地址时，先用 search_places_text 搜索，然后用 add_event_location 添加\n"
+            "如果没有照片，不要主动问地点，等用户自己提。"
+        ),
+        "en": (
+            "\n## Location Tagging Rules\n"
+            "After creating a diary event with photos via create_calendar_event:\n"
+            "1. If user shared location, call search_places to find 5 nearby places\n"
+            "2. Proactively ask 'Want to tag the location?' and list the options\n"
+            "3. When user picks one, call add_event_location\n"
+            "4. When user types an address, use search_places_text first, then add_event_location\n"
+            "If no photos, don't ask about location — wait for user to bring it up."
+        ),
     },
 }

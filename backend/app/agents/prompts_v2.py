@@ -55,6 +55,9 @@ def build_system_prompt(
         hints_text = "\n".join(f"- {h}" for h in preprocessor_hints)
         parts.append(t("preprocessor_hint", lang).format(hints=hints_text))
 
+    # Location tagging hint
+    parts.append(t("location_hint", lang))
+
     return "\n".join(parts)
 
 
