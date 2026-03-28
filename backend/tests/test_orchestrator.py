@@ -151,7 +151,7 @@ async def test_confirm_gate_single():
 
     with patch("app.agents.orchestrator.litellm.acompletion", new_callable=AsyncMock, return_value=MockAsyncIterator(chunks)), \
          patch("app.agents.orchestrator.validate_tool_args", return_value=[]), \
-         patch("app.agents.orchestrator.store_action", return_value="action-123"):
+         patch("app.agents.orchestrator.store_action", new_callable=AsyncMock, return_value="action-123"):
         result = await run_orchestrator(
             message="删除三妹",
             system_prompt="test",

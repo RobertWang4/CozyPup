@@ -434,7 +434,7 @@ async def confirm_action(
 
     No LLM involved — direct tool execution from stored arguments.
     """
-    action = pop_action(request.action_id, str(user_id))
+    action = await pop_action(db, request.action_id, str(user_id))
     if not action:
         raise HTTPException(status_code=404, detail="Action not found or expired")
 
@@ -445,14 +445,14 @@ async def confirm_action(
         await db.commit()
     except Exception as exc:
         logger.error("confirm_action_error", extra={
-            "action_id": action.action_id,
+            "action_id": str(action.id),
             "tool": action.tool_name,
             "error": str(exc)[:200],
         })
         raise HTTPException(status_code=500, detail=str(exc))
 
     # Save confirmation as assistant message in the chat
-    session_id = uuid.UUID(action.session_id)
+    session_id = action.session_id
     card = result.get("card")
     cards_json = json.dumps([card]) if card else None
     await _save_message(

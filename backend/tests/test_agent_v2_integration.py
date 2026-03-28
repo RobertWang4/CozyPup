@@ -442,7 +442,7 @@ async def test_confirm_flow_delete_pet():
         new_callable=AsyncMock,
         return_value=MockAsyncIterator(chunks),
     ), patch("app.agents.orchestrator.validate_tool_args", return_value=[]), patch(
-        "app.agents.orchestrator.store_action", return_value="action-456"
+        "app.agents.orchestrator.store_action", new_callable=AsyncMock, return_value="action-456"
     ), patch(
         "app.agents.orchestrator.execute_tool", mock_execute
     ):

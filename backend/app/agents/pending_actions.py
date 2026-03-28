@@ -1,32 +1,17 @@
-"""In-memory store for pending user-confirmable actions.
-
-When the pre-processor detects an action with medium confidence,
-it is stored here and a confirm card is shown to the user.
-On confirm, the action is popped and executed directly — no LLM needed.
-"""
-
+"""DB-backed store for pending user-confirmable actions."""
 import uuid as _uuid
-from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
+
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.models import PendingAction
 
 _MAX_AGE = timedelta(hours=1)
 
 
-@dataclass
-class PendingAction:
-    action_id: str
-    user_id: str
-    session_id: str
-    tool_name: str
-    arguments: dict
-    description: str
-    created_at: datetime
-
-
-_store: dict[str, PendingAction] = {}
-
-
-def store_action(
+async def store_action(
+    db: AsyncSession,
     user_id: str,
     session_id: str,
     tool_name: str,
@@ -34,31 +19,36 @@ def store_action(
     description: str,
 ) -> str:
     """Store a pending action and return its ID."""
-    _cleanup()
-    action_id = str(_uuid.uuid4())
-    _store[action_id] = PendingAction(
-        action_id=action_id,
-        user_id=user_id,
-        session_id=session_id,
+    action_id = _uuid.uuid4()
+    action = PendingAction(
+        id=action_id,
+        user_id=_uuid.UUID(user_id),
+        session_id=_uuid.UUID(session_id),
         tool_name=tool_name,
         arguments=arguments,
         description=description,
-        created_at=datetime.utcnow(),
     )
-    return action_id
+    db.add(action)
+    await db.flush()
+    return str(action_id)
 
 
-def pop_action(action_id: str, user_id: str) -> PendingAction | None:
-    """Pop a pending action if it belongs to the user. Returns None if not found/expired."""
-    action = _store.get(action_id)
-    if action and action.user_id == user_id:
-        del _store[action_id]
-        return action
-    return None
-
-
-def _cleanup():
-    cutoff = datetime.utcnow() - _MAX_AGE
-    expired = [k for k, v in _store.items() if v.created_at < cutoff]
-    for k in expired:
-        del _store[k]
+async def pop_action(
+    db: AsyncSession,
+    action_id: str,
+    user_id: str,
+) -> PendingAction | None:
+    """Pop a pending action if it belongs to the user."""
+    cutoff = datetime.now(timezone.utc) - _MAX_AGE
+    result = await db.execute(
+        select(PendingAction).where(
+            PendingAction.id == _uuid.UUID(action_id),
+            PendingAction.user_id == _uuid.UUID(user_id),
+            PendingAction.created_at > cutoff,
+        )
+    )
+    action = result.scalar_one_or_none()
+    if action:
+        await db.delete(action)
+        await db.flush()
+    return action

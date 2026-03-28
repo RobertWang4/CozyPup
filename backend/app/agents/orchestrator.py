@@ -287,7 +287,8 @@ async def _handle_single_task(
     if fn_name in CONFIRM_TOOLS:
         if session_id:
             desc = _describe_tool_call(fn_name, fn_args, lang=lang)
-            action_id = store_action(
+            action_id = await store_action(
+                db=db,
                 user_id=str(user_id),
                 session_id=str(session_id),
                 tool_name=fn_name,
@@ -335,7 +336,8 @@ async def _handle_single_task(
                 confirm_tool = tool_result.get("confirm_tool", current_fn_name)
                 confirm_args = tool_result.get("confirm_arguments", current_fn_args)
                 confirm_desc = tool_result.get("confirm_description", f"确认执行 {current_fn_name}")
-                action_id = store_action(
+                action_id = await store_action(
+                    db=db,
                     user_id=str(user_id),
                     session_id=str(session_id),
                     tool_name=confirm_tool,
@@ -416,7 +418,8 @@ async def _handle_single_task(
             if next_fn in CONFIRM_TOOLS:
                 if session_id:
                     desc = _describe_tool_call(next_fn, next_args, lang=lang)
-                    action_id = store_action(
+                    action_id = await store_action(
+                        db=db,
                         user_id=str(user_id),
                         session_id=str(session_id),
                         tool_name=next_fn,
@@ -522,7 +525,8 @@ async def _handle_request_images_then_continue(
                 # Confirm gate
                 if fn_name in CONFIRM_TOOLS:
                     if session_id:
-                        action_id = store_action(
+                        action_id = await store_action(
+                            db=db,
                             user_id=str(user_id),
                             session_id=str(session_id),
                             tool_name=fn_name,
@@ -593,8 +597,8 @@ async def _handle_request_images_then_continue(
                         continue
                     if ft_name in CONFIRM_TOOLS and session_id:
                         desc = _describe_tool_call(ft_name, ft_args, lang=lang)
-                        aid = store_action(user_id=str(user_id), session_id=str(session_id),
-                                           tool_name=ft_name, arguments=ft_args, description=desc)
+                        aid = await store_action(db=db, user_id=str(user_id), session_id=str(session_id),
+                                                 tool_name=ft_name, arguments=ft_args, description=desc)
                         cc = {"type": "confirm_action", "action_id": aid, "message": desc}
                         result.confirm_cards.append(cc)
                         if on_card:
@@ -677,7 +681,8 @@ async def _handle_multi_task(
 
         if exec_result.needs_confirm:
             if session_id:
-                action_id = store_action(
+                action_id = await store_action(
+                    db=db,
                     user_id=str(user_id),
                     session_id=str(session_id),
                     tool_name=exec_result.tool,
