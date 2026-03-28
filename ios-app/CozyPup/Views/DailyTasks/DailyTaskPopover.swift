@@ -5,59 +5,54 @@ struct DailyTaskPopover: View {
     @Binding var isPresented: Bool
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
+        VStack(spacing: 0) {
+            // Compact header
             HStack {
                 Text("今日待办")
-                    .font(Tokens.fontSubheadline.weight(.semibold))
-                    .foregroundColor(Tokens.text)
+                    .font(Tokens.fontCaption.weight(.semibold))
+                    .foregroundColor(Tokens.textSecondary)
                 Spacer()
                 Button {
                     withAnimation(.easeOut(duration: 0.2)) { isPresented = false }
                 } label: {
-                    Image(systemName: "xmark")
-                        .font(Tokens.fontCaption.weight(.medium))
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.system(size: 16))
                         .foregroundColor(Tokens.textTertiary)
                 }
                 .buttonStyle(.plain)
             }
             .padding(.horizontal, Tokens.spacing.md)
-            .padding(.top, Tokens.spacing.md)
-            .padding(.bottom, Tokens.spacing.sm)
+            .padding(.top, Tokens.spacing.sm + 2)
+            .padding(.bottom, Tokens.spacing.xs)
 
-            Divider().foregroundColor(Tokens.divider)
-
+            // Task list — no scroll, sized to content
             if store.tasks.isEmpty {
                 Text("暂无待办")
                     .font(Tokens.fontCaption)
                     .foregroundColor(Tokens.textTertiary)
+                    .padding(.vertical, Tokens.spacing.sm)
                     .frame(maxWidth: .infinity)
-                    .padding(Tokens.spacing.md)
             } else {
-                ScrollView {
-                    VStack(spacing: 0) {
-                        ForEach(store.tasks) { task in
-                            DailyTaskRow(task: task) {
-                                Task { await store.tap(task.id) }
-                            }
-                            .padding(.horizontal, Tokens.spacing.md)
-
-                            if task.id != store.tasks.last?.id {
-                                Divider()
-                                    .foregroundColor(Tokens.divider)
-                                    .padding(.horizontal, Tokens.spacing.md)
-                            }
+                VStack(spacing: 0) {
+                    ForEach(store.tasks) { task in
+                        if task.id != store.tasks.first?.id {
+                            Divider()
+                                .padding(.horizontal, Tokens.spacing.md)
+                        }
+                        DailyTaskRow(task: task) {
+                            Task { await store.tap(task.id) }
                         }
                     }
-                    .padding(.vertical, Tokens.spacing.sm)
                 }
             }
         }
+        .padding(.bottom, Tokens.spacing.xs)
         .background(Tokens.surface)
-        .cornerRadius(Tokens.radius)
+        .cornerRadius(Tokens.radiusSmall)
         .overlay(
-            RoundedRectangle(cornerRadius: Tokens.radius)
-                .stroke(Tokens.border, lineWidth: 1)
+            RoundedRectangle(cornerRadius: Tokens.radiusSmall)
+                .stroke(Tokens.border.opacity(0.5), lineWidth: 0.5)
         )
-        .shadow(color: Tokens.dimOverlay.opacity(0.08), radius: 12, y: 4)
+        .shadow(color: Tokens.dimOverlay.opacity(0.06), radius: 8, y: 3)
     }
 }

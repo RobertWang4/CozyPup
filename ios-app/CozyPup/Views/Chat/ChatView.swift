@@ -177,7 +177,7 @@ struct ChatView: View {
                 VStack {
                     DailyTaskPopover(isPresented: $showDailyTasks)
                         .environmentObject(dailyTaskStore)
-                        .frame(maxHeight: UIScreen.main.bounds.height / 3)
+                        .fixedSize(horizontal: false, vertical: true)
                         .padding(.horizontal, Tokens.spacing.lg)
                         .padding(.top, 60)
                     Spacer()
