@@ -702,4 +702,24 @@ Notes:
             "After calling, images will be returned to you, then answer the user based on image content."
         ),
     },
+    "fallback_error": {
+        "zh": "抱歉，处理时遇到了问题，请再说一次。",
+        "en": "Sorry, something went wrong. Please try again.",
+    },
+    "arg_parse_error": {
+        "zh": "抱歉，理解您的意思时出了点问题，请换个说法再试试。",
+        "en": "Sorry, I had trouble understanding. Could you rephrase?",
+    },
+    "multi_task_failed": {
+        "zh": "❌ {tool}: 执行失败",
+        "en": "❌ {tool}: execution failed",
+    },
+    "executor_failed": {
+        "zh": "❌ {error}",
+        "en": "❌ {error}",
+    },
+    "execution_failed": {
+        "zh": "执行失败",
+        "en": "Execution failed",
+    },
 }

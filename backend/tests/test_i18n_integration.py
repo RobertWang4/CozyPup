@@ -65,6 +65,23 @@ def test_tool_definitions_chinese_unchanged():
     assert any(ord(c) > 0x4e00 for c in first_desc), "Chinese tool descriptions should contain CJK chars"
 
 
+def test_new_error_strings_have_both_languages():
+    """All new error strings should have zh and en translations."""
+    new_keys = [
+        "fallback_error", "arg_parse_error",
+        "multi_task_failed", "executor_failed", "execution_failed",
+    ]
+    # These keys use identical templates in zh and en (language-neutral format strings)
+    language_neutral_keys = {"executor_failed"}
+    for key in new_keys:
+        zh = t(key, "zh")
+        en = t(key, "en")
+        assert zh != key, f"{key} missing zh translation"
+        assert en != key, f"{key} missing en translation"
+        if key not in language_neutral_keys:
+            assert zh != en, f"{key} zh and en are identical"
+
+
 def test_system_prompt_with_pets_english():
     """Test that pet context is also in English."""
     class FakePet:

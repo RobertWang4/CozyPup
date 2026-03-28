@@ -147,19 +147,13 @@ async def _execute_tool_call(
     return tool_result
 
 
-_FALLBACK_MSGS = {
-    "zh": "抱歉，处理时遇到了问题，请再说一次。",
-    "en": "Sorry, something went wrong. Please try again.",
-}
-
-
 async def _ensure_response(result, on_token, lang: str = "zh"):
     """Ensure response_text is never empty — stream fallback if needed.
     Skip fallback when confirm cards are pending (empty text is expected)."""
     if result.confirm_cards:
         return
     if not result.response_text.strip():
-        fallback = _FALLBACK_MSGS.get(lang, _FALLBACK_MSGS["zh"])
+        fallback = t("fallback_error", lang)
         result.response_text = fallback
         if on_token:
             await maybe_await(on_token, fallback)
@@ -311,7 +305,8 @@ async def _handle_single_task(
     try:
         fn_args = json.loads(tool_call["function"]["arguments"])
     except json.JSONDecodeError as exc:
-        result.response_text = initial_text or f"参数解析错误: {exc}"
+        logger.warning("arg_parse_error", extra={"error": str(exc), "fn_name": fn_name})
+        result.response_text = initial_text or t("arg_parse_error", lang)
         return result
 
     # Validate
@@ -666,7 +661,7 @@ async def _handle_multi_task(
             logger.error("executor_exception", extra={
                 "task": tasks[i]["name"], "error": str(exec_result)
             })
-            summaries.append(f"❌ {tasks[i]['name']}: 执行失败")
+            summaries.append(t("multi_task_failed", lang).format(tool=tasks[i]["name"]))
             continue
 
         result.executor_results.append(exec_result)
@@ -699,7 +694,7 @@ async def _handle_multi_task(
             summaries.append(f"✅ {exec_result.summary}")
 
         else:
-            summaries.append(f"❌ {exec_result.error or '执行失败'}")
+            summaries.append(t("executor_failed", lang).format(error=exec_result.error or t("execution_failed", lang)))
 
     # If ALL tasks need confirmation, skip LLM summary — just return with confirm cards
     all_confirm = result.confirm_cards and not result.cards
