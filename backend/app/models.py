@@ -44,6 +44,11 @@ class EventSource(str, enum.Enum):
     manual = "manual"
 
 
+class TaskType(str, enum.Enum):
+    routine = "routine"
+    special = "special"
+
+
 class MessageRole(str, enum.Enum):
     user = "user"
     assistant = "assistant"
@@ -183,6 +188,40 @@ class PendingAction(Base):
     arguments: Mapped[dict] = mapped_column(JSON, nullable=False)
     description: Mapped[str] = mapped_column(String(500), default="")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class DailyTask(Base):
+    __tablename__ = "daily_tasks"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    pet_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("pets.id", ondelete="CASCADE"))
+    title: Mapped[str] = mapped_column(String(200), nullable=False)
+    type: Mapped[TaskType] = mapped_column(Enum(TaskType), nullable=False, default=TaskType.routine)
+    daily_target: Mapped[int] = mapped_column(sa.Integer, nullable=False, default=1)
+    start_date: Mapped[date | None] = mapped_column(Date)
+    end_date: Mapped[date | None] = mapped_column(Date)
+    active: Mapped[bool] = mapped_column(Boolean, default=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+    pet: Mapped["Pet"] = relationship()
+    completions: Mapped[list["DailyTaskCompletion"]] = relationship(back_populates="task", cascade="all, delete-orphan")
+
+
+class DailyTaskCompletion(Base):
+    __tablename__ = "daily_task_completions"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    task_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("daily_tasks.id", ondelete="CASCADE"), nullable=False)
+    date: Mapped[date] = mapped_column(Date, nullable=False)
+    count: Mapped[int] = mapped_column(sa.Integer, nullable=False, default=0)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+    task: Mapped["DailyTask"] = relationship(back_populates="completions")
+
+    __table_args__ = (
+        sa.UniqueConstraint("task_id", "date", name="uq_task_completions_task_date"),
+    )
 
 
 class DeviceToken(Base):
