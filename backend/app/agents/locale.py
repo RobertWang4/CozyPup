@@ -710,6 +710,38 @@ Notes:
             "After calling, images will be returned to you, then answer the user based on image content."
         ),
     },
+    "tool_desc_search_places_text": {
+        "en": (
+            "Search for a specific place by name or address.\n"
+            "Use when the user provides a specific place name or address to look up.\n"
+            "Returns place details including coordinates."
+        ),
+    },
+    "tool_desc_add_event_location": {
+        "en": (
+            "Add a location tag to a diary/calendar event.\n"
+            "Use after the user selects a place.\n"
+            "Requires an event_id (from create_calendar_event return value)."
+        ),
+    },
+    "tool_desc_create_daily_task": {
+        "en": (
+            "Create a recurring daily task (to-do item).\n"
+            "Use when the user wants to set up something to do every day.\n"
+            "type='routine' for permanent daily tasks (walk the dog, feed).\n"
+            "type='special' for date-bounded tasks (take probiotics for the next 7 days).\n"
+            "Do NOT use for: one-time reminders (use create_reminder).\n"
+            "Do NOT use for: recording past events (use create_calendar_event)."
+        ),
+    },
+    "tool_desc_manage_daily_task": {
+        "en": (
+            "Edit or delete an existing daily task.\n"
+            "Use when the user wants to change a task's title, frequency, dates, or delete/pause it.\n"
+            "Can match by task_id (exact) or title keyword (fuzzy).\n"
+            "Do NOT use for: creating new tasks (use create_daily_task)."
+        ),
+    },
     "fallback_error": {
         "zh": "抱歉，处理时遇到了问题，请再说一次。",
         "en": "Sorry, something went wrong. Please try again.",
