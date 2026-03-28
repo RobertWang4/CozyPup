@@ -11,6 +11,7 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import Pet, Species
+from app.agents.tools.registry import register_tool
 
 UPLOAD_DIR = Path("/app/uploads/avatars") if Path("/app/uploads").exists() else Path(__file__).resolve().parent.parent.parent / "uploads" / "avatars"
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
@@ -170,6 +171,7 @@ def apply_profile_updates(pet, info: dict, existing: dict):
         pet.breed = str(info["breed"])
 
 
+@register_tool("create_pet")
 async def create_pet(
     arguments: dict,
     db: AsyncSession,
@@ -261,6 +263,7 @@ async def create_pet(
     }
 
 
+@register_tool("update_pet_profile")
 async def update_pet_profile(
     arguments: dict,
     db: AsyncSession,
@@ -400,6 +403,7 @@ async def update_pet_profile(
     }
 
 
+@register_tool("save_pet_profile_md")
 async def save_pet_profile_md(
     arguments: dict,
     db: AsyncSession,
@@ -426,6 +430,7 @@ async def save_pet_profile_md(
     return {"success": True, "pet_id": str(pet.id), "pet_name": pet.name}
 
 
+@register_tool("summarize_pet_profile")
 async def summarize_pet_profile(
     arguments: dict,
     db: AsyncSession,
@@ -462,6 +467,7 @@ async def summarize_pet_profile(
     }
 
 
+@register_tool("list_pets")
 async def list_pets(
     arguments: dict,
     db: AsyncSession,
@@ -490,6 +496,7 @@ async def list_pets(
     }
 
 
+@register_tool("delete_pet")
 async def delete_pet(
     arguments: dict,
     db: AsyncSession,
@@ -520,6 +527,7 @@ async def delete_pet(
     }
 
 
+@register_tool("set_pet_avatar", accepts_kwargs=True)
 async def set_pet_avatar(
     arguments: dict,
     db: AsyncSession,

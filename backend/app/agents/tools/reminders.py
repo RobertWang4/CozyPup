@@ -7,8 +7,10 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import Pet, Reminder
+from app.agents.tools.registry import register_tool
 
 
+@register_tool("create_reminder")
 async def create_reminder(
     arguments: dict,
     db: AsyncSession,
@@ -54,6 +56,7 @@ async def create_reminder(
     }
 
 
+@register_tool("list_reminders")
 async def list_reminders(
     arguments: dict,
     db: AsyncSession,
@@ -83,6 +86,7 @@ async def list_reminders(
     }
 
 
+@register_tool("update_reminder")
 async def update_reminder(
     arguments: dict,
     db: AsyncSession,
@@ -132,6 +136,7 @@ async def update_reminder(
     }
 
 
+@register_tool("delete_reminder")
 async def delete_reminder(
     arguments: dict,
     db: AsyncSession,

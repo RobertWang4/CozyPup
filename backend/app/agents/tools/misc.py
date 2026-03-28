@@ -4,7 +4,10 @@ import uuid
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.agents.tools.registry import register_tool
 
+
+@register_tool("search_places", accepts_kwargs=True)
 async def search_places(
     arguments: dict,
     db: AsyncSession,
@@ -56,6 +59,7 @@ async def search_places(
     }
 
 
+@register_tool("draft_email")
 async def draft_email(
     arguments: dict,
     db: AsyncSession,
@@ -77,6 +81,7 @@ async def draft_email(
     }
 
 
+@register_tool("set_language")
 async def set_language(
     arguments: dict,
     db: AsyncSession,
@@ -97,6 +102,7 @@ async def set_language(
     }
 
 
+@register_tool("trigger_emergency")
 async def trigger_emergency(
     arguments: dict,
     db: AsyncSession,

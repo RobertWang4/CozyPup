@@ -9,11 +9,13 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import CalendarEvent, EventCategory, EventSource, EventType, Pet
+from app.agents.tools.registry import register_tool
 
 PHOTO_DIR = Path("/app/uploads/photos") if Path("/app/uploads").exists() else Path(__file__).resolve().parent.parent.parent / "uploads" / "photos"
 PHOTO_DIR.mkdir(parents=True, exist_ok=True)
 
 
+@register_tool("create_calendar_event", accepts_kwargs=True)
 async def create_calendar_event(
     arguments: dict,
     db: AsyncSession,
@@ -109,6 +111,7 @@ async def create_calendar_event(
     }
 
 
+@register_tool("query_calendar_events")
 async def query_calendar_events(
     arguments: dict,
     db: AsyncSession,
@@ -148,6 +151,7 @@ async def query_calendar_events(
     }
 
 
+@register_tool("update_calendar_event")
 async def update_calendar_event(
     arguments: dict,
     db: AsyncSession,
@@ -201,6 +205,7 @@ async def update_calendar_event(
     }
 
 
+@register_tool("delete_calendar_event")
 async def delete_calendar_event(
     arguments: dict,
     db: AsyncSession,
@@ -233,6 +238,7 @@ async def delete_calendar_event(
     }
 
 
+@register_tool("upload_event_photo", accepts_kwargs=True)
 async def upload_event_photo(
     arguments: dict,
     db: AsyncSession,
