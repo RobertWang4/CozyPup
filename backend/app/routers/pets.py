@@ -1,10 +1,9 @@
 import logging
 import uuid
 from datetime import date
-from pathlib import Path
 
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
-from fastapi.responses import FileResponse
+from fastapi.responses import RedirectResponse
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -12,9 +11,8 @@ from app.auth import get_current_user_id
 from app.database import get_db
 from app.models import Pet
 from app.schemas.pets import PetCreate, PetResponse, PetUpdate
-
-UPLOAD_DIR = Path("/app/uploads/avatars") if Path("/app/uploads").exists() else Path(__file__).resolve().parent.parent / "uploads" / "avatars"
-UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+from app.storage import upload_avatar as gcs_upload_avatar, get_avatar_url
+from app.config import settings
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1/pets", tags=["pets"])
@@ -205,17 +203,23 @@ async def upload_avatar(
     if file.content_type not in ("image/jpeg", "image/png", "image/webp"):
         raise HTTPException(status_code=400, detail="Only JPEG, PNG, and WebP images are allowed")
 
-    ext = file.content_type.split("/")[-1].replace("jpeg", "jpg")
-    filename = f"{pet_id}.{ext}"
-    filepath = UPLOAD_DIR / filename
-
     content = await file.read()
     if len(content) > 5 * 1024 * 1024:
         raise HTTPException(status_code=400, detail="Image must be under 5MB")
 
-    filepath.write_bytes(content)
+    if settings.gcs_bucket:
+        avatar_url = gcs_upload_avatar(str(pet_id), content, file.content_type)
+    else:
+        # Local fallback for development without GCS
+        from pathlib import Path
+        upload_dir = Path(__file__).resolve().parent.parent / "uploads" / "avatars"
+        upload_dir.mkdir(parents=True, exist_ok=True)
+        ext = file.content_type.split("/")[-1].replace("jpeg", "jpg")
+        filepath = upload_dir / f"{pet_id}.{ext}"
+        filepath.write_bytes(content)
+        avatar_url = f"/api/v1/pets/{pet_id}/avatar"
 
-    pet.avatar_url = f"/api/v1/pets/{pet_id}/avatar"
+    pet.avatar_url = avatar_url
     await db.commit()
     await db.refresh(pet)
     logger.info("avatar_uploaded", extra={"pet_id": str(pet.id)})
@@ -224,11 +228,27 @@ async def upload_avatar(
 
 @router.get("/{pet_id}/avatar")
 async def get_avatar(pet_id: uuid.UUID):
-    """Serve pet avatar image (public, no auth required)."""
-    for ext in ("jpg", "png", "webp"):
-        filepath = UPLOAD_DIR / f"{pet_id}.{ext}"
-        if filepath.exists():
-            media_type = f"image/{'jpeg' if ext == 'jpg' else ext}"
-            return FileResponse(filepath, media_type=media_type)
-
-    raise HTTPException(status_code=404, detail="No avatar uploaded")
+    """Serve pet avatar — redirect to GCS or serve local file."""
+    if settings.gcs_bucket:
+        from google.cloud import storage as gcs
+        client = gcs.Client()
+        bucket = client.bucket(settings.gcs_bucket)
+        for ext in ("jpg", "png", "webp"):
+            blob = bucket.blob(f"avatars/{pet_id}.{ext}")
+            if blob.exists():
+                return RedirectResponse(
+                    url=get_avatar_url(f"avatars/{pet_id}.{ext}"),
+                    status_code=302,
+                )
+        raise HTTPException(status_code=404, detail="No avatar uploaded")
+    else:
+        # Local fallback
+        from pathlib import Path
+        from fastapi.responses import FileResponse
+        upload_dir = Path(__file__).resolve().parent.parent / "uploads" / "avatars"
+        for ext in ("jpg", "png", "webp"):
+            filepath = upload_dir / f"{pet_id}.{ext}"
+            if filepath.exists():
+                media_type = f"image/{'jpeg' if ext == 'jpg' else ext}"
+                return FileResponse(filepath, media_type=media_type)
+        raise HTTPException(status_code=404, detail="No avatar uploaded")
