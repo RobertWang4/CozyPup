@@ -38,6 +38,7 @@
 		95DD6D7255D318AD21C287F2 /* PinchGestureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3295CA4BEC61EA4CB1EFA88A /* PinchGestureView.swift */; };
 		99852793A13EC2793BD1D09C /* EmptyStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3489B7A2D858787350EDED43 /* EmptyStateView.swift */; };
 		A1EB3BDC33841836F43CF639 /* LocationPickerCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83B07BC50E00F919A66D1227 /* LocationPickerCard.swift */; };
+		A2F4C81B44D72E5CF8190347 /* DailyTaskCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3E6D92A11C84F5DA0728561 /* DailyTaskCard.swift */; };
 		ACC8DEDAA3BCE7642D22C250 /* ChatStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50750BC93A661BAE576D418E /* ChatStore.swift */; };
 		B0BE23343ADC65DAF3EEF9A3 /* AuthStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 913C15A464B82E869A8EA6E8 /* AuthStore.swift */; };
 		B21CAB20F3E00F67BF64675A /* DailyTaskStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E831C8CE60089D202386C70 /* DailyTaskStore.swift */; };
@@ -92,6 +93,7 @@
 		56F22249C794BE7E45685D4D /* L.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = L.swift; sourceTree = "<group>"; };
 		5DB61EE7DA9BF7F42F10327F /* MultiDayTimelineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiDayTimelineView.swift; sourceTree = "<group>"; };
 		6D13867B665EA08AA24CD995 /* ActionCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionCard.swift; sourceTree = "<group>"; };
+		B3E6D92A11C84F5DA0728561 /* DailyTaskCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyTaskCard.swift; sourceTree = "<group>"; };
 		6DCF2E30E5CF4BE404D7E58C /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
 		6F1DE87BB5B212F3C11C18C5 /* DailyTaskPopover.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyTaskPopover.swift; sourceTree = "<group>"; };
 		7457A5F181182A68DC0B8CE6 /* CalendarStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarStore.swift; sourceTree = "<group>"; };
@@ -331,6 +333,7 @@
 			children = (
 				6D13867B665EA08AA24CD995 /* ActionCard.swift */,
 				FDD76A395C37067B90C0DFD7 /* ConfirmActionCard.swift */,
+				B3E6D92A11C84F5DA0728561 /* DailyTaskCard.swift */,
 				3FDC9E1441AC78B6C6632FD0 /* EmailCard.swift */,
 				83B07BC50E00F919A66D1227 /* LocationPickerCard.swift */,
 				E722C9266BF5B0325E6B52A6 /* MapCard.swift */,
@@ -450,6 +453,7 @@
 				7680AF2AF4FE47DB7049794A /* L.swift in Sources */,
 				22BFF30BA8D291920198281D /* LegalPageView.swift in Sources */,
 				A1EB3BDC33841836F43CF639 /* LocationPickerCard.swift in Sources */,
+				A2F4C81B44D72E5CF8190347 /* DailyTaskCard.swift in Sources */,
 				DBF96E2B35FB712BC97A1C27 /* LocationService.swift in Sources */,
 				51487E55A5465BDA994D245C /* LoginView.swift in Sources */,
 				DDE0B95A2BBD3D6913475404 /* MapCard.swift in Sources */,

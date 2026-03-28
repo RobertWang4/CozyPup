@@ -500,6 +500,8 @@ struct ChatView: View {
             )
         case .locationPicker(let data):
             LocationPickerCard(data: data)
+        case .dailyTask(let data):
+            DailyTaskCard(data: data)
         case .setLanguage:
             EmptyView()
         case .genericAction(let data):

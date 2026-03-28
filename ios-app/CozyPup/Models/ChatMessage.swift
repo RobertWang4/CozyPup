@@ -88,6 +88,22 @@ struct ConfirmActionCardData: Codable, Equatable {
     }
 }
 
+struct DailyTaskCardData: Codable, Equatable {
+    let type: String           // "daily_task_created", "daily_task_updated", "daily_task_deleted"
+    let title: String
+    let task_type: String?     // "routine" or "special"
+    let daily_target: Int?
+    let pet: DailyTaskCardPet?
+    let start_date: String?
+    let end_date: String?
+    let active: Bool?
+
+    struct DailyTaskCardPet: Codable, Equatable {
+        let name: String
+        let color_hex: String
+    }
+}
+
 struct LocationOption: Codable, Equatable {
     let name: String
     let address: String
@@ -114,6 +130,7 @@ enum CardData: Codable, Equatable {
     case setLanguage(SetLanguageCardData)
     case genericAction(GenericActionCardData)
     case locationPicker(LocationPickerCardData)
+    case dailyTask(DailyTaskCardData)
 
     init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
@@ -135,6 +152,9 @@ enum CardData: Codable, Equatable {
             self = .setLanguage(d)
         } else if let d = try? container.decode(LocationPickerCardData.self), d.type == "location_picker" {
             self = .locationPicker(d)
+        } else if let d = try? container.decode(DailyTaskCardData.self),
+                  ["daily_task_created", "daily_task_updated", "daily_task_deleted"].contains(d.type) {
+            self = .dailyTask(d)
         } else if let d = try? container.decode(GenericActionCardData.self) {
             // Catch-all for pet_deleted, event_deleted, reminder_deleted, profile_summarized, etc.
             self = .genericAction(d)
@@ -157,6 +177,7 @@ enum CardData: Codable, Equatable {
         case .setLanguage(let d): try container.encode(d)
         case .genericAction(let d): try container.encode(d)
         case .locationPicker(let d): try container.encode(d)
+        case .dailyTask(let d): try container.encode(d)
         }
     }
 }
