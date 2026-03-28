@@ -412,19 +412,13 @@ struct ChatView: View {
 
     private var header: some View {
         HStack {
-            Button {
-                Haptics.light()
-                dismissKeyboard()
-                withAnimation(.easeOut(duration: 0.3)) { showCalendar = true }
-            } label: {
-                Image(systemName: "calendar")
-                    .font(Tokens.fontHeadline)
-                    .foregroundColor(Tokens.text)
+            // Daily task indicator (left)
+            if !dailyTaskStore.tasks.isEmpty {
+                DailyTaskIndicator(showPopover: $showDailyTasks)
+            } else {
+                // Invisible spacer to keep logo centered
+                Color.clear
                     .frame(width: Tokens.size.iconMedium, height: Tokens.size.iconMedium)
-                    .background(Tokens.surface)
-                    .cornerRadius(Tokens.radiusIcon)
-                    .overlay(RoundedRectangle(cornerRadius: Tokens.radiusIcon).stroke(Tokens.border))
-                    .shadow(color: Tokens.dimOverlay.opacity(0.06), radius: 8, y: 2)
             }
 
             Spacer()
@@ -442,24 +436,9 @@ struct ChatView: View {
 
             Spacer()
 
-            if !dailyTaskStore.tasks.isEmpty {
-                DailyTaskIndicator(showPopover: $showDailyTasks)
-            }
-
-            Button {
-                Haptics.light()
-                dismissKeyboard()
-                withAnimation(.easeOut(duration: 0.3)) { showSettings = true }
-            } label: {
-                Image(systemName: "gearshape")
-                    .font(Tokens.fontHeadline)
-                    .foregroundColor(Tokens.text)
-                    .frame(width: Tokens.size.iconMedium, height: Tokens.size.iconMedium)
-                    .background(Tokens.surface)
-                    .cornerRadius(Tokens.radiusIcon)
-                    .overlay(RoundedRectangle(cornerRadius: Tokens.radiusIcon).stroke(Tokens.border))
-                    .shadow(color: Tokens.dimOverlay.opacity(0.06), radius: 8, y: 2)
-            }
+            // Right spacer to balance layout
+            Color.clear
+                .frame(width: Tokens.size.iconMedium, height: Tokens.size.iconMedium)
         }
         .padding(.horizontal, Tokens.spacing.lg)
         .padding(.vertical, 12)
