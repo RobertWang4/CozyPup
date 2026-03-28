@@ -469,6 +469,8 @@ struct ChatView: View {
                 onConfirm: { handleConfirmAction(actionId: data.action_id) },
                 onCancel: { handleCancelAction(actionId: data.action_id) }
             )
+        case .locationPicker(let data):
+            LocationPickerCard(data: data)
         case .setLanguage:
             EmptyView()
         case .genericAction(let data):
