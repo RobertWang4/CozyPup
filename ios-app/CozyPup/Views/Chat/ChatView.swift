@@ -171,20 +171,28 @@ struct ChatView: View {
                 Color.black.opacity(0.001)
                     .ignoresSafeArea()
                     .onTapGesture {
-                        withAnimation(.easeOut(duration: 0.2)) { showDailyTasks = false }
+                        withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
+                            showDailyTasks = false
+                        }
                     }
-
-                VStack {
-                    DailyTaskPopover(isPresented: $showDailyTasks)
-                        .environmentObject(dailyTaskStore)
-                        .fixedSize(horizontal: false, vertical: true)
-                        .padding(.horizontal, Tokens.spacing.lg)
-                        .padding(.top, 60)
-                    Spacer()
-                }
-                .transition(.opacity.combined(with: .move(edge: .top)))
-                .zIndex(10)
+                    .transition(.opacity)
+                    .zIndex(9)
             }
+
+            VStack {
+                DailyTaskPopover(isPresented: $showDailyTasks)
+                    .environmentObject(dailyTaskStore)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(.horizontal, Tokens.spacing.lg)
+                    .padding(.top, 60)
+                    .opacity(showDailyTasks ? 1 : 0)
+                    .scaleEffect(showDailyTasks ? 1 : 0.9, anchor: .top)
+                    .offset(y: showDailyTasks ? 0 : -10)
+                    .animation(.spring(response: 0.35, dampingFraction: 0.85), value: showDailyTasks)
+                Spacer()
+            }
+            .allowsHitTesting(showDailyTasks)
+            .zIndex(10)
         }
         .overlay {
             if speech.isListening {

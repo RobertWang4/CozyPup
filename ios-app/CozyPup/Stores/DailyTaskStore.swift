@@ -61,6 +61,30 @@ class DailyTaskStore: ObservableObject {
         }
     }
 
+    func untap(_ taskId: String) async {
+        // Optimistic update
+        if let idx = tasks.firstIndex(where: { $0.id == taskId }),
+           tasks[idx].completed_count > 0 {
+            tasks[idx].completed_count -= 1
+            allCompleted = tasks.allSatisfy { $0.isCompleted }
+            saveLocal()
+        }
+
+        do {
+            let response: TapResponse = try await APIClient.shared.request(
+                "POST", "/tasks/\(taskId)/untap"
+            )
+            if let idx = tasks.firstIndex(where: { $0.id == taskId }) {
+                tasks[idx].completed_count = response.completed_count
+            }
+            allCompleted = response.all_completed
+            saveLocal()
+        } catch {
+            print("DailyTaskStore.untap failed: \(error)")
+            await fetchToday()
+        }
+    }
+
     func create(
         title: String, type: String, dailyTarget: Int,
         petId: String? = nil, startDate: String? = nil, endDate: String? = nil

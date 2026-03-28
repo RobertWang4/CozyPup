@@ -238,3 +238,44 @@ async def tap_task(
         daily_target=task.daily_target,
         all_completed=data["all_completed"],
     )
+
+
+@router.post("/{task_id}/untap", response_model=TapResponse)
+async def untap_task(
+    task_id: uuid.UUID,
+    user_id: uuid.UUID = Depends(get_current_user_id),
+    db: AsyncSession = Depends(get_db),
+):
+    """Undo one completion tap for a task today."""
+    result = await db.execute(
+        select(DailyTask).where(DailyTask.id == task_id, DailyTask.user_id == user_id)
+    )
+    task = result.scalar_one_or_none()
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+
+    today = date.today()
+
+    comp_result = await db.execute(
+        select(DailyTaskCompletion).where(
+            DailyTaskCompletion.task_id == task_id,
+            DailyTaskCompletion.date == today,
+        )
+    )
+    comp = comp_result.scalar_one_or_none()
+
+    if comp is not None and comp.count > 0:
+        comp.count -= 1
+        if comp.count == 0:
+            await db.delete(comp)
+        await db.commit()
+
+    count = comp.count if comp is not None and comp.count > 0 else 0
+    data = await _get_today_tasks(db, user_id, today)
+
+    return TapResponse(
+        task_id=str(task_id),
+        completed_count=count,
+        daily_target=task.daily_target,
+        all_completed=data["all_completed"],
+    )

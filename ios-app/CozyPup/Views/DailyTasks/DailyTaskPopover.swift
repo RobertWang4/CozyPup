@@ -54,9 +54,11 @@ struct DailyTaskPopover: View {
             } else {
                 VStack(spacing: 0) {
                     ForEach(store.tasks) { task in
-                        DailyTaskRow(task: task) {
+                        DailyTaskRow(task: task, onTap: {
                             Task { await store.tap(task.id) }
-                        }
+                        }, onUntap: {
+                            Task { await store.untap(task.id) }
+                        })
                     }
                 }
             }
