@@ -781,3 +781,129 @@ async def test_orchestrator_error_recovery():
 
     assert "错误" in result.response_text
     assert len(tokens) > 0  # Error message was streamed
+
+
+# ============================================
+# Test 16: Parallel Executors Get Separate DB Sessions
+# ============================================
+@pytest.mark.asyncio
+async def test_parallel_executors_get_separate_sessions():
+    """Multi-task path passes db_factory (not db) so each executor gets its own session."""
+    tool_args_1 = {
+        "pet_id": "abc",
+        "event_date": "2026-03-24",
+        "title": "吃狗粮",
+        "category": "diet",
+    }
+    tool_args_2 = {
+        "pet_id": "def",
+        "event_date": "2026-03-24",
+        "title": "打疫苗",
+        "category": "vaccine",
+    }
+    chunks = _make_stream_chunks(
+        content="好的，",
+        tool_calls=[
+            {"name": "create_calendar_event", "args": tool_args_1},
+            {"name": "create_calendar_event", "args": tool_args_2},
+        ],
+    )
+
+    # Track calls to run_executor to verify db_factory is passed (not db)
+    captured_kwargs = []
+    exec_result = ExecutorResult(
+        success=True,
+        tool="create_calendar_event",
+        card={"type": "record"},
+        summary="done",
+    )
+
+    original_run_executor = run_executor
+
+    async def spy_run_executor(**kwargs):
+        captured_kwargs.append(kwargs)
+        return exec_result
+
+    with patch(
+        "app.agents.orchestrator.litellm.acompletion",
+        new_callable=AsyncMock,
+        return_value=MockAsyncIterator(chunks),
+    ), patch(
+        "app.agents.orchestrator.run_executor",
+        new_callable=AsyncMock,
+        side_effect=[exec_result, exec_result],
+    ) as mock_exec:
+        result = await run_orchestrator(
+            message="三妹吃了狗粮，豆豆打了疫苗",
+            system_prompt="test",
+            context_messages=[
+                {"role": "user", "content": "三妹吃了狗粮，豆豆打了疫苗"}
+            ],
+            db=AsyncMock(),
+            user_id="user-1",
+            on_token=lambda t: None,
+            on_card=lambda c: None,
+        )
+
+    # Verify run_executor was called twice (one per task)
+    assert mock_exec.call_count == 2
+
+    # Verify each call received db_factory (not db)
+    for call in mock_exec.call_args_list:
+        _, kwargs = call
+        assert "db_factory" in kwargs, "run_executor should receive db_factory"
+        assert kwargs["db_factory"] is not None, "db_factory should not be None"
+        assert "db" not in kwargs or kwargs.get("db") is None, \
+            "db should not be passed in multi-task path"
+
+
+# ============================================
+# Test 17: Executor Uses db_factory When Provided
+# ============================================
+@pytest.mark.asyncio
+async def test_executor_uses_db_factory():
+    """When db_factory is provided, executor creates a dedicated session."""
+    tool_args = {
+        "pet_id": "abc-123",
+        "event_date": "2026-03-24",
+        "title": "吃狗粮",
+        "category": "diet",
+    }
+    response = _make_llm_response("create_calendar_event", tool_args)
+
+    mock_session = AsyncMock()
+    mock_execute = AsyncMock(
+        return_value={"success": True, "card": {"type": "record"}}
+    )
+
+    # Create a db_factory that returns a context manager yielding our mock session
+    mock_factory = MagicMock()
+    mock_ctx = AsyncMock()
+    mock_ctx.__aenter__ = AsyncMock(return_value=mock_session)
+    mock_ctx.__aexit__ = AsyncMock(return_value=False)
+    mock_factory.return_value = mock_ctx
+
+    with patch(
+        "app.agents.executor.litellm.acompletion",
+        new_callable=AsyncMock,
+        return_value=response,
+    ), patch("app.agents.executor.validate_tool_args", return_value=[]), patch(
+        "app.agents.executor.execute_tool", mock_execute
+    ):
+        result = await run_executor(
+            task_description="记录三妹吃了狗粮",
+            context='三妹(id=abc-123, species=dog)',
+            db_factory=mock_factory,
+            user_id="user-1",
+            today="2026-03-24",
+        )
+
+    assert result.success is True
+    # Verify the factory was called to create a session
+    mock_factory.assert_called_once()
+    # Verify execute_tool received the factory-created session, not some other db
+    mock_execute.assert_called_once()
+    call_args = mock_execute.call_args
+    assert call_args[0][2] is mock_session, "execute_tool should receive the factory-created session"
+    # Verify commit was called on the factory session
+    mock_session.commit.assert_called_once()

@@ -19,6 +19,7 @@ from app.agents.constants import CONFIRM_TOOLS, maybe_await
 from app.config import settings
 from app.agents.executor import run_executor, ExecutorResult
 from app.agents.locale import t
+from app.database import async_session
 from app.agents.tools import execute_tool, get_tool_definitions
 from app.agents.validation import validate_tool_args
 from app.agents.pending_actions import store_action
@@ -646,14 +647,14 @@ async def _handle_multi_task(
         await _ensure_response(result, on_token, lang=lang)
         return result
 
-    # Run executors in parallel
+    # Run executors in parallel — each gets its own DB session for concurrency safety
     executor_coros = []
     for task in tasks:
         coro = run_executor(
             task_description=task["description"],
             context=json.dumps(task["args"], ensure_ascii=False),
             available_tools=[task["name"]],
-            db=db,
+            db_factory=async_session,
             user_id=user_id,
             today=today,
             **kwargs,

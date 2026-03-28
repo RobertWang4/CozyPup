@@ -42,6 +42,7 @@ async def run_executor(
     user_id=None,
     today: str = "",
     lang: str = "zh",
+    db_factory=None,
     **kwargs,
 ) -> ExecutorResult:
     """
@@ -51,10 +52,12 @@ async def run_executor(
         task_description: What to do (e.g. "记录三妹吃狗粮")
         context: Relevant context (e.g. "三妹(id=abc, species=dog)")
         available_tools: Filter tool definitions to only these tools. None = all tools.
-        db: Database session for tool execution
+        db: Database session for tool execution (used directly in single-task path)
         user_id: User ID for ownership checks
         today: Today's date string (YYYY-MM-DD)
         lang: Language code for i18n ("zh" or "en")
+        db_factory: Async sessionmaker that creates dedicated sessions (used in multi-task path
+                    for concurrency safety). When provided, overrides db.
 
     Returns:
         ExecutorResult with structured data
@@ -170,16 +173,30 @@ async def run_executor(
             )
 
         # Execute tool
-        if db is None or user_id is None:
+        if db is None and db_factory is None:
             return ExecutorResult(
                 success=False,
                 tool=fn_name,
                 arguments=fn_args,
-                error="No database session or user_id provided",
+                error="No database session or db_factory provided",
+            )
+        if user_id is None:
+            return ExecutorResult(
+                success=False,
+                tool=fn_name,
+                arguments=fn_args,
+                error="No user_id provided",
             )
 
-        result = await execute_tool(fn_name, fn_args, db, user_id, **kwargs)
-        await db.commit()
+        if db_factory is not None:
+            # Multi-task path: create a dedicated session for concurrency safety
+            async with db_factory() as session:
+                result = await execute_tool(fn_name, fn_args, session, user_id, **kwargs)
+                await session.commit()
+        else:
+            # Single-task path: use the provided session directly
+            result = await execute_tool(fn_name, fn_args, db, user_id, **kwargs)
+            await db.commit()
 
         card = result.get("card")
         return ExecutorResult(
