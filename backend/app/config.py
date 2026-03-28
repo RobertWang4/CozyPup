@@ -27,6 +27,8 @@ class Settings(BaseSettings):
     # Server public URL (for constructing image URLs for LLM vision)
     server_public_url: str = "http://168.138.75.153:8000"
 
+    gcs_bucket: str = ""  # GCS bucket for file uploads (e.g. "cozypup-avatars")
+
     class Config:
         env_file = ".env"
         extra = "ignore"
