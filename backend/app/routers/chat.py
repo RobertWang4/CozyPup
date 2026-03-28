@@ -259,9 +259,11 @@ async def _event_generator(
         lang=lang,
     )
 
-    # Build messages — past images already in context via _build_context_with_images
+    # Build messages — past images in context via _build_context_with_images,
+    # current message images injected directly so LLM sees them on first call
+    # (eliminates the extra request_images round trip)
     recent_msgs = _build_context_with_images(context_messages)
-    messages = build_messages(recent_msgs, request.message, images=None)
+    messages = build_messages(recent_msgs, request.message, images=request.images)
 
     # --- Phase 3: Run orchestrator via queue ---
 
