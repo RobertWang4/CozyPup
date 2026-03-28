@@ -12,163 +12,322 @@ struct DailyTaskManagerSheet: View {
     @State private var newType = "routine"
     @State private var newTarget = 1
     @State private var newPetId: String?
-    @State private var newStartDate = Date()
-    @State private var newEndDate = Date().addingTimeInterval(7 * 86400)
+    @State private var isSaving = false
 
     var body: some View {
-        NavigationView {
-            List {
-                Section("常规待办") {
-                    ForEach(store.tasks.filter { $0.type == "routine" }) { task in
-                        taskRow(task)
-                    }
-                    if store.tasks.filter({ $0.type == "routine" }).isEmpty {
-                        Text("暂无常规待办")
-                            .font(Tokens.fontCaption)
-                            .foregroundColor(Tokens.textTertiary)
-                    }
+        VStack(spacing: 0) {
+            // Header
+            HStack {
+                Button("关闭") { dismiss() }
+                    .font(Tokens.fontSubheadline)
+                    .foregroundColor(Tokens.textSecondary)
+                Spacer()
+                Text("管理待办")
+                    .font(Tokens.fontSubheadline.weight(.semibold))
+                    .foregroundColor(Tokens.text)
+                Spacer()
+                Button {
+                    withAnimation(.easeOut(duration: 0.2)) { showAddForm = true }
+                } label: {
+                    Image(systemName: "plus.circle.fill")
+                        .font(.system(size: 22))
+                        .foregroundColor(Tokens.accent)
                 }
+            }
+            .padding(.horizontal, Tokens.spacing.lg)
+            .padding(.vertical, 14)
 
-                Section("特殊待办") {
-                    ForEach(store.tasks.filter { $0.type == "special" }) { task in
-                        taskRow(task)
+            Divider().foregroundColor(Tokens.divider)
+
+            // Task list
+            ScrollView {
+                VStack(spacing: Tokens.spacing.md) {
+                    if !store.tasks.filter({ $0.type == "routine" }).isEmpty {
+                        taskSection("常规", tasks: store.tasks.filter { $0.type == "routine" })
                     }
-                    if store.tasks.filter({ $0.type == "special" }).isEmpty {
-                        Text("暂无特殊待办")
-                            .font(Tokens.fontCaption)
-                            .foregroundColor(Tokens.textTertiary)
+                    if !store.tasks.filter({ $0.type == "special" }).isEmpty {
+                        taskSection("特殊", tasks: store.tasks.filter { $0.type == "special" })
                     }
-                }
-            }
-            .listStyle(.insetGrouped)
-            .navigationTitle("管理待办")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button("关闭") { dismiss() }
-                }
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button {
-                        showAddForm = true
-                    } label: {
-                        Image(systemName: "plus")
+                    if store.tasks.isEmpty {
+                        VStack(spacing: Tokens.spacing.sm) {
+                            Image(systemName: "leaf")
+                                .font(.system(size: 24))
+                                .foregroundColor(Tokens.green.opacity(0.5))
+                            Text("暂无待办")
+                                .font(Tokens.fontCaption)
+                                .foregroundColor(Tokens.textTertiary)
+                        }
+                        .padding(.top, 40)
                     }
                 }
+                .padding(Tokens.spacing.lg)
             }
-            .sheet(isPresented: $showAddForm) {
-                addTaskForm
-                    .preferredColorScheme(.light)
-            }
+        }
+        .background(Tokens.bg)
+        .sheet(isPresented: $showAddForm) {
+            addFormSheet
         }
         .preferredColorScheme(.light)
     }
 
-    private func taskRow(_ task: DailyTask) -> some View {
-        HStack {
-            VStack(alignment: .leading, spacing: Tokens.spacing.xxs) {
-                HStack(spacing: Tokens.spacing.xs) {
-                    Text(task.title)
-                        .font(Tokens.fontBody)
-                        .foregroundColor(Tokens.text)
-                    if let pet = task.pet {
-                        Text(pet.name)
-                            .font(Tokens.fontCaption2)
-                            .foregroundColor(Tokens.white)
-                            .padding(.horizontal, 4)
-                            .padding(.vertical, 1)
-                            .background(Color(hex: pet.color_hex))
-                            .cornerRadius(4)
+    // MARK: - Task Section
+
+    private func taskSection(_ title: String, tasks: [DailyTask]) -> some View {
+        VStack(alignment: .leading, spacing: Tokens.spacing.sm) {
+            Text(title)
+                .font(Tokens.fontCaption.weight(.semibold))
+                .foregroundColor(Tokens.textTertiary)
+                .textCase(.uppercase)
+                .tracking(0.8)
+
+            VStack(spacing: 0) {
+                ForEach(tasks) { task in
+                    if task.id != tasks.first?.id {
+                        Divider().padding(.leading, Tokens.spacing.md)
                     }
+                    HStack(spacing: Tokens.spacing.sm) {
+                        VStack(alignment: .leading, spacing: 2) {
+                            HStack(spacing: 6) {
+                                Text(task.title)
+                                    .font(Tokens.fontBody)
+                                    .foregroundColor(Tokens.text)
+                                if let pet = task.pet {
+                                    Text(pet.name)
+                                        .font(.system(size: 9, weight: .semibold))
+                                        .foregroundColor(Color(hex: pet.color_hex))
+                                        .padding(.horizontal, 5)
+                                        .padding(.vertical, 2)
+                                        .background(Color(hex: pet.color_hex).opacity(0.12))
+                                        .cornerRadius(4)
+                                }
+                            }
+                            Text("每天 \(task.daily_target) 次")
+                                .font(Tokens.fontCaption)
+                                .foregroundColor(Tokens.textSecondary)
+                        }
+                        Spacer()
+                        Button {
+                            Task { await store.delete(task.id) }
+                        } label: {
+                            Image(systemName: "minus.circle")
+                                .font(.system(size: 18))
+                                .foregroundColor(Tokens.red.opacity(0.6))
+                        }
+                        .buttonStyle(.plain)
+                    }
+                    .padding(.horizontal, Tokens.spacing.md)
+                    .padding(.vertical, Tokens.spacing.sm + 2)
                 }
-                Text("每天 \(task.daily_target) 次")
-                    .font(Tokens.fontCaption)
-                    .foregroundColor(Tokens.textSecondary)
             }
-            Spacer()
-            Button(role: .destructive) {
-                Task { await store.delete(task.id) }
-            } label: {
-                Image(systemName: "trash")
-                    .font(Tokens.fontCaption)
-                    .foregroundColor(Tokens.red)
-            }
-            .buttonStyle(.plain)
+            .background(Tokens.surface)
+            .cornerRadius(Tokens.radiusSmall)
         }
     }
 
-    private var addTaskForm: some View {
-        NavigationView {
-            Form {
-                Section("基本信息") {
-                    TextField("待办名称", text: $newTitle)
-                    Picker("类型", selection: $newType) {
-                        Text("常规（每天）").tag("routine")
-                        Text("特殊（指定日期）").tag("special")
-                    }
-                    Stepper("每天 \(newTarget) 次", value: $newTarget, in: 1...10)
+    // MARK: - Add Form (lightweight, no NavigationView/Form)
+
+    private var addFormSheet: some View {
+        VStack(spacing: 0) {
+            // Header
+            HStack {
+                Button("取消") {
+                    showAddForm = false
+                    resetForm()
                 }
-
-                Section("关联宠物（可选）") {
-                    Button("不关联") {
-                        newPetId = nil
+                .font(Tokens.fontSubheadline)
+                .foregroundColor(Tokens.textSecondary)
+                Spacer()
+                Text("添加待办")
+                    .font(Tokens.fontSubheadline.weight(.semibold))
+                    .foregroundColor(Tokens.text)
+                Spacer()
+                Button {
+                    guard !newTitle.trimmingCharacters(in: .whitespaces).isEmpty else { return }
+                    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                    isSaving = true
+                    Task {
+                        let success = await store.create(
+                            title: newTitle,
+                            type: newType,
+                            dailyTarget: newTarget,
+                            petId: newPetId
+                        )
+                        isSaving = false
+                        if success {
+                            showAddForm = false
+                            resetForm()
+                        }
                     }
-                    .foregroundColor(newPetId == nil ? Tokens.accent : Tokens.textSecondary)
+                } label: {
+                    if isSaving {
+                        ProgressView()
+                            .scaleEffect(0.8)
+                    } else {
+                        Text("保存")
+                            .font(Tokens.fontSubheadline.weight(.semibold))
+                            .foregroundColor(
+                                newTitle.trimmingCharacters(in: .whitespaces).isEmpty
+                                ? Tokens.textTertiary : Tokens.accent
+                            )
+                    }
+                }
+                .disabled(newTitle.trimmingCharacters(in: .whitespaces).isEmpty || isSaving)
+            }
+            .padding(.horizontal, Tokens.spacing.lg)
+            .padding(.vertical, 14)
 
-                    ForEach(petStore.pets) { pet in
-                        Button {
-                            newPetId = pet.id
-                        } label: {
-                            HStack {
-                                Text(pet.name)
-                                    .foregroundColor(Tokens.text)
-                                Spacer()
-                                if newPetId == pet.id {
-                                    Image(systemName: "checkmark")
-                                        .foregroundColor(Tokens.accent)
+            Divider().foregroundColor(Tokens.divider)
+
+            ScrollView {
+                VStack(spacing: Tokens.spacing.md) {
+                    // Name field
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("名称")
+                            .font(Tokens.fontCaption.weight(.medium))
+                            .foregroundColor(Tokens.textSecondary)
+                        TextField("例如：遛狗、喂药", text: $newTitle)
+                            .font(Tokens.fontBody)
+                            .padding(Tokens.spacing.sm + 2)
+                            .background(Tokens.surface)
+                            .cornerRadius(Tokens.radiusSmall)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: Tokens.radiusSmall)
+                                    .strokeBorder(Tokens.border.opacity(0.5), lineWidth: 0.5)
+                            )
+                    }
+
+                    // Type picker
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("类型")
+                            .font(Tokens.fontCaption.weight(.medium))
+                            .foregroundColor(Tokens.textSecondary)
+                        HStack(spacing: Tokens.spacing.sm) {
+                            typeChip("常规", value: "routine")
+                            typeChip("特殊", value: "special")
+                        }
+                    }
+
+                    // Target stepper
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("每天次数")
+                            .font(Tokens.fontCaption.weight(.medium))
+                            .foregroundColor(Tokens.textSecondary)
+                        HStack {
+                            Text("\(newTarget) 次")
+                                .font(Tokens.fontBody.weight(.medium))
+                                .foregroundColor(Tokens.text)
+                            Spacer()
+                            HStack(spacing: 0) {
+                                Button {
+                                    if newTarget > 1 { newTarget -= 1 }
+                                } label: {
+                                    Image(systemName: "minus")
+                                        .font(.system(size: 13, weight: .medium))
+                                        .frame(width: 36, height: 32)
+                                }
+                                Divider().frame(height: 16)
+                                Button {
+                                    if newTarget < 10 { newTarget += 1 }
+                                } label: {
+                                    Image(systemName: "plus")
+                                        .font(.system(size: 13, weight: .medium))
+                                        .frame(width: 36, height: 32)
+                                }
+                            }
+                            .foregroundColor(Tokens.text)
+                            .background(Tokens.surface)
+                            .cornerRadius(8)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 8)
+                                    .strokeBorder(Tokens.border.opacity(0.5), lineWidth: 0.5)
+                            )
+                        }
+                        .padding(Tokens.spacing.sm + 2)
+                        .background(Tokens.surface)
+                        .cornerRadius(Tokens.radiusSmall)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: Tokens.radiusSmall)
+                                .strokeBorder(Tokens.border.opacity(0.5), lineWidth: 0.5)
+                        )
+                    }
+
+                    // Pet picker
+                    if !petStore.pets.isEmpty {
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text("关联宠物")
+                                .font(Tokens.fontCaption.weight(.medium))
+                                .foregroundColor(Tokens.textSecondary)
+                            HStack(spacing: Tokens.spacing.sm) {
+                                petChip(nil, name: "不关联")
+                                ForEach(petStore.pets) { pet in
+                                    petChip(pet.id, name: pet.name, colorHex: pet.colorHex)
                                 }
                             }
                         }
                     }
                 }
-
-                if newType == "special" {
-                    Section("日期范围") {
-                        DatePicker("开始", selection: $newStartDate, displayedComponents: .date)
-                        DatePicker("结束", selection: $newEndDate, displayedComponents: .date)
-                    }
-                }
-            }
-            .navigationTitle("添加待办")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button("取消") { showAddForm = false }
-                }
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("保存") {
-                        let fmt = DateFormatter()
-                        fmt.dateFormat = "yyyy-MM-dd"
-                        Task {
-                            let success = await store.create(
-                                title: newTitle,
-                                type: newType,
-                                dailyTarget: newTarget,
-                                petId: newPetId,
-                                startDate: newType == "special" ? fmt.string(from: newStartDate) : nil,
-                                endDate: newType == "special" ? fmt.string(from: newEndDate) : nil
-                            )
-                            if success {
-                                showAddForm = false
-                                newTitle = ""
-                                newTarget = 1
-                                newPetId = nil
-                                newType = "routine"
-                            }
-                        }
-                    }
-                    .disabled(newTitle.trimmingCharacters(in: .whitespaces).isEmpty)
-                }
+                .padding(Tokens.spacing.lg)
             }
         }
+        .background(Tokens.bg)
+        .preferredColorScheme(.light)
+    }
+
+    // MARK: - Chips
+
+    private func typeChip(_ label: String, value: String) -> some View {
+        Button {
+            newType = value
+        } label: {
+            Text(label)
+                .font(Tokens.fontSubheadline.weight(.medium))
+                .foregroundColor(newType == value ? Tokens.white : Tokens.text)
+                .padding(.horizontal, 14)
+                .padding(.vertical, 8)
+                .background(newType == value ? Tokens.accent : Tokens.surface)
+                .cornerRadius(Tokens.radiusSmall)
+                .overlay(
+                    RoundedRectangle(cornerRadius: Tokens.radiusSmall)
+                        .strokeBorder(newType == value ? Color.clear : Tokens.border.opacity(0.5), lineWidth: 0.5)
+                )
+        }
+        .buttonStyle(.plain)
+    }
+
+    private func petChip(_ id: String?, name: String, colorHex: String? = nil) -> some View {
+        Button {
+            newPetId = id
+        } label: {
+            Text(name)
+                .font(Tokens.fontSubheadline.weight(.medium))
+                .foregroundColor(newPetId == id
+                    ? (colorHex != nil ? Color(hex: colorHex!) : Tokens.accent)
+                    : Tokens.textSecondary)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 7)
+                .background(
+                    newPetId == id
+                    ? (colorHex != nil ? Color(hex: colorHex!).opacity(0.12) : Tokens.accentSoft)
+                    : Tokens.surface
+                )
+                .cornerRadius(Tokens.radiusSmall)
+                .overlay(
+                    RoundedRectangle(cornerRadius: Tokens.radiusSmall)
+                        .strokeBorder(
+                            newPetId == id
+                            ? (colorHex != nil ? Color(hex: colorHex!).opacity(0.3) : Tokens.accent.opacity(0.3))
+                            : Tokens.border.opacity(0.5),
+                            lineWidth: 0.5
+                        )
+                )
+        }
+        .buttonStyle(.plain)
+    }
+
+    private func resetForm() {
+        newTitle = ""
+        newTarget = 1
+        newPetId = nil
+        newType = "routine"
     }
 }

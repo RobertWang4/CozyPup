@@ -4,41 +4,56 @@ struct DailyTaskPopover: View {
     @EnvironmentObject var store: DailyTaskStore
     @Binding var isPresented: Bool
 
+    private var completedCount: Int {
+        store.tasks.filter { $0.isCompleted }.count
+    }
+
     var body: some View {
         VStack(spacing: 0) {
-            // Compact header
-            HStack {
-                Text("今日待办")
-                    .font(Tokens.fontCaption.weight(.semibold))
-                    .foregroundColor(Tokens.textSecondary)
+            // Header with overall progress
+            HStack(alignment: .center) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Today")
+                        .font(Tokens.fontCaption2.weight(.medium))
+                        .foregroundColor(Tokens.textTertiary)
+                        .textCase(.uppercase)
+                        .tracking(1.2)
+                    Text("\(completedCount)/\(store.tasks.count)")
+                        .font(.system(size: 20, weight: .semibold, design: .serif))
+                        .foregroundColor(store.allCompleted ? Tokens.green : Tokens.text)
+                }
                 Spacer()
                 Button {
                     withAnimation(.easeOut(duration: 0.2)) { isPresented = false }
                 } label: {
-                    Image(systemName: "xmark.circle.fill")
-                        .font(.system(size: 16))
+                    Image(systemName: "xmark")
+                        .font(.system(size: 10, weight: .semibold))
                         .foregroundColor(Tokens.textTertiary)
+                        .frame(width: 22, height: 22)
+                        .background(Tokens.bg)
+                        .clipShape(Circle())
                 }
                 .buttonStyle(.plain)
             }
             .padding(.horizontal, Tokens.spacing.md)
-            .padding(.top, Tokens.spacing.sm + 2)
-            .padding(.bottom, Tokens.spacing.xs)
+            .padding(.top, 14)
+            .padding(.bottom, 10)
 
-            // Task list — no scroll, sized to content
+            // Task list
             if store.tasks.isEmpty {
-                Text("暂无待办")
-                    .font(Tokens.fontCaption)
-                    .foregroundColor(Tokens.textTertiary)
-                    .padding(.vertical, Tokens.spacing.sm)
-                    .frame(maxWidth: .infinity)
+                HStack(spacing: 6) {
+                    Image(systemName: "leaf")
+                        .font(.system(size: 12))
+                        .foregroundColor(Tokens.green)
+                    Text("No tasks yet")
+                        .font(Tokens.fontCaption)
+                        .foregroundColor(Tokens.textTertiary)
+                }
+                .padding(.vertical, Tokens.spacing.md)
+                .frame(maxWidth: .infinity)
             } else {
                 VStack(spacing: 0) {
                     ForEach(store.tasks) { task in
-                        if task.id != store.tasks.first?.id {
-                            Divider()
-                                .padding(.horizontal, Tokens.spacing.md)
-                        }
                         DailyTaskRow(task: task) {
                             Task { await store.tap(task.id) }
                         }
@@ -46,13 +61,15 @@ struct DailyTaskPopover: View {
                 }
             }
         }
-        .padding(.bottom, Tokens.spacing.xs)
-        .background(Tokens.surface)
-        .cornerRadius(Tokens.radiusSmall)
-        .overlay(
-            RoundedRectangle(cornerRadius: Tokens.radiusSmall)
-                .stroke(Tokens.border.opacity(0.5), lineWidth: 0.5)
+        .padding(.bottom, 6)
+        .background(
+            RoundedRectangle(cornerRadius: Tokens.radius)
+                .fill(Tokens.surface)
+                .shadow(color: Tokens.text.opacity(0.06), radius: 16, y: 6)
         )
-        .shadow(color: Tokens.dimOverlay.opacity(0.06), radius: 8, y: 3)
+        .overlay(
+            RoundedRectangle(cornerRadius: Tokens.radius)
+                .strokeBorder(Tokens.border.opacity(0.3), lineWidth: 0.5)
+        )
     }
 }
