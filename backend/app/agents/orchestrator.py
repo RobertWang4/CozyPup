@@ -125,8 +125,9 @@ async def _execute_tool_call(
     if errors:
         raise ValueError("; ".join(errors))
 
-    # Execute
-    tool_result = await execute_tool(fn_name, fn_args, db, user_id, **kwargs)
+    # Execute — strip lang from kwargs to avoid duplicate keyword argument
+    tool_kwargs = {k: v for k, v in kwargs.items() if k != "lang"}
+    tool_result = await execute_tool(fn_name, fn_args, db, user_id, **tool_kwargs)
     await db.commit()
 
     # Handle needs_confirm (gender/species first-time set)
