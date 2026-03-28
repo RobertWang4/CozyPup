@@ -15,6 +15,7 @@ struct TimelineEventCard: View {
     @State private var selectedPhotoItem: PhotosPickerItem?
     @State private var cropImage: UIImage?
     @State private var showCropSheet = false
+    @State private var fullScreenImage: UIImage?
 
     var body: some View {
         HStack(spacing: 0) {
@@ -48,6 +49,23 @@ struct TimelineEventCard: View {
                 // Photo grid
                 if !event.photos.isEmpty {
                     photoGrid
+                }
+
+                // Location
+                if let locName = event.locationName, let lat = event.locationLat, let lng = event.locationLng {
+                    Button {
+                        openGoogleMaps(lat: lat, lng: lng, placeId: event.placeId, name: locName)
+                    } label: {
+                        HStack(spacing: Tokens.spacing.xs) {
+                            Image(systemName: "mappin.circle.fill")
+                                .foregroundColor(Tokens.accent)
+                                .font(.system(size: 14))
+                            Text(locName)
+                                .font(Tokens.fontCaption)
+                                .foregroundColor(Tokens.accent)
+                                .lineLimit(1)
+                        }
+                    }
                 }
 
                 // Bottom row: pet name + add photo
@@ -142,6 +160,9 @@ struct TimelineEventCard: View {
                         .frame(width: 72, height: 72)
                         .clipped()
                         .cornerRadius(Tokens.radiusSmall)
+                        .onTapGesture {
+                            loadFullScreenImage(from: urlStr)
+                        }
 
                         if onPhotoDelete != nil {
                             Button {
@@ -158,11 +179,48 @@ struct TimelineEventCard: View {
                 }
             }
         }
+        .fullScreenCover(isPresented: Binding(
+            get: { fullScreenImage != nil },
+            set: { if !$0 { fullScreenImage = nil } }
+        )) {
+            if let img = fullScreenImage {
+                FullScreenImageViewer(image: img) {
+                    fullScreenImage = nil
+                }
+                .ignoresSafeArea()
+                .presentationBackground(.clear)
+            }
+        }
+    }
+
+    private func loadFullScreenImage(from urlStr: String) {
+        guard let url = photoURL(urlStr) else { return }
+        Task {
+            if let (data, _) = try? await URLSession.shared.data(from: url),
+               let uiImage = UIImage(data: data) {
+                await MainActor.run { fullScreenImage = uiImage }
+            }
+        }
     }
 
     private func photoURL(_ path: String) -> URL? {
         if path.hasPrefix("http") { return URL(string: path) }
         return APIClient.shared.avatarURL(path)
+    }
+
+    private func openGoogleMaps(lat: Double, lng: Double, placeId: String?, name: String) {
+        let gmapsURL = URL(string: "comgooglemaps://?q=\(lat),\(lng)")!
+        if UIApplication.shared.canOpenURL(gmapsURL) {
+            UIApplication.shared.open(gmapsURL)
+        } else {
+            var urlStr = "https://www.google.com/maps/search/?api=1&query=\(lat),\(lng)"
+            if let pid = placeId, !pid.isEmpty {
+                urlStr += "&query_place_id=\(pid)"
+            }
+            if let url = URL(string: urlStr) {
+                UIApplication.shared.open(url)
+            }
+        }
     }
 
     private var categoryColor: Color {

@@ -42,6 +42,10 @@
 	<string>CozyPup needs microphone access for voice input</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>CozyPup needs photo library access to attach pet photos</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>comgooglemaps</string>
+	</array>
 <key>UILaunchScreen</key>
 	<dict/>
 	<key>UIRequiresFullScreen</key>
