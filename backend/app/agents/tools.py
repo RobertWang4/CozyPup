@@ -1142,6 +1142,14 @@ def _sync_profile_md(pet) -> str:
         "vet": ("健康", "兽医"),
         "temperament": ("性格", "性格特点"),
         "medication": ("健康", "用药"),
+        "vaccination": ("健康", "疫苗"),
+        "vaccines": ("健康", "疫苗"),
+        "vaccination_status": ("健康", "疫苗"),
+        "deworming": ("健康", "驱虫"),
+        "deworming_status": ("健康", "驱虫"),
+        "health_notes": ("健康", "健康备注"),
+        "routine": ("日常", "日常习惯"),
+        "preferences": ("日常", "喜好"),
     }
     for key, (section, label) in FIELD_SECTIONS.items():
         val = profile.get(key)
