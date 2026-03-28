@@ -24,6 +24,10 @@ class DailyTaskStore: ObservableObject {
         }
     }
 
+    private func recalcAllCompleted() {
+        allCompleted = tasks.isEmpty || tasks.allSatisfy { $0.isCompleted }
+    }
+
     func fetchToday() async {
         do {
             let response: TodayTasksResponse = try await APIClient.shared.request(
@@ -42,22 +46,18 @@ class DailyTaskStore: ObservableObject {
         if let idx = tasks.firstIndex(where: { $0.id == taskId }),
            tasks[idx].completed_count < tasks[idx].daily_target {
             tasks[idx].completed_count += 1
-            allCompleted = tasks.allSatisfy { $0.isCompleted }
+            recalcAllCompleted()
             saveLocal()
         }
 
+        // Fire-and-forget — trust optimistic update
         do {
-            let response: TapResponse = try await APIClient.shared.request(
+            let _: TapResponse = try await APIClient.shared.request(
                 "POST", "/tasks/\(taskId)/tap"
             )
-            if let idx = tasks.firstIndex(where: { $0.id == taskId }) {
-                tasks[idx].completed_count = response.completed_count
-            }
-            allCompleted = response.all_completed
-            saveLocal()
         } catch {
             print("DailyTaskStore.tap failed: \(error)")
-            await fetchToday()
+            await fetchToday() // revert on failure
         }
     }
 
@@ -66,22 +66,18 @@ class DailyTaskStore: ObservableObject {
         if let idx = tasks.firstIndex(where: { $0.id == taskId }),
            tasks[idx].completed_count > 0 {
             tasks[idx].completed_count -= 1
-            allCompleted = tasks.allSatisfy { $0.isCompleted }
+            recalcAllCompleted()
             saveLocal()
         }
 
+        // Fire-and-forget — trust optimistic update
         do {
-            let response: TapResponse = try await APIClient.shared.request(
+            let _: TapResponse = try await APIClient.shared.request(
                 "POST", "/tasks/\(taskId)/untap"
             )
-            if let idx = tasks.firstIndex(where: { $0.id == taskId }) {
-                tasks[idx].completed_count = response.completed_count
-            }
-            allCompleted = response.all_completed
-            saveLocal()
         } catch {
             print("DailyTaskStore.untap failed: \(error)")
-            await fetchToday()
+            await fetchToday() // revert on failure
         }
     }
 
@@ -94,10 +90,13 @@ class DailyTaskStore: ObservableObject {
             pet_id: petId, start_date: startDate, end_date: endDate
         )
         do {
-            let _: DailyTask = try await APIClient.shared.request(
+            let created: DailyTask = try await APIClient.shared.request(
                 "POST", "/tasks", body: body
             )
-            await fetchToday()
+            // Directly add to list — no second fetch needed
+            tasks.append(created)
+            recalcAllCompleted()
+            saveLocal()
             return true
         } catch {
             print("DailyTaskStore.create failed: \(error)")
@@ -111,10 +110,14 @@ class DailyTaskStore: ObservableObject {
             start_date: nil, end_date: nil, active: active
         )
         do {
-            let _: DailyTask = try await APIClient.shared.request(
+            let updated: DailyTask = try await APIClient.shared.request(
                 "PUT", "/tasks/\(taskId)", body: body
             )
-            await fetchToday()
+            if let idx = tasks.firstIndex(where: { $0.id == taskId }) {
+                tasks[idx] = updated
+            }
+            recalcAllCompleted()
+            saveLocal()
             return true
         } catch {
             print("DailyTaskStore.update failed: \(error)")
@@ -123,14 +126,17 @@ class DailyTaskStore: ObservableObject {
     }
 
     func delete(_ taskId: String) async -> Bool {
+        // Optimistic — already removed from UI before calling
         do {
             try await APIClient.shared.requestNoContent("DELETE", "/tasks/\(taskId)")
+            // Ensure removed (may already be removed optimistically by caller)
             tasks.removeAll { $0.id == taskId }
-            allCompleted = tasks.allSatisfy { $0.isCompleted }
+            recalcAllCompleted()
             saveLocal()
             return true
         } catch {
             print("DailyTaskStore.delete failed: \(error)")
+            await fetchToday() // revert on failure
             return false
         }
     }

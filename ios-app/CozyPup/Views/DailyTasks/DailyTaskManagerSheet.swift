@@ -13,6 +13,7 @@ struct DailyTaskManagerSheet: View {
     @State private var newTarget = 1
     @State private var newPetId: String?
     @State private var isSaving = false
+    @State private var deleteTarget: DailyTask?
 
     var body: some View {
         VStack(spacing: 0) {
@@ -67,6 +68,26 @@ struct DailyTaskManagerSheet: View {
         .sheet(isPresented: $showAddForm) {
             addFormSheet
         }
+        .alert("确认删除", isPresented: Binding(
+            get: { deleteTarget != nil },
+            set: { if !$0 { deleteTarget = nil } }
+        )) {
+            Button("取消", role: .cancel) { deleteTarget = nil }
+            Button("删除", role: .destructive) {
+                if let task = deleteTarget {
+                    // Optimistic: remove from list immediately
+                    withAnimation(.easeOut(duration: 0.2)) {
+                        store.tasks.removeAll { $0.id == task.id }
+                    }
+                    Task { await store.delete(task.id) }
+                    deleteTarget = nil
+                }
+            }
+        } message: {
+            if let task = deleteTarget {
+                Text("确定要删除「\(task.title)」吗？")
+            }
+        }
         .preferredColorScheme(.light)
     }
 
@@ -107,7 +128,7 @@ struct DailyTaskManagerSheet: View {
                         }
                         Spacer()
                         Button {
-                            Task { await store.delete(task.id) }
+                            deleteTarget = task
                         } label: {
                             Image(systemName: "minus.circle")
                                 .font(.system(size: 18))
