@@ -57,8 +57,10 @@ struct DailyTaskManagerSheet: View {
             }
             .sheet(isPresented: $showAddForm) {
                 addTaskForm
+                    .preferredColorScheme(.light)
             }
         }
+        .preferredColorScheme(.light)
     }
 
     private func taskRow(_ task: DailyTask) -> some View {
