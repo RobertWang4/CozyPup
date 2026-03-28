@@ -7,6 +7,7 @@ enum CalendarMode {
 struct CalendarDrawer: View {
     @EnvironmentObject var calendarStore: CalendarStore
     @EnvironmentObject var petStore: PetStore
+    @EnvironmentObject var dailyTaskStore: DailyTaskStore
     @Binding var isPresented: Bool
 
     @State private var year: Int
@@ -17,6 +18,7 @@ struct CalendarDrawer: View {
     @State private var previousMode: CalendarMode = .calendar
     @State private var singleDayDate: String?
     @State private var timelineTargetDate: String?
+    @State private var showTaskManager = false
 
     init(isPresented: Binding<Bool>) {
         _isPresented = isPresented
@@ -60,6 +62,25 @@ struct CalendarDrawer: View {
                     .buttonStyle(.plain)
                 }
                 Spacer()
+
+                // Task indicator
+                Button {
+                    showTaskManager = true
+                } label: {
+                    ZStack {
+                        Circle()
+                            .fill(dailyTaskStore.allCompleted ? Tokens.green.opacity(0.15) : Tokens.surface)
+                            .frame(width: Tokens.size.buttonSmall, height: Tokens.size.buttonSmall)
+                        Image(systemName: dailyTaskStore.allCompleted ? "checkmark.circle.fill" : "checkmark.circle")
+                            .font(.system(size: 16))
+                            .foregroundColor(dailyTaskStore.allCompleted ? Tokens.green : Tokens.textSecondary)
+                    }
+                }
+                .sheet(isPresented: $showTaskManager) {
+                    DailyTaskManagerSheet()
+                        .environmentObject(dailyTaskStore)
+                        .environmentObject(petStore)
+                }
 
                 // Mode toggle
                 Button {
