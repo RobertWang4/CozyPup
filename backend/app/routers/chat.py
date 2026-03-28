@@ -19,7 +19,7 @@ from app.agents.locale import detect_language
 from app.agents.orchestrator import run_orchestrator
 from app.agents.pending_actions import pop_action
 from app.agents.post_processor import response_claims_action, execute_suggested_actions
-from app.agents.pre_processor import pre_process
+from app.agents.pre_processing import pre_process
 from app.agents.prompts_v2 import build_messages, build_system_prompt
 from app.agents.context_agent import trigger_summary_if_needed
 from app.agents.tools import execute_tool

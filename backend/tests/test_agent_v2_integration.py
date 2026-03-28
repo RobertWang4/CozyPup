@@ -15,7 +15,7 @@ from app.agents.emergency import EmergencyCheckResult, build_emergency_hint, det
 from app.agents.executor import ExecutorResult, run_executor
 from app.agents.orchestrator import OrchestratorResult, run_orchestrator
 from app.agents.locale import t
-from app.agents.pre_processor import (
+from app.agents.pre_processing import (
     SuggestedAction,
     pre_process,
 )

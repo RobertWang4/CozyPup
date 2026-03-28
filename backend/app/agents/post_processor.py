@@ -14,7 +14,7 @@ from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.agents.constants import maybe_await
-from app.agents.pre_processor import SuggestedAction
+from app.agents.pre_processing import SuggestedAction
 from app.agents.tools import execute_tool
 from app.agents.validation import validate_tool_args
 

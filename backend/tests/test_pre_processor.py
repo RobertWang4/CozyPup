@@ -4,7 +4,7 @@ import uuid
 from datetime import date
 from types import SimpleNamespace
 
-from app.agents.pre_processor import pre_process, _resolve_date, _resolve_pets
+from app.agents.pre_processing import pre_process, resolve_date as _resolve_date, resolve_pets as _resolve_pets
 
 
 def _make_pet(name, pet_id=None):
