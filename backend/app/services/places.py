@@ -97,6 +97,48 @@ class PlacesService:
         logger.info("places_search", extra={"query": query, "result_count": len(results)})
         return results
 
+    async def search_nearby_general(self, lat: float, lng: float, radius: int = 1000) -> list[dict]:
+        """Get general nearby places without keyword using Text Search with location bias."""
+        if not self.api_key:
+            return []
+
+        cache_key = self._cache_key(lat, lng, "_general")
+        cached = self._get_cached(cache_key)
+        if cached is not None:
+            return cached
+
+        try:
+            async with httpx.AsyncClient(timeout=10.0) as client:
+                resp = await client.get(
+                    "https://maps.googleapis.com/maps/api/place/nearbysearch/json",
+                    params={
+                        "location": f"{lat},{lng}",
+                        "radius": radius,
+                        "key": self.api_key,
+                    },
+                )
+                resp.raise_for_status()
+                data = resp.json()
+        except Exception as exc:
+            logger.error("places_nearby_general_error", extra={"error": str(exc)[:200]})
+            return []
+
+        results = []
+        for place in data.get("results", [])[:MAX_RESULTS]:
+            location = place.get("geometry", {}).get("location", {})
+            results.append({
+                "name": place.get("name", ""),
+                "address": place.get("vicinity", ""),
+                "place_id": place.get("place_id", ""),
+                "lat": location.get("lat", 0.0),
+                "lng": location.get("lng", 0.0),
+                "rating": place.get("rating"),
+            })
+
+        self._set_cached(cache_key, results)
+        logger.info("places_nearby_general", extra={"result_count": len(results)})
+        return results
+
     async def search_text(self, query: str) -> list[dict]:
         """Search places by text query (address, name). Returns up to 5 results."""
         if not self.api_key:

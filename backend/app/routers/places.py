@@ -18,7 +18,11 @@ async def search_nearby(
     _user_id=Depends(get_current_user_id),
 ):
     """Search nearby places by GPS coordinates."""
-    results = await places_service.search_nearby(lat=lat, lng=lng, query=query, radius=radius)
+    if query:
+        results = await places_service.search_nearby(lat=lat, lng=lng, query=query, radius=radius)
+    else:
+        # No keyword — use text search with location bias to get general nearby places
+        results = await places_service.search_nearby_general(lat=lat, lng=lng, radius=radius)
     return {"places": results}
 
 
