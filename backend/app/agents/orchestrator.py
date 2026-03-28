@@ -78,6 +78,15 @@ def _describe_tool_call(fn_name: str, fn_args: dict, pets: list | None = None, l
 MAX_TOOL_ROUNDS = 3
 
 
+@dataclass
+class OrchestratorResult:
+    """Result from orchestrator execution."""
+    response_text: str = ""
+    cards: list[dict] = field(default_factory=list)
+    confirm_cards: list[dict] = field(default_factory=list)
+    executor_results: list[ExecutorResult] = field(default_factory=list)
+
+
 async def _execute_tool_call(
     fn_name: str,
     fn_args: dict,
@@ -157,15 +166,6 @@ async def _ensure_response(result, on_token, lang: str = "zh"):
         result.response_text = fallback
         if on_token:
             await maybe_await(on_token, fallback)
-
-
-@dataclass
-class OrchestratorResult:
-    """Result from orchestrator execution."""
-    response_text: str = ""
-    cards: list[dict] = field(default_factory=list)
-    confirm_cards: list[dict] = field(default_factory=list)
-    executor_results: list[ExecutorResult] = field(default_factory=list)
 
 
 async def run_orchestrator(
