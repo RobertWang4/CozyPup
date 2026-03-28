@@ -469,6 +469,8 @@ async def _handle_single_task(
             })
             error_text = f"\n参数验证失败: {ve}"
             text_parts.append(error_text)
+            if on_token:
+                await maybe_await(on_token, error_text)
             break
         except Exception as exc:
             logger.error("orchestrator_tool_error", extra={
@@ -476,6 +478,9 @@ async def _handle_single_task(
             })
             error_text = f"\n{t('tool_execution_error', lang)}"
             text_parts.append(error_text)
+            # Send error to client via SSE so user sees feedback
+            if on_token:
+                await maybe_await(on_token, error_text)
             break
 
     result.response_text = "".join(text_parts)
