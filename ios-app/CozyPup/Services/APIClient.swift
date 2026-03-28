@@ -6,7 +6,7 @@ actor APIClient {
     #if targetEnvironment(simulator)
     private let baseURL = "http://localhost:8000/api/v1"
     #else
-    private let baseURL = "http://168.138.75.153:8000/api/v1" // TODO: change for production
+    private let baseURL = "https://backend-601329501885.asia-east1.run.app/api/v1"
     #endif
 
     private var accessToken: String?
@@ -208,7 +208,11 @@ actor APIClient {
                     request.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
                     request.httpBody = bodyData
 
-                    let (bytes, response) = try await URLSession.shared.bytes(for: request)
+                    // Use ephemeral session to avoid HTTP connection reuse issues with SSE
+                    let sseConfig = URLSessionConfiguration.ephemeral
+                    sseConfig.timeoutIntervalForRequest = 120
+                    let sseSession = URLSession(configuration: sseConfig)
+                    let (bytes, response) = try await sseSession.bytes(for: request)
                     let status = (response as? HTTPURLResponse)?.statusCode ?? 0
                     guard status == 200 else {
                         throw APIError.badStatus(status)
