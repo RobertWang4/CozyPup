@@ -49,6 +49,8 @@
 		D5FA653E9B82083C5D63B0D2 /* ChatMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 369D8B87FDDB80958DDAD250 /* ChatMessage.swift */; };
 		D630CFC714CC64ED932C3278 /* PhotoCropSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F098F57E511474AEEB173948 /* PhotoCropSheet.swift */; };
 		D7EF6BD5206BF3B30C294354 /* Pet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A64F760C22D68D06ECA76404 /* Pet.swift */; };
+		AA1234561234567890ABCDEF /* DailyTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1234561234567890ABCDEF /* DailyTask.swift */; };
+		CC1234561234567890ABCDEF /* DailyTaskStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1234561234567890ABCDEF /* DailyTaskStore.swift */; };
 		D8425461FC00D2E8DECB8021 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 4B60F559B4A4D8C5CC3A9B42 /* GoogleSignIn */; };
 		DBF96E2B35FB712BC97A1C27 /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2586D01E7C42221ABD72995 /* LocationService.swift */; };
 		DDE0B95A2BBD3D6913475404 /* MapCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = E722C9266BF5B0325E6B52A6 /* MapCard.swift */; };
@@ -95,6 +97,8 @@
 		A0966E4141F24A98CBF3DA68 /* VoiceInputOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceInputOverlay.swift; sourceTree = "<group>"; };
 		A1FDA644076F4501C37D7F50 /* DisclaimerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisclaimerView.swift; sourceTree = "<group>"; };
 		A64F760C22D68D06ECA76404 /* Pet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Pet.swift; sourceTree = "<group>"; };
+		BB1234561234567890ABCDEF /* DailyTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyTask.swift; sourceTree = "<group>"; };
+		DD1234561234567890ABCDEF /* DailyTaskStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyTaskStore.swift; sourceTree = "<group>"; };
 		A8DFA987EA363F0C2645FD64 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		AE52D72C580AA7D599BDCEAC /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
 		B6F1DE010DA6010A14147BF8 /* SettingsDrawer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsDrawer.swift; sourceTree = "<group>"; };
@@ -139,6 +143,7 @@
 				913C15A464B82E869A8EA6E8 /* AuthStore.swift */,
 				7457A5F181182A68DC0B8CE6 /* CalendarStore.swift */,
 				50750BC93A661BAE576D418E /* ChatStore.swift */,
+				DD1234561234567890ABCDEF /* DailyTaskStore.swift */,
 				1D8DC0ADAB2E88C2F59583DA /* PetStore.swift */,
 			);
 			path = Stores;
@@ -174,6 +179,7 @@
 			children = (
 				E59EDD63ED4B5127A8B5D2DC /* CalendarEvent.swift */,
 				369D8B87FDDB80958DDAD250 /* ChatMessage.swift */,
+				BB1234561234567890ABCDEF /* DailyTask.swift */,
 				A64F760C22D68D06ECA76404 /* Pet.swift */,
 			);
 			path = Models;
@@ -402,6 +408,8 @@
 				D5FA653E9B82083C5D63B0D2 /* ChatMessage.swift in Sources */,
 				8C479A4CCAAB3EA751F08C51 /* ChatService.swift in Sources */,
 				ACC8DEDAA3BCE7642D22C250 /* ChatStore.swift in Sources */,
+				AA1234561234567890ABCDEF /* DailyTask.swift in Sources */,
+				CC1234561234567890ABCDEF /* DailyTaskStore.swift in Sources */,
 				E4CE679EF88093851EBC91E0 /* ChatView.swift in Sources */,
 				B26546A329CCAA0E29AF43B5 /* ConfirmActionCard.swift in Sources */,
 				858DEA8563727562E8ACE8BC /* CozyPupApp.swift in Sources */,

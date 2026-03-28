@@ -21,6 +21,7 @@ struct CozyPupApp: App {
     @StateObject private var petStore = PetStore()
     @StateObject private var calendarStore = CalendarStore()
     @StateObject private var chatStore = ChatStore()
+    @StateObject private var dailyTaskStore = DailyTaskStore()
     var body: some Scene {
         WindowGroup {
             Group {
@@ -38,6 +39,7 @@ struct CozyPupApp: App {
             .environmentObject(petStore)
             .environmentObject(calendarStore)
             .environmentObject(chatStore)
+            .environmentObject(dailyTaskStore)
             .environmentObject(Lang.shared)
         }
     }
