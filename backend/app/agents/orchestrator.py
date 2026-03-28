@@ -102,10 +102,14 @@ async def _execute_tool_call(
 
     Returns:
         tool_result dict on success.
+    Note: lang is stripped from kwargs to prevent 'multiple values' errors.
         None if a confirm card was queued (tool not executed).
     Raises:
         ValueError if validation fails.
     """
+    # Strip lang from kwargs — callers pass lang=lang AND **kwargs which may also contain lang
+    kwargs.pop("lang", None)
+
     # Confirm gate — destructive tools need user approval
     if fn_name in CONFIRM_TOOLS and session_id:
         desc = _describe_tool_call(fn_name, fn_args, lang=lang)

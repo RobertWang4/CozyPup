@@ -4,6 +4,7 @@ struct MultiDayTimelineView: View {
     @EnvironmentObject var calendarStore: CalendarStore
     @EnvironmentObject var petStore: PetStore
     @Binding var filterPetId: String?
+    var filterCategory: EventCategory?
     var scrollToDate: String?
     var onSelectDay: (String) -> Void
 
@@ -79,6 +80,12 @@ struct MultiDayTimelineView: View {
                             },
                             onPhotoDelete: { id, photoUrl in
                                 Task { await calendarStore.deleteEventPhoto(eventId: id, photoUrl: photoUrl) }
+                            },
+                            onLocationUpdate: { id, name, address, lat, lng, placeId in
+                                Task { await calendarStore.updateLocation(eventId: id, name: name, address: address, lat: lat, lng: lng, placeId: placeId) }
+                            },
+                            onLocationRemove: { id in
+                                Task { await calendarStore.removeLocation(eventId: id) }
                             }
                         )
                         .id(index)
@@ -97,7 +104,8 @@ struct MultiDayTimelineView: View {
 
     private func eventsForDate(_ dateKey: String) -> [CalendarEvent] {
         calendarStore.eventsForDate(dateKey).filter {
-            filterPetId == nil || $0.petId == filterPetId
+            (filterPetId == nil || $0.petId == filterPetId) &&
+            (filterCategory == nil || $0.category == filterCategory)
         }
     }
 
@@ -138,6 +146,8 @@ struct DayRow: View {
     var onDelete: ((String) -> Void)?
     var onPhotoUpload: ((String, Data) async -> String?)?
     var onPhotoDelete: ((String, String) -> Void)?
+    var onLocationUpdate: ((String, String, String, Double, Double, String) -> Void)?  // eventId, name, address, lat, lng, placeId
+    var onLocationRemove: ((String) -> Void)?  // eventId
 
     @State private var editingEvent: CalendarEvent?
     @State private var fullScreenImage: UIImage?
@@ -192,6 +202,12 @@ struct DayRow: View {
                     },
                     onPhotoDelete: onPhotoDelete.map { delete in
                         { photoUrl in delete(evt.id, photoUrl) }
+                    },
+                    onLocationUpdate: onLocationUpdate.map { update in
+                        { name, address, lat, lng, placeId in update(evt.id, name, address, lat, lng, placeId) }
+                    },
+                    onLocationRemove: onLocationRemove.map { remove in
+                        { remove(evt.id) }
                     }
                 )
             }
@@ -207,8 +223,8 @@ struct DayRow: View {
                 .font(.system(size: 26, weight: isToday ? .bold : .regular, design: .serif))
                 .foregroundColor(isToday ? Tokens.accent : Tokens.text)
         }
-        .frame(width: 56, alignment: .trailing)
-        .padding(.trailing, Tokens.spacing.sm)
+        .frame(width: 40, alignment: .trailing)
+        .padding(.trailing, Tokens.spacing.xs)
         .padding(.vertical, 10)
     }
 
@@ -285,6 +301,19 @@ struct DayRow: View {
                                 .padding(.top, 4)
                             }
                         }
+
+                        if let loc = evt.locationName, !loc.isEmpty {
+                            HStack(spacing: 3) {
+                                Image(systemName: "mappin")
+                                    .font(.system(size: 8))
+                                Text(loc)
+                                    .font(Tokens.fontCaption2)
+                                    .lineLimit(1)
+                            }
+                            .foregroundColor(Tokens.textTertiary)
+                            .padding(.leading, Tokens.spacing.md)
+                            .padding(.top, 2)
+                        }
                     }
                     .padding(.vertical, Tokens.spacing.sm)
                     .padding(.horizontal, Tokens.spacing.sm)
@@ -328,10 +357,8 @@ struct DayRow: View {
 
     private func categoryColor(_ category: EventCategory) -> Color {
         switch category {
-        case .diet: return Tokens.green; case .medical: return Tokens.blue
-        case .daily: return Tokens.accent; case .abnormal: return Tokens.red
-        case .vaccine: return Tokens.purple; case .deworming: return Tokens.orange
-        case .excretion: return Tokens.textSecondary
+        case .daily: return Tokens.accent; case .diet: return Tokens.green
+        case .medical: return Tokens.blue; case .abnormal: return Tokens.red
         }
     }
 }

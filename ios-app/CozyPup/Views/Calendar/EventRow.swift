@@ -6,6 +6,8 @@ struct EventRow: View {
     var pet: Pet?
     var onUpdate: (String, EventCategory, String, String?) -> Void
     var onDelete: () -> Void
+    var onLocationUpdate: ((String, String, Double, Double, String) -> Void)?
+    var onLocationRemove: (() -> Void)?
 
     @State private var showEditSheet = false
 
@@ -69,7 +71,7 @@ struct EventRow: View {
             }
         }
         .sheet(isPresented: $showEditSheet) {
-            EventEditSheet(event: event, onSave: onUpdate)
+            EventEditSheet(event: event, onSave: onUpdate, onLocationUpdate: onLocationUpdate, onLocationRemove: onLocationRemove)
         }
     }
 
@@ -81,9 +83,11 @@ struct EventRow: View {
     }
 
     private var barColor: Color {
-        if let first = event.petTags.first {
-            return Color(hex: first.color_hex) ?? petColor
+        switch event.category {
+        case .daily: return Tokens.accent
+        case .diet: return Tokens.green
+        case .medical: return Tokens.blue
+        case .abnormal: return Tokens.red
         }
-        return petColor
     }
 }

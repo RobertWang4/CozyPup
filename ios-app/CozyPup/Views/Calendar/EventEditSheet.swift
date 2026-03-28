@@ -6,6 +6,8 @@ struct EventEditSheet: View {
     var onSave: (String, EventCategory, String, String?) -> Void
     var onPhotoUpload: ((Data) async -> String?)?  // returns photo URL on success
     var onPhotoDelete: ((String) -> Void)?
+    var onLocationUpdate: ((String, String, Double, Double, String) -> Void)?  // name, address, lat, lng, placeId
+    var onLocationRemove: (() -> Void)?
     @Environment(\.dismiss) private var dismiss
 
     @State private var title: String
@@ -17,17 +19,37 @@ struct EventEditSheet: View {
     @State private var cropImage: UIImage?
     @State private var showCropSheet = false
     @State private var photoToDelete: String?
+    @State private var showLocationPicker = false
+    @State private var locationName: String?
+    @State private var locationAddress: String?
+    @State private var locationLat: Double?
+    @State private var locationLng: Double?
+    @State private var placeId: String?
 
-    init(event: CalendarEvent, onSave: @escaping (String, EventCategory, String, String?) -> Void, onPhotoUpload: ((Data) async -> String?)? = nil, onPhotoDelete: ((String) -> Void)? = nil) {
+    init(
+        event: CalendarEvent,
+        onSave: @escaping (String, EventCategory, String, String?) -> Void,
+        onPhotoUpload: ((Data) async -> String?)? = nil,
+        onPhotoDelete: ((String) -> Void)? = nil,
+        onLocationUpdate: ((String, String, Double, Double, String) -> Void)? = nil,
+        onLocationRemove: (() -> Void)? = nil
+    ) {
         self.event = event
         self.onSave = onSave
         self.onPhotoUpload = onPhotoUpload
         self.onPhotoDelete = onPhotoDelete
+        self.onLocationUpdate = onLocationUpdate
+        self.onLocationRemove = onLocationRemove
         _title = State(initialValue: event.title)
         _category = State(initialValue: event.category)
         _date = State(initialValue: event.eventDate)
         _time = State(initialValue: event.eventTime ?? "")
         _photos = State(initialValue: event.photos)
+        _locationName = State(initialValue: event.locationName)
+        _locationAddress = State(initialValue: event.locationAddress)
+        _locationLat = State(initialValue: event.locationLat)
+        _locationLng = State(initialValue: event.locationLng)
+        _placeId = State(initialValue: event.placeId)
     }
 
     var body: some View {
@@ -74,22 +96,7 @@ struct EventEditSheet: View {
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack(spacing: Tokens.spacing.sm) {
                                 ForEach(EventCategory.allCases, id: \.self) { c in
-                                    Button {
-                                        withAnimation(.easeInOut(duration: 0.15)) {
-                                            category = c
-                                        }
-                                    } label: {
-                                        Text(c.label)
-                                            .font(Tokens.fontSubheadline.weight(.medium))
-                                            .foregroundColor(category == c ? Tokens.accent : Tokens.textSecondary)
-                                            .padding(.horizontal, 14)
-                                            .padding(.vertical, 8)
-                                            .background(
-                                                category == c ? Tokens.accentSoft : Tokens.surface
-                                            )
-                                            .cornerRadius(Tokens.radiusSmall)
-                                    }
-                                    .buttonStyle(.plain)
+                                    categoryChip(c)
                                 }
                             }
                         }
@@ -99,36 +106,72 @@ struct EventEditSheet: View {
                     photoSection
 
                     // Card 4: Location
-                    if let locName = event.locationName, let lat = event.locationLat, let lng = event.locationLng {
-                        VStack(alignment: .leading, spacing: Tokens.spacing.sm) {
-                            Text(Lang.shared.isZh ? "地点" : "Location")
-                                .font(Tokens.fontCaption.weight(.medium))
-                                .foregroundColor(Tokens.textTertiary)
-                                .padding(.leading, Tokens.spacing.xs)
+                    VStack(alignment: .leading, spacing: Tokens.spacing.sm) {
+                        Text(Lang.shared.isZh ? "地点" : "Location")
+                            .font(Tokens.fontCaption.weight(.medium))
+                            .foregroundColor(Tokens.textTertiary)
+                            .padding(.leading, Tokens.spacing.xs)
 
+                        if let locName = locationName {
+                            // Has location — show it with option to change/remove
                             HStack {
                                 Button {
-                                    openGoogleMaps(lat: lat, lng: lng, placeId: event.placeId, name: locName)
+                                    if let lat = locationLat, let lng = locationLng {
+                                        openGoogleMaps(lat: lat, lng: lng, placeId: placeId, name: locName)
+                                    }
                                 } label: {
                                     HStack(spacing: Tokens.spacing.xs) {
                                         Image(systemName: "mappin.circle.fill")
                                             .foregroundColor(Tokens.accent)
-                                        Text(locName)
-                                            .font(Tokens.fontBody)
-                                            .foregroundColor(Tokens.accent)
-                                        if let addr = event.locationAddress, !addr.isEmpty {
-                                            Text(addr)
-                                                .font(Tokens.fontCaption)
-                                                .foregroundColor(Tokens.textSecondary)
-                                                .lineLimit(1)
+                                        VStack(alignment: .leading, spacing: 2) {
+                                            Text(locName)
+                                                .font(Tokens.fontBody)
+                                                .foregroundColor(Tokens.accent)
+                                            if let addr = locationAddress, !addr.isEmpty {
+                                                Text(addr)
+                                                    .font(Tokens.fontCaption)
+                                                    .foregroundColor(Tokens.textSecondary)
+                                                    .lineLimit(1)
+                                            }
                                         }
                                     }
                                 }
                                 Spacer()
+                                Button {
+                                    locationName = nil
+                                    locationAddress = nil
+                                    locationLat = nil
+                                    locationLng = nil
+                                    placeId = nil
+                                    onLocationRemove?()
+                                } label: {
+                                    Image(systemName: "xmark.circle.fill")
+                                        .foregroundColor(Tokens.textTertiary)
+                                }
                             }
                             .padding(Tokens.spacing.md)
                             .background(Tokens.surface)
                             .cornerRadius(Tokens.radius)
+                        } else {
+                            // No location — show add button
+                            Button {
+                                showLocationPicker = true
+                            } label: {
+                                HStack(spacing: Tokens.spacing.xs) {
+                                    Image(systemName: "mappin.circle")
+                                        .foregroundColor(Tokens.textTertiary)
+                                    Text(Lang.shared.isZh ? "添加地点" : "Add Location")
+                                        .font(Tokens.fontBody)
+                                        .foregroundColor(Tokens.textSecondary)
+                                    Spacer()
+                                    Image(systemName: "chevron.right")
+                                        .font(.system(size: 12))
+                                        .foregroundColor(Tokens.textTertiary)
+                                }
+                                .padding(Tokens.spacing.md)
+                                .background(Tokens.surface)
+                                .cornerRadius(Tokens.radius)
+                            }
                         }
                     }
                 }
@@ -148,6 +191,13 @@ struct EventEditSheet: View {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button(L.save) {
                         onSave(title, category, date, time.isEmpty ? nil : time)
+                        // Also persist location if it was added/changed in this session
+                        if let name = locationName, let lat = locationLat, let lng = locationLng {
+                            onLocationUpdate?(name, locationAddress ?? "", lat, lng, placeId ?? "")
+                        } else if event.locationName != nil && locationName == nil {
+                            // Location was removed
+                            onLocationRemove?()
+                        }
                         dismiss()
                     }
                     .fontWeight(.semibold)
@@ -190,6 +240,20 @@ struct EventEditSheet: View {
                     }
                 )
             }
+        }
+        .sheet(isPresented: $showLocationPicker) {
+            LocationPickerSheet(
+                currentLat: LocationService.lastLat,
+                currentLng: LocationService.lastLng,
+                onSelect: { place in
+                    locationName = place.name
+                    locationAddress = place.address
+                    locationLat = place.lat
+                    locationLng = place.lng
+                    placeId = place.id
+                    onLocationUpdate?(place.name, place.address, place.lat, place.lng, place.id)
+                }
+            )
         }
         .alert(Lang.shared.isZh ? "删除照片" : "Delete Photo",
                isPresented: Binding(
@@ -315,5 +379,21 @@ struct EventEditSheet: View {
         }
         .padding(.horizontal, Tokens.spacing.md)
         .padding(.vertical, Tokens.spacing.sm + 2)
+    }
+
+    private func categoryChip(_ c: EventCategory) -> some View {
+        let selected = category == c
+        return Button {
+            withAnimation(.easeInOut(duration: 0.15)) { category = c }
+        } label: {
+            Text(c.label)
+                .font(Tokens.fontSubheadline.weight(.medium))
+                .foregroundColor(selected ? Tokens.accent : Tokens.textSecondary)
+                .padding(.horizontal, 14)
+                .padding(.vertical, 8)
+                .background(selected ? Tokens.accentSoft : Tokens.surface)
+                .cornerRadius(Tokens.radiusSmall)
+        }
+        .buttonStyle(.plain)
     }
 }
