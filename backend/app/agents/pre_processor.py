@@ -213,6 +213,15 @@ _QUESTION_OVERRIDE = re.compile(
     re.I,
 )
 
+# Completion/status phrases — "都打完了" describes a state, not an event
+# When detected, suppress calendar hint so LLM decides on its own
+_STATUS_OVERRIDE = re.compile(
+    r"都.*(?:打完|做完|完成|打齐|做齐)|已经.*(?:完了|完成|打完|做完)"
+    r"|打完了|打齐了|做完了|完成了|做齐了"
+    r"|all done|completed|finished|fully vaccinated|all.*shots.*done",
+    re.I,
+)
+
 _CREATE_PET_PATTERN = re.compile(
     r"新养了|新.*(?:狗|猫|宠物)|养了.*(?:叫|名字)|创建.*宠物|添加.*宠物|新来了|刚买了|刚领养"
     r"|got a new|new (?:pet|puppy|kitten|dog|cat)|adopt",
@@ -319,7 +328,8 @@ def pre_process(
     actions: list[SuggestedAction] = []
 
     # --- Calendar events ---
-    if not is_question:
+    is_status = bool(_STATUS_OVERRIDE.search(message))
+    if not is_question and not is_status:
         matched_categories = []
         for pattern, category, confidence in _CALENDAR_PATTERNS:
             if pattern.search(message):

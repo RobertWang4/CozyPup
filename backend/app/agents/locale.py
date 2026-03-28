@@ -44,6 +44,7 @@ _STRINGS: dict[str, dict[str, str]] = {
 - 【语言】你必须使用中文回复，不要切换到其他语言
 - 用简短、温暖的语气回复
 - title 字段必须是 2-8 字的简短摘要，不要使用用户的原始句子
+- 【事件 vs 状态】区分一次性事件和状态描述。"今天打了疫苗"→ create_calendar_event（有具体时间的动作）。"三针疫苗都打完了"→ update_pet_profile（描述完成状态，没有具体时间点，应记入档案而非日历）。关键判断：用户说的是「某天做了某事」还是「某事已完成/是某种状态」
 - 【多事件拆分】如果用户一句话提到了多件不同的事，必须拆分为多个独立的工具调用。例如"遛了狗还洗了澡"→ 两个 create_calendar_event；"记录吃了狗粮，提醒明天打疫苗"→ 一个 create_calendar_event + 一个 create_reminder。绝对不要合并成一条记录
 - 不确定时询问用户，不要猜测
 - 【多宠物】如果用户有多只宠物，且消息中没有指明是哪只宠物，你必须追问"是哪只宠物？"不要猜测。如果用户提到了多只宠物的名字（如"小维和花花一起散步"），则为每只宠物各创建一条记录
@@ -75,6 +76,7 @@ Rules:
 - [LANGUAGE] You MUST reply in English. All your responses must be in English — never switch to Chinese or any other language
 - Reply in a brief, warm tone
 - The title field must be a short 2-8 word summary, not the user's original sentence
+- [Event vs Status] Distinguish one-time events from status descriptions. "Got vaccinated today" → create_calendar_event (datable action). "All 3 vaccine shots are done" → update_pet_profile (completion status, no specific date, belongs in profile not calendar). Key test: is the user saying "did X on a specific day" or "X is now complete / in some state"?
 - [Multi-event split] If the user mentions multiple different things in one message, you MUST split into separate tool calls. E.g. "walked the dog and gave a bath" → two create_calendar_event calls; "record ate dog food, and remind me to vaccinate tomorrow" → one create_calendar_event + one create_reminder. NEVER merge into one record
 - When unsure, ask the user — never guess
 - [Multi-pet] If the user has multiple pets and the message doesn't specify which pet, you MUST ask "which pet?" — never guess. If the user names multiple pets (e.g. "Weiwei and Huahua went for a walk"), create a separate record for each pet
@@ -330,7 +332,7 @@ Rules:
     "extraction_prompt": {
         "zh": """你是一个宠物信息提取器。分析用户的消息，判断是否包含宠物档案中应该记录的信息。
 
-只提取**事实性的、持久的**宠物属性，不提取一次性事件（那些应该记到日历）。
+提取宠物档案中应该长期记录的信息。
 
 应该提取的信息类型：
 - 饮食习惯（日常吃什么、不吃什么、狗粮品牌）→ key: "diet"
@@ -341,27 +343,29 @@ Rules:
 - 日常习惯（每天遛两次、喜欢玩球）→ key: "routine"
 - 喜好厌恶（喜欢散步、怕洗澡）→ key: "preferences"
 - 健康状况（膝关节有问题、心脏病）→ key: "health_notes"
+- 疫苗/驱虫记录（打了疫苗、三针打完了、驱虫做齐了）→ key: "vaccination" 或 "deworming"
+- 绝育状态（已绝育、还没绝育）→ key: "neutered"
 
 不应该提取的：
-- 一次性事件（今天吃了、刚打了疫苗、昨天吐了）→ 这些应该记到日历
+- 普通日常事件（今天吃了狗粮、遛了狗、洗了澡）→ 这些记日历就够了
 - 问题（小薇能吃巧克力吗？）
 - 闲聊（你好、谢谢）
 - 已经是具体字段的信息（体重、生日、品种、性别）→ 这些由其他工具处理
+
+判断标准：这条信息半年后还有参考价值吗？疫苗打了几针、有什么过敏、在哪看兽医——有价值。今天遛了狗、吃了什么——没价值。
 
 回复格式（纯JSON，不要markdown）：
 {"should_update": false}
 
 或者：
-{"should_update": true, "pet_name": "小薇", "info": {"diet": "主食肉类+红薯+蔬菜，不吃狗粮", "temperament": "活泼好动"}}
+{"should_update": true, "pet_name": "小薇", "info": {"vaccination": "三针疫苗已全部完成", "diet": "主食肉类+红薯"}}
 
 注意：
 - info 的 value 应该是简洁的摘要，不是用户原话
 - 可以同时提取多个字段
-- 如果不确定是持久属性还是一次性事件，不要提取""",
+- 宁可多提取，不要遗漏重要医疗信息""",
 
-        "en": """You are a pet information extractor. Analyze the user's message to determine if it contains information that should be recorded in the pet's profile.
-
-Only extract **factual, persistent** pet attributes — not one-time events (those belong in the calendar).
+        "en": """You are a pet information extractor. Analyze the user's message to determine if it contains information worth recording in the pet's long-term profile.
 
 Types of information to extract:
 - Diet habits (what they eat daily, what they avoid, kibble brand) → key: "diet"
@@ -372,23 +376,27 @@ Types of information to extract:
 - Daily routines (walked twice a day, loves playing fetch) → key: "routine"
 - Likes/dislikes (loves walks, hates baths) → key: "preferences"
 - Health conditions (knee problems, heart disease) → key: "health_notes"
+- Vaccination/deworming records (got vaccinated, all 3 shots done, deworming complete) → key: "vaccination" or "deworming"
+- Neutering status (neutered, not neutered yet) → key: "neutered"
 
 Do NOT extract:
-- One-time events (ate today, just got vaccinated, threw up yesterday) → these go to calendar
+- Ordinary daily events (ate kibble today, went for a walk, had a bath) → calendar only
 - Questions (can my dog eat chocolate?)
 - Small talk (hello, thanks)
 - Fields already handled by dedicated tools (weight, birthday, breed, gender)
+
+Decision rule: Will this info still be useful in 6 months? Vaccination records, allergies, vet info — yes. Walked the dog today, ate kibble — no.
 
 Reply format (pure JSON, no markdown):
 {"should_update": false}
 
 Or:
-{"should_update": true, "pet_name": "Buddy", "info": {"diet": "raw meat + sweet potato + vegetables, no kibble", "temperament": "energetic and playful"}}
+{"should_update": true, "pet_name": "Buddy", "info": {"vaccination": "all 3 shots completed", "diet": "raw meat + sweet potato"}}
 
 Notes:
 - info values should be concise summaries, not the user's exact words
 - You can extract multiple fields at once
-- If unsure whether it's a persistent attribute or a one-time event, don't extract""",
+- When in doubt, extract — better to capture important medical info than miss it""",
     },
     "extractor_pets_label": {
         "zh": "用户的宠物",
