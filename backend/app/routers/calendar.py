@@ -17,6 +17,7 @@ from app.schemas.calendar import (
     CalendarEventCreate,
     CalendarEventResponse,
     CalendarEventUpdate,
+    LocationUpdate,
     PetTag,
 )
 
@@ -65,6 +66,11 @@ def _event_to_response(event: CalendarEvent, pets_by_id: dict | None = None) -> 
         source=event.source,
         edited=event.edited,
         photos=event.photos or [],
+        location_name=event.location_name,
+        location_address=event.location_address,
+        location_lat=event.location_lat,
+        location_lng=event.location_lng,
+        place_id=event.place_id,
         created_at=event.created_at.isoformat(),
     )
 
@@ -295,3 +301,65 @@ async def delete_event_photo(
     await db.commit()
     await db.refresh(event)
     return _event_to_response(event)
+
+
+@router.put("/{event_id}/location", response_model=CalendarEventResponse)
+async def update_location(
+    event_id: uuid.UUID,
+    req: LocationUpdate,
+    user_id: uuid.UUID = Depends(get_current_user_id),
+    db: AsyncSession = Depends(get_db),
+):
+    result = await db.execute(
+        select(CalendarEvent).where(CalendarEvent.id == event_id, CalendarEvent.user_id == user_id)
+    )
+    event = result.scalar_one_or_none()
+    if not event:
+        raise HTTPException(status_code=404, detail="Event not found")
+
+    event.location_name = req.location_name
+    event.location_address = req.location_address
+    event.location_lat = req.location_lat
+    event.location_lng = req.location_lng
+    event.place_id = req.place_id
+    await db.commit()
+    await db.refresh(event)
+
+    pets_by_id = {}
+    pet_ids = event.pet_ids or ([str(event.pet_id)] if event.pet_id else [])
+    if pet_ids:
+        pet_result = await db.execute(select(Pet).where(Pet.id.in_([uuid.UUID(p) for p in pet_ids])))
+        pets_by_id = {str(p.id): p for p in pet_result.scalars().all()}
+
+    logger.info("location_updated", extra={"event_id": str(event_id), "place": req.location_name})
+    return _event_to_response(event, pets_by_id)
+
+
+@router.delete("/{event_id}/location", response_model=CalendarEventResponse)
+async def delete_location(
+    event_id: uuid.UUID,
+    user_id: uuid.UUID = Depends(get_current_user_id),
+    db: AsyncSession = Depends(get_db),
+):
+    result = await db.execute(
+        select(CalendarEvent).where(CalendarEvent.id == event_id, CalendarEvent.user_id == user_id)
+    )
+    event = result.scalar_one_or_none()
+    if not event:
+        raise HTTPException(status_code=404, detail="Event not found")
+
+    event.location_name = None
+    event.location_address = None
+    event.location_lat = None
+    event.location_lng = None
+    event.place_id = None
+    await db.commit()
+    await db.refresh(event)
+
+    pets_by_id = {}
+    pet_ids = event.pet_ids or ([str(event.pet_id)] if event.pet_id else [])
+    if pet_ids:
+        pet_result = await db.execute(select(Pet).where(Pet.id.in_([uuid.UUID(p) for p in pet_ids])))
+        pets_by_id = {str(p.id): p for p in pet_result.scalars().all()}
+
+    return _event_to_response(event, pets_by_id)

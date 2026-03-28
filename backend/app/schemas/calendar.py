@@ -14,6 +14,14 @@ class CalendarEventCreate(BaseModel):
     source: EventSource = EventSource.manual
 
 
+class LocationUpdate(BaseModel):
+    location_name: str
+    location_address: str = ""
+    location_lat: float
+    location_lng: float
+    place_id: str = ""
+
+
 class CalendarEventUpdate(BaseModel):
     title: str | None = None
     category: EventCategory | None = None
@@ -42,4 +50,9 @@ class CalendarEventResponse(BaseModel):
     source: EventSource
     edited: bool
     photos: list[str] = []
+    location_name: str | None = None
+    location_address: str | None = None
+    location_lat: float | None = None
+    location_lng: float | None = None
+    place_id: str | None = None
     created_at: str
