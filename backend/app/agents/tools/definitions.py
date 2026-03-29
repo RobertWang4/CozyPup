@@ -42,8 +42,13 @@ _BASE_TOOL_DEFINITIONS = [
                     },
                     "category": {
                         "type": "string",
-                        "enum": ["diet", "excretion", "abnormal", "vaccine", "deworming", "medical", "daily"],
-                        "description": "Category of the health event.",
+                        "enum": ["daily", "diet", "medical", "abnormal"],
+                        "description": (
+                            "Category: daily (walks, baths, grooming, park visits), "
+                            "diet (feeding, food changes, medication given orally), "
+                            "medical (vet visits, vaccines, deworming, checkups), "
+                            "abnormal (vomiting, diarrhea, unusual excretion, injuries, illness signs)."
+                        ),
                     },
                     "event_time": {
                         "type": "string",
@@ -322,9 +327,12 @@ _BASE_TOOL_DEFINITIONS = [
             "name": "search_places",
             "description": (
                 "搜索附近的宠物相关地点 (宠物医院/宠物店/狗公园/美容店/24h急诊)。\n"
-                "当用户问附近哪里有…/帮我找…时使用。\n"
-                "不要用于: 记录去过的地方 (用 create_calendar_event)。\n"
-                "需要用户授权位置信息才能使用。"
+                "【必须调用】当用户提到以下任何一种时，必须调用此工具:\n"
+                "- '附近''附近哪里有''帮我找''最近的' + 宠物医院/医院/宠物店/狗公园/公园/美容店\n"
+                "- 'nearby''find''closest''nearest' + vet/clinic/hospital/dog park/pet store/groomer\n"
+                "- 需要找宠物相关地点的任何表达\n"
+                "即使没有位置信息也要调用，系统会自动处理。\n"
+                "不要用于: 记录去过的地方 (用 create_calendar_event)。"
             ),
             "parameters": {
                 "type": "object",
@@ -473,8 +481,9 @@ _BASE_TOOL_DEFINITIONS = [
             "name": "delete_reminder",
             "description": (
                 "删除/取消一个提醒。\n"
-                "当用户要取消已设定的提醒时使用。\n"
+                "当用户要取消某一个已设定的提醒时使用。\n"
                 "不要用于: 修改提醒 (用 update_reminder)。\n"
+                "不要用于: 删除全部提醒 (用 delete_all_reminders)。\n"
                 "必须先调 list_reminders 获取 reminder_id。"
             ),
             "parameters": {
@@ -486,6 +495,22 @@ _BASE_TOOL_DEFINITIONS = [
                     },
                 },
                 "required": ["reminder_id"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "delete_all_reminders",
+            "description": (
+                "删除用户所有未发送的提醒。\n"
+                "当用户要求清空/删除全部提醒时使用。\n"
+                "不要用于: 删除单个提醒 (用 delete_reminder)。\n"
+                "不需要 reminder_id，直接清空所有待发送提醒。"
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {},
             },
         },
     },
@@ -516,8 +541,12 @@ _BASE_TOOL_DEFINITIONS = [
         "function": {
             "name": "set_language",
             "description": (
-                "切换应用显示语言。\n"
-                "当用户要求切换语言时使用 (说英文/switch to English)。\n"
+                "切换应用界面显示语言。\n"
+                "【必须调用】当用户说以下任何一种时，必须调用此工具:\n"
+                "- '切换成中文''切换成英文''说中文''说英文''用中文''用英文'\n"
+                "- 'switch to English''switch to Chinese''use English''use Chinese''speak English''speak Chinese'\n"
+                "- 任何要求改变回复/界面语言的表达\n"
+                "调用此工具时同时切换你的回复语言。\n"
                 "不要用于: 翻译内容 (直接用目标语言回复)。\n"
                 "支持 zh 和 en。"
             ),
@@ -565,10 +594,11 @@ _BASE_TOOL_DEFINITIONS = [
         "function": {
             "name": "trigger_emergency",
             "description": (
-                "当判断用户描述的是真正的宠物紧急情况时调用。\n"
-                "使用场景: 宠物中毒、抽搐、大出血、呼吸困难、昏迷等危及生命的状况。\n"
-                "不要用于: 用户询问过去的紧急事件、一般性健康咨询、轻微不适。\n"
-                "调用前请仔细判断是否真的紧急。"
+                "【紧急情况必须调用】当用户描述宠物正在经历危及生命的状况时，必须立即调用。\n"
+                "触发场景: 抽搐/seizure、中毒/poisoning、大出血/bleeding、呼吸困难/breathing difficulty、\n"
+                "昏迷/unconscious、快死了/dying、口吐白沫、翻白眼、站不起来、被车撞、误食有毒物等。\n"
+                "只要用户描述的是【正在发生】或【刚刚发生】的紧急症状，就必须调用此工具。\n"
+                "不调用的唯一情况: 用户明确在问【过去的】事件（'上次中毒是什么时候'）或进行一般性讨论。"
             ),
             "parameters": {
                 "type": "object",
@@ -626,7 +656,7 @@ _BASE_TOOL_DEFINITIONS = [
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "action": {"type": "string", "enum": ["update", "delete", "deactivate"], "description": "update=修改, delete=删除, deactivate=暂停."},
+                    "action": {"type": "string", "enum": ["update", "delete", "deactivate", "delete_all"], "description": "update=修改, delete=删除单个, deactivate=暂停, delete_all=删除全部待办(不需要task_id/title)."},
                     "task_id": {"type": "string", "description": "UUID of the task (if known)."},
                     "title": {"type": "string", "description": "Task title keyword for fuzzy matching."},
                     "updates": {

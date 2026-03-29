@@ -6,7 +6,7 @@ actor APIClient {
     #if targetEnvironment(simulator)
     private let baseURL = "http://localhost:8000/api/v1"
     #else
-    private let baseURL = "https://backend-601329501885.asia-east1.run.app/api/v1"
+    private let baseURL = "https://backend-601329501885.northamerica-northeast1.run.app/api/v1"
     #endif
 
     private var accessToken: String?

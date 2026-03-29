@@ -197,7 +197,7 @@ Add `.weight(.semibold)` etc. as needed: `Tokens.fontBody.weight(.semibold)`
 
 ## Deployment
 
-**Server**: Google Cloud Run (asia-east1), auto-deployed via Cloud Build on push to main.
+**Server**: Google Cloud Run (northamerica-northeast1 / Montreal), auto-deployed via Cloud Build on push to main.
 
 ```bash
 # Auto-deploy: just push backend changes
@@ -206,8 +206,8 @@ git push origin main
 
 # Manual deploy (if needed)
 cd backend
-gcloud builds submit --tag asia-east1-docker.pkg.dev/cozypup-39487/cozypup/backend:latest --project=cozypup-39487
-gcloud run deploy backend --image=asia-east1-docker.pkg.dev/cozypup-39487/cozypup/backend:latest --region=asia-east1 --project=cozypup-39487
+gcloud builds submit --tag northamerica-northeast1-docker.pkg.dev/cozypup-39487/cozypup/backend:latest --project=cozypup-39487
+gcloud run deploy backend --image=northamerica-northeast1-docker.pkg.dev/cozypup-39487/cozypup/backend:latest --region=northamerica-northeast1 --project=cozypup-39487
 
 # View logs
 gcloud logging read "resource.type=cloud_run_revision AND resource.labels.service_name=backend" --limit=20 --project=cozypup-39487
@@ -216,10 +216,12 @@ gcloud logging read "resource.type=cloud_run_revision AND resource.labels.servic
 gcloud logging read 'jsonPayload.message="user_login" OR jsonPayload.message="user_created"' --limit=10 --project=cozypup-39487
 
 # Check service status
-gcloud run services describe backend --region=asia-east1 --project=cozypup-39487
+gcloud run services describe backend --region=northamerica-northeast1 --project=cozypup-39487
 ```
 
-**Public URL**: `https://backend-601329501885.asia-east1.run.app`
+**Public URL**: `https://backend-601329501885.northamerica-northeast1.run.app`
+
+> Note: Previously deployed in asia-east1 (Taiwan). Migrated to northamerica-northeast1 (Montreal) on 2026-03-28. Old asia-east1 service can be deleted.
 
 **Avatars**: GCS bucket `cozypup-avatars` (public read)
 

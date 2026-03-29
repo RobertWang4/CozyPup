@@ -2,6 +2,9 @@ import CoreLocation
 
 @MainActor
 class LocationService: NSObject, ObservableObject, CLLocationManagerDelegate {
+    static var lastLat: Double?
+    static var lastLng: Double?
+
     @Published var lastLocation: CLLocationCoordinate2D?
 
     private let manager = CLLocationManager()
@@ -25,6 +28,8 @@ class LocationService: NSObject, ObservableObject, CLLocationManagerDelegate {
         let coord = locations.first?.coordinate
         Task { @MainActor in
             self.lastLocation = coord
+            LocationService.lastLat = coord?.latitude
+            LocationService.lastLng = coord?.longitude
             self.continuation?.resume(returning: coord)
             self.continuation = nil
         }

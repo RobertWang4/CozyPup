@@ -122,7 +122,7 @@ struct SettingsDrawer: View {
                             if !pet.avatarUrl.isEmpty,
                                let baseURL = APIClient.shared.avatarURL(pet.avatarUrl),
                                let url = URL(string: "\(baseURL.absoluteString)?v=\(petStore.avatarRevision)") {
-                                AsyncImage(url: url) { image in
+                                CachedAsyncImage(url: url) { image in
                                     image.resizable().scaledToFill()
                                 } placeholder: {
                                     Image(systemName: pet.species == .cat ? "cat" : "dog")

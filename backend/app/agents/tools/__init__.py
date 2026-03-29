@@ -47,6 +47,7 @@ from app.agents.tools.pets import (
 )
 from app.agents.tools.reminders import (
     create_reminder,
+    delete_all_reminders,
     delete_reminder,
     list_reminders,
     update_reminder,
@@ -80,6 +81,7 @@ __all__ = [
     "list_reminders",
     "update_reminder",
     "delete_reminder",
+    "delete_all_reminders",
     # misc
     "search_places",
     "draft_email",

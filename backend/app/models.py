@@ -30,13 +30,10 @@ class EventType(str, enum.Enum):
 
 
 class EventCategory(str, enum.Enum):
-    diet = "diet"
-    excretion = "excretion"
-    abnormal = "abnormal"
-    vaccine = "vaccine"
-    deworming = "deworming"
-    medical = "medical"
     daily = "daily"
+    diet = "diet"
+    medical = "medical"
+    abnormal = "abnormal"
 
 
 class EventSource(str, enum.Enum):

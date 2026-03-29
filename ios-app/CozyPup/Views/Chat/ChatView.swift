@@ -24,6 +24,8 @@ struct ChatView: View {
     @State private var containerHeight: CGFloat = 0
     @State private var fullScreenImage: UIImage?
     @State private var showDailyTasks = false
+    @State private var showTaskManager = false
+    @State private var showSlashMenu = false
 
     private var drawerWidth: CGFloat { UIScreen.main.bounds.width * 0.90 }
 
@@ -146,6 +148,14 @@ struct ChatView: View {
                     .foregroundColor(Tokens.textTertiary)
                     .padding(.vertical, 2)
 
+                // Slash command menu
+                if showSlashMenu {
+                    SlashCommandMenu(onSelect: { command in
+                        handleSlashCommand(command)
+                    })
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                }
+
                 ChatInputBar(
                     text: $inputText,
                     pendingPhotos: $pendingPhotos,
@@ -163,6 +173,11 @@ struct ChatView: View {
                 // Hide input bar when drawer is open so keyboard doesn't push it up
                 .frame(height: (showSettings || showCalendar) ? 0 : nil)
                 .clipped()
+                .onChange(of: inputText) { _, newValue in
+                    withAnimation(.easeOut(duration: 0.15)) {
+                        showSlashMenu = newValue == "/"
+                    }
+                }
             }
             .background(Tokens.bg.ignoresSafeArea())
 
@@ -274,6 +289,11 @@ struct ChatView: View {
                 .ignoresSafeArea()
                 .presentationBackground(.clear)
             }
+        }
+        .sheet(isPresented: $showTaskManager) {
+            DailyTaskManagerSheet()
+                .environmentObject(dailyTaskStore)
+                .environmentObject(petStore)
         }
         .task {
             await petStore.fetchFromAPI()
@@ -503,6 +523,8 @@ struct ChatView: View {
                 if dest == "settings" { navigateToSettings(petId: data.pet_id ?? data.pet_name) }
                 else if dest == "calendar" {
                     withAnimation(.easeOut(duration: 0.3)) { showCalendar = true }
+                } else if dest == "daily_tasks" {
+                    showTaskManager = true
                 }
             }
         }
@@ -510,8 +532,29 @@ struct ChatView: View {
 
     // MARK: - Chat
 
+    private func handleSlashCommand(_ command: String) {
+        showSlashMenu = false
+        inputText = ""
+        switch command {
+        case "clear":
+            withAnimation(.easeOut(duration: 0.25)) {
+                chatStore.clear()
+            }
+            Haptics.light()
+        default:
+            break
+        }
+    }
+
     private func sendMessage() {
         let text = inputText.trimmingCharacters(in: .whitespaces)
+
+        // Intercept slash commands
+        if text.lowercased() == "/clear" {
+            handleSlashCommand("clear")
+            return
+        }
+
         let photos = pendingPhotos
         guard !text.isEmpty || !photos.isEmpty, !isStreaming else { return }
         Haptics.light()
@@ -606,6 +649,7 @@ struct ChatView: View {
         switch type {
         case "pet_deleted", "pet_updated", "profile_summarized": return "settings"
         case "event_deleted", "reminder_deleted": return "calendar"
+        case "daily_task_created", "daily_task_updated", "daily_task_deleted": return "daily_tasks"
         default: return ""
         }
     }
@@ -764,5 +808,58 @@ struct ChatView: View {
                 }
             }
         }
+    }
+}
+
+// MARK: - Slash Command Menu
+
+private struct SlashCommandMenu: View {
+    let onSelect: (String) -> Void
+
+    private struct SlashCommand {
+        let name: String
+        let icon: String
+        let label: String
+    }
+
+    private var commands: [SlashCommand] {
+        [
+            SlashCommand(
+                name: "clear",
+                icon: "trash",
+                label: Lang.shared.isZh ? "清空对话记录" : "Clear chat history"
+            ),
+        ]
+    }
+
+    var body: some View {
+        VStack(spacing: 0) {
+            ForEach(commands, id: \.name) { cmd in
+                Button {
+                    onSelect(cmd.name)
+                } label: {
+                    HStack(spacing: Tokens.spacing.sm) {
+                        Image(systemName: cmd.icon)
+                            .font(Tokens.fontSubheadline)
+                            .foregroundColor(Tokens.accent)
+                            .frame(width: 24)
+                        Text("/\(cmd.name)")
+                            .font(Tokens.fontBody.weight(.medium))
+                            .foregroundColor(Tokens.text)
+                        Text(cmd.label)
+                            .font(Tokens.fontCaption)
+                            .foregroundColor(Tokens.textSecondary)
+                        Spacer()
+                    }
+                    .padding(.horizontal, Tokens.spacing.md)
+                    .padding(.vertical, Tokens.spacing.sm + Tokens.spacing.xs)
+                }
+            }
+        }
+        .background(Tokens.surface)
+        .clipShape(RoundedRectangle(cornerRadius: Tokens.radiusSmall))
+        .overlay(RoundedRectangle(cornerRadius: Tokens.radiusSmall).stroke(Tokens.border))
+        .padding(.horizontal, 12)
+        .shadow(color: Tokens.dimOverlay.opacity(0.08), radius: 6, y: -2)
     }
 }

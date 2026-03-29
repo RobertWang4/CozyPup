@@ -10,6 +10,8 @@ struct TimelineEventCard: View {
     var onDelete: (() -> Void)?
     var onPhotoUpload: ((Data) async -> String?)?
     var onPhotoDelete: ((String) -> Void)?
+    var onLocationUpdate: ((String, String, Double, Double, String) -> Void)?
+    var onLocationRemove: (() -> Void)?
 
     @State private var showEditSheet = false
     @State private var selectedPhotoItem: PhotosPickerItem?
@@ -111,7 +113,7 @@ struct TimelineEventCard: View {
         }
         .sheet(isPresented: $showEditSheet) {
             if let onUpdate {
-                EventEditSheet(event: event, onSave: onUpdate, onPhotoUpload: onPhotoUpload, onPhotoDelete: onPhotoDelete)
+                EventEditSheet(event: event, onSave: onUpdate, onPhotoUpload: onPhotoUpload, onPhotoDelete: onPhotoDelete, onLocationUpdate: onLocationUpdate, onLocationRemove: onLocationRemove)
             }
         }
         .onChange(of: selectedPhotoItem) { _, item in
@@ -152,7 +154,7 @@ struct TimelineEventCard: View {
             HStack(spacing: Tokens.spacing.xs) {
                 ForEach(event.photos, id: \.self) { urlStr in
                     ZStack(alignment: .topTrailing) {
-                        AsyncImage(url: photoURL(urlStr)) { image in
+                        CachedAsyncImage(url: photoURL(urlStr)) { image in
                             image.resizable().scaledToFill()
                         } placeholder: {
                             Tokens.placeholderBg
@@ -225,13 +227,10 @@ struct TimelineEventCard: View {
 
     private var categoryColor: Color {
         switch event.category {
+        case .daily: return Tokens.accent
         case .diet: return Tokens.green
         case .medical: return Tokens.blue
-        case .daily: return Tokens.accent
         case .abnormal: return Tokens.red
-        case .vaccine: return Tokens.purple
-        case .deworming: return Tokens.orange
-        case .excretion: return Tokens.textSecondary
         }
     }
 }

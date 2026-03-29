@@ -1,5 +1,6 @@
 import SwiftUI
 import MapKit
+import CoreLocation
 
 struct PlaceResult: Identifiable, Equatable {
     let id: String  // place_id
@@ -18,136 +19,199 @@ struct LocationPickerSheet: View {
     let currentLng: Double?
     let onSelect: (PlaceResult) -> Void
     @Environment(\.dismiss) private var dismiss
+    @StateObject private var locationService = LocationService()
 
+    @State private var activeLat: Double?
+    @State private var activeLng: Double?
     @State private var searchText = ""
     @State private var places: [PlaceResult] = []
     @State private var isLoading = false
-    @State private var selectedId: String?
-    @State private var mapSelection: String?
     @State private var cameraPosition: MapCameraPosition = .automatic
     @State private var searchTask: Task<Void, Never>?
+    @State private var pinnedPlace: PlaceResult?
+    @State private var isGeocoding = false
 
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
-                // Map
-                Map(position: $cameraPosition, selection: $mapSelection) {
-                    if let lat = currentLat, let lng = currentLng {
-                        Annotation("", coordinate: CLLocationCoordinate2D(latitude: lat, longitude: lng)) {
-                            Circle()
-                                .fill(Tokens.accent)
-                                .frame(width: 16, height: 16)
-                                .overlay(Circle().stroke(Tokens.white, lineWidth: 3))
-                                .shadow(radius: 2)
-                        }
-                    }
-                    ForEach(places) { place in
-                        Marker(place.name, coordinate: place.coordinate)
-                            .tint(Tokens.accent)
-                            .tag(place.id)
-                    }
-                }
-                .frame(height: 250)
-                .onChange(of: mapSelection) { _, newId in
-                    guard let newId, let place = places.first(where: { $0.id == newId }) else { return }
-                    selectedId = place.id
-                    onSelect(place)
-                    dismiss()
-                }
-
-                // Search bar
-                HStack(spacing: Tokens.spacing.sm) {
-                    Image(systemName: "magnifyingglass")
-                        .foregroundColor(Tokens.textTertiary)
-                    TextField(Lang.shared.isZh ? "搜索地点" : "Search for location", text: $searchText)
-                        .font(Tokens.fontBody)
-                        .foregroundColor(Tokens.text)
-                        .autocorrectionDisabled()
-                        .submitLabel(.search)
-                        .onSubmit {
-                            searchTask?.cancel()
-                            if !searchText.isEmpty {
-                                searchTask = Task { await searchPlaces(query: searchText) }
+                // Map — tap anywhere to drop a pin
+                ZStack(alignment: .bottom) {
+                    MapReader { proxy in
+                        Map(position: $cameraPosition) {
+                            // User location dot
+                            if let lat = activeLat, let lng = activeLng {
+                                Annotation("", coordinate: CLLocationCoordinate2D(latitude: lat, longitude: lng)) {
+                                    Circle()
+                                        .fill(Color.blue)
+                                        .frame(width: 12, height: 12)
+                                        .overlay(Circle().stroke(Tokens.white, lineWidth: 2))
+                                        .shadow(radius: 2)
+                                }
+                            }
+                            // Dropped pin
+                            if let pin = pinnedPlace {
+                                Annotation("", coordinate: pin.coordinate) {
+                                    VStack(spacing: 0) {
+                                        Image(systemName: "mappin.circle.fill")
+                                            .font(.system(size: 30))
+                                            .foregroundColor(Tokens.accent)
+                                        Image(systemName: "arrowtriangle.down.fill")
+                                            .font(.system(size: 10))
+                                            .foregroundColor(Tokens.accent)
+                                            .offset(y: -4)
+                                    }
+                                }
                             }
                         }
-                }
-                .padding(Tokens.spacing.sm)
-                .background(Tokens.surface)
-                .cornerRadius(Tokens.radiusSmall)
-                .padding(.horizontal, Tokens.spacing.md)
-                .padding(.vertical, Tokens.spacing.sm)
-
-                // Results list
-                if isLoading {
-                    ProgressView()
-                        .padding(.top, Tokens.spacing.lg)
-                    Spacer()
-                } else if places.isEmpty {
-                    VStack(spacing: Tokens.spacing.sm) {
-                        Image(systemName: "mappin.slash")
-                            .font(.system(size: 32))
-                            .foregroundColor(Tokens.textTertiary)
-                        Text(Lang.shared.isZh ? "暂无结果" : "No results")
-                            .font(Tokens.fontBody)
-                            .foregroundColor(Tokens.textSecondary)
+                        .onTapGesture { screenPoint in
+                            if let coordinate = proxy.convert(screenPoint, from: .local) {
+                                Task { await reverseGeocode(coordinate) }
+                            }
+                        }
                     }
-                    .padding(.top, Tokens.spacing.xl)
-                    Spacer()
-                } else {
-                    ScrollView {
-                        LazyVStack(spacing: 0) {
-                            ForEach(places) { place in
+
+                    // Pinned place preview card
+                    if let pin = pinnedPlace {
+                        HStack(spacing: Tokens.spacing.sm) {
+                            VStack(alignment: .leading, spacing: Tokens.spacing.xxs) {
+                                Text(pin.name.isEmpty ? (Lang.shared.isZh ? "已选位置" : "Selected Location") : pin.name)
+                                    .font(Tokens.fontSubheadline.weight(.semibold))
+                                    .foregroundColor(Tokens.text)
+                                    .lineLimit(1)
+                                if !pin.address.isEmpty {
+                                    Text(pin.address)
+                                        .font(Tokens.fontCaption)
+                                        .foregroundColor(Tokens.textSecondary)
+                                        .lineLimit(1)
+                                }
+                            }
+                            Spacer()
+                            if isGeocoding {
+                                ProgressView()
+                                    .controlSize(.small)
+                            } else {
                                 Button {
-                                    selectedId = place.id
-                                    onSelect(place)
+                                    onSelect(pin)
                                     dismiss()
                                 } label: {
-                                    HStack {
-                                        VStack(alignment: .leading, spacing: Tokens.spacing.xxs) {
-                                            Text(place.name)
-                                                .font(Tokens.fontBody)
-                                                .foregroundColor(Tokens.text)
-                                            Text(place.address)
-                                                .font(Tokens.fontCaption)
-                                                .foregroundColor(Tokens.textSecondary)
-                                                .lineLimit(2)
-                                        }
-                                        Spacer()
-                                        if selectedId == place.id {
-                                            Image(systemName: "checkmark")
-                                                .foregroundColor(Tokens.accent)
-                                                .fontWeight(.semibold)
-                                        }
-                                    }
-                                    .padding(.horizontal, Tokens.spacing.md)
-                                    .padding(.vertical, Tokens.spacing.sm + 2)
+                                    Text(Lang.shared.isZh ? "选择" : "Select")
+                                        .font(Tokens.fontSubheadline.weight(.semibold))
+                                        .foregroundColor(Tokens.white)
+                                        .padding(.horizontal, Tokens.spacing.md)
+                                        .padding(.vertical, Tokens.spacing.xs + 2)
+                                        .background(Tokens.accent)
+                                        .cornerRadius(Tokens.radiusSmall)
                                 }
-
-                                Divider()
-                                    .padding(.leading, Tokens.spacing.md)
                             }
                         }
+                        .padding(Tokens.spacing.sm)
+                        .background(.ultraThinMaterial)
+                        .cornerRadius(Tokens.radiusSmall)
+                        .padding(.horizontal, Tokens.spacing.sm)
+                        .padding(.bottom, Tokens.spacing.sm)
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
                     }
-                    .scrollDismissesKeyboard(.interactively)
                 }
+                .frame(height: 280)
+
+                // Search bar + results
+                VStack(spacing: 0) {
+                    HStack(spacing: Tokens.spacing.sm) {
+                        Image(systemName: "magnifyingglass")
+                            .foregroundColor(Tokens.textTertiary)
+                        TextField(Lang.shared.isZh ? "搜索地点" : "Search for location", text: $searchText)
+                            .font(Tokens.fontBody)
+                            .foregroundColor(Tokens.text)
+                            .autocorrectionDisabled()
+                            .submitLabel(.search)
+                            .onSubmit {
+                                searchTask?.cancel()
+                                if !searchText.isEmpty {
+                                    searchTask = Task { await searchPlaces(query: searchText) }
+                                }
+                            }
+                    }
+                    .padding(Tokens.spacing.sm)
+                    .background(Tokens.surface)
+                    .cornerRadius(Tokens.radiusSmall)
+                    .padding(.horizontal, Tokens.spacing.md)
+                    .padding(.vertical, Tokens.spacing.sm)
+
+                    // Results list
+                    if isLoading {
+                        ProgressView()
+                            .padding(.top, Tokens.spacing.lg)
+                        Spacer()
+                    } else if places.isEmpty {
+                        VStack(spacing: Tokens.spacing.sm) {
+                            Image(systemName: "mappin.slash")
+                                .font(.system(size: 32))
+                                .foregroundColor(Tokens.textTertiary)
+                            Text(Lang.shared.isZh ? "暂无结果" : "No results")
+                                .font(Tokens.fontBody)
+                                .foregroundColor(Tokens.textSecondary)
+                        }
+                        .padding(.top, Tokens.spacing.xl)
+                        Spacer()
+                    } else {
+                        ScrollView {
+                            LazyVStack(spacing: 0) {
+                                ForEach(places) { place in
+                                    Button {
+                                        onSelect(place)
+                                        dismiss()
+                                    } label: {
+                                        HStack {
+                                            VStack(alignment: .leading, spacing: Tokens.spacing.xxs) {
+                                                Text(place.name)
+                                                    .font(Tokens.fontBody)
+                                                    .foregroundColor(Tokens.text)
+                                                Text(place.address)
+                                                    .font(Tokens.fontCaption)
+                                                    .foregroundColor(Tokens.textSecondary)
+                                                    .lineLimit(2)
+                                            }
+                                            Spacer()
+                                        }
+                                        .padding(.horizontal, Tokens.spacing.md)
+                                        .padding(.vertical, Tokens.spacing.sm + 2)
+                                    }
+
+                                    Divider()
+                                        .padding(.leading, Tokens.spacing.md)
+                                }
+                            }
+                        }
+                        .scrollDismissesKeyboard(.interactively)
+                    }
+                }
+                .onTapGesture { dismissKeyboard() }
             }
             .background(Tokens.bg.ignoresSafeArea())
             .toolbarBackground(Tokens.bg, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
+            .toolbarColorScheme(.light, for: .navigationBar)
             .navigationTitle(Lang.shared.isZh ? "选择地点" : "Choose Location")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button(Lang.shared.isZh ? "取消" : "Cancel") { dismiss() }
-                        .foregroundColor(Tokens.accent)
+                        .foregroundColor(Tokens.textSecondary)
                 }
             }
-            .onTapGesture { dismissKeyboard() }
         }
         .presentationDetents([.large])
         .presentationDragIndicator(.visible)
         .task {
             if let lat = currentLat, let lng = currentLng {
+                activeLat = lat
+                activeLng = lng
+            } else {
+                let coord = await locationService.requestLocation()
+                activeLat = coord?.latitude
+                activeLng = coord?.longitude
+            }
+            if let lat = activeLat, let lng = activeLng {
                 cameraPosition = .region(MKCoordinateRegion(
                     center: CLLocationCoordinate2D(latitude: lat, longitude: lng),
                     span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
@@ -168,14 +232,54 @@ struct LocationPickerSheet: View {
                 }
             }
         }
+        .animation(.easeInOut(duration: 0.2), value: pinnedPlace)
     }
 
     private func dismissKeyboard() {
         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
 
+    private func reverseGeocode(_ coordinate: CLLocationCoordinate2D) async {
+        isGeocoding = true
+        pinnedPlace = PlaceResult(
+            id: "pin-\(coordinate.latitude)-\(coordinate.longitude)",
+            name: "",
+            address: Lang.shared.isZh ? "获取地址中…" : "Getting address…",
+            lat: coordinate.latitude,
+            lng: coordinate.longitude
+        )
+
+        let geocoder = CLGeocoder()
+        let location = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
+        do {
+            let placemarks = try await geocoder.reverseGeocodeLocation(location)
+            if let pm = placemarks.first {
+                let name = pm.name ?? ""
+                let parts = [pm.thoroughfare, pm.subLocality, pm.locality, pm.administrativeArea].compactMap { $0 }
+                let address = parts.joined(separator: ", ")
+                pinnedPlace = PlaceResult(
+                    id: "pin-\(coordinate.latitude)-\(coordinate.longitude)",
+                    name: name,
+                    address: address,
+                    lat: coordinate.latitude,
+                    lng: coordinate.longitude
+                )
+            }
+        } catch {
+            // Keep the coordinate-only pin
+            pinnedPlace = PlaceResult(
+                id: "pin-\(coordinate.latitude)-\(coordinate.longitude)",
+                name: Lang.shared.isZh ? "已选位置" : "Dropped Pin",
+                address: String(format: "%.5f, %.5f", coordinate.latitude, coordinate.longitude),
+                lat: coordinate.latitude,
+                lng: coordinate.longitude
+            )
+        }
+        isGeocoding = false
+    }
+
     private func loadNearby() async {
-        guard let lat = currentLat, let lng = currentLng else { return }
+        guard let lat = activeLat, let lng = activeLng else { return }
         isLoading = true
         defer { isLoading = false }
 

@@ -177,9 +177,12 @@ class TestMiddleware:
         with caplog.at_level(logging.INFO):
             self.client.get("/ok")
         messages = " ".join(caplog.messages)
-        assert "GET" in messages
-        assert "/ok" in messages
-        assert "duration_ms" in messages
+        assert "request_start" in messages
+        assert "request_complete" in messages
+        # duration_ms is in the structured extra dict, not the message text
+        complete_records = [r for r in caplog.records if r.message == "request_complete"]
+        assert len(complete_records) >= 1
+        assert hasattr(complete_records[0], "duration_ms")
 
     def test_error_capture_returns_500(self):
         resp = self.client.get("/fail")

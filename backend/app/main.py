@@ -60,6 +60,28 @@ app.add_middleware(CorrelationMiddleware)
 
 
 
+@app.on_event("startup")
+async def _fix_avatar_urls():
+    """One-time fix: convert GCS absolute URLs to relative paths."""
+    import asyncio
+    import logging
+    from app.database import async_session
+    from sqlalchemy import text
+    logger = logging.getLogger(__name__)
+    try:
+        async with asyncio.timeout(10):
+            async with async_session() as s:
+                r = await s.execute(text(
+                    "UPDATE pets SET avatar_url = '/api/v1/pets/' || id::text || '/avatar' "
+                    "WHERE avatar_url LIKE 'https://storage%'"
+                ))
+                if r.rowcount:
+                    await s.commit()
+                    logger.info(f"Fixed {r.rowcount} avatar URLs from GCS absolute to relative")
+    except (Exception, asyncio.TimeoutError) as e:
+        logger.warning(f"avatar URL fix skipped: {e}")
+
+
 @app.get("/health")
 async def health():
     return {"status": "ok"}

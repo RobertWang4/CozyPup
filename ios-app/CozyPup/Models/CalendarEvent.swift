@@ -5,7 +5,7 @@ enum EventType: String, Codable, CaseIterable {
 }
 
 enum EventCategory: String, Codable, CaseIterable {
-    case diet, excretion, abnormal, vaccine, deworming, medical, daily
+    case daily, diet, medical, abnormal
 
     var label: String { L.category(rawValue) }
 }

@@ -12,12 +12,9 @@ from .pet_utils import resolve_pets
 _CALENDAR_PATTERNS = [
     # (regex, category, confidence)
     (re.compile(r"吃了|喂了|喂食|吃的|feeding|fed|ate|kibble", re.I), "diet", 0.9),
-    (re.compile(r"拉了|拉稀|拉肚子|大便|排便|excretion|poop", re.I), "excretion", 0.9),
-    (re.compile(r"吐了|呕吐|vomit|不舒服|不太好|sick|异常", re.I), "abnormal", 0.9),
-    (re.compile(r"打了.*疫苗|接种|vaccin", re.I), "vaccine", 0.9),
-    (re.compile(r"驱虫|deworm", re.I), "deworming", 0.9),
-    (re.compile(r"看医生|去医院|看兽医|vet visit|checkup|体检", re.I), "medical", 0.85),
-    (re.compile(r"遛了|遛狗|散步|走了|洗澡|grooming|walk|park|公园", re.I), "daily", 0.85),
+    (re.compile(r"吐了|呕吐|vomit|不舒服|不太好|sick|异常|拉了|拉稀|拉肚子|大便异常|排便异常", re.I), "abnormal", 0.9),
+    (re.compile(r"打了.*疫苗|接种|vaccin|驱虫|deworm|看医生|去医院|看兽医|vet visit|checkup|体检", re.I), "medical", 0.9),
+    (re.compile(r"遛了|遛狗|散步|走了|洗澡|grooming|walk|park|公园|玩|游泳", re.I), "daily", 0.85),
 ]
 
 # Completion/status phrases — "都打完了" describes a state, not an event

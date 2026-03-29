@@ -19,6 +19,9 @@ struct CalendarDrawer: View {
     @State private var singleDayDate: String?
     @State private var timelineTargetDate: String?
     @State private var showTaskManager = false
+    @State private var filterCategory: EventCategory?
+    @State private var isSelecting = false
+    @State private var selectedEventIds: Set<String> = []
 
     init(isPresented: Binding<Bool>) {
         _isPresented = isPresented
@@ -34,11 +37,14 @@ struct CalendarDrawer: View {
 
     private var selectedEvents: [CalendarEvent] {
         guard let date = selectedDate else { return [] }
-        let dayEvts = calendarStore.eventsForDate(date)
+        var evts = calendarStore.eventsForDate(date)
         if let pid = filterPetId {
-            return dayEvts.filter { $0.petId == pid }
+            evts = evts.filter { $0.petId == pid }
         }
-        return dayEvts
+        if let cat = filterCategory {
+            evts = evts.filter { $0.category == cat }
+        }
+        return evts
     }
 
     var body: some View {
@@ -89,6 +95,8 @@ struct CalendarDrawer: View {
                             timelineTargetDate = selectedDate
                             mode = .timeline
                         } else {
+                            isSelecting = false
+                            selectedEventIds.removeAll()
                             mode = .calendar
                         }
                     }
@@ -103,6 +111,11 @@ struct CalendarDrawer: View {
             }
             .padding(.horizontal, Tokens.spacing.lg)
             .padding(.top, 70)
+
+            // Category filter pills
+            categoryFilterRow
+                .padding(.horizontal, Tokens.spacing.lg)
+                .padding(.top, Tokens.spacing.sm)
 
             // Scrollable content area
             switch mode {
@@ -126,7 +139,7 @@ struct CalendarDrawer: View {
                 }
 
             case .timeline:
-                MultiDayTimelineView(filterPetId: $filterPetId, scrollToDate: timelineTargetDate) { date in
+                MultiDayTimelineView(filterPetId: $filterPetId, filterCategory: filterCategory, scrollToDate: timelineTargetDate, isSelecting: $isSelecting, selectedEventIds: $selectedEventIds) { date in
                     singleDayDate = date
                     previousMode = .timeline
                     withAnimation(.easeInOut(duration: 0.3)) { mode = .singleDay }
@@ -134,12 +147,64 @@ struct CalendarDrawer: View {
 
             case .singleDay:
                 if let date = singleDayDate {
-                    SingleDayTimelineView(date: date, filterPetId: filterPetId) {
+                    SingleDayTimelineView(date: date, filterPetId: filterPetId, filterCategory: filterCategory) {
                         withAnimation(.easeInOut(duration: 0.3)) { mode = previousMode }
                     }
                 }
             }
         }
+        .overlay(alignment: .bottom) {
+            if isSelecting {
+                HStack(spacing: Tokens.spacing.md) {
+                    Button {
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            selectedEventIds.removeAll()
+                            isSelecting = false
+                        }
+                    } label: {
+                        Image(systemName: "xmark")
+                            .font(.system(size: 13, weight: .medium))
+                            .foregroundColor(Tokens.textSecondary)
+                            .frame(width: 32, height: 32)
+                            .background(Tokens.bg.opacity(0.8))
+                            .clipShape(Circle())
+                    }
+
+                    Text(Lang.shared.isZh
+                         ? "已选 \(selectedEventIds.count) 项"
+                         : "\(selectedEventIds.count) selected")
+                        .font(Tokens.fontSubheadline.weight(.medium))
+                        .foregroundColor(Tokens.text)
+
+                    Button {
+                        Haptics.medium()
+                        calendarStore.removeMultiple(selectedEventIds)
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            selectedEventIds.removeAll()
+                            isSelecting = false
+                        }
+                    } label: {
+                        Image(systemName: "trash")
+                            .font(.system(size: 13, weight: .medium))
+                            .foregroundColor(selectedEventIds.isEmpty ? Tokens.textTertiary : Tokens.red)
+                            .frame(width: 32, height: 32)
+                            .background(selectedEventIds.isEmpty ? Tokens.bg.opacity(0.5) : Tokens.redSoft)
+                            .clipShape(Circle())
+                    }
+                    .disabled(selectedEventIds.isEmpty)
+                }
+                .padding(.horizontal, Tokens.spacing.lg)
+                .padding(.vertical, Tokens.spacing.sm)
+                .background(
+                    Capsule()
+                        .fill(.ultraThinMaterial)
+                        .shadow(color: .black.opacity(0.1), radius: 12, y: 4)
+                )
+                .padding(.bottom, Tokens.spacing.lg)
+                .transition(.move(edge: .bottom).combined(with: .opacity))
+            }
+        }
+        .animation(.easeInOut(duration: 0.25), value: isSelecting)
         .padding(.horizontal, Tokens.spacing.sm)
         .task {
             await calendarStore.fetchMonth(year: year, month: month + 1)
@@ -149,6 +214,48 @@ struct CalendarDrawer: View {
         .onChange(of: year) { Task { await calendarStore.fetchMonth(year: year, month: month + 1) } }
         .background(Tokens.bg)
         .foregroundColor(Tokens.text)
+    }
+
+    // MARK: - Category Filter
+
+    private var categoryFilterRow: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 6) {
+                ForEach(EventCategory.allCases, id: \.self) { cat in
+                    categoryPill(cat)
+                }
+            }
+        }
+    }
+
+    private func categoryPill(_ cat: EventCategory) -> some View {
+        let active = filterCategory == cat
+        let fillColor = active ? categoryColor(cat) : Tokens.surface
+        let textColor = active ? Tokens.white : Tokens.textSecondary
+        let borderColor = active ? Color.clear : Tokens.border
+        return Button {
+            withAnimation(.easeInOut(duration: 0.15)) {
+                filterCategory = filterCategory == cat ? nil : cat
+            }
+        } label: {
+            Text(cat.label)
+                .font(.system(size: 11, weight: .medium))
+                .foregroundColor(textColor)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 4)
+                .background(Capsule().fill(fillColor))
+                .overlay(Capsule().strokeBorder(borderColor, lineWidth: 0.5))
+        }
+        .buttonStyle(.plain)
+    }
+
+    private func categoryColor(_ cat: EventCategory) -> Color {
+        switch cat {
+        case .daily: return Tokens.accent
+        case .diet: return Tokens.green
+        case .medical: return Tokens.blue
+        case .abnormal: return Tokens.red
+        }
     }
 
     // MARK: - Calendar Card
@@ -277,7 +384,7 @@ struct PetAvatarCircle: View {
                 if !pet.avatarUrl.isEmpty,
                    let baseURL = APIClient.shared.avatarURL(pet.avatarUrl),
                    let url = URL(string: "\(baseURL.absoluteString)?v=\(avatarRevision)") {
-                    AsyncImage(url: url) { image in
+                    CachedAsyncImage(url: url) { image in
                         image.resizable().scaledToFill()
                     } placeholder: {
                         Tokens.placeholderBg

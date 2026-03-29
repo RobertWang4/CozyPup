@@ -201,6 +201,15 @@ async def run_executor(
             await db.commit()
 
         card = result.get("card")
+        # Check tool-level success (some tools return {"success": False, "error": "..."})
+        tool_success = result.get("success", True)
+        if not tool_success:
+            return ExecutorResult(
+                success=False,
+                tool=fn_name,
+                arguments=fn_args,
+                error=result.get("error", t("execution_failed", lang)),
+            )
         return ExecutorResult(
             success=True,
             tool=fn_name,

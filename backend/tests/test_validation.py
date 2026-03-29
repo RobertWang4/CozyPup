@@ -52,6 +52,32 @@ class TestValidateToolArgs:
         errors = validate_tool_args("create_calendar_event", args)
         assert any("category" in e.lower() for e in errors)
 
+    def test_removed_categories_rejected(self):
+        """Old categories (excretion, vaccine, deworming) should be rejected."""
+        for old_cat in ["excretion", "vaccine", "deworming"]:
+            args = {
+                "pet_id": "550e8400-e29b-41d4-a716-446655440000",
+                "event_date": "2026-03-22",
+                "title": "Test",
+                "category": old_cat,
+            }
+            errors = validate_tool_args("create_calendar_event", args)
+            assert any("category" in e.lower() for e in errors), (
+                f"Old category '{old_cat}' should be rejected"
+            )
+
+    def test_new_category_set(self):
+        """Valid categories are: daily, diet, medical, abnormal."""
+        for cat in ["daily", "diet", "medical", "abnormal"]:
+            args = {
+                "pet_id": "550e8400-e29b-41d4-a716-446655440000",
+                "event_date": "2026-03-22",
+                "title": "Test",
+                "category": cat,
+            }
+            errors = validate_tool_args("create_calendar_event", args)
+            assert errors == [], f"Category '{cat}' should be valid, got {errors}"
+
     def test_valid_create_pet(self):
         errors = validate_tool_args("create_pet", {"name": "Buddy", "species": "dog"})
         assert errors == []

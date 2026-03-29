@@ -219,7 +219,7 @@ async def test_multi_task_parallel_execution():
         "pet_id": "def",
         "event_date": "2026-03-24",
         "title": "打疫苗",
-        "category": "vaccine",
+        "category": "medical",
     }
     chunks = _make_stream_chunks(
         content="好的，",
@@ -799,7 +799,7 @@ async def test_parallel_executors_get_separate_sessions():
         "pet_id": "def",
         "event_date": "2026-03-24",
         "title": "打疫苗",
-        "category": "vaccine",
+        "category": "medical",
     }
     chunks = _make_stream_chunks(
         content="好的，",

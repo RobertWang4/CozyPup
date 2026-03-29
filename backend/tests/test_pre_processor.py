@@ -73,7 +73,28 @@ class TestPreProcess:
         pets = [_make_pet("Buddy")]
         actions = pre_process("今天打了疫苗", pets, today=date(2026, 3, 22))
         assert len(actions) == 1
-        assert actions[0].arguments["category"] == "vaccine"
+        assert actions[0].arguments["category"] == "medical"
+
+    def test_diarrhea_is_abnormal(self):
+        """Diarrhea (拉稀) should map to 'abnormal' (was 'excretion')."""
+        pets = [_make_pet("维尼")]
+        actions = pre_process("维尼拉稀了", pets, today=date(2026, 3, 22))
+        assert len(actions) == 1
+        assert actions[0].arguments["category"] == "abnormal"
+
+    def test_deworming_is_medical(self):
+        """Deworming (驱虫) should map to 'medical' (was 'deworming')."""
+        pets = [_make_pet("Buddy")]
+        actions = pre_process("今天驱虫了", pets, today=date(2026, 3, 22))
+        assert len(actions) == 1
+        assert actions[0].arguments["category"] == "medical"
+
+    def test_swimming_is_daily(self):
+        """Swimming (游泳) should map to 'daily'."""
+        pets = [_make_pet("Buddy")]
+        actions = pre_process("今天去游泳了", pets, today=date(2026, 3, 22))
+        assert len(actions) == 1
+        assert actions[0].arguments["category"] == "daily"
 
     def test_question_skips_calendar(self):
         pets = [_make_pet("维尼")]

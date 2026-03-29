@@ -140,6 +140,21 @@ class CalendarStore: ObservableObject {
         }
     }
 
+    func removeMultiple(_ ids: Set<String>) {
+        events.removeAll { ids.contains($0.id) }
+        saveLocal()
+
+        Task {
+            for id in ids {
+                do {
+                    try await APIClient.shared.requestNoContent("DELETE", "/calendar/\(id)")
+                } catch {
+                    print("CalendarStore.removeMultiple API sync failed for \(id): \(error)")
+                }
+            }
+        }
+    }
+
     // MARK: - Photo upload
 
     /// Upload photo and return the new photo URL, or nil on failure.

@@ -150,8 +150,10 @@ class PetStore: ObservableObject {
                 saveLocal()
             }
             avatarRevision += 1
-            // Clear URL cache so AsyncImage reloads the new avatar everywhere
-            URLCache.shared.removeAllCachedResponses()
+            // Evict old avatar from image cache so CachedAsyncImage reloads
+            if let url = APIClient.shared.avatarURL("/api/v1/pets/\(petId)/avatar") {
+                await ImageCache.shared.evict(for: url)
+            }
         } catch {
             print("PetStore.uploadAvatar failed: \(error)")
         }

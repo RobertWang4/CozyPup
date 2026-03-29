@@ -572,12 +572,20 @@ async def set_pet_avatar(
     if len(image_data) > 5 * 1024 * 1024:
         return {"success": False, "error": "Image must be under 5MB"}
 
-    filename = f"{pet_id}.jpg"
-    filepath = UPLOAD_DIR / filename
-    filepath.write_bytes(image_data)
-    logger.info("avatar_file_written", extra={"path": str(filepath), "size": len(image_data)})
+    # Upload to GCS if configured, otherwise local
+    from app.config import settings
+    if settings.gcs_bucket:
+        from app.storage import upload_avatar as gcs_upload_avatar
+        gcs_upload_avatar(str(pet_id), image_data, "image/jpeg")
+    else:
+        filename = f"{pet_id}.jpg"
+        filepath = UPLOAD_DIR / filename
+        filepath.write_bytes(image_data)
+    # Always use relative URL — iOS avatarURL() builds the full URL from this
+    avatar_url = f"/api/v1/pets/{pet_id}/avatar"
+    logger.info("avatar_file_written", extra={"pet_id": str(pet_id), "gcs": bool(settings.gcs_bucket), "size": len(image_data)})
 
-    pet.avatar_url = f"/api/v1/pets/{pet_id}/avatar"
+    pet.avatar_url = avatar_url
     await db.flush()
 
     return {

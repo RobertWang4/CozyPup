@@ -24,7 +24,7 @@ import pytest_asyncio
 
 BASE_URL = os.getenv("E2E_BASE_URL", "http://localhost:8000")
 API = f"{BASE_URL}/api/v1"
-TIMEOUT = 60.0  # LLM responses can be slow
+TIMEOUT = 120.0  # LLM responses can be slow (SSE streaming with tool calls)
 
 REPORTS_DIR = Path(__file__).parent / "reports"
 FAILURES_DIR = REPORTS_DIR / "failures"

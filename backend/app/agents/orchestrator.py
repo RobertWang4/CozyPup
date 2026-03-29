@@ -65,6 +65,8 @@ def _describe_tool_call(fn_name: str, fn_args: dict, pets: list | None = None, l
         return t("desc_update_reminder", lang)
     if fn_name == "delete_reminder":
         return t("desc_delete_reminder", lang)
+    if fn_name == "delete_all_reminders":
+        return t("desc_delete_all_reminders", lang)
     if fn_name == "draft_email":
         return t("desc_draft_email", lang).format(subject=fn_args.get('subject', ''))
     if fn_name == "save_pet_profile_md":
@@ -107,8 +109,9 @@ async def _execute_tool_call(
     Raises:
         ValueError if validation fails.
     """
-    # Strip lang from kwargs — callers pass lang=lang AND **kwargs which may also contain lang
-    kwargs.pop("lang", None)
+    # Strip known keys from kwargs to avoid "got multiple values" error
+    for key in ("lang", "session_id", "on_card", "result"):
+        kwargs.pop(key, None)
 
     # Confirm gate — destructive tools need user approval
     if fn_name in CONFIRM_TOOLS and session_id:
@@ -192,7 +195,7 @@ async def run_orchestrator(
     Streams text via on_token callback, pushes cards via on_card callback.
     Returns structured result with all cards and executor outputs.
     """
-    lang = kwargs.get("lang", "zh")
+    lang = kwargs.pop("lang", "zh")
     result = OrchestratorResult()
     use_model = model or settings.model
     tool_defs = get_tool_definitions(lang)
@@ -301,7 +304,7 @@ async def _handle_single_task(
     **kwargs,
 ) -> OrchestratorResult:
     """Fast path: orchestrator handles single tool call directly."""
-    lang = kwargs.get("lang", "zh")
+    lang = kwargs.pop("lang", "zh")
     result = OrchestratorResult()
     text_parts = [initial_text] if initial_text else []
 
@@ -502,7 +505,7 @@ async def _handle_request_images_then_continue(
     **kwargs,
 ) -> OrchestratorResult:
     """Handle request_images, then allow LLM to call follow-up tools (e.g. create_calendar_event)."""
-    lang = kwargs.get("lang", "zh")
+    lang = kwargs.pop("lang", "zh")
     result = OrchestratorResult()
     text_parts = [initial_text] if initial_text else []
 
@@ -625,7 +628,7 @@ async def _handle_multi_task(
     **kwargs,
 ) -> OrchestratorResult:
     """Multi-task path: dispatch parallel executors."""
-    lang = kwargs.get("lang", "zh")
+    lang = kwargs.pop("lang", "zh")
     result = OrchestratorResult()
     result.response_text = initial_text or ""
 

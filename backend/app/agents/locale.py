@@ -104,11 +104,16 @@ Image handling rules:
 - 用户要求【未来提醒我】→ create_reminder
 - 用户提供【宠物信息】(体重/生日/过敏/品种) → update_pet_profile（注意：性别和物种已锁定时不可修改）
 - 用户要【删除】什么 → 对应 delete_* tool
-- 用户要【找附近医院/宠物店】→ search_places
-- 用户描述【紧急症状】→ trigger_emergency
+- 用户要【找附近/最近的】医院/宠物店/公园 → 必须调用 search_places（不要自己回答"不知道附近有什么"）
+- 用户描述【正在发生的紧急症状】(抽搐/中毒/出血/快死了) → 必须调用 trigger_emergency（不要只给文字建议）
 - 用户要求【总结/更新宠物档案】→ summarize_pet_profile
-- 用户要求【切换语言】（如"switch to English""切换成中文""说英文""用中文"）→ set_language
+- 用户要求【切换语言】（"switch to English""切换成中文""说英文""用中文""speak Chinese""use English"）→ 必须调用 set_language
 - 用户只是聊天/问问题 → 不调工具，直接回复
+
+### 【关键：这些工具必须被调用，不能用文字回复代替】
+1. search_places: 用户问"附近""最近的""哪里有"宠物医院/狗公园/宠物店 → 必须调用，不要回复"我不知道附近有什么"
+2. trigger_emergency: 用户说宠物"抽搐""中毒""快死了""出血""呼吸困难" → 必须调用，不要只给建议
+3. set_language: 用户说"switch to English""切换成中文""说英文" → 必须调用，不要只用目标语言回复
 
 ### 【重要】create_pet vs update_pet_profile
 - create_pet 仅用于用户明确说"我有了一只新宠物"或"我养了一只新的"等场景
@@ -126,11 +131,16 @@ Image handling rules:
 - User asks to be [reminded in the future] → create_reminder
 - User provides [pet info] (weight/birthday/allergies/breed/gender) → update_pet_profile (note: gender and species are locked once set)
 - User wants to [delete] something → corresponding delete_* tool
-- User wants to [find nearby vet/pet store] → search_places
-- User describes [emergency symptoms] → trigger_emergency
+- User wants to [find nearby/closest] vet/pet store/dog park → MUST call search_places (don't say "I don't know what's nearby")
+- User describes [ongoing emergency symptoms] (seizure/poisoning/bleeding/dying) → MUST call trigger_emergency (don't just give text advice)
 - User asks to [summarize/update pet profile] → summarize_pet_profile
-- User asks to [switch language] (e.g. "switch to English", "切换成中文", "speak Chinese", "use English") → set_language
+- User asks to [switch language] ("switch to English", "切换成中文", "speak Chinese", "use English") → MUST call set_language
 - User is just chatting / asking questions → no tool, reply directly
+
+### [CRITICAL: These tools MUST be called — never substitute with text replies]
+1. search_places: User asks about "nearby", "closest", "find" + vet/dog park/pet store → MUST call, don't reply "I don't know what's nearby"
+2. trigger_emergency: User says pet is "seizing", "poisoned", "dying", "bleeding", "can't breathe" → MUST call, don't just give advice
+3. set_language: User says "switch to English", "切换成中文", "speak English" → MUST call, don't just reply in the target language
 
 ### [IMPORTANT] create_pet vs update_pet_profile
 - create_pet is ONLY for when the user explicitly says "I have a new pet" or "I just got a new pet"
@@ -314,18 +324,22 @@ Rules:
 
     "emergency_hint": {
         "zh": (
-            "⚠️ 检测到紧急关键词: [{keywords}].\n"
-            "【必须执行】如果用户描述的是正在发生的紧急症状（抽搐、中毒、出血、呼吸困难等），"
-            "你必须调用 trigger_emergency 工具，同时在回复中提供急救指导。不调用工具只回复文字是不够的。\n"
-            "【不触发的情况】只有当用户明确是在询问过去的事件（上次、什么时候）或一般性讨论时，才不触发。"
+            "🚨🚨🚨 紧急关键词检测: [{keywords}]\n"
+            "【强制要求】你必须调用 trigger_emergency 工具！这不是可选的。\n"
+            "用户正在描述紧急症状，你必须:\n"
+            "1. 调用 trigger_emergency 工具（action 选择: find_er=找医院, call_vet=打电话给兽医, first_aid=急救指导）\n"
+            "2. 在回复中提供急救建议\n"
+            "只回复文字而不调用 trigger_emergency 工具 = 严重失败。\n"
+            "唯一豁免: 用户明确在问过去的事（'上次中毒是什么时候'）。"
         ),
         "en": (
-            "⚠️ Emergency keywords detected: [{keywords}].\n"
-            "[MUST DO] If the user is describing an ongoing emergency symptom (seizure, poisoning, bleeding, "
-            "difficulty breathing, etc.), you MUST call the trigger_emergency tool AND provide first-aid guidance "
-            "in your reply. Replying with text alone is NOT sufficient.\n"
-            "[DO NOT trigger] Only skip if the user is clearly asking about a past event (last time, when was) "
-            "or having a general discussion."
+            "🚨🚨🚨 Emergency keywords detected: [{keywords}]\n"
+            "[MANDATORY] You MUST call the trigger_emergency tool! This is NOT optional.\n"
+            "The user is describing an emergency. You MUST:\n"
+            "1. Call the trigger_emergency tool (action: find_er=find hospital, call_vet=call vet, first_aid=first aid)\n"
+            "2. Provide first-aid guidance in your reply\n"
+            "Replying with text only WITHOUT calling trigger_emergency = CRITICAL FAILURE.\n"
+            "Only exception: user is clearly asking about a past event ('when was the last poisoning')."
         ),
     },
 
@@ -446,6 +460,10 @@ Notes:
     "desc_delete_reminder": {
         "zh": "删除提醒",
         "en": "Delete reminder",
+    },
+    "desc_delete_all_reminders": {
+        "zh": "清空所有提醒",
+        "en": "Delete all reminders",
     },
     "desc_draft_email": {
         "zh": "草拟邮件: {subject}",
@@ -608,9 +626,11 @@ Notes:
     "tool_desc_search_places": {
         "en": (
             "Search for nearby pet-related places (vet clinics/pet stores/dog parks/grooming/24h emergency).\n"
-            "Use when the user asks where nearby.../help me find...\n"
-            "Do NOT use for: recording visited places (use create_calendar_event).\n"
-            "Requires user location authorization."
+            "[MUST CALL] You MUST call this tool when the user mentions ANY of:\n"
+            "- 'nearby', 'find', 'closest', 'nearest', 'where is' + vet/clinic/hospital/dog park/pet store/groomer\n"
+            "- Any expression asking to find pet-related locations\n"
+            "Call this tool even without location info — the system handles it automatically.\n"
+            "Do NOT use for: recording visited places (use create_calendar_event)."
         ),
     },
     "tool_desc_draft_email": {
@@ -671,8 +691,12 @@ Notes:
     },
     "tool_desc_set_language": {
         "en": (
-            "Switch the app display language.\n"
-            "Use when the user asks to switch language (speak English/switch to English).\n"
+            "Switch the app interface display language.\n"
+            "[MUST CALL] You MUST call this tool when the user says ANY of:\n"
+            "- 'switch to English/Chinese', 'use English/Chinese', 'speak English/Chinese'\n"
+            "- '切换成中文/英文', '说中文/英文', '用中文/英文'\n"
+            "- Any request to change the reply/interface language\n"
+            "When calling this tool, also switch your reply language accordingly.\n"
             "Do NOT use for: translating content (just reply in the target language).\n"
             "Supports zh and en."
         ),
@@ -696,10 +720,11 @@ Notes:
 
     "tool_desc_trigger_emergency": {
         "en": (
-            "Call when you determine the user is describing a real pet emergency.\n"
-            "Use for: pet poisoning, seizures, severe bleeding, difficulty breathing, unconsciousness, and other life-threatening situations.\n"
-            "Do NOT use for: user asking about past emergency events, general health questions, minor discomfort.\n"
-            "Carefully assess whether it's truly an emergency before calling."
+            "[EMERGENCY — MUST CALL] When the user describes a pet experiencing a life-threatening situation, you MUST call this tool immediately.\n"
+            "Trigger scenarios: seizure, poisoning, severe bleeding, difficulty breathing, unconsciousness,\n"
+            "dying, foaming at mouth, unable to stand, hit by car, ingested toxic substance, etc.\n"
+            "If the situation is [happening now] or [just happened], you MUST call this tool.\n"
+            "The ONLY time NOT to call: user is clearly asking about a [past] event ('when was the last poisoning') or having a general discussion."
         ),
     },
     "tool_desc_request_images": {

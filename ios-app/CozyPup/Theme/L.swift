@@ -68,13 +68,10 @@ enum L {
     static func category(_ key: String) -> String {
         if !z { return key.capitalized }
         switch key {
-        case "diet": return "饮食"
-        case "excretion": return "排泄"
-        case "abnormal": return "异常"
-        case "vaccine": return "疫苗"
-        case "deworming": return "驱虫"
-        case "medical": return "就医"
         case "daily": return "日常"
+        case "diet": return "饮食"
+        case "medical": return "医疗"
+        case "abnormal": return "异常"
         default: return key
         }
     }

@@ -6,6 +6,8 @@ struct MultiDayTimelineView: View {
     @Binding var filterPetId: String?
     var filterCategory: EventCategory?
     var scrollToDate: String?
+    @Binding var isSelecting: Bool
+    @Binding var selectedEventIds: Set<String>
     var onSelectDay: (String) -> Void
 
     @State private var selectedDate: String?
@@ -53,6 +55,8 @@ struct MultiDayTimelineView: View {
                             pets: petStore.pets,
                             isToday: index == 365,
                             isHighlighted: dateKey == selectedDate,
+                            isSelecting: $isSelecting,
+                            selectedEventIds: $selectedEventIds,
                             onTap: {
                                 let now = Date()
                                 if lastTapDate == dateKey,
@@ -141,6 +145,8 @@ struct DayRow: View {
     let pets: [Pet]
     let isToday: Bool
     var isHighlighted: Bool = false
+    @Binding var isSelecting: Bool
+    @Binding var selectedEventIds: Set<String>
     let onTap: () -> Void
     var onUpdate: ((String, String, EventCategory, String, String?) -> Void)?
     var onDelete: ((String) -> Void)?
@@ -249,6 +255,8 @@ struct DayRow: View {
                 Color.clear.frame(height: 28)
             } else {
                 ForEach(events, id: \.id) { evt in
+                    let isSelected = selectedEventIds.contains(evt.id)
+
                     VStack(alignment: .leading, spacing: 0) {
                         HStack(spacing: Tokens.spacing.sm) {
                             RoundedRectangle(cornerRadius: 1.5)
@@ -278,13 +286,19 @@ struct DayRow: View {
                                 }
                             }
                             Spacer()
+
+                            // Selection indicator — right side of card
+                            if isSelecting {
+                                selectionCircle(isSelected: isSelected)
+                                    .transition(.opacity)
+                            }
                         }
 
                         if !evt.photos.isEmpty {
                             ScrollView(.horizontal, showsIndicators: false) {
                                 HStack(spacing: 4) {
                                     ForEach(evt.photos, id: \.self) { urlStr in
-                                        AsyncImage(url: APIClient.shared.avatarURL(urlStr)) { image in
+                                        CachedAsyncImage(url: APIClient.shared.avatarURL(urlStr)) { image in
                                             image.resizable().scaledToFill()
                                         } placeholder: {
                                             Tokens.placeholderBg
@@ -293,7 +307,9 @@ struct DayRow: View {
                                         .clipped()
                                         .cornerRadius(6)
                                         .onTapGesture {
-                                            loadFullScreenImage(from: urlStr)
+                                            if !isSelecting {
+                                                loadFullScreenImage(from: urlStr)
+                                            }
                                         }
                                     }
                                 }
@@ -318,16 +334,41 @@ struct DayRow: View {
                     .padding(.vertical, Tokens.spacing.sm)
                     .padding(.horizontal, Tokens.spacing.sm)
                     .background(Tokens.surface)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: Tokens.radiusSmall)
+                            .strokeBorder(isSelecting && isSelected ? Tokens.accent.opacity(0.4) : .clear, lineWidth: 1.5)
+                    )
                     .cornerRadius(Tokens.radiusSmall)
-                    .contextMenu {
-                        if onUpdate != nil {
-                            Button { editingEvent = evt } label: {
-                                Label(Lang.shared.isZh ? "编辑" : "Edit", systemImage: "pencil")
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        if isSelecting {
+                            Haptics.light()
+                            if isSelected {
+                                selectedEventIds.remove(evt.id)
+                            } else {
+                                selectedEventIds.insert(evt.id)
                             }
                         }
-                        if let onDelete {
-                            Button(role: .destructive) { Haptics.medium(); onDelete(evt.id) } label: {
-                                Label(L.delete, systemImage: "trash")
+                    }
+                    .contextMenu {
+                        if !isSelecting {
+                            if onUpdate != nil {
+                                Button { editingEvent = evt } label: {
+                                    Label(Lang.shared.isZh ? "编辑" : "Edit", systemImage: "pencil")
+                                }
+                            }
+                            Button {
+                                withAnimation(.easeInOut(duration: 0.2)) {
+                                    selectedEventIds.insert(evt.id)
+                                    isSelecting = true
+                                }
+                            } label: {
+                                Label(Lang.shared.isZh ? "多选" : "Select", systemImage: "checkmark.circle")
+                            }
+                            if let onDelete {
+                                Button(role: .destructive) { Haptics.medium(); onDelete(evt.id) } label: {
+                                    Label(L.delete, systemImage: "trash")
+                                }
                             }
                         }
                     }
@@ -337,6 +378,23 @@ struct DayRow: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.leading, Tokens.spacing.xs)
         .padding(.vertical, 10)
+    }
+
+    @ViewBuilder
+    private func selectionCircle(isSelected: Bool) -> some View {
+        ZStack {
+            Circle()
+                .stroke(isSelected ? Tokens.accent : Tokens.border, lineWidth: 1)
+                .frame(width: 20, height: 20)
+            if isSelected {
+                Circle()
+                    .fill(Tokens.accent)
+                    .frame(width: 20, height: 20)
+                Image(systemName: "checkmark")
+                    .font(.system(size: 10, weight: .semibold))
+                    .foregroundColor(Tokens.white)
+            }
+        }
     }
 
     private func petColor(for event: CalendarEvent) -> Color {

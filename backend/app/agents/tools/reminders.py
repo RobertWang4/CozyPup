@@ -136,6 +136,33 @@ async def update_reminder(
     }
 
 
+@register_tool("delete_all_reminders")
+async def delete_all_reminders(
+    arguments: dict,
+    db: AsyncSession,
+    user_id: uuid.UUID,
+) -> dict:
+    """Delete all unsent reminders for the user."""
+    result = await db.execute(
+        select(Reminder)
+        .where(Reminder.user_id == user_id, Reminder.sent == False)  # noqa: E712
+    )
+    reminders = result.scalars().all()
+
+    if not reminders:
+        return {"success": True, "deleted_count": 0, "message": "No reminders to delete"}
+
+    count = len(reminders)
+    for r in reminders:
+        await db.delete(r)
+    await db.flush()
+
+    return {
+        "success": True,
+        "deleted_count": count,
+    }
+
+
 @register_tool("delete_reminder")
 async def delete_reminder(
     arguments: dict,

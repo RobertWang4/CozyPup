@@ -56,7 +56,7 @@ async def test_2_2_walk_yesterday(e2e_with_pet: E2EClient, lang: str):
 @pytest.mark.asyncio
 @pytest.mark.parametrize("lang", ["zh", "en"])
 async def test_2_3_vaccine_last_friday(e2e_with_pet: E2EClient, lang: str):
-    """2.3 'got vaccinated last Friday' -> record card, category=vaccine."""
+    """2.3 'got vaccinated last Friday' -> record card, category=medical."""
     e2e = e2e_with_pet
     result = await e2e.chat(MESSAGES["2.3"][lang])
 
@@ -66,8 +66,8 @@ async def test_2_3_vaccine_last_friday(e2e_with_pet: E2EClient, lang: str):
     )
 
     card = result.first_card("record")
-    assert card["category"] == "vaccine", (
-        f"Expected category=vaccine, got {card.get('category')}.\n{result.dump()}"
+    assert card["category"] == "medical", (
+        f"Expected category=medical, got {card.get('category')}.\n{result.dump()}"
     )
 
 
@@ -134,6 +134,65 @@ async def test_2_7_multi_event(e2e_with_pet: E2EClient, lang: str):
     assert result.error is None, f"Chat error: {result.error}"
     assert result.card_count("record") >= 2, (
         f"Expected at least 2 record cards, got {result.card_count('record')}.\n{result.dump()}"
+    )
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# Section 2.8-2.10: Category consolidation tests
+# ═══════════════════════════════════════════════════════════════════════════
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("lang", ["zh", "en"])
+async def test_2_8_diarrhea_is_abnormal(e2e_with_pet: E2EClient, lang: str):
+    """2.8 'has diarrhea' -> record card, category=abnormal (was excretion)."""
+    e2e = e2e_with_pet
+    result = await e2e.chat(MESSAGES["2.8"][lang])
+
+    assert result.error is None, f"Chat error: {result.error}"
+    assert result.has_card("record"), (
+        f"Expected a record card.\n{result.dump()}"
+    )
+
+    card = result.first_card("record")
+    assert card["category"] == "abnormal", (
+        f"Expected category=abnormal, got {card.get('category')}.\n{result.dump()}"
+    )
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("lang", ["zh", "en"])
+async def test_2_9_deworming_is_medical(e2e_with_pet: E2EClient, lang: str):
+    """2.9 'dewormed today' -> record card, category=medical (was deworming)."""
+    e2e = e2e_with_pet
+    result = await e2e.chat(MESSAGES["2.9"][lang])
+
+    assert result.error is None, f"Chat error: {result.error}"
+    assert result.has_card("record"), (
+        f"Expected a record card.\n{result.dump()}"
+    )
+
+    card = result.first_card("record")
+    assert card["category"] == "medical", (
+        f"Expected category=medical, got {card.get('category')}.\n{result.dump()}"
+    )
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("lang", ["zh", "en"])
+async def test_2_10_swimming_is_daily(e2e_with_pet: E2EClient, lang: str):
+    """2.10 'went swimming' -> record card, category=daily."""
+    e2e = e2e_with_pet
+    result = await e2e.chat(MESSAGES["2.10"][lang])
+
+    assert result.error is None, f"Chat error: {result.error}"
+    assert result.has_card("record"), (
+        f"Expected a record card.\n{result.dump()}"
+    )
+
+    card = result.first_card("record")
+    assert card["category"] == "daily", (
+        f"Expected category=daily, got {card.get('category')}.\n{result.dump()}"
     )
 
 

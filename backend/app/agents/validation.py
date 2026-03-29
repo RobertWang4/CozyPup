@@ -9,7 +9,7 @@ import re
 import uuid
 from datetime import date, datetime
 
-_CATEGORIES = {"diet", "excretion", "abnormal", "vaccine", "deworming", "medical", "daily"}
+_CATEGORIES = {"daily", "diet", "medical", "abnormal"}
 _SPECIES = {"dog", "cat", "other"}
 _REMINDER_TYPES = {"medication", "vaccine", "checkup", "feeding", "grooming", "other"}
 _TASK_TYPES = {"routine", "special"}
@@ -181,6 +181,11 @@ def _validate_delete_reminder(args: dict) -> list[str]:
     errors = _check_required(args, ["reminder_id"])
     errors += _check_uuid(args, "reminder_id")
     return errors
+
+
+@_register("delete_all_reminders")
+def _validate_delete_all_reminders(args: dict) -> list[str]:
+    return []  # No arguments needed
 
 
 @_register("save_pet_profile_md")

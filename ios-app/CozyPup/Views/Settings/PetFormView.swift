@@ -41,28 +41,6 @@ struct PetFormView: View {
         return speciesLabel(species)
     }
 
-    private var speciesMenuLabel: some View {
-        Text(speciesDisplayText)
-            .font(Tokens.fontBody)
-            .foregroundColor(speciesLocked ? Tokens.textTertiary : Tokens.text)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(12)
-            .background(Tokens.surface)
-            .cornerRadius(12)
-            .overlay(RoundedRectangle(cornerRadius: 12).stroke(Tokens.border))
-    }
-
-    private var genderMenuLabel: some View {
-        Text(gender.isEmpty ? "-" : genderLabel(gender))
-            .font(Tokens.fontBody)
-            .foregroundColor(gender.isEmpty ? Tokens.textTertiary : (genderLocked ? Tokens.textTertiary : Tokens.text))
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(12)
-            .background(Tokens.surface)
-            .cornerRadius(12)
-            .overlay(RoundedRectangle(cornerRadius: 12).stroke(Tokens.border))
-    }
-
     @State private var speciesDisplay = ""
 
     private var allPetTypes: [(String, String, Species)] {
@@ -146,7 +124,7 @@ struct PetFormView: View {
     }
 
     var body: some View {
-        VStack(spacing: Tokens.spacing.md) {
+        VStack(spacing: Tokens.spacing.lg) {
             // Avatar
             PhotosPicker(selection: $selectedPhoto, matching: .images) {
                 ZStack {
@@ -158,9 +136,8 @@ struct PetFormView: View {
                             .clipShape(Circle())
                     } else if let pet = currentPet, !pet.avatarUrl.isEmpty,
                               let baseURL = APIClient.shared.avatarURL(pet.avatarUrl) {
-                        // Append version to bust AsyncImage cache after upload
                         let url = URL(string: "\(baseURL.absoluteString)?v=\(avatarVersion)")!
-                        AsyncImage(url: url) { image in
+                        CachedAsyncImage(url: url) { image in
                             image.resizable().scaledToFill()
                         } placeholder: {
                             Circle().fill(avatarColor.opacity(0.15))
@@ -200,7 +177,6 @@ struct PetFormView: View {
                     if let data = try? await newItem.loadTransferable(type: Data.self),
                        let uiImage = UIImage(data: data) {
                         avatarImage = uiImage
-                        // Upload immediately if editing existing pet
                         if let pet = editingPet, let store = petStore {
                             if let jpegData = uiImage.jpegData(compressionQuality: 0.8) {
                                 isUploadingAvatar = true
@@ -212,81 +188,93 @@ struct PetFormView: View {
                     }
                 }
             }
-            .padding(.bottom, Tokens.spacing.xs)
 
-            VStack(alignment: .leading, spacing: 6) {
-                Text(L.name).font(Tokens.fontSubheadline.weight(.medium)).foregroundColor(Tokens.textSecondary)
-                TextField(L.namePlaceholder, text: $name)
-                    .textFieldStyle(.plain)
-                    .foregroundColor(Tokens.text)
-                    .padding(12)
-                    .background(Tokens.surface)
-                    .cornerRadius(12)
-                    .overlay(RoundedRectangle(cornerRadius: 12).stroke(Tokens.border))
+            // Card 1: Name
+            formCard {
+                cardField(label: L.name) {
+                    TextField(L.namePlaceholder, text: $name)
+                        .font(Tokens.fontBody)
+                        .foregroundColor(Tokens.text)
+                }
             }
 
-            // Row 2: Species + Gender
-            HStack(spacing: 12) {
-                VStack(alignment: .leading, spacing: 6) {
-                    Text(L.species).font(Tokens.fontSubheadline.weight(.medium)).foregroundColor(Tokens.textSecondary)
-                    Menu {
-                        ForEach(allPetTypes, id: \.0) { key, label, sp in
-                            Button(label) { selectSpecies(sp, display: label) }
+            // Card 2: Species + Gender + Breed
+            formCard {
+                HStack(spacing: 0) {
+                    cardField(label: L.species) {
+                        Menu {
+                            ForEach(allPetTypes, id: \.0) { key, label, sp in
+                                Button(label) { selectSpecies(sp, display: label) }
+                            }
+                        } label: {
+                            HStack {
+                                Text(speciesDisplayText)
+                                    .font(Tokens.fontBody)
+                                    .foregroundColor(speciesLocked ? Tokens.textTertiary : Tokens.text)
+                                Spacer()
+                                Image(systemName: "chevron.up.chevron.down")
+                                    .font(.system(size: 10))
+                                    .foregroundColor(Tokens.textTertiary)
+                            }
                         }
-                    } label: {
-                        speciesMenuLabel
+                        .disabled(speciesLocked)
                     }
-                    .disabled(speciesLocked)
+
+                    Rectangle()
+                        .fill(Tokens.divider)
+                        .frame(width: 0.5)
+                        .padding(.vertical, Tokens.spacing.sm)
+
+                    cardField(label: Lang.shared.isZh ? "性别" : "Gender") {
+                        Menu {
+                            Button(genderLabel("male")) { confirmGender("male") }
+                            Button(genderLabel("female")) { confirmGender("female") }
+                        } label: {
+                            HStack {
+                                Text(gender.isEmpty ? "-" : genderLabel(gender))
+                                    .font(Tokens.fontBody)
+                                    .foregroundColor(gender.isEmpty ? Tokens.textTertiary : (genderLocked ? Tokens.textTertiary : Tokens.text))
+                                Spacer()
+                                Image(systemName: "chevron.up.chevron.down")
+                                    .font(.system(size: 10))
+                                    .foregroundColor(Tokens.textTertiary)
+                            }
+                        }
+                        .disabled(genderLocked)
+                    }
                 }
-                VStack(alignment: .leading, spacing: 6) {
-                    Text(Lang.shared.isZh ? "性别" : "Gender")
-                        .font(Tokens.fontSubheadline.weight(.medium)).foregroundColor(Tokens.textSecondary)
-                    Menu {
-                        Button(genderLabel("male")) { confirmGender("male") }
-                        Button(genderLabel("female")) { confirmGender("female") }
-                    } label: {
-                        genderMenuLabel
-                    }
-                    .disabled(genderLocked)
+
+                cardDivider
+
+                cardField(label: L.breed) {
+                    TextField(L.breedPlaceholder, text: $breed)
+                        .font(Tokens.fontBody)
+                        .foregroundColor(Tokens.text)
                 }
             }
 
-            // Row 3: Breed
-            VStack(alignment: .leading, spacing: 6) {
-                Text(L.breed).font(Tokens.fontSubheadline.weight(.medium)).foregroundColor(Tokens.textSecondary)
-                TextField(L.breedPlaceholder, text: $breed)
-                    .textFieldStyle(.plain)
-                    .foregroundColor(Tokens.text)
-                    .padding(12)
-                    .background(Tokens.surface)
-                    .cornerRadius(12)
-                    .overlay(RoundedRectangle(cornerRadius: 12).stroke(Tokens.border))
-            }
+            // Card 3: Birthday + Weight
+            formCard {
+                HStack(spacing: 0) {
+                    cardField(label: L.birthday) {
+                        TextField("YYYY-MM-DD", text: $birthday)
+                            .keyboardType(.numbersAndPunctuation)
+                            .autocorrectionDisabled()
+                            .font(Tokens.fontBody)
+                            .foregroundColor(Tokens.text)
+                    }
 
-            // Row 4: Birthday + Weight
-            HStack(spacing: 12) {
-                VStack(alignment: .leading, spacing: 6) {
-                    Text(L.birthday).font(Tokens.fontSubheadline.weight(.medium)).foregroundColor(Tokens.textSecondary)
-                    TextField("YYYY-MM-DD", text: $birthday)
-                        .keyboardType(.numbersAndPunctuation)
-                        .autocorrectionDisabled()
-                        .textFieldStyle(.plain)
-                        .foregroundColor(Tokens.text)
-                        .padding(12)
-                        .background(Tokens.surface)
-                        .cornerRadius(12)
-                        .overlay(RoundedRectangle(cornerRadius: 12).stroke(Tokens.border))
-                }
-                VStack(alignment: .leading, spacing: 6) {
-                    Text(L.weightKg).font(Tokens.fontSubheadline.weight(.medium)).foregroundColor(Tokens.textSecondary)
-                    TextField("0.0", text: $weight)
-                        .keyboardType(.decimalPad)
-                        .textFieldStyle(.plain)
-                        .foregroundColor(Tokens.text)
-                        .padding(12)
-                        .background(Tokens.surface)
-                        .cornerRadius(12)
-                        .overlay(RoundedRectangle(cornerRadius: 12).stroke(Tokens.border))
+                    Rectangle()
+                        .fill(Tokens.divider)
+                        .frame(width: 0.5)
+                        .padding(.vertical, Tokens.spacing.sm)
+
+                    cardField(label: L.weightKg) {
+                        TextField("0.0", text: $weight)
+                            .keyboardType(.decimalPad)
+                            .font(Tokens.fontBody)
+                            .foregroundColor(Tokens.text)
+                    }
                 }
             }
 
@@ -294,7 +282,7 @@ struct PetFormView: View {
             if let pet = editingPet {
                 Button { showProfileEditor = true } label: {
                     HStack {
-                        VStack(alignment: .leading, spacing: 4) {
+                        VStack(alignment: .leading, spacing: Tokens.spacing.xs) {
                             HStack(spacing: 6) {
                                 Image(systemName: "doc.text.fill")
                                     .foregroundColor(Tokens.accent)
@@ -315,8 +303,7 @@ struct PetFormView: View {
                     }
                     .padding(Tokens.spacing.md)
                     .background(Tokens.surface)
-                    .cornerRadius(12)
-                    .overlay(RoundedRectangle(cornerRadius: 12).stroke(Tokens.border))
+                    .cornerRadius(Tokens.radius)
                 }
                 .buttonStyle(.plain)
                 .sheet(isPresented: $showProfileEditor) {
@@ -326,11 +313,13 @@ struct PetFormView: View {
                 }
             }
 
+            Spacer().frame(height: Tokens.spacing.xs)
+
+            // Save button
             Button {
                 Haptics.light()
                 let bday = birthday.isEmpty ? nil : birthday
                 let w = Double(weight)
-                // Save gender separately if editing
                 if let pet = editingPet, let store = petStore, !gender.isEmpty {
                     Task { await store.updateGender(pet.id, gender: gender) }
                 }
@@ -341,7 +330,7 @@ struct PetFormView: View {
                     .padding(.vertical, 14)
                     .background(name.isEmpty ? Tokens.border : Tokens.accent)
                     .foregroundColor(Tokens.white)
-                    .cornerRadius(14)
+                    .cornerRadius(Tokens.radius)
                     .font(Tokens.fontCallout.weight(.semibold))
             }
             .disabled(name.isEmpty)
@@ -349,6 +338,7 @@ struct PetFormView: View {
             if let onCancel {
                 Button(L.cancel) { onCancel() }
                     .foregroundColor(Tokens.textSecondary)
+                    .font(Tokens.fontSubheadline)
             }
         }
         .onTapGesture { UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil) }
@@ -362,7 +352,6 @@ struct PetFormView: View {
                 gender = pet.gender ?? ""
                 speciesLocked = pet.speciesLocked ?? false
                 genderLocked = !(pet.gender ?? "").isEmpty
-                // Set display text for species
                 if pet.species == .dog { speciesDisplay = L.dog }
                 else if pet.species == .cat { speciesDisplay = L.cat }
                 else if !pet.breed.isEmpty { speciesDisplay = pet.breed }
@@ -408,5 +397,35 @@ struct PetFormView: View {
                  ? "性别设置后将无法修改，请确认选择。"
                  : "Gender cannot be changed after this. Please confirm.")
         }
+    }
+
+    // MARK: - Form Card Components
+
+    @ViewBuilder
+    private func formCard<Content: View>(@ViewBuilder content: () -> Content) -> some View {
+        VStack(spacing: 0) {
+            content()
+        }
+        .background(Tokens.surface)
+        .cornerRadius(Tokens.radius)
+    }
+
+    private var cardDivider: some View {
+        Rectangle()
+            .fill(Tokens.divider)
+            .frame(height: 0.5)
+            .padding(.leading, Tokens.spacing.md)
+    }
+
+    @ViewBuilder
+    private func cardField<Content: View>(label: String, @ViewBuilder content: () -> Content) -> some View {
+        VStack(alignment: .leading, spacing: Tokens.spacing.xs) {
+            Text(label)
+                .font(Tokens.fontCaption)
+                .foregroundColor(Tokens.textTertiary)
+            content()
+        }
+        .padding(.horizontal, Tokens.spacing.md)
+        .padding(.vertical, Tokens.spacing.sm + 2)
     }
 }

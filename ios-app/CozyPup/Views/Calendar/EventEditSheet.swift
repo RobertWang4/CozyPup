@@ -286,7 +286,7 @@ struct EventEditSheet: View {
                 HStack(spacing: Tokens.spacing.sm) {
                     ForEach(photos, id: \.self) { urlStr in
                         ZStack(alignment: .topTrailing) {
-                            AsyncImage(url: photoURL(urlStr)) { image in
+                            CachedAsyncImage(url: photoURL(urlStr)) { image in
                                 image.resizable().scaledToFill()
                             } placeholder: {
                                 Tokens.placeholderBg

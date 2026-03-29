@@ -22,6 +22,11 @@ MESSAGES = {
     "2.6": {"zh": "小维吐了", "en": "Weiwei vomited"},
     "2.7": {"zh": "今天遛了狗还洗了澡", "en": "Walked the dog and gave a bath today"},
 
+    # ═══ 二(补)、分类合并测试 ═══
+    "2.8": {"zh": "小维拉稀了", "en": "Weiwei has diarrhea"},
+    "2.9": {"zh": "今天驱虫了", "en": "Dewormed today"},
+    "2.10": {"zh": "小维今天游泳了", "en": "Weiwei went swimming today"},
+
     # ═══ 三、查询事件 ═══
     "3.1": {"zh": "小维上次打疫苗是什么时候？", "en": "When was Weiwei's last vaccination?"},
     "3.2": {"zh": "这周记录了什么？", "en": "What was recorded this week?"},

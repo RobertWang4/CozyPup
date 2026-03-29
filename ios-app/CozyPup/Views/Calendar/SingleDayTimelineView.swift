@@ -5,21 +5,26 @@ struct SingleDayTimelineView: View {
     @EnvironmentObject var petStore: PetStore
     let date: String  // YYYY-MM-DD
     var filterPetId: String?
+    var filterCategory: EventCategory?
     var onBack: () -> Void
 
     @State private var currentDate: String
     @GestureState private var dragOffset: CGFloat = 0
 
-    init(date: String, filterPetId: String?, onBack: @escaping () -> Void) {
+    init(date: String, filterPetId: String?, filterCategory: EventCategory? = nil, onBack: @escaping () -> Void) {
         self.date = date
         self.filterPetId = filterPetId
+        self.filterCategory = filterCategory
         self.onBack = onBack
         _currentDate = State(initialValue: date)
     }
 
     private var events: [CalendarEvent] {
         calendarStore.eventsForDate(currentDate)
-            .filter { filterPetId == nil || $0.petId == filterPetId }
+            .filter {
+                (filterPetId == nil || $0.petId == filterPetId) &&
+                (filterCategory == nil || $0.category == filterCategory)
+            }
             .sorted { ($0.eventTime ?? "") < ($1.eventTime ?? "") }
     }
 
@@ -104,6 +109,12 @@ struct SingleDayTimelineView: View {
                         },
                         onPhotoDelete: { photoUrl in
                             Task { await calendarStore.deleteEventPhoto(eventId: evt.id, photoUrl: photoUrl) }
+                        },
+                        onLocationUpdate: { name, address, lat, lng, placeId in
+                            Task { await calendarStore.updateLocation(eventId: evt.id, name: name, address: address, lat: lat, lng: lng, placeId: placeId) }
+                        },
+                        onLocationRemove: {
+                            Task { await calendarStore.removeLocation(eventId: evt.id) }
                         }
                     )
                     .padding(.horizontal, Tokens.spacing.md)

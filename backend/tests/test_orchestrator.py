@@ -109,7 +109,7 @@ async def test_path_b_single_task():
 async def test_path_c_multi_task():
     """Multiple tool calls -> parallel executors."""
     tool_args_1 = {"pet_id": "abc", "event_date": "2026-03-24", "title": "吃狗粮", "category": "diet"}
-    tool_args_2 = {"pet_id": "def", "event_date": "2026-03-24", "title": "打疫苗", "category": "vaccine"}
+    tool_args_2 = {"pet_id": "def", "event_date": "2026-03-24", "title": "打疫苗", "category": "medical"}
 
     chunks = _make_stream_chunks(
         content="好的，",

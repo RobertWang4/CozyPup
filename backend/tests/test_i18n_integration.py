@@ -7,7 +7,10 @@ from app.agents.tools import get_tool_definitions
 
 def test_english_system_prompt_has_no_chinese():
     prompt = build_system_prompt(pets=[], today="2026-03-26", lang="en")
-    cjk = re.findall(r"[\u4e00-\u9fff]", prompt)
+    # Strip known CJK examples that legitimately appear in English prompt
+    # (e.g. "切换成中文" as example of user input in tool guide)
+    cleaned = re.sub(r'"[^"]*"', '', prompt)  # remove quoted strings
+    cjk = re.findall(r"[\u4e00-\u9fff]", cleaned)
     assert len(cjk) == 0, f"Found Chinese chars in English prompt: {''.join(cjk[:20])}"
 
 
