@@ -113,6 +113,33 @@ async def manage_daily_task(
     task_id_str = arguments.get("task_id")
     title_keyword = arguments.get("title")
 
+    # Fallback: "delete" without task_id/title → treat as "delete_all"
+    if action == "delete" and not task_id_str and not title_keyword:
+        action = "delete_all"
+        result = await db.execute(
+            select(DailyTask).where(
+                DailyTask.user_id == user_id,
+                DailyTask.active == True,  # noqa: E712
+            )
+        )
+        tasks = result.scalars().all()
+        if not tasks:
+            return {"success": True, "action": "delete_all", "deleted_count": 0, "message": "No active tasks to delete"}
+        deleted_titles = [t.title for t in tasks]
+        for t in tasks:
+            await db.delete(t)
+        await db.flush()
+        return {
+            "success": True,
+            "action": "delete_all",
+            "deleted_count": len(deleted_titles),
+            "deleted_titles": deleted_titles,
+            "card": {
+                "type": "daily_task_deleted",
+                "title": f"已删除 {len(deleted_titles)} 个待办",
+            },
+        }
+
     task = None
 
     if task_id_str:
