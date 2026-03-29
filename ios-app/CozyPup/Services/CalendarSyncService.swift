@@ -272,6 +272,27 @@ final class CalendarSyncService {
         try? store.commit()
     }
 
+    /// Convenience: bulk sync all events, grouped by pet.
+    func bulkSync(events: [CalendarEvent]) async {
+        guard isSyncEnabled, await requestAccess() else { return }
+        // Group events by petId
+        var grouped: [String: (name: String, color: String?, events: [CalendarEvent])] = [:]
+        for event in events {
+            guard let petId = event.petId else { continue }
+            if grouped[petId] == nil {
+                grouped[petId] = (
+                    name: event.petName ?? "Pet",
+                    color: event.petColorHex,
+                    events: []
+                )
+            }
+            grouped[petId]?.events.append(event)
+        }
+        for (petId, info) in grouped {
+            await bulkSync(events: info.events, petId: petId, petName: info.name, colorHex: info.color)
+        }
+    }
+
     // MARK: - EKEvent configuration
 
     private func configureEKEvent(

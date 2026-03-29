@@ -26,7 +26,19 @@
 				<string>com.googleusercontent.apps.496617144117-73j9krtarupr8as09cka2tg06sn4cke8</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>CFBundleURLName</key>
+			<string>com.robertwang.cozypup.dev</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>cozypup</string>
+			</array>
+		</dict>
 	</array>
+	<key>NSCalendarsFullAccessUsageDescription</key>
+	<string>CozyPup syncs pet health events to your calendar so you can see appointments alongside your schedule.</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>NSAppTransportSecurity</key>

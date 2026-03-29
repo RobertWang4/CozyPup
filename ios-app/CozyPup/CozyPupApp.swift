@@ -41,6 +41,22 @@ struct CozyPupApp: App {
             .environmentObject(chatStore)
             .environmentObject(dailyTaskStore)
             .environmentObject(Lang.shared)
+            .onOpenURL { url in
+                guard url.scheme == "cozypup",
+                      url.host == "calendar",
+                      url.pathComponents.count >= 3,
+                      url.pathComponents[1] == "event" else { return }
+                let eventId = url.pathComponents[2]
+                NotificationCenter.default.post(
+                    name: .openCalendarEvent,
+                    object: nil,
+                    userInfo: ["eventId": eventId]
+                )
+            }
         }
     }
+}
+
+extension Notification.Name {
+    static let openCalendarEvent = Notification.Name("openCalendarEvent")
 }

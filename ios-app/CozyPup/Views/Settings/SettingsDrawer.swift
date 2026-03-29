@@ -9,6 +9,8 @@ struct SettingsDrawer: View {
     @State private var notifications = true
     @State private var medReminders = true
     @State private var weeklyInsights = false
+    @State private var calendarSync = CalendarSyncService.shared.isSyncEnabled
+    @State private var showCalendarSyncOptions = false
     @ObservedObject private var lang = Lang.shared
     @State private var editingPetId: String?
     @State private var showAddPet = false
@@ -75,6 +77,35 @@ struct SettingsDrawer: View {
                 }
             }
             Button(L.cancel, role: .cancel) { }
+        }
+        .confirmationDialog("Sync to Apple Calendar", isPresented: $showCalendarSyncOptions, titleVisibility: .visible) {
+            Button("Sync all history") {
+                Task {
+                    CalendarSyncService.shared.setSyncEnabled(true)
+                    let granted = await CalendarSyncService.shared.requestAccess()
+                    if granted {
+                        await CalendarSyncService.shared.bulkSync(events: calendarStore.events)
+                    } else {
+                        calendarSync = false
+                        CalendarSyncService.shared.setSyncEnabled(false)
+                    }
+                }
+            }
+            Button("Sync new events only") {
+                Task {
+                    CalendarSyncService.shared.setSyncEnabled(true)
+                    let granted = await CalendarSyncService.shared.requestAccess()
+                    if !granted {
+                        calendarSync = false
+                        CalendarSyncService.shared.setSyncEnabled(false)
+                    }
+                }
+            }
+            Button("Cancel", role: .cancel) {
+                calendarSync = false
+            }
+        } message: {
+            Text("Choose how to sync your pet events to the Apple Calendar app.")
         }
         .sheet(isPresented: $showUserProfile) {
             UserProfileSheet(auth: auth)
@@ -186,6 +217,19 @@ struct SettingsDrawer: View {
                     }
                     .tint(Tokens.textSecondary)
                 }
+                .listRowBackground(Tokens.surface)
+
+                Section("Calendar") {
+                    Toggle("Sync to Apple Calendar", isOn: $calendarSync)
+                        .onChange(of: calendarSync) { _, newValue in
+                            if newValue {
+                                showCalendarSyncOptions = true
+                            } else {
+                                CalendarSyncService.shared.setSyncEnabled(false)
+                            }
+                        }
+                }
+                .tint(Tokens.green)
                 .listRowBackground(Tokens.surface)
 
                 Section(L.notifications) {

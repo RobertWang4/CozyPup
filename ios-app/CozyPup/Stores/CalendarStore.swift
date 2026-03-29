@@ -51,6 +51,9 @@ class CalendarStore: ObservableObject {
         events.append(event)
         saveLocal()
 
+        // Sync to system calendar
+        Task { await CalendarSyncService.shared.syncEvent(event) }
+
         // Sync to API
         Task {
             struct CreateBody: Encodable {
@@ -103,6 +106,10 @@ class CalendarStore: ObservableObject {
         events[idx].edited = true
         saveLocal()
 
+        // Sync to system calendar
+        let updatedEvent = events[idx]
+        Task { await CalendarSyncService.shared.syncEvent(updatedEvent) }
+
         // Sync to API
         Task {
             struct UpdateBody: Encodable {
@@ -131,6 +138,9 @@ class CalendarStore: ObservableObject {
         events.removeAll { $0.id == id }
         saveLocal()
 
+        // Remove from system calendar
+        CalendarSyncService.shared.deleteEvent(eventId: id)
+
         Task {
             do {
                 try await APIClient.shared.requestNoContent("DELETE", "/calendar/\(id)")
@@ -143,6 +153,9 @@ class CalendarStore: ObservableObject {
     func removeMultiple(_ ids: Set<String>) {
         events.removeAll { ids.contains($0.id) }
         saveLocal()
+
+        // Remove from system calendar
+        for id in ids { CalendarSyncService.shared.deleteEvent(eventId: id) }
 
         Task {
             for id in ids {
@@ -189,6 +202,9 @@ class CalendarStore: ObservableObject {
             events[idx].locationLng = lng
             events[idx].placeId = placeId
             saveLocal()
+
+            // Sync location to system calendar
+            Task { await CalendarSyncService.shared.syncEvent(events[idx]) }
         }
 
         // Sync to API
@@ -223,6 +239,9 @@ class CalendarStore: ObservableObject {
             events[idx].locationLng = nil
             events[idx].placeId = nil
             saveLocal()
+
+            // Sync location removal to system calendar
+            Task { await CalendarSyncService.shared.syncEvent(events[idx]) }
         }
 
         do {

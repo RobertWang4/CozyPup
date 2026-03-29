@@ -93,6 +93,7 @@ class PetStore: ObservableObject {
                 pets[idx] = updated
                 saveLocal()
             }
+            CalendarSyncService.shared.renameCalendar(petId: id, newName: name)
         } catch {
             print("PetStore.update failed: \(error)")
             // Fallback to local
@@ -104,6 +105,7 @@ class PetStore: ObservableObject {
                 pets[idx].weight = weight
                 saveLocal()
             }
+            CalendarSyncService.shared.renameCalendar(petId: id, newName: name)
         }
     }
 
@@ -132,6 +134,8 @@ class PetStore: ObservableObject {
         } catch {
             print("PetStore.remove failed: \(error)")
         }
+        // Remove pet calendar from system
+        CalendarSyncService.shared.deleteCalendar(petId: id)
         pets.removeAll { $0.id == id }
         saveLocal()
     }
