@@ -11,10 +11,9 @@ struct ChatView: View {
     @State private var inputText = ""
     @State private var isStreaming = false
     @State private var emergency: EmergencyData?
-    @State private var showCalendar = false
     @State private var showSettings = false
+    @State private var showCalendarSyncOptions = false
     @State private var settingsDeepLinkPetId: String?
-    @State private var calendarDrag: CGFloat = 0
     @State private var settingsDrag: CGFloat = 0
     @State private var voiceDragOffset: CGFloat = 0
     @State private var pendingPhotos: [Data] = []
@@ -29,12 +28,6 @@ struct ChatView: View {
 
     private var drawerWidth: CGFloat { UIScreen.main.bounds.width * 0.90 }
 
-    // Calendar: -drawerWidth (hidden) to 0 (open)
-    private var calendarX: CGFloat {
-        let base: CGFloat = showCalendar ? 0 : -drawerWidth
-        return min(0, max(-drawerWidth, base + calendarDrag))
-    }
-
     // Settings: 0 (open) to drawerWidth (hidden)
     private var settingsX: CGFloat {
         let base: CGFloat = showSettings ? 0 : drawerWidth
@@ -43,9 +36,7 @@ struct ChatView: View {
 
     // 0 = all closed, 1 = fully open
     private var drawerProgress: CGFloat {
-        let calP = (calendarX + drawerWidth) / drawerWidth
-        let setP = (drawerWidth - settingsX) / drawerWidth
-        return max(calP, setP)
+        (drawerWidth - settingsX) / drawerWidth
     }
 
     var body: some View {
@@ -169,9 +160,9 @@ struct ChatView: View {
                     onMicCancel: cancelVoice,
                     dragOffsetOut: $voiceDragOffset
                 )
-                .allowsHitTesting(!showSettings && !showCalendar)
+                .allowsHitTesting(!showSettings)
                 // Hide input bar when drawer is open so keyboard doesn't push it up
-                .frame(height: (showSettings || showCalendar) ? 0 : nil)
+                .frame(height: showSettings ? 0 : nil)
                 .clipped()
                 .onChange(of: inputText) { _, newValue in
                     withAnimation(.easeOut(duration: 0.15)) {
@@ -224,12 +215,9 @@ struct ChatView: View {
                 .animation(.spring(response: 0.4, dampingFraction: 0.75), value: speech.isListening)
             }
         }
-        // 1. Edge swipe areas (always rendered, below dimming overlay)
+        // 1. Edge swipe area for settings (right edge)
         .overlay {
             HStack(spacing: 0) {
-                Color.clear.frame(width: Tokens.size.iconSmall)
-                    .contentShape(Rectangle())
-                    .gesture(edgeOpenGesture(isCalendar: true))
                 Spacer()
                 Color.clear.frame(width: Tokens.size.iconSmall)
                     .contentShape(Rectangle())
@@ -241,23 +229,11 @@ struct ChatView: View {
         .overlay {
             Tokens.dimOverlay.opacity(Double(drawerProgress) * 0.3)
                 .ignoresSafeArea()
-                .allowsHitTesting(showCalendar || showSettings)
+                .allowsHitTesting(showSettings)
                 .onTapGesture { closeDrawers() }
                 .gesture(overlayCloseDrag)
         }
-        // 3. Calendar drawer
-        .overlay(alignment: .leading) {
-            CalendarDrawer(isPresented: $showCalendar)
-                .frame(width: drawerWidth)
-                .frame(maxHeight: .infinity)
-                .background(Tokens.bg)
-                .clipShape(UnevenRoundedRectangle(bottomTrailingRadius: 20, topTrailingRadius: 20))
-                .shadow(color: Tokens.dimOverlay.opacity(drawerProgress > 0.01 ? 0.15 : 0), radius: 10, x: 2)
-                .offset(x: calendarX)
-                .ignoresSafeArea()
-                .gesture(calendarDrawerCloseDrag)
-        }
-        // 4. Settings drawer
+        // Settings drawer
         .overlay(alignment: .trailing) {
             SettingsDrawer(isPresented: $showSettings, deepLinkPetId: $settingsDeepLinkPetId)
                 .frame(width: drawerWidth)
@@ -268,9 +244,6 @@ struct ChatView: View {
                 .offset(x: settingsX)
                 .ignoresSafeArea()
                 .gesture(settingsDrawerCloseDrag)
-        }
-        .onChange(of: showCalendar) { _, val in
-            if !val { calendarDrag = 0 }
         }
         .onChange(of: showSettings) { _, val in
             if !val {
@@ -295,6 +268,26 @@ struct ChatView: View {
                 .environmentObject(dailyTaskStore)
                 .environmentObject(petStore)
         }
+        .confirmationDialog("Sync to Apple Calendar", isPresented: $showCalendarSyncOptions, titleVisibility: .visible) {
+            Button(Lang.shared.isZh ? "同步所有历史事件" : "Sync all history") {
+                Task {
+                    CalendarSyncService.shared.setSyncEnabled(true)
+                    let granted = await CalendarSyncService.shared.requestAccess()
+                    if granted {
+                        await CalendarSyncService.shared.bulkSync(events: calendarStore.events)
+                    }
+                }
+            }
+            Button(Lang.shared.isZh ? "仅同步新事件" : "Sync new events only") {
+                Task {
+                    CalendarSyncService.shared.setSyncEnabled(true)
+                    _ = await CalendarSyncService.shared.requestAccess()
+                }
+            }
+            Button(Lang.shared.isZh ? "不连接" : "Don't connect", role: .cancel) {}
+        } message: {
+            Text(Lang.shared.isZh ? "选择如何同步宠物事件到 Apple 日历" : "Choose how to sync pet events to Apple Calendar")
+        }
         .task {
             await petStore.fetchFromAPI()
             await location.requestLocation()
@@ -306,37 +299,22 @@ struct ChatView: View {
 
     // MARK: - Drawer Gestures
 
-    /// Edge swipe to open a drawer
+    /// Edge swipe to open settings drawer
     private func edgeOpenGesture(isCalendar: Bool) -> some Gesture {
         DragGesture(minimumDistance: 10)
             .onChanged { value in
                 dismissKeyboard()
-                if isCalendar {
-                    calendarDrag = max(0, value.translation.width)
-                } else {
-                    settingsDrag = min(0, value.translation.width)
-                }
+                settingsDrag = min(0, value.translation.width)
             }
             .onEnded { value in
                 let threshold = drawerWidth * 0.3
-                if isCalendar {
-                    if value.translation.width > threshold ||
-                       value.predictedEndTranslation.width > drawerWidth * 0.5 {
-                        withAnimation(.easeOut(duration: 0.25)) {
-                            showCalendar = true; calendarDrag = 0
-                        }
-                    } else {
-                        withAnimation(.easeOut(duration: 0.2)) { calendarDrag = 0 }
+                if value.translation.width < -threshold ||
+                   value.predictedEndTranslation.width < -drawerWidth * 0.5 {
+                    withAnimation(.easeOut(duration: 0.25)) {
+                        showSettings = true; settingsDrag = 0
                     }
                 } else {
-                    if value.translation.width < -threshold ||
-                       value.predictedEndTranslation.width < -drawerWidth * 0.5 {
-                        withAnimation(.easeOut(duration: 0.25)) {
-                            showSettings = true; settingsDrag = 0
-                        }
-                    } else {
-                        withAnimation(.easeOut(duration: 0.2)) { settingsDrag = 0 }
-                    }
+                    withAnimation(.easeOut(duration: 0.2)) { settingsDrag = 0 }
                 }
             }
     }
@@ -345,24 +323,13 @@ struct ChatView: View {
     private var overlayCloseDrag: some Gesture {
         DragGesture(minimumDistance: 20)
             .onChanged { value in
-                if showCalendar {
-                    calendarDrag = min(0, value.translation.width)
-                } else if showSettings {
+                if showSettings {
                     settingsDrag = max(0, value.translation.width)
                 }
             }
             .onEnded { value in
                 let threshold = drawerWidth * 0.3
-                if showCalendar {
-                    if value.translation.width < -threshold ||
-                       value.predictedEndTranslation.width < -drawerWidth * 0.5 {
-                        withAnimation(.easeOut(duration: 0.25)) {
-                            showCalendar = false; calendarDrag = 0
-                        }
-                    } else {
-                        withAnimation(.spring(response: 0.3)) { calendarDrag = 0 }
-                    }
-                } else if showSettings {
+                if showSettings {
                     if value.translation.width > threshold ||
                        value.predictedEndTranslation.width > drawerWidth * 0.5 {
                         withAnimation(.easeOut(duration: 0.25)) {
@@ -395,31 +362,9 @@ struct ChatView: View {
             }
     }
 
-    /// Swipe left on calendar drawer content to close
-    private var calendarDrawerCloseDrag: some Gesture {
-        DragGesture(minimumDistance: 30, coordinateSpace: .local)
-            .onChanged { value in
-                guard showCalendar, value.translation.width < 0 else { return }
-                calendarDrag = value.translation.width
-            }
-            .onEnded { value in
-                guard showCalendar else { return }
-                if value.translation.width < -drawerWidth * 0.25 ||
-                   value.predictedEndTranslation.width < -drawerWidth * 0.5 {
-                    withAnimation(.easeOut(duration: 0.25)) {
-                        showCalendar = false; calendarDrag = 0
-                    }
-                } else {
-                    withAnimation(.spring(response: 0.3)) { calendarDrag = 0 }
-                }
-            }
-    }
-
     private func closeDrawers() {
         withAnimation(.easeOut(duration: 0.25)) {
-            showCalendar = false
             showSettings = false
-            calendarDrag = 0
             settingsDrag = 0
         }
     }
@@ -435,33 +380,11 @@ struct ChatView: View {
             // Daily task indicator (left)
             if !dailyTaskStore.tasks.isEmpty {
                 DailyTaskIndicator(showPopover: $showDailyTasks)
-            } else {
-                // Invisible spacer to keep logo centered
-                Color.clear
-                    .frame(width: Tokens.size.iconMedium, height: Tokens.size.iconMedium)
             }
-
             Spacer()
-
-            HStack(spacing: Tokens.spacing.sm) {
-                Image("logo")
-                    .resizable()
-                    .frame(width: Tokens.size.iconSmall, height: Tokens.size.iconSmall)
-                    .cornerRadius(Tokens.spacing.sm)
-                Text("Cozy Pup")
-                    .font(Tokens.fontTitle)
-                    .fontWeight(.medium)
-                    .foregroundColor(Tokens.accent)
-            }
-
-            Spacer()
-
-            // Right spacer to balance layout
-            Color.clear
-                .frame(width: Tokens.size.iconMedium, height: Tokens.size.iconMedium)
         }
         .padding(.horizontal, Tokens.spacing.lg)
-        .padding(.vertical, 12)
+        .padding(.vertical, Tokens.spacing.xs)
     }
 
     // MARK: - Cards
@@ -470,9 +393,7 @@ struct ChatView: View {
     private func cardView(_ card: CardData) -> some View {
         switch card {
         case .record(let data):
-            RecordCard(petName: data.pet_name, date: data.date, category: data.category) {
-                withAnimation(.easeOut(duration: 0.3)) { showCalendar = true }
-            }
+            RecordCard(petName: data.pet_name, date: data.date, category: data.category)
         case .map(let data):
             MapCard(items: data.items)
         case .email(let data):
@@ -490,7 +411,7 @@ struct ChatView: View {
                 label: L.reminderSet,
                 title: "\(data.pet_name) · \(data.title)",
                 subtitle: data.trigger_at
-            ) { withAnimation(.easeOut(duration: 0.3)) { showCalendar = true } }
+            )
         case .petUpdated(let data):
             ActionCard(
                 icon: "checkmark.circle.fill", iconColor: Tokens.green,
@@ -509,6 +430,15 @@ struct ChatView: View {
             LocationPickerCard(data: data)
         case .dailyTask(let data):
             DailyTaskCard(data: data)
+        case .calendarSync:
+            ActionCard(
+                icon: "calendar.badge.plus", iconColor: Tokens.green,
+                label: Lang.shared.isZh ? "日历同步" : "Calendar Sync",
+                title: Lang.shared.isZh ? "同步到 Apple 日历" : "Sync to Apple Calendar",
+                subtitle: ""
+            ) {
+                showCalendarSyncOptions = true
+            }
         case .setLanguage:
             EmptyView()
         case .genericAction(let data):
@@ -521,9 +451,7 @@ struct ChatView: View {
             ) {
                 let dest = navigationForActionType(data.type)
                 if dest == "settings" { navigateToSettings(petId: data.pet_id ?? data.pet_name) }
-                else if dest == "calendar" {
-                    withAnimation(.easeOut(duration: 0.3)) { showCalendar = true }
-                } else if dest == "daily_tasks" {
+                else if dest == "daily_tasks" {
                     showTaskManager = true
                 }
             }
@@ -609,6 +537,9 @@ struct ChatView: View {
                                 let comps = Calendar.current.dateComponents([.year, .month], from: Date())
                                 Task { await calendarStore.fetchMonth(year: comps.year!, month: comps.month!) }
                             }
+                        }
+                        if case .calendarSync = c {
+                            showCalendarSyncOptions = true
                         }
                         if case .record(let r) = c, let comps = parseYearMonth(r.date) {
                             Task { await calendarStore.fetchMonth(year: comps.0, month: comps.1) }

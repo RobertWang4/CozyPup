@@ -133,6 +133,11 @@ def _validate_create_reminder(args: dict) -> list[str]:
     return errors
 
 
+@_register("sync_calendar")
+def _validate_sync_calendar(args: dict) -> list[str]:
+    return []
+
+
 @_register("search_places")
 def _validate_search_places(args: dict) -> list[str]:
     return _check_required(args, ["query"])

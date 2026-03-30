@@ -119,6 +119,21 @@ async def trigger_emergency(
     }
 
 
+@register_tool("sync_calendar")
+async def sync_calendar(
+    arguments: dict,
+    db: AsyncSession,
+    user_id: uuid.UUID,
+) -> dict:
+    """Trigger Apple Calendar sync on the client."""
+    return {
+        "success": True,
+        "card": {
+            "type": "calendar_sync",
+        },
+    }
+
+
 @register_tool("search_places_text")
 async def search_places_text(
     arguments: dict,

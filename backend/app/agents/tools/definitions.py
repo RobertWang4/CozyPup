@@ -758,6 +758,23 @@ _BASE_TOOL_DEFINITIONS = [
             },
         },
     },
+    {
+        "type": "function",
+        "function": {
+            "name": "sync_calendar",
+            "description": (
+                "同步宠物事件到用户的 Apple 日历。\n"
+                "当用户要求同步日历、连接日历、或说'把事件同步到手机日历'时使用。\n"
+                "当用户在新设备上登录后想恢复日历数据时使用。\n"
+                "不需要参数，前端会弹出选项让用户选择同步方式。"
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {},
+                "required": [],
+            },
+        },
+    },
 ]
 
 # Backward compatibility alias

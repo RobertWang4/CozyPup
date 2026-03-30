@@ -104,6 +104,10 @@ struct DailyTaskCardData: Codable, Equatable {
     }
 }
 
+struct CalendarSyncCardData: Codable, Equatable {
+    let type: String  // "calendar_sync"
+}
+
 struct LocationOption: Codable, Equatable {
     let name: String
     let address: String
@@ -129,6 +133,7 @@ enum CardData: Codable, Equatable {
     case confirmAction(ConfirmActionCardData)
     case setLanguage(SetLanguageCardData)
     case genericAction(GenericActionCardData)
+    case calendarSync(CalendarSyncCardData)
     case locationPicker(LocationPickerCardData)
     case dailyTask(DailyTaskCardData)
 
@@ -150,6 +155,8 @@ enum CardData: Codable, Equatable {
             self = .confirmAction(d)
         } else if let d = try? container.decode(SetLanguageCardData.self), d.type == "set_language" {
             self = .setLanguage(d)
+        } else if let d = try? container.decode(CalendarSyncCardData.self), d.type == "calendar_sync" {
+            self = .calendarSync(d)
         } else if let d = try? container.decode(LocationPickerCardData.self), d.type == "location_picker" {
             self = .locationPicker(d)
         } else if let d = try? container.decode(DailyTaskCardData.self),
@@ -176,6 +183,7 @@ enum CardData: Codable, Equatable {
         case .confirmAction(let d): try container.encode(d)
         case .setLanguage(let d): try container.encode(d)
         case .genericAction(let d): try container.encode(d)
+        case .calendarSync(let d): try container.encode(d)
         case .locationPicker(let d): try container.encode(d)
         case .dailyTask(let d): try container.encode(d)
         }
