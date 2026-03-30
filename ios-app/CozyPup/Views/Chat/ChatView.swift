@@ -452,9 +452,11 @@ struct ChatView: View {
                 Color.clear.frame(width: Tokens.size.avatarSmall, height: Tokens.size.avatarSmall)
             }
             Spacer()
-            Text("Cozy Pup")
-                .font(Tokens.fontSubheadline)
-                .foregroundColor(Tokens.textTertiary)
+            Text("CozyPup")
+                .font(.system(size: 13, weight: .regular, design: .serif))
+                .italic()
+                .tracking(1.5)
+                .foregroundColor(Tokens.textTertiary.opacity(0.7))
             Spacer()
             Color.clear.frame(width: Tokens.size.avatarSmall, height: Tokens.size.avatarSmall)
         }
