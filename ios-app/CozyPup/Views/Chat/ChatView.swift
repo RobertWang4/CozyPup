@@ -452,10 +452,10 @@ struct ChatView: View {
                 Color.clear.frame(width: Tokens.size.avatarSmall, height: Tokens.size.avatarSmall)
             }
             Spacer()
-            Text("CozyPup")
-                .font(.system(size: 15, weight: .medium, design: .rounded))
-                .tracking(0.5)
-                .foregroundColor(Tokens.accent)
+            Image("logo")
+                .resizable()
+                .frame(width: 24, height: 24)
+                .cornerRadius(6)
             Spacer()
             Color.clear.frame(width: Tokens.size.avatarSmall, height: Tokens.size.avatarSmall)
         }
