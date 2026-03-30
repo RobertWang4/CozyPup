@@ -454,8 +454,8 @@ struct ChatView: View {
             Spacer()
             Image("logo")
                 .resizable()
-                .frame(width: 24, height: 24)
-                .cornerRadius(6)
+                .frame(width: 30, height: 30)
+                .cornerRadius(8)
             Spacer()
             Color.clear.frame(width: Tokens.size.avatarSmall, height: Tokens.size.avatarSmall)
         }
