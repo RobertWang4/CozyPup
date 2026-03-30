@@ -14,8 +14,8 @@ struct CalendarDrawer: View {
     @State private var month: Int
     @State private var selectedDate: String?
     @State private var filterPetId: String?
-    @State private var mode: CalendarMode = .calendar
-    @State private var previousMode: CalendarMode = .calendar
+    @State private var mode: CalendarMode = .timeline
+    @State private var previousMode: CalendarMode = .timeline
     @State private var singleDayDate: String?
     @State private var timelineTargetDate: String?
     @State private var showTaskManager = false
@@ -88,26 +88,6 @@ struct CalendarDrawer: View {
                         .environmentObject(petStore)
                 }
 
-                // Mode toggle
-                Button {
-                    withAnimation(.easeInOut(duration: 0.3)) {
-                        if mode == .calendar {
-                            timelineTargetDate = selectedDate
-                            mode = .timeline
-                        } else {
-                            isSelecting = false
-                            selectedEventIds.removeAll()
-                            mode = .calendar
-                        }
-                    }
-                } label: {
-                    Image(systemName: mode == .calendar ? "list.bullet" : "calendar")
-                        .font(Tokens.fontSubheadline)
-                        .foregroundColor(mode == .timeline ? Tokens.white : Tokens.textSecondary)
-                        .frame(width: Tokens.size.buttonSmall, height: Tokens.size.buttonSmall)
-                        .background(mode == .timeline ? Tokens.accent : Tokens.surface)
-                        .clipShape(Circle())
-                }
             }
             .padding(.horizontal, Tokens.spacing.lg)
             .padding(.top, 70)
@@ -120,23 +100,7 @@ struct CalendarDrawer: View {
             // Scrollable content area
             switch mode {
             case .calendar:
-                ScrollView(showsIndicators: false) {
-                    VStack(spacing: 0) {
-                        calendarCard
-                            .padding(.horizontal, Tokens.spacing.md)
-                            .padding(.top, Tokens.spacing.md)
-                            .padding(.bottom, Tokens.spacing.md)
-                            .shadow(color: .black.opacity(0.03), radius: 8, y: 2)
-
-                        if selectedDate != nil {
-                            eventsList
-                                .padding(.horizontal, Tokens.spacing.md)
-                                .padding(.bottom, 30)
-                        } else {
-                            Spacer().frame(height: 30)
-                        }
-                    }
-                }
+                EmptyView() // Calendar grid removed — use Apple Calendar
 
             case .timeline:
                 MultiDayTimelineView(filterPetId: $filterPetId, filterCategory: filterCategory, scrollToDate: timelineTargetDate, isSelecting: $isSelecting, selectedEventIds: $selectedEventIds) { date in
