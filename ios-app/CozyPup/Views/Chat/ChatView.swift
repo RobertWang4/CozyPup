@@ -446,11 +446,17 @@ struct ChatView: View {
 
     private var header: some View {
         HStack {
-            // Daily task indicator (left)
             if !dailyTaskStore.tasks.isEmpty {
                 DailyTaskIndicator(showPopover: $showDailyTasks)
+            } else {
+                Color.clear.frame(width: Tokens.size.avatarSmall, height: Tokens.size.avatarSmall)
             }
             Spacer()
+            Text("Cozy Pup")
+                .font(Tokens.fontSubheadline)
+                .foregroundColor(Tokens.textTertiary)
+            Spacer()
+            Color.clear.frame(width: Tokens.size.avatarSmall, height: Tokens.size.avatarSmall)
         }
         .padding(.horizontal, Tokens.spacing.lg)
         .padding(.vertical, Tokens.spacing.xs)
