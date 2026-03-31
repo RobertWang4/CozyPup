@@ -26,6 +26,9 @@ backend/logs/error_snapshots/*.json
 .env
 .env.local
 
+# Google/Firebase config (contains client IDs)
+GoogleService-Info.plist
+
 # Xcode
 ios-app/build/
 *.xcuserstate
