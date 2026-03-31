@@ -36,6 +36,20 @@ xcuserdata/
 
 # Server logs
 backend/server.log
+backend/server_stderr.log
+
+# Playwright/MCP logs
+.playwright-mcp/*.log
+
+# Claude Code superpowers dev logs
+.superpowers/**/.server.log
+.superpowers/**/.server.pid
+
+# Claude Code worktrees
+.claude/worktrees/
+
+# Dev workflow artifacts
+claude-progress.txt
 
 # E2E test reports (generated, not tracked)
 backend/tests/e2e/reports/*.md
