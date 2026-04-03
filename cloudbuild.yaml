@@ -30,7 +30,7 @@ steps:
       - '--max-instances=3'
 
 substitutions:
-  _REGION: asia-east1
+  _REGION: northamerica-northeast1
   _REPO: cozypup
   _IMAGE: backend
   _SERVICE: backend
