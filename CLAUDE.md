@@ -76,6 +76,7 @@ backend/app/
 event: token\ndata: {"text": "..."}\n\n
 event: card\ndata: {CardData JSON}\n\n
 event: emergency\ndata: {"message": "...", "action": "..."}\n\n
+event: __debug__\ndata: {trace JSON}\n\n          # only when X-Debug: true header
 event: done\ndata: {"intent": "chat", "session_id": "..."}\n\n
 ```
 
@@ -108,7 +109,9 @@ ios-app/CozyPup/
 - **Unified ChatAgent**: No intent router — single ChatAgent handles all interactions (chat, summaries, emails, map search) via one LLM call with function calling
 - **Constrained Agent framework**: Schema validation + ownership checks + feedback loop to minimize LLM errors without needing expensive models
 - **Orchestrator + Executor**: LLM decides what to do (function calling), pure code executes it (DB writes, API calls)
-- **Dual-model routing**: Qwen3.5-Plus for daily chat (cheap), Kimi K2.5 for emergencies (accurate). Routed via emergency keyword detection in `agents/emergency.py`
+- **Plan tool**: LLM calls `plan(steps=[...])` to decompose multi-step requests before executing. Orchestrator checks plan completion and nags if steps are missed. Single-step requests skip plan entirely.
+- **Dual-model routing**: grok-4-1-fast for daily chat (cheap), Kimi K2.5 for emergencies (accurate). Routed via emergency keyword detection in `agents/emergency.py`
+- **Debug trace**: `X-Debug: true` header activates per-request TraceCollector that records every pipeline step + parallel non-streaming LLM call for full response JSON. Emitted as `__debug__` SSE event. Zero overhead when inactive.
 - **pet_logs merged into calendar_events**: Added category, raw_text, edited, source fields
 - **Dev auth**: `POST /api/v1/auth/dev` bypasses OAuth for simulator testing
 
@@ -194,6 +197,7 @@ Add `.weight(.semibold)` etc. as needed: `Tokens.fontBody.weight(.semibold)`
 6. **Handle all states**: loading, error, empty, populated
 7. **Extract reusable views** when used 2+ times (not prematurely)
 8. AI-generated iOS code quality is lower than web — review more carefully
+9. **All new/modified Views MUST include `#Preview`** — enables live preview in Xcode Canvas (`Option + Cmd + P`). Use mock data for pure UI components; inject mock Stores via `.environmentObject()` for pages that need them.
 
 ## Deployment
 
@@ -233,7 +237,107 @@ Backend env vars are managed via Cloud Run (secrets in Secret Manager, plain var
 
 ## Implementation Status
 
-- **Done**: All REST APIs, database models, iOS SwiftUI frontend, frontend-backend integration, Phase 3 agents (v1 — router + multi-agent pattern)
-- **In progress**: Refactoring to Constrained Agent architecture (unified ChatAgent, validation layers, remove router + sub-agents)
-- **Not done**: Phase 4 push notifications, RAG knowledge base, multi-step planning (Agent Phase 2), Phase 5 宠物共享（多主人共享 + 会员体系）
+- **Done**: All REST APIs, database models, iOS SwiftUI frontend, frontend-backend integration, Constrained Agent architecture, plan tool (multi-step planning), E2E audit infrastructure
+- **Not done**: Phase 4 push notifications, RAG knowledge base, Phase 5 宠物共享（多主人共享 + 会员体系）
 - **Spec**: `docs/superpowers/specs/2026-03-17-petcare-agent-design.md` has the full architecture (incl. design system, agent evolution roadmap, iOS standards)
+
+## How to Add a New Tool (Checklist)
+
+When adding a new tool to the agent, follow ALL steps below. Missing any step will cause the tool to not be called or not work correctly.
+
+### 1. Define the tool (`backend/app/agents/tools/definitions.py`)
+
+Add to `_BASE_TOOL_DEFINITIONS` array. The description is critical — it tells the LLM WHEN to use the tool.
+
+```python
+{
+    "type": "function",
+    "function": {
+        "name": "my_new_tool",
+        "description": (
+            "一句话说明功能。\n"
+            "【何时调用】具体触发场景。\n"
+            "不要用于: 明确排除场景 (用 other_tool)。"
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": { ... },
+            "required": ["required_field"],
+        },
+    },
+},
+```
+
+**Description 写法要求**:
+- 第一行：功能概述
+- 【何时调用】或【必须调用】：列出触发场景和关键词
+- 不要用于：排除容易混淆的场景，指向正确的工具
+- 中文写，英文翻译放 `locale.py` 的 `tool_desc_my_new_tool`
+
+### 2. Implement the handler (`backend/app/agents/tools/`)
+
+在对应文件里用 `@register_tool` 注册：
+
+```python
+from app.agents.tools.registry import register_tool
+
+@register_tool("my_new_tool", accepts_kwargs=True)
+async def my_new_tool(arguments: dict, db, user_id, **kwargs):
+    # ... do work ...
+    return {
+        "success": True,
+        "card": {"type": "my_card_type", ...},  # Optional: emitted to iOS
+    }
+```
+
+### 3. Add validation (`backend/app/agents/validation.py`)
+
+如果工具有枚举值或必填字段，在 `validate_tool_args` 里加校验：
+
+```python
+if name == "my_new_tool":
+    if not args.get("required_field"):
+        errors.append("missing required_field")
+```
+
+### 4. Update tool decision guide (`backend/app/agents/locale.py`)
+
+在 `tool_decision_tree` 的 zh 和 en 两个版本里都加一行规则：
+
+```
+- 用户说了 XXX → my_new_tool
+```
+
+如果是**必须调用**类工具（LLM 容易跳过的），加到"关键：必须调用"列表里。
+
+### 5. Handle in orchestrator (if special)
+
+大部分工具不需要改 orchestrator。但如果工具需要特殊处理（如 `plan` 不走 DB，`request_images` 注入图片），在 `orchestrator.py` 的 `dispatch_tool` 里加分支。
+
+需要用户确认的破坏性工具，加到 `agents/constants.py` 的 `CONFIRM_TOOLS` 集合里。
+
+### 6. Add English description (`backend/app/agents/locale.py`)
+
+在 `_STRINGS` 里加 `tool_desc_my_new_tool` 的英文翻译。
+
+### 7. Update TEST_PLAN + add test case
+
+- `backend/tests/e2e/TEST_PLAN.md` — 加测试用例
+- `backend/tests/e2e/test_messages.py` — 加中英文测试消息
+- `backend/tests/e2e/run_audit.py` — 在 `build_test_cases()` 里加 case
+
+### 8. Run E2E audit to verify
+
+```bash
+cd backend
+uvicorn app.main:app --port 8000 &
+python tests/e2e/run_audit.py --lang zh --case X.X   # single case
+python tests/e2e/run_audit.py --lang zh               # full audit
+```
+
+### Common Pitfalls
+
+- **Description 太弱** → LLM 不调。用"必须调用"、列出触发关键词、用排除法
+- **没加到 locale 的 decision tree** → LLM 有工具但不知道什么时候用
+- **枚举值不一致** → definitions.py 里的 enum 和 validation.py 里的 set 必须一致
+- **忘了清 `_tool_defs_cache`** → 重启 uvicorn 即可（cache 是进程内的）
