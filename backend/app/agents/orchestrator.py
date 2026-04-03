@@ -1,12 +1,15 @@
 """
-Orchestrator Agent: Main agent that understands intent and dispatches executors.
+Unified Agent Loop — 统一的 orchestrator，替代旧的 4 路径架构。
 
-Three execution paths:
-  A. Pure chat — no tools, stream response directly
-  B. Single task — fast path, orchestrator calls tool itself
-  C. Multi task — dispatch parallel executors, collect results, generate summary
+核心设计：一个 while 循环处理所有场景（纯聊天、单工具、多工具、图片）。
+加入 nudge 机制：当 LLM 没调用预期的工具时，催促它重试一轮。
+
+流程：
+  1. 流式调 LLM
+  2. 如果有 tool_calls → 逐个 dispatch → 把结果喂回 → 继续循环
+  3. 如果没有 tool_calls → 检查 nudge → 退出或重试
 """
-import asyncio
+
 import json
 import logging
 from dataclasses import dataclass, field
@@ -16,16 +19,38 @@ import litellm
 
 from app.agents import llm_extra_kwargs
 from app.agents.constants import CONFIRM_TOOLS, maybe_await
-from app.config import settings
-from app.agents.executor import run_executor, ExecutorResult
 from app.agents.locale import t
-from app.database import async_session
-from app.agents.tools import execute_tool, get_tool_definitions
-from app.agents.validation import validate_tool_args
+from app.agents.micro_compact import micro_compact
 from app.agents.pending_actions import store_action
+from app.agents.pre_processing.types import SuggestedAction
+from app.agents.tools import execute_tool, get_tool_definitions
+from app.agents.trace_collector import TraceCollector, INACTIVE_TRACE
+from app.agents.validation import validate_tool_args
+from app.config import settings
 
 logger = logging.getLogger(__name__)
 
+MAX_ROUNDS = 5            # 最多循环轮次（含 nudge 重试）
+NUDGE_CONFIDENCE = 0.8    # nudge 触发的最低置信度
+
+
+# ---------------------------------------------------------------------------
+# Result dataclass
+# ---------------------------------------------------------------------------
+
+@dataclass
+class OrchestratorResult:
+    """orchestrator 执行结果。"""
+    response_text: str = ""
+    cards: list[dict] = field(default_factory=list)
+    confirm_cards: list[dict] = field(default_factory=list)
+    tools_called: set[str] = field(default_factory=set)
+    plan_steps: list[dict] = field(default_factory=list)  # Steps from plan() tool
+
+
+# ---------------------------------------------------------------------------
+# _describe_tool_call — 生成工具调用的人类可读描述（用于 confirm card）
+# ---------------------------------------------------------------------------
 
 def _describe_tool_call(fn_name: str, fn_args: dict, pets: list | None = None, lang: str = "zh") -> str:
     """Generate human-readable description from LLM's tool call arguments."""
@@ -77,67 +102,97 @@ def _describe_tool_call(fn_name: str, fn_args: dict, pets: list | None = None, l
         return t("desc_upload_photo", lang)
     return fn_name
 
-MAX_TOOL_ROUNDS = 3
 
+# ---------------------------------------------------------------------------
+# dispatch_tool — 统一的工具分发：validate → confirm → execute → card
+# ---------------------------------------------------------------------------
 
-@dataclass
-class OrchestratorResult:
-    """Result from orchestrator execution."""
-    response_text: str = ""
-    cards: list[dict] = field(default_factory=list)
-    confirm_cards: list[dict] = field(default_factory=list)
-    executor_results: list[ExecutorResult] = field(default_factory=list)
-
-
-async def _execute_tool_call(
-    fn_name: str,
-    fn_args: dict,
+async def dispatch_tool(
+    tool_call: dict,
     db,
     user_id,
-    session_id=None,
-    on_card=None,
-    result: OrchestratorResult | None = None,
-    lang: str = "zh",
+    session_id,
+    result: OrchestratorResult,
+    on_card: Callable | None,
+    lang: str,
+    pets: list | None = None,
+    images: list[str] | None = None,
+    image_urls: list[str] | None = None,
     **kwargs,
-) -> dict | None:
-    """Validate, check confirm gate, execute a single tool call.
+) -> dict:
+    """统一的工具执行入口。
 
-    Returns:
-        tool_result dict on success.
-    Note: lang is stripped from kwargs to prevent 'multiple values' errors.
-        None if a confirm card was queued (tool not executed).
-    Raises:
-        ValueError if validation fails.
+    始终返回一个 dict（不会返回 None 或抛异常到调用方）。
+    - 验证失败 → {"error": "..."}（LLM 下一轮会看到错误并自动修正）
+    - confirm 门控 → {"status": "waiting_confirm", "message": "..."}
+    - 正常执行 → 工具返回的结果 dict
     """
-    # Strip known keys from kwargs to avoid "got multiple values" error
-    for key in ("lang", "session_id", "on_card", "result"):
-        kwargs.pop(key, None)
+    fn_name = tool_call["function"]["name"]
 
-    # Confirm gate — destructive tools need user approval
+    try:
+        fn_args = json.loads(tool_call["function"]["arguments"])
+    except json.JSONDecodeError as exc:
+        return {"error": f"Invalid JSON arguments: {exc}"}
+
+    result.tools_called.add(fn_name)
+
+    # --- plan：多步骤规划，不走 DB ---
+    if fn_name == "plan":
+        steps = fn_args.get("steps", [])
+        result.plan_steps = steps
+        step_summary = "; ".join(f"[{s.get('id')}] {s.get('action')}" for s in steps)
+        return {
+            "status": "planned",
+            "message": f"已规划 {len(steps)} 个步骤: {step_summary}",
+            "steps": steps,
+        }
+
+    # --- request_images：返回特殊标记，主循环会注入图片 ---
+    if fn_name == "request_images":
+        if not images:
+            return {"error": "用户没有附带图片" if lang == "zh" else "No images attached"}
+        return {
+            "status": "images_loaded",
+            "message": "图片已加载" if lang == "zh" else "Images loaded",
+            "_inject_images": images,
+        }
+
+    # --- Confirm gate：破坏性工具需要用户确认 ---
     if fn_name in CONFIRM_TOOLS and session_id:
-        desc = _describe_tool_call(fn_name, fn_args, lang=lang)
+        desc = _describe_tool_call(fn_name, fn_args, pets=pets, lang=lang)
         action_id = await store_action(
             db=db, user_id=str(user_id), session_id=str(session_id),
             tool_name=fn_name, arguments=fn_args, description=desc,
         )
-        confirm_card = {"type": "confirm_action", "action_id": action_id, "message": desc}
-        if result:
-            result.confirm_cards.append(confirm_card)
+        card = {"type": "confirm_action", "action_id": action_id, "message": desc}
+        result.confirm_cards.append(card)
         if on_card:
-            await maybe_await(on_card, confirm_card)
-        return None  # Signal: confirm pending
+            await maybe_await(on_card, card)
+        return {"status": "waiting_confirm", "message": desc}
 
-    # Validate
+    # --- Validate ---
     errors = validate_tool_args(fn_name, fn_args)
     if errors:
-        raise ValueError("; ".join(errors))
+        return {"error": "; ".join(errors)}
 
-    # Execute — strip lang from kwargs to avoid duplicate keyword argument
-    tool_kwargs = {k: v for k, v in kwargs.items() if k != "lang"}
-    tool_result = await execute_tool(fn_name, fn_args, db, user_id, **tool_kwargs)
-    await db.commit()
+    # --- Execute ---
+    try:
+        # 透传 image_urls 和 location 给所有工具，工具侧自行决定是否使用
+        exec_kwargs = {}
+        if "location" in kwargs:
+            exec_kwargs["location"] = kwargs["location"]
+        if image_urls:
+            exec_kwargs["image_urls"] = image_urls
 
-    # Handle needs_confirm (gender/species first-time set)
+        tool_result = await execute_tool(fn_name, fn_args, db, user_id, **exec_kwargs)
+        await db.commit()
+    except Exception as exc:
+        logger.error("dispatch_tool_error", extra={
+            "tool": fn_name, "error": str(exc)[:300],
+        })
+        return {"error": str(exc)[:200]}
+
+    # --- Handle needs_confirm（部分工具执行后仍需确认） ---
     if tool_result.get("needs_confirm") and session_id:
         confirm_tool = tool_result.get("confirm_tool", fn_name)
         confirm_args = tool_result.get("confirm_arguments", fn_args)
@@ -146,35 +201,177 @@ async def _execute_tool_call(
             db=db, user_id=str(user_id), session_id=str(session_id),
             tool_name=confirm_tool, arguments=confirm_args, description=confirm_desc,
         )
-        confirm_card = {"type": "confirm_action", "action_id": action_id, "message": confirm_desc}
-        if result:
-            result.confirm_cards.append(confirm_card)
+        card = {"type": "confirm_action", "action_id": action_id, "message": confirm_desc}
+        result.confirm_cards.append(card)
         if on_card:
-            await maybe_await(on_card, confirm_card)
-        return tool_result  # Return result (may have saved non-lockable fields)
+            await maybe_await(on_card, card)
+        return tool_result
 
-    # Push card
+    # --- Emit card ---
     card = tool_result.get("card")
     if card:
-        if result:
-            result.cards.append(card)
+        result.cards.append(card)
         if on_card:
             await maybe_await(on_card, card)
 
     return tool_result
 
 
-async def _ensure_response(result, on_token, lang: str = "zh"):
-    """Ensure response_text is never empty — stream fallback if needed.
-    Skip fallback when confirm cards are pending (empty text is expected)."""
-    if result.confirm_cards:
-        return
-    if not result.response_text.strip():
-        fallback = t("fallback_error", lang)
-        result.response_text = fallback
-        if on_token:
-            await maybe_await(on_token, fallback)
+# ---------------------------------------------------------------------------
+# Nudge helpers — 催促 LLM 调用它遗漏的工具
+# ---------------------------------------------------------------------------
 
+def _find_missed_tools(
+    suggested_actions: list[SuggestedAction],
+    tools_called: set[str],
+) -> list[SuggestedAction]:
+    """找出高置信度的预测工具中，LLM 没有调用的。"""
+    return [
+        a for a in suggested_actions
+        if a.confidence >= NUDGE_CONFIDENCE and a.tool_name not in tools_called
+    ]
+
+
+def _inject_nudge(
+    messages: list[dict],
+    last_text: str,
+    missed: list[SuggestedAction],
+    lang: str,
+) -> None:
+    """注入催促消息，让 LLM 在下一轮调用遗漏的工具。"""
+    # 把 LLM 上一轮的文本回复作为 assistant 消息加入
+    if last_text:
+        messages.append({"role": "assistant", "content": last_text})
+
+    hints = []
+    for a in missed:
+        hints.append(f"- {a.tool_name}({json.dumps(a.arguments, ensure_ascii=False)})")
+
+    if lang == "zh":
+        nudge_text = (
+            "你的回复没有调用工具。根据用户意图分析，你应该调用以下工具：\n"
+            + "\n".join(hints)
+            + "\n请立即调用对应的工具。不要用文字假装操作已完成。"
+        )
+    else:
+        nudge_text = (
+            "Your response did not call any tools. Based on intent analysis, you should call:\n"
+            + "\n".join(hints)
+            + "\nPlease call the appropriate tools now. Do not pretend the action was completed."
+        )
+
+    messages.append({"role": "user", "content": nudge_text})
+
+
+# ---------------------------------------------------------------------------
+# _stream_completion — 流式 LLM 调用
+# ---------------------------------------------------------------------------
+
+async def _capture_non_streaming(
+    messages: list[dict],
+    model: str,
+    lang: str,
+    round_num: int,
+    trace: TraceCollector,
+):
+    """Parallel non-streaming call to capture the full chat.completion JSON."""
+    try:
+        import asyncio
+        response = await asyncio.wait_for(
+            litellm.acompletion(
+                model=model,
+                messages=messages,
+                tools=get_tool_definitions(lang),
+                tool_choice="auto",
+                temperature=0.3,
+                stream=False,
+                **llm_extra_kwargs(),
+            ),
+            timeout=60,
+        )
+        # Convert litellm response to dict
+        raw = response.model_dump() if hasattr(response, "model_dump") else response.to_dict() if hasattr(response, "to_dict") else {"raw": str(response)}
+        trace.record_llm_response(round_num, raw)
+    except Exception as exc:
+        trace.record(f"llm_capture_error_round_{round_num}", str(exc)[:300])
+
+
+async def _stream_completion(
+    messages: list[dict],
+    model: str,
+    on_token: Callable | None = None,
+    lang: str = "zh",
+    trace: TraceCollector = INACTIVE_TRACE,
+    round_num: int = 0,
+) -> tuple[str, list[dict]]:
+    """流式调用 LLM，返回 (文本, tool_calls 列表)。"""
+    import asyncio
+
+    text_parts = []
+    tool_calls_map = {}
+
+    # If trace is active, fire parallel non-streaming call to capture full JSON
+    capture_task = None
+    if trace.active:
+        capture_task = asyncio.create_task(
+            _capture_non_streaming(messages, model, lang, round_num, trace)
+        )
+
+    try:
+        response = await litellm.acompletion(
+            model=model,
+            messages=messages,
+            tools=get_tool_definitions(lang),
+            tool_choice="auto",
+            temperature=0.3,
+            stream=True,
+            **llm_extra_kwargs(),
+        )
+
+        async for chunk in response:
+            delta = chunk.choices[0].delta
+
+            if delta.content:
+                text_parts.append(delta.content)
+                if on_token:
+                    await maybe_await(on_token, delta.content)
+
+            if delta.tool_calls:
+                for tc_delta in delta.tool_calls:
+                    idx = tc_delta.index
+                    if idx not in tool_calls_map:
+                        tool_calls_map[idx] = {
+                            "id": tc_delta.id or "",
+                            "type": "function",
+                            "function": {"name": "", "arguments": ""},
+                        }
+                    tc = tool_calls_map[idx]
+                    if tc_delta.id:
+                        tc["id"] = tc_delta.id
+                    if tc_delta.function and tc_delta.function.name:
+                        tc["function"]["name"] += tc_delta.function.name
+                    if tc_delta.function and tc_delta.function.arguments:
+                        tc["function"]["arguments"] += tc_delta.function.arguments
+
+    except Exception as exc:
+        logger.error("stream_completion_error", extra={"error": str(exc)[:300]})
+        if capture_task:
+            capture_task.cancel()
+        return "".join(text_parts), []
+
+    # Wait for capture task to finish (don't block too long)
+    if capture_task:
+        try:
+            await asyncio.wait_for(capture_task, timeout=30)
+        except (asyncio.TimeoutError, Exception):
+            pass  # Capture is best-effort
+
+    return "".join(text_parts), [tool_calls_map[i] for i in sorted(tool_calls_map)]
+
+
+# ---------------------------------------------------------------------------
+# run_orchestrator — 统一 Agent Loop 主入口
+# ---------------------------------------------------------------------------
 
 async def run_orchestrator(
     message: str,
@@ -187,595 +384,151 @@ async def run_orchestrator(
     on_token: Callable[[str], Awaitable[None]] | None = None,
     on_card: Callable[[dict], Awaitable[None]] | None = None,
     today: str = "",
+    suggested_actions: list[SuggestedAction] | None = None,
+    trace: TraceCollector = INACTIVE_TRACE,
     **kwargs,
 ) -> OrchestratorResult:
-    """
-    Main orchestrator entry point.
+    """统一的 orchestrator 入口。
 
-    Streams text via on_token callback, pushes cards via on_card callback.
-    Returns structured result with all cards and executor outputs.
+    一个 while 循环处理所有场景：
+    - 纯聊天（LLM 不调工具 → 直接返回文本）
+    - 单/多工具（LLM 返回 tool_calls → dispatch → 喂回结果 → 循环）
+    - 图片分析（request_images 作为普通工具处理）
+    - Nudge（LLM 遗漏预期工具时催促重试一次）
     """
     lang = kwargs.pop("lang", "zh")
     result = OrchestratorResult()
     use_model = model or settings.model
-    tool_defs = get_tool_definitions(lang)
 
-    # Build messages
+    # 构建初始消息列表
     messages = [{"role": "system", "content": system_prompt}]
     messages.extend(context_messages)
 
-    # Stream the initial LLM response
-    text_parts = []
-    tool_calls_map = {}
+    text_parts: list[str] = []
+    nudge_used = False
+    plan_nag_used = False
 
-    try:
-        response = await litellm.acompletion(
-            model=use_model,
-            messages=messages,
-            tools=tool_defs,
-            tool_choice="auto",
-            temperature=0.3,
-            stream=True,
-            **llm_extra_kwargs(),
+    # 从 kwargs 提取 dispatch_tool 需要的参数
+    images = kwargs.pop("images", None)
+    image_urls = kwargs.pop("image_urls", None)
+    location = kwargs.pop("location", None)
+    pets = kwargs.pop("pets", None)
+
+    for round_num in range(MAX_ROUNDS):
+        # --- micro_compact：压缩旧的 tool_result ---
+        if round_num > 0:
+            micro_compact(messages)
+
+        # --- 流式调 LLM ---
+        round_text, tool_calls = await _stream_completion(
+            messages, use_model, on_token, lang=lang,
+            trace=trace, round_num=round_num,
         )
 
-        async for chunk in response:
-            delta = chunk.choices[0].delta
+        # --- 没有 tool_calls：检查 plan nag / nudge 或退出 ---
+        if not tool_calls:
+            text_parts.append(round_text)
 
-            if delta.content:
-                text_parts.append(delta.content)
-                if on_token:
-                    await maybe_await(on_token, delta.content)
-
-            if delta.tool_calls:
-                for tc_delta in delta.tool_calls:
-                    idx = tc_delta.index
-                    if idx not in tool_calls_map:
-                        tool_calls_map[idx] = {
-                            "id": tc_delta.id or "",
-                            "type": "function",
-                            "function": {"name": "", "arguments": ""},
-                        }
-                    tc = tool_calls_map[idx]
-                    if tc_delta.id:
-                        tc["id"] = tc_delta.id
-                    if tc_delta.function and tc_delta.function.name:
-                        tc["function"]["name"] += tc_delta.function.name
-                    if tc_delta.function and tc_delta.function.arguments:
-                        tc["function"]["arguments"] += tc_delta.function.arguments
-
-    except Exception as exc:
-        logger.error("orchestrator_stream_error", extra={"error": str(exc)})
-        error_msg = t("orchestrator_stream_error_msg", lang)
-        if on_token:
-            await maybe_await(on_token, error_msg)
-        result.response_text = error_msg
-        return result
-
-    tool_calls = [tool_calls_map[i] for i in sorted(tool_calls_map)]
-    initial_text = "".join(text_parts)
-
-    # PATH A: Pure chat — no tools
-    if not tool_calls:
-        result.response_text = initial_text
-        return result
-
-    # If request_images is among tool calls, handle it first, then re-run
-    has_request_images = any(
-        tc["function"]["name"] == "request_images" for tc in tool_calls
-    )
-    if has_request_images:
-        # Find the request_images call
-        ri_tc = next(tc for tc in tool_calls if tc["function"]["name"] == "request_images")
-        # Handle images first, then let LLM decide next steps (may call tools)
-        result = await _handle_request_images_then_continue(
-            ri_tc, messages, initial_text, use_model,
-            db, user_id, session_id, on_token, on_card, today, **kwargs,
-        )
-        return result
-
-    # PATH B: Single task — fast path
-    if len(tool_calls) == 1:
-        result = await _handle_single_task(
-            tool_calls[0], messages, initial_text, use_model,
-            db, user_id, session_id, on_token, on_card, **kwargs,
-        )
-        await _ensure_response(result, on_token, lang=lang)
-        return result
-
-    # PATH C: Multi task — parallel executors
-    result = await _handle_multi_task(
-        tool_calls, initial_text, use_model, db, user_id, session_id,
-        on_token, on_card, today, **kwargs,
-    )
-
-    await _ensure_response(result, on_token, lang=lang)
-
-    return result
-
-
-async def _handle_single_task(
-    tool_call: dict,
-    messages: list[dict],
-    initial_text: str,
-    model: str,
-    db, user_id, session_id,
-    on_token, on_card,
-    **kwargs,
-) -> OrchestratorResult:
-    """Fast path: orchestrator handles single tool call directly."""
-    lang = kwargs.pop("lang", "zh")
-    result = OrchestratorResult()
-    text_parts = [initial_text] if initial_text else []
-
-    fn_name = tool_call["function"]["name"]
-
-    try:
-        fn_args = json.loads(tool_call["function"]["arguments"])
-    except json.JSONDecodeError as exc:
-        logger.warning("arg_parse_error", extra={"error": str(exc), "fn_name": fn_name})
-        result.response_text = initial_text or t("arg_parse_error", lang)
-        return result
-
-    # Validate
-    errors = validate_tool_args(fn_name, fn_args)
-    if errors:
-        # Feed back to LLM for one retry
-        messages.append({
-            "role": "assistant",
-            "content": initial_text or None,
-            "tool_calls": [tool_call],
-        })
-        messages.append({
-            "role": "tool",
-            "tool_call_id": tool_call["id"],
-            "content": json.dumps({"error": "; ".join(errors)}),
-        })
-
-        # Retry with streaming
-        retry_text, retry_tools = await _stream_completion(
-            messages, model, on_token, lang=lang
-        )
-
-        if retry_tools:
-            fn_name = retry_tools[0]["function"]["name"]
-            try:
-                fn_args = json.loads(retry_tools[0]["function"]["arguments"])
-            except json.JSONDecodeError:
-                result.response_text = retry_text or "重试失败"
-                return result
-
-            errors = validate_tool_args(fn_name, fn_args)
-            if errors:
-                result.response_text = retry_text or "参数验证失败"
-                return result
-
-            text_parts = [retry_text] if retry_text else text_parts
-        else:
-            result.response_text = retry_text
-            return result
-
-    # Special: request_images — handled by _handle_request_images_then_continue
-    # (should not reach here due to early check, but just in case)
-    if fn_name == "request_images":
-        result = await _handle_request_images_then_continue(
-            tool_call, messages, initial_text, model,
-            db, user_id, session_id, on_token, on_card, "", **kwargs,
-        )
-        return result
-
-    # Confirm gate (pre-execution, before entering the multi-round loop)
-    if fn_name in CONFIRM_TOOLS:
-        try:
-            await _execute_tool_call(
-                fn_name, fn_args, db, user_id,
-                session_id=session_id, on_card=on_card, result=result, lang=lang, **kwargs,
-            )
-        except ValueError:
-            pass  # confirm tools skip validation
-        result.response_text = "".join(text_parts)
-        return result
-
-    # Execute tool with multi-round loop (like chat_agent)
-    current_tool_call = tool_call
-    current_fn_name = fn_name
-    current_fn_args = fn_args
-    current_text = initial_text
-
-    for _round in range(MAX_TOOL_ROUNDS):
-        if not (db and user_id):
-            break
-
-        try:
-            tool_result = await _execute_tool_call(
-                current_fn_name, current_fn_args, db, user_id,
-                session_id=session_id, on_card=on_card, result=result, lang=lang, **kwargs,
-            )
-
-            # Handle needs_confirm (tool executed partially, pending user confirmation)
-            if tool_result is not None and tool_result.get("needs_confirm"):
-                confirm_desc = tool_result.get("confirm_description", f"确认执行 {current_fn_name}")
-                messages.append({
-                    "role": "assistant",
-                    "content": current_text or None,
-                    "tool_calls": [current_tool_call],
-                })
-                messages.append({
-                    "role": "tool",
-                    "tool_call_id": current_tool_call["id"],
-                    "content": json.dumps({"status": "pending_user_confirmation", "message": confirm_desc}),
-                })
-                break
-
-            # Feed tool result back to LLM
-            messages.append({
-                "role": "assistant",
-                "content": current_text or None,
-                "tool_calls": [current_tool_call],
-            })
-            messages.append({
-                "role": "tool",
-                "tool_call_id": current_tool_call["id"],
-                "content": json.dumps(tool_result, ensure_ascii=False, default=str),
-            })
-
-            # Get follow-up — may include more tool calls
-            followup_text, followup_tools = await _stream_completion(
-                messages, model, on_token, lang=lang
-            )
-            text_parts.append(followup_text)
-
-            if not followup_tools:
-                break  # No more tools, done
-
-            # Process next tool call
-            next_tc = followup_tools[0]
-            next_fn = next_tc["function"]["name"]
-            try:
-                next_args = json.loads(next_tc["function"]["arguments"])
-            except json.JSONDecodeError:
-                break
-
-            # Validate next tool (validation errors break the loop, no retry for follow-ups)
-            next_errors = validate_tool_args(next_fn, next_args)
-            if next_errors:
-                messages.append({
-                    "role": "assistant",
-                    "content": followup_text or None,
-                    "tool_calls": [next_tc],
-                })
-                messages.append({
-                    "role": "tool",
-                    "tool_call_id": next_tc["id"],
-                    "content": json.dumps({"error": "; ".join(next_errors)}),
-                })
-                break
-
-            # Confirm gate for next tool
-            if next_fn in CONFIRM_TOOLS:
-                try:
-                    await _execute_tool_call(
-                        next_fn, next_args, db, user_id,
-                        session_id=session_id, on_card=on_card, result=result, lang=lang, **kwargs,
-                    )
-                except ValueError:
-                    pass  # confirm tools skip validation
-                break
-
-            # Continue loop with next tool
-            current_tool_call = next_tc
-            current_fn_name = next_fn
-            current_fn_args = next_args
-            current_text = followup_text
-
-        except ValueError as ve:
-            # Validation error from _execute_tool_call — shouldn't happen on first round
-            # (already validated above) but may happen on follow-up rounds
-            logger.error("orchestrator_validation_error", extra={
-                "tool": current_fn_name, "error": str(ve), "round": _round,
-            })
-            error_text = f"\n参数验证失败: {ve}"
-            text_parts.append(error_text)
-            if on_token:
-                await maybe_await(on_token, error_text)
-            break
-        except Exception as exc:
-            logger.error("orchestrator_tool_error", extra={
-                "tool": current_fn_name, "error": str(exc), "round": _round,
-            })
-            error_text = f"\n{t('tool_execution_error', lang)}"
-            text_parts.append(error_text)
-            # Send error to client via SSE so user sees feedback
-            if on_token:
-                await maybe_await(on_token, error_text)
-            break
-
-    result.response_text = "".join(text_parts)
-    return result
-
-
-async def _handle_request_images_then_continue(
-    ri_tool_call: dict,
-    messages: list[dict],
-    initial_text: str,
-    model: str,
-    db, user_id, session_id,
-    on_token, on_card,
-    today: str = "",
-    **kwargs,
-) -> OrchestratorResult:
-    """Handle request_images, then allow LLM to call follow-up tools (e.g. create_calendar_event)."""
-    lang = kwargs.pop("lang", "zh")
-    result = OrchestratorResult()
-    text_parts = [initial_text] if initial_text else []
-
-    images = kwargs.get("images") or []
-    messages.append({
-        "role": "assistant",
-        "content": initial_text or None,
-        "tool_calls": [ri_tool_call],
-    })
-
-    if images:
-        image_content = [{"type": "text", "text": "这是用户附带的图片，请仔细查看后回答："}]
-        for img_b64 in images:
-            image_content.append({
-                "type": "image_url",
-                "image_url": {"url": f"data:image/jpeg;base64,{img_b64}"},
-            })
-        messages.append({
-            "role": "tool",
-            "tool_call_id": ri_tool_call["id"],
-            "content": "图片已加载，请查看对话中的图片。",
-        })
-        messages.append({
-            "role": "user",
-            "content": image_content,
-        })
-    else:
-        messages.append({
-            "role": "tool",
-            "tool_call_id": ri_tool_call["id"],
-            "content": json.dumps({"error": "用户没有附带图片"}),
-        })
-
-    # Follow-up: LLM sees the image and may call tools (e.g. create_calendar_event)
-    followup_text, followup_tools = await _stream_completion(messages, model, on_token, lang=lang)
-    text_parts.append(followup_text)
-
-    # If LLM wants to call tools after seeing the image, execute them
-    if followup_tools:
-        # Filter out request_images if LLM calls it again
-        real_tools = [tc for tc in followup_tools if tc["function"]["name"] != "request_images"]
-        if real_tools:
-            # Add assistant message with tool calls
-            messages.append({
-                "role": "assistant",
-                "content": followup_text or None,
-                "tool_calls": real_tools,
-            })
-
-            for tc in real_tools:
-                fn_name = tc["function"]["name"]
-                try:
-                    fn_args = json.loads(tc["function"]["arguments"])
-                except json.JSONDecodeError:
+            # Plan nag：如果有 plan 但未完成所有步骤，催促 LLM 继续
+            if not plan_nag_used and result.plan_steps:
+                planned_tools = {s["tool"] for s in result.plan_steps}
+                # tools_called 里去掉 plan 本身
+                executed_tools = result.tools_called - {"plan"}
+                missing_tools = planned_tools - executed_tools
+                if missing_tools:
+                    plan_nag_used = True
+                    missing_steps = [s for s in result.plan_steps if s["tool"] in missing_tools]
+                    trace.record("plan_nag_triggered", {
+                        "round": round_num,
+                        "missing_tools": list(missing_tools),
+                        "missing_steps": missing_steps,
+                    })
+                    logger.info("plan_nag_triggered", extra={
+                        "round": round_num,
+                        "missing_tools": list(missing_tools),
+                    })
+                    # 注入 nag 消息
+                    if round_text:
+                        messages.append({"role": "assistant", "content": round_text})
+                    step_list = "\n".join(f"- [{s['id']}] {s['action']} → {s['tool']}" for s in missing_steps)
+                    if lang == "zh":
+                        nag = f"你的 plan 还有未完成的步骤:\n{step_list}\n请立即调用对应的工具完成这些步骤。"
+                    else:
+                        nag = f"Your plan has unfinished steps:\n{step_list}\nPlease call the corresponding tools now."
+                    messages.append({"role": "user", "content": nag})
                     continue
 
-                if db and user_id:
-                    try:
-                        tool_result = await _execute_tool_call(
-                            fn_name, fn_args, db, user_id,
-                            session_id=session_id, on_card=on_card, result=result,
-                            lang=lang, **kwargs,
-                        )
-                        if tool_result is not None:
-                            messages.append({
-                                "role": "tool", "tool_call_id": tc["id"],
-                                "content": json.dumps(tool_result, ensure_ascii=False, default=str),
-                            })
-                        else:
-                            messages.append({
-                                "role": "tool", "tool_call_id": tc["id"],
-                                "content": json.dumps({"status": "waiting_confirm"}),
-                            })
-                    except ValueError as ve:
-                        messages.append({
-                            "role": "tool", "tool_call_id": tc["id"],
-                            "content": json.dumps({"error": str(ve)}),
-                        })
-                    except Exception as exc:
-                        logger.error("image_followup_tool_error", extra={"tool": fn_name, "error": str(exc)})
-                        messages.append({
-                            "role": "tool", "tool_call_id": tc["id"],
-                            "content": json.dumps({"error": str(exc)}),
-                        })
+            # Nudge：如果有高置信度预测但 LLM 从未调用任何工具，催促一次
+            # 注意：如果 LLM 已经调过工具（哪怕不是预测的那个），说明它在正常工作，不 nudge
+            if not nudge_used and not result.tools_called and suggested_actions:
+                missed = _find_missed_tools(suggested_actions, result.tools_called)
+                if missed:
+                    nudge_used = True
+                    trace.record("nudge_triggered", {
+                        "round": round_num,
+                        "missed_tools": [a.tool_name for a in missed],
+                    })
+                    logger.info("nudge_triggered", extra={
+                        "round": round_num,
+                        "missed_tools": [a.tool_name for a in missed],
+                    })
+                    _inject_nudge(messages, round_text, missed, lang)
+                    continue
 
-            # Generate final summary — may include more tool calls
-            final_text, final_tools = await _stream_completion(messages, model, on_token, lang=lang)
-            text_parts.append(final_text)
+            break  # 正常退出循环
 
-            # Execute any follow-up tools after image viewing
-            if final_tools and db and user_id:
-                for ft in final_tools:
-                    ft_name = ft["function"]["name"]
-                    try:
-                        ft_args = json.loads(ft["function"]["arguments"])
-                    except json.JSONDecodeError:
-                        continue
-                    try:
-                        await _execute_tool_call(
-                            ft_name, ft_args, db, user_id,
-                            session_id=session_id, on_card=on_card, result=result,
-                            lang=lang, **kwargs,
-                        )
-                    except ValueError as ve:
-                        logger.error("image_followup_extra_validation", extra={"tool": ft_name, "error": str(ve)[:200]})
-                    except Exception as exc:
-                        logger.error("image_followup_extra_error", extra={"tool": ft_name, "error": str(exc)[:200]})
+        # --- 有 tool_calls：构建 assistant 消息并逐个执行 ---
+        text_parts.append(round_text)
 
-    result.response_text = "".join(text_parts)
-    return result
+        assistant_msg = {
+            "role": "assistant",
+            "content": round_text or None,
+            "tool_calls": tool_calls,
+        }
+        messages.append(assistant_msg)
 
+        for tc in tool_calls:
+            tool_result = await dispatch_tool(
+                tc, db, user_id, session_id, result, on_card, lang,
+                pets=pets, images=images, image_urls=image_urls,
+                location=location,
+            )
 
-async def _handle_multi_task(
-    tool_calls: list[dict],
-    initial_text: str,
-    model: str,
-    db, user_id, session_id,
-    on_token, on_card,
-    today: str = "",
-    **kwargs,
-) -> OrchestratorResult:
-    """Multi-task path: dispatch parallel executors."""
-    lang = kwargs.pop("lang", "zh")
-    result = OrchestratorResult()
-    result.response_text = initial_text or ""
-
-    # Parse all tool calls into executor tasks
-    tasks = []
-    for tc in tool_calls:
-        fn_name = tc["function"]["name"]
-        try:
-            fn_args = json.loads(tc["function"]["arguments"])
-        except json.JSONDecodeError:
-            continue
-
-        tasks.append({
-            "name": fn_name,
-            "args": fn_args,
-            "description": f"执行 {fn_name}: {json.dumps(fn_args, ensure_ascii=False)}",
-        })
-
-    if not tasks:
-        await _ensure_response(result, on_token, lang=lang)
-        return result
-
-    # Run executors in parallel — each gets its own DB session for concurrency safety
-    executor_coros = []
-    for task in tasks:
-        coro = run_executor(
-            task_description=task["description"],
-            context=json.dumps(task["args"], ensure_ascii=False),
-            available_tools=[task["name"]],
-            db_factory=async_session,
-            user_id=user_id,
-            today=today,
-            **kwargs,
-        )
-        executor_coros.append(coro)
-
-    executor_results = await asyncio.gather(*executor_coros, return_exceptions=True)
-
-    # Process results
-    summaries = []
-    for i, exec_result in enumerate(executor_results):
-        if isinstance(exec_result, Exception):
-            logger.error("executor_exception", extra={
-                "task": tasks[i]["name"], "error": str(exec_result)
+            trace.record("tool_dispatch", {
+                "round": round_num,
+                "tool": tc["function"]["name"],
+                "args": tc["function"]["arguments"],
+                "result_keys": list(tool_result.keys()),
+                "success": tool_result.get("success"),
+                "error": tool_result.get("error"),
             })
-            summaries.append(t("multi_task_failed", lang).format(tool=tasks[i]["name"]))
-            continue
 
-        result.executor_results.append(exec_result)
+            # 序列化 tool_result（去掉内部标记字段）
+            serializable = {k: v for k, v in tool_result.items() if not k.startswith("_")}
+            messages.append({
+                "role": "tool",
+                "tool_call_id": tc["id"],
+                "content": json.dumps(serializable, ensure_ascii=False, default=str),
+            })
 
-        if exec_result.needs_confirm:
-            if session_id:
-                action_id = await store_action(
-                    db=db,
-                    user_id=str(user_id),
-                    session_id=str(session_id),
-                    tool_name=exec_result.tool,
-                    arguments=exec_result.arguments,
-                    description=exec_result.description,
-                )
-                confirm_card = {
-                    "type": "confirm_action",
-                    "action_id": action_id,
-                    "message": exec_result.description,
-                }
-                result.confirm_cards.append(confirm_card)
-                if on_card:
-                    await maybe_await(on_card, confirm_card)
-            summaries.append(f"⏳ {exec_result.description} (等待确认)")
+            # 如果 request_images 返回了图片，注入到消息中
+            if "_inject_images" in tool_result:
+                image_content = [
+                    {"type": "text", "text": "这是用户附带的图片，请仔细查看后回答：" if lang == "zh" else "Here are the user's images:"}
+                ]
+                for img_b64 in tool_result["_inject_images"]:
+                    image_content.append({
+                        "type": "image_url",
+                        "image_url": {"url": f"data:image/jpeg;base64,{img_b64}"},
+                    })
+                messages.append({"role": "user", "content": image_content})
 
-        elif exec_result.success:
-            if exec_result.card:
-                result.cards.append(exec_result.card)
-                if on_card:
-                    await maybe_await(on_card, exec_result.card)
-            summaries.append(f"✅ {exec_result.summary}")
-
-        else:
-            summaries.append(t("executor_failed", lang).format(error=exec_result.error or t("execution_failed", lang)))
-
-    # If ALL tasks need confirmation, skip LLM summary — just return with confirm cards
-    all_confirm = result.confirm_cards and not result.cards
-    if all_confirm:
-        return result
-
-    # Generate natural language summary via LLM (not raw technical output)
-    if summaries:
-        summary_prompt = "你刚才执行了以下操作，请用简短温暖的语气告诉用户结果：\n" + "\n".join(summaries)
-        followup_msgs = [
-            *[{"role": "system", "content": "用简短温暖的语气总结操作结果，不要列出工具名称。"}],
-            {"role": "user", "content": summary_prompt},
-        ]
-        # Summary-only call — tool_calls intentionally discarded (all tools already executed)
-        followup_text, _ = await _stream_completion(followup_msgs, model, on_token, lang=lang)
-        result.response_text += followup_text
+    # 确保 response_text 不为空（除非有 confirm card 待处理）
+    result.response_text = "".join(text_parts)
+    if not result.response_text.strip() and not result.confirm_cards:
+        fallback = t("fallback_error", lang)
+        result.response_text = fallback
+        if on_token:
+            await maybe_await(on_token, fallback)
 
     return result
-
-
-async def _stream_completion(
-    messages: list[dict],
-    model: str,
-    on_token=None,
-    lang: str = "zh",
-) -> tuple[str, list[dict]]:
-    """Stream a completion, return (text, tool_calls)."""
-    text_parts = []
-    tool_calls_map = {}
-
-    try:
-        response = await litellm.acompletion(
-            model=model,
-            messages=messages,
-            tools=get_tool_definitions(lang),
-            tool_choice="auto",
-            temperature=0.3,
-            **llm_extra_kwargs(),
-            stream=True,
-        )
-
-        async for chunk in response:
-            delta = chunk.choices[0].delta
-
-            if delta.content:
-                text_parts.append(delta.content)
-                if on_token:
-                    await maybe_await(on_token, delta.content)
-
-            if delta.tool_calls:
-                for tc_delta in delta.tool_calls:
-                    idx = tc_delta.index
-                    if idx not in tool_calls_map:
-                        tool_calls_map[idx] = {
-                            "id": tc_delta.id or "",
-                            "type": "function",
-                            "function": {"name": "", "arguments": ""},
-                        }
-                    tc = tool_calls_map[idx]
-                    if tc_delta.id:
-                        tc["id"] = tc_delta.id
-                    if tc_delta.function and tc_delta.function.name:
-                        tc["function"]["name"] += tc_delta.function.name
-                    if tc_delta.function and tc_delta.function.arguments:
-                        tc["function"]["arguments"] += tc_delta.function.arguments
-
-    except Exception as exc:
-        logger.error("stream_completion_error", extra={"error": str(exc)})
-        return "".join(text_parts), []
-
-    return "".join(text_parts), [tool_calls_map[i] for i in sorted(tool_calls_map)]

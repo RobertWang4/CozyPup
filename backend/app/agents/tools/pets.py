@@ -16,8 +16,9 @@ from app.agents.tools.registry import register_tool
 UPLOAD_DIR = Path("/app/uploads/avatars") if Path("/app/uploads").exists() else Path(__file__).resolve().parent.parent.parent / "uploads" / "avatars"
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
-# PHOTO_DIR reference for reading previously uploaded photos (written by calendar.py)
-from app.agents.tools.calendar import PHOTO_DIR
+# 聊天上传的图片目录（chat.py 写入，工具读取）
+PHOTO_DIR = Path("/app/uploads/photos") if Path("/app/uploads").exists() else Path(__file__).resolve().parent.parent.parent / "uploads" / "photos"
+PHOTO_DIR.mkdir(parents=True, exist_ok=True)
 
 logger = logging.getLogger(__name__)
 
@@ -532,10 +533,9 @@ async def set_pet_avatar(
     arguments: dict,
     db: AsyncSession,
     user_id: uuid.UUID,
-    images: list[str] | None = None,
-    **_kwargs,
+    **kwargs,
 ) -> dict:
-    """Set a pet's avatar from a base64 image."""
+    """Set a pet's avatar. Uses already-saved image_urls from chat flow."""
     pet_id = uuid.UUID(arguments["pet_id"])
 
     result = await db.execute(
@@ -545,26 +545,35 @@ async def set_pet_avatar(
     if not pet:
         return {"success": False, "error": "Pet not found"}
 
-    # Priority: 1) current message images, 2) photo_url from previous upload, 3) inline base64
-    img_b64 = (images[0] if images else None) or arguments.get("image_base64")
+    # Priority:
+    # 1) image_urls — 聊天流已存好的图片 URL（最优，不需要重新 decode）
+    # 2) photo_url — LLM 指定之前上传的图片路径
+    # 3) images (raw base64) — 兜底
+    image_urls = kwargs.get("image_urls") or []
     photo_url = arguments.get("photo_url")
     image_data: bytes | None = None
 
-    if img_b64:
-        image_data = base64.b64decode(img_b64)
+    if image_urls:
+        # 直接从已保存的文件读取（避免重新 decode base64）
+        filename = image_urls[0].split("/")[-1]
+        filepath = PHOTO_DIR / filename
+        if filepath.exists():
+            image_data = filepath.read_bytes()
     elif photo_url:
-        # Read from previously saved photo on disk
+        # LLM 引用了之前对话中的图片路径
         filename = photo_url.split("/")[-1]
         filepath = PHOTO_DIR / filename
-        if not filepath.exists():
-            return {"success": False, "error": f"Photo not found: {photo_url}"}
-        image_data = filepath.read_bytes()
+        if filepath.exists():
+            image_data = filepath.read_bytes()
+    else:
+        # 兜底：raw base64（不应该走到这里，但保持兼容）
+        images = kwargs.get("images")
+        if images:
+            image_data = base64.b64decode(images[0])
 
     logger.info("set_pet_avatar_debug", extra={
         "pet_id": str(pet_id),
-        "has_images": bool(images),
-        "images_count": len(images) if images else 0,
-        "photo_url": photo_url,
+        "source": "image_urls" if image_urls else ("photo_url" if photo_url else "base64_fallback"),
         "image_data_len": len(image_data) if image_data else 0,
     })
     if not image_data:

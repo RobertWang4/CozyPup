@@ -70,8 +70,8 @@ async def test_path_a_pure_chat():
     assert len(tokens) > 0
 
 @pytest.mark.asyncio
-async def test_path_b_single_task():
-    """Single tool call -> fast path."""
+async def test_single_tool_call():
+    """Single tool call -> execute and follow up."""
     tool_args = {"pet_id": "abc", "event_date": "2026-03-24", "title": "吃狗粮", "category": "diet"}
     chunks = _make_stream_chunks(tool_calls=[{"name": "create_calendar_event", "args": tool_args}])
     followup_chunks = _make_stream_chunks(content="已记录")
@@ -105,9 +105,10 @@ async def test_path_b_single_task():
     assert len(result.cards) == 1
     assert result.cards[0]["type"] == "record"
 
+
 @pytest.mark.asyncio
-async def test_path_c_multi_task():
-    """Multiple tool calls -> parallel executors."""
+async def test_multi_tool_calls():
+    """Multiple tool calls in one round -> all executed sequentially."""
     tool_args_1 = {"pet_id": "abc", "event_date": "2026-03-24", "title": "吃狗粮", "category": "diet"}
     tool_args_2 = {"pet_id": "def", "event_date": "2026-03-24", "title": "打疫苗", "category": "medical"}
 
@@ -118,27 +119,37 @@ async def test_path_c_multi_task():
             {"name": "create_calendar_event", "args": tool_args_2},
         ]
     )
+    followup_chunks = _make_stream_chunks(content="都记录好了")
 
-    from app.agents.executor import ExecutorResult
-    exec_result_1 = ExecutorResult(success=True, tool="create_calendar_event", card={"type": "record", "pet": "三妹"}, summary="已记录三妹吃狗粮")
-    exec_result_2 = ExecutorResult(success=True, tool="create_calendar_event", card={"type": "record", "pet": "豆豆"}, summary="已记录豆豆打疫苗")
+    call_count = 0
+    async def mock_completion(**kwargs):
+        nonlocal call_count
+        call_count += 1
+        if call_count == 1:
+            return MockAsyncIterator(chunks)
+        return MockAsyncIterator(followup_chunks)
+
+    mock_execute = AsyncMock(return_value={"success": True, "card": {"type": "record"}})
+    mock_db = AsyncMock()
 
     cards = []
     async def capture_card(c):
         cards.append(c)
 
-    with patch("app.agents.orchestrator.litellm.acompletion", new_callable=AsyncMock, return_value=MockAsyncIterator(chunks)), \
-         patch("app.agents.orchestrator.run_executor", new_callable=AsyncMock, side_effect=[exec_result_1, exec_result_2]):
+    with patch("app.agents.orchestrator.litellm.acompletion", new_callable=AsyncMock, side_effect=mock_completion), \
+         patch("app.agents.orchestrator.validate_tool_args", return_value=[]), \
+         patch("app.agents.orchestrator.execute_tool", mock_execute):
         result = await run_orchestrator(
             message="三妹吃了狗粮，豆豆打了疫苗",
             system_prompt="test",
             context_messages=[{"role": "user", "content": "三妹吃了狗粮，豆豆打了疫苗"}],
-            db=AsyncMock(), user_id="user-1",
+            db=mock_db, user_id="user-1",
             on_card=capture_card,
         )
 
     assert len(result.cards) == 2
-    assert len(result.executor_results) == 2
+    assert mock_execute.call_count == 2
+
 
 @pytest.mark.asyncio
 async def test_confirm_gate_single():
@@ -175,4 +186,55 @@ async def test_error_handling():
             on_token=lambda t: tokens.append(t),
         )
 
-    assert "错误" in result.response_text
+    assert "抱歉" in result.response_text or "错误" in result.response_text
+
+
+@pytest.mark.asyncio
+async def test_nudge_triggers_when_tools_missed():
+    """When pre-processor expects tools but LLM doesn't call any, nudge fires."""
+    from app.agents.pre_processing.types import SuggestedAction
+
+    # Round 1: LLM returns text only (no tools)
+    round1_chunks = _make_stream_chunks(content="好的~三妹吃狗粮了呢")
+
+    # Round 2 (after nudge): LLM calls the tool
+    tool_args = {"pet_id": "abc", "event_date": "2026-03-24", "title": "吃狗粮", "category": "diet"}
+    round2_chunks = _make_stream_chunks(tool_calls=[{"name": "create_calendar_event", "args": tool_args}])
+
+    # Round 3: follow-up text
+    round3_chunks = _make_stream_chunks(content="已记录")
+
+    call_count = 0
+    async def mock_completion(**kwargs):
+        nonlocal call_count
+        call_count += 1
+        if call_count == 1:
+            return MockAsyncIterator(round1_chunks)
+        elif call_count == 2:
+            return MockAsyncIterator(round2_chunks)
+        return MockAsyncIterator(round3_chunks)
+
+    mock_execute = AsyncMock(return_value={"success": True, "card": {"type": "record"}})
+    mock_db = AsyncMock()
+
+    suggested = [SuggestedAction(
+        tool_name="create_calendar_event",
+        arguments=tool_args,
+        confidence=0.9,
+    )]
+
+    with patch("app.agents.orchestrator.litellm.acompletion", new_callable=AsyncMock, side_effect=mock_completion), \
+         patch("app.agents.orchestrator.validate_tool_args", return_value=[]), \
+         patch("app.agents.orchestrator.execute_tool", mock_execute):
+        result = await run_orchestrator(
+            message="三妹吃了狗粮",
+            system_prompt="test",
+            context_messages=[{"role": "user", "content": "三妹吃了狗粮"}],
+            db=mock_db, user_id="user-1",
+            suggested_actions=suggested,
+        )
+
+    # Nudge should have triggered: 3 LLM calls (initial + nudge + follow-up)
+    assert call_count == 3
+    assert len(result.cards) == 1
+    assert "create_calendar_event" in result.tools_called

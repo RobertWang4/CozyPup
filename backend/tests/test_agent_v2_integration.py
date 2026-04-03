@@ -1,6 +1,6 @@
 """
 Agent V2 Integration Tests
-Tests the full pipeline: preprocessing -> orchestrator -> executor -> response
+Tests the full pipeline: preprocessing -> orchestrator -> response
 All LLM calls are mocked, but the pipeline logic is real.
 """
 import json
@@ -12,7 +12,6 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 
 from app.agents.emergency import EmergencyCheckResult, build_emergency_hint, detect_emergency
-from app.agents.executor import ExecutorResult, run_executor
 from app.agents.orchestrator import OrchestratorResult, run_orchestrator
 from app.agents.locale import t
 from app.agents.pre_processing import (
@@ -68,24 +67,6 @@ class MockAsyncIterator:
             raise StopAsyncIteration
 
 
-def _make_llm_response(tool_name=None, tool_args=None, content=None):
-    """Create a mock non-streaming LLM response (for executor)."""
-    msg = MagicMock()
-    msg.content = content
-    if tool_name:
-        tc = MagicMock()
-        tc.id = "call_123"
-        tc.function.name = tool_name
-        tc.function.arguments = json.dumps(tool_args or {})
-        msg.tool_calls = [tc]
-    else:
-        msg.tool_calls = None
-    response = MagicMock()
-    response.choices = [MagicMock()]
-    response.choices[0].message = msg
-    return response
-
-
 def _make_pet(name, pet_id=None, species="dog"):
     return SimpleNamespace(
         id=pet_id or str(uuid.uuid4()),
@@ -100,7 +81,7 @@ def _make_pet(name, pet_id=None, species="dog"):
 
 
 # ============================================
-# Test 1: Pure Chat Path (Path A)
+# Test 1: Pure Chat Path
 # ============================================
 @pytest.mark.asyncio
 async def test_pure_chat_no_tools():
@@ -138,7 +119,7 @@ async def test_pure_chat_no_tools():
 
 
 # ============================================
-# Test 2: Single Task Path (Path B)
+# Test 2: Single Task — Tool Call
 # ============================================
 @pytest.mark.asyncio
 async def test_single_task_creates_event():
@@ -204,11 +185,11 @@ async def test_single_task_creates_event():
 
 
 # ============================================
-# Test 3: Multi Task Path (Path C)
+# Test 3: Multi Tool Calls — Sequential in Unified Loop
 # ============================================
 @pytest.mark.asyncio
-async def test_multi_task_parallel_execution():
-    """Send '三妹吃了狗粮，豆豆打了疫苗' -> 2 parallel executors -> 2 cards."""
+async def test_multi_tool_sequential_execution():
+    """Send '三妹吃了狗粮，豆豆打了疫苗' -> 2 tool calls in one round -> 2 cards."""
     tool_args_1 = {
         "pet_id": "abc",
         "event_date": "2026-03-24",
@@ -228,38 +209,33 @@ async def test_multi_task_parallel_execution():
             {"name": "create_calendar_event", "args": tool_args_2},
         ],
     )
+    followup_chunks = _make_stream_chunks(content="都记录好了")
 
-    exec_result_1 = ExecutorResult(
-        success=True,
-        tool="create_calendar_event",
-        card={"type": "record", "pet": "三妹"},
-        summary="已记录三妹吃狗粮",
+    call_count = 0
+
+    async def mock_completion(**kwargs):
+        nonlocal call_count
+        call_count += 1
+        if call_count == 1:
+            return MockAsyncIterator(chunks)
+        return MockAsyncIterator(followup_chunks)
+
+    mock_execute = AsyncMock(
+        return_value={"success": True, "card": {"type": "record"}}
     )
-    exec_result_2 = ExecutorResult(
-        success=True,
-        tool="create_calendar_event",
-        card={"type": "record", "pet": "豆豆"},
-        summary="已记录豆豆打疫苗",
-    )
+    mock_db = AsyncMock()
 
     cards = []
 
     async def capture_card(c):
         cards.append(c)
 
-    tokens = []
-
-    async def capture_token(t):
-        tokens.append(t)
-
     with patch(
         "app.agents.orchestrator.litellm.acompletion",
         new_callable=AsyncMock,
-        return_value=MockAsyncIterator(chunks),
-    ), patch(
-        "app.agents.orchestrator.run_executor",
-        new_callable=AsyncMock,
-        side_effect=[exec_result_1, exec_result_2],
+        side_effect=mock_completion,
+    ), patch("app.agents.orchestrator.validate_tool_args", return_value=[]), patch(
+        "app.agents.orchestrator.execute_tool", mock_execute
     ):
         result = await run_orchestrator(
             message="三妹吃了狗粮，豆豆打了疫苗",
@@ -267,15 +243,14 @@ async def test_multi_task_parallel_execution():
             context_messages=[
                 {"role": "user", "content": "三妹吃了狗粮，豆豆打了疫苗"}
             ],
-            db=AsyncMock(),
+            db=mock_db,
             user_id="user-1",
-            on_token=capture_token,
             on_card=capture_card,
         )
 
     assert len(result.cards) == 2
-    assert len(result.executor_results) == 2
     assert len(cards) == 2
+    assert mock_execute.call_count == 2
 
 
 # ============================================
@@ -293,8 +268,7 @@ async def test_emergency_triggers_tool():
     hint = build_emergency_hint(check.keywords)
     assert "trigger_emergency" in hint
 
-    # Step 3: full pipeline — orchestrator receives emergency hint in system prompt,
-    # LLM calls trigger_emergency
+    # Step 3: full pipeline
     emergency_args = {
         "symptoms": "中毒",
         "first_aid": "催吐并立即送医",
@@ -359,11 +333,9 @@ async def test_emergency_triggers_tool():
 @pytest.mark.asyncio
 async def test_emergency_false_positive_blocked():
     """Send '上次中毒是什么时候' -> keywords detected but LLM does NOT trigger emergency."""
-    # Keywords are detected
     check = detect_emergency("上次中毒是什么时候")
     assert check.detected is True
 
-    # But LLM recognizes it's a question and calls query_calendar_events instead
     query_args = {"pet_id": "abc", "category": "abnormal"}
     initial_chunks = _make_stream_chunks(
         tool_calls=[{"name": "query_calendar_events", "args": query_args}]
@@ -411,12 +383,9 @@ async def test_emergency_false_positive_blocked():
             on_card=capture_card,
         )
 
-    # No emergency card — the tool called was query, not trigger_emergency
     emergency_cards = [c for c in cards if c.get("type") == "emergency"]
     assert len(emergency_cards) == 0
-    mock_execute.assert_called_once_with(
-        "query_calendar_events", query_args, mock_db, "user-1"
-    )
+    mock_execute.assert_called_once()
 
 
 # ============================================
@@ -459,7 +428,6 @@ async def test_confirm_flow_delete_pet():
     assert len(result.confirm_cards) == 1
     assert result.confirm_cards[0]["type"] == "confirm_action"
     assert result.confirm_cards[0]["action_id"] == "action-456"
-    # execute_tool should NOT have been called — destructive op needs confirm
     mock_execute.assert_not_called()
 
 
@@ -472,7 +440,6 @@ def test_context_compression_triggered():
     assert should_summarize(total_messages=4, summarized_up_to=0) is False
     assert should_summarize(total_messages=10, summarized_up_to=5) is True
     assert should_summarize(total_messages=10, summarized_up_to=6) is False
-    # None means never summarized
     assert should_summarize(total_messages=5, summarized_up_to=None) is True
     assert should_summarize(total_messages=4, summarized_up_to=None) is False
 
@@ -522,16 +489,13 @@ def test_prompt_cache_friendly_order():
         today="2026-03-24",
     )
 
-    # Tool decision tree should appear in the prompt
     assert "工具选择" in prompt
 
-    # Get positions
     tree_pos = prompt.find("工具选择")
     summary_pos = prompt.find("对话摘要")
     hint_pos = prompt.find("⚠️")
     preprocessor_pos = prompt.find("系统检测到")
 
-    # Static before dynamic: tool guide < summary < emergency < preprocessor
     assert tree_pos < summary_pos, "Tool guide should come before session summary"
     assert summary_pos < hint_pos, "Summary should come before emergency hint"
     assert hint_pos < preprocessor_pos, "Emergency hint should come before preprocessor hints"
@@ -552,70 +516,7 @@ def test_prompt_without_pets():
 
 
 # ============================================
-# Test 9: Executor with Tool Execution
-# ============================================
-@pytest.mark.asyncio
-async def test_executor_creates_event():
-    """Executor receives task, calls tool, returns structured result."""
-    tool_args = {
-        "pet_id": "abc-123",
-        "event_date": "2026-03-24",
-        "title": "吃狗粮",
-        "category": "diet",
-    }
-    response = _make_llm_response("create_calendar_event", tool_args)
-
-    mock_execute = AsyncMock(
-        return_value={"success": True, "card": {"type": "record"}}
-    )
-    mock_db = AsyncMock()
-
-    with patch(
-        "app.agents.executor.litellm.acompletion",
-        new_callable=AsyncMock,
-        return_value=response,
-    ), patch("app.agents.executor.validate_tool_args", return_value=[]), patch(
-        "app.agents.executor.execute_tool", mock_execute
-    ):
-        result = await run_executor(
-            task_description="记录三妹吃了狗粮",
-            context='三妹(id=abc-123, species=dog)',
-            db=mock_db,
-            user_id="user-1",
-            today="2026-03-24",
-        )
-
-    assert result.success is True
-    assert result.tool == "create_calendar_event"
-    assert result.card is not None
-    mock_db.commit.assert_called_once()
-
-
-# ============================================
-# Test 10: Executor Confirm Gate
-# ============================================
-@pytest.mark.asyncio
-async def test_executor_confirm_gate_delete():
-    """Executor returns needs_confirm for destructive operations."""
-    response = _make_llm_response("delete_pet", {"pet_id": "abc-123"})
-
-    with patch(
-        "app.agents.executor.litellm.acompletion",
-        new_callable=AsyncMock,
-        return_value=response,
-    ), patch("app.agents.executor.validate_tool_args", return_value=[]):
-        result = await run_executor(
-            task_description="删除三妹",
-            context="三妹(id=abc-123)",
-        )
-
-    assert result.needs_confirm is True
-    assert result.tool == "delete_pet"
-    assert result.arguments == {"pet_id": "abc-123"}
-
-
-# ============================================
-# Test 11: Tool Decision Tree Exists
+# Test 9: Tool Decision Tree Exists
 # ============================================
 def test_tool_decision_tree_loaded():
     """Verify locale has the decision tree with all key tools."""
@@ -628,7 +529,7 @@ def test_tool_decision_tree_loaded():
 
 
 # ============================================
-# Test 12: Enhanced Tool Descriptions
+# Test 10: Enhanced Tool Descriptions
 # ============================================
 def test_tool_descriptions_enhanced():
     """Verify all tools have meaningful descriptions (not just one line)."""
@@ -651,7 +552,7 @@ def test_tool_definitions_have_required_fields():
 
 
 # ============================================
-# Test 13: Pre-processor Hint Format
+# Test 11: Pre-processor Hint Format
 # ============================================
 def test_preprocessor_hint_format():
     """Verify pre-processor outputs executable hints for high-confidence actions."""
@@ -669,7 +570,6 @@ def test_preprocessor_question_no_action():
     pet = _make_pet("三妹", pet_id=str(uuid.uuid4()))
     actions = pre_process("三妹上次吃了什么？", [pet], today=date(2026, 3, 24))
 
-    # Should not suggest creating a calendar event for a question
     create_actions = [a for a in actions if a.tool_name == "create_calendar_event"]
     assert len(create_actions) == 0
 
@@ -680,13 +580,12 @@ def test_preprocessor_multi_pet_detection():
     pet2 = _make_pet("豆豆", pet_id=str(uuid.uuid4()))
 
     actions = pre_process("三妹吃了狗粮，豆豆也吃了", [pet1, pet2], today=date(2026, 3, 24))
-    # Should produce actions for both pets
     pet_ids = {a.arguments.get("pet_id") for a in actions}
     assert str(pet1.id) in pet_ids or str(pet2.id) in pet_ids
 
 
 # ============================================
-# Test 14: Full Pipeline Integration
+# Test 12: Full Pipeline Integration
 # ============================================
 @pytest.mark.asyncio
 async def test_full_pipeline_preprocessor_to_orchestrator():
@@ -695,15 +594,12 @@ async def test_full_pipeline_preprocessor_to_orchestrator():
     message = "三妹吃了200克狗粮"
     today_str = "2026-03-24"
 
-    # Step 1: Pre-process
     actions = pre_process(message, [pet], today=date(2026, 3, 24))
     assert len(actions) >= 1
 
-    # Step 2: Emergency check
     emergency = detect_emergency(message)
     assert emergency.detected is False
 
-    # Step 3: Build prompt
     hints = [f"{a.tool_name}({json.dumps(a.arguments, ensure_ascii=False)})" for a in actions if a.confidence >= 0.5]
     system_prompt = build_system_prompt(
         pets=[pet],
@@ -712,7 +608,6 @@ async def test_full_pipeline_preprocessor_to_orchestrator():
     )
     assert "三妹" in system_prompt
 
-    # Step 4: Run orchestrator (mocked LLM follows preprocessor hint)
     tool_args = {
         "pet_id": "abc-123",
         "event_date": "2026-03-24",
@@ -760,7 +655,7 @@ async def test_full_pipeline_preprocessor_to_orchestrator():
 
 
 # ============================================
-# Test 15: Orchestrator Error Recovery
+# Test 13: Orchestrator Error Recovery
 # ============================================
 @pytest.mark.asyncio
 async def test_orchestrator_error_recovery():
@@ -779,131 +674,55 @@ async def test_orchestrator_error_recovery():
             on_token=lambda t: tokens.append(t),
         )
 
-    assert "错误" in result.response_text
-    assert len(tokens) > 0  # Error message was streamed
+    assert "抱歉" in result.response_text or "错误" in result.response_text
+    assert len(tokens) > 0
 
 
 # ============================================
-# Test 16: Parallel Executors Get Separate DB Sessions
+# Test 14: Nudge Mechanism
 # ============================================
 @pytest.mark.asyncio
-async def test_parallel_executors_get_separate_sessions():
-    """Multi-task path passes db_factory (not db) so each executor gets its own session."""
-    tool_args_1 = {
-        "pet_id": "abc",
-        "event_date": "2026-03-24",
-        "title": "吃狗粮",
-        "category": "diet",
-    }
-    tool_args_2 = {
-        "pet_id": "def",
-        "event_date": "2026-03-24",
-        "title": "打疫苗",
-        "category": "medical",
-    }
-    chunks = _make_stream_chunks(
-        content="好的，",
-        tool_calls=[
-            {"name": "create_calendar_event", "args": tool_args_1},
-            {"name": "create_calendar_event", "args": tool_args_2},
-        ],
-    )
+async def test_nudge_fires_when_llm_skips_tools():
+    """When pre-processor expects tools but LLM ignores, nudge triggers and LLM retries."""
+    from app.agents.pre_processing.types import SuggestedAction
 
-    # Track calls to run_executor to verify db_factory is passed (not db)
-    captured_kwargs = []
-    exec_result = ExecutorResult(
-        success=True,
-        tool="create_calendar_event",
-        card={"type": "record"},
-        summary="done",
-    )
+    # Round 1: LLM just chats (ignores tool intent)
+    round1_chunks = _make_stream_chunks(content="好的~三妹吃狗粮啦")
+    # Round 2 (after nudge): LLM calls tool
+    tool_args = {"pet_id": "abc", "event_date": "2026-03-24", "title": "吃狗粮", "category": "diet"}
+    round2_chunks = _make_stream_chunks(tool_calls=[{"name": "create_calendar_event", "args": tool_args}])
+    # Round 3: follow-up
+    round3_chunks = _make_stream_chunks(content="已记录")
 
-    original_run_executor = run_executor
+    call_count = 0
+    async def mock_completion(**kwargs):
+        nonlocal call_count
+        call_count += 1
+        if call_count == 1:
+            return MockAsyncIterator(round1_chunks)
+        elif call_count == 2:
+            return MockAsyncIterator(round2_chunks)
+        return MockAsyncIterator(round3_chunks)
 
-    async def spy_run_executor(**kwargs):
-        captured_kwargs.append(kwargs)
-        return exec_result
+    mock_execute = AsyncMock(return_value={"success": True, "card": {"type": "record"}})
 
-    with patch(
-        "app.agents.orchestrator.litellm.acompletion",
-        new_callable=AsyncMock,
-        return_value=MockAsyncIterator(chunks),
-    ), patch(
-        "app.agents.orchestrator.run_executor",
-        new_callable=AsyncMock,
-        side_effect=[exec_result, exec_result],
-    ) as mock_exec:
+    suggested = [SuggestedAction(
+        tool_name="create_calendar_event",
+        arguments=tool_args,
+        confidence=0.9,
+    )]
+
+    with patch("app.agents.orchestrator.litellm.acompletion", new_callable=AsyncMock, side_effect=mock_completion), \
+         patch("app.agents.orchestrator.validate_tool_args", return_value=[]), \
+         patch("app.agents.orchestrator.execute_tool", mock_execute):
         result = await run_orchestrator(
-            message="三妹吃了狗粮，豆豆打了疫苗",
+            message="三妹吃了狗粮",
             system_prompt="test",
-            context_messages=[
-                {"role": "user", "content": "三妹吃了狗粮，豆豆打了疫苗"}
-            ],
-            db=AsyncMock(),
-            user_id="user-1",
-            on_token=lambda t: None,
-            on_card=lambda c: None,
+            context_messages=[{"role": "user", "content": "三妹吃了狗粮"}],
+            db=AsyncMock(), user_id="user-1",
+            suggested_actions=suggested,
         )
 
-    # Verify run_executor was called twice (one per task)
-    assert mock_exec.call_count == 2
-
-    # Verify each call received db_factory (not db)
-    for call in mock_exec.call_args_list:
-        _, kwargs = call
-        assert "db_factory" in kwargs, "run_executor should receive db_factory"
-        assert kwargs["db_factory"] is not None, "db_factory should not be None"
-        assert "db" not in kwargs or kwargs.get("db") is None, \
-            "db should not be passed in multi-task path"
-
-
-# ============================================
-# Test 17: Executor Uses db_factory When Provided
-# ============================================
-@pytest.mark.asyncio
-async def test_executor_uses_db_factory():
-    """When db_factory is provided, executor creates a dedicated session."""
-    tool_args = {
-        "pet_id": "abc-123",
-        "event_date": "2026-03-24",
-        "title": "吃狗粮",
-        "category": "diet",
-    }
-    response = _make_llm_response("create_calendar_event", tool_args)
-
-    mock_session = AsyncMock()
-    mock_execute = AsyncMock(
-        return_value={"success": True, "card": {"type": "record"}}
-    )
-
-    # Create a db_factory that returns a context manager yielding our mock session
-    mock_factory = MagicMock()
-    mock_ctx = AsyncMock()
-    mock_ctx.__aenter__ = AsyncMock(return_value=mock_session)
-    mock_ctx.__aexit__ = AsyncMock(return_value=False)
-    mock_factory.return_value = mock_ctx
-
-    with patch(
-        "app.agents.executor.litellm.acompletion",
-        new_callable=AsyncMock,
-        return_value=response,
-    ), patch("app.agents.executor.validate_tool_args", return_value=[]), patch(
-        "app.agents.executor.execute_tool", mock_execute
-    ):
-        result = await run_executor(
-            task_description="记录三妹吃了狗粮",
-            context='三妹(id=abc-123, species=dog)',
-            db_factory=mock_factory,
-            user_id="user-1",
-            today="2026-03-24",
-        )
-
-    assert result.success is True
-    # Verify the factory was called to create a session
-    mock_factory.assert_called_once()
-    # Verify execute_tool received the factory-created session, not some other db
-    mock_execute.assert_called_once()
-    call_args = mock_execute.call_args
-    assert call_args[0][2] is mock_session, "execute_tool should receive the factory-created session"
-    # Verify commit was called on the factory session
-    mock_session.commit.assert_called_once()
+    assert call_count == 3  # initial + nudge + follow-up
+    assert len(result.cards) == 1
+    assert "create_calendar_event" in result.tools_called

@@ -1,18 +1,12 @@
 """Calendar event tool handlers."""
 
-import base64
 import uuid
 from datetime import date, time
-from pathlib import Path
-
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import CalendarEvent, EventCategory, EventSource, EventType, Pet
 from app.agents.tools.registry import register_tool
-
-PHOTO_DIR = Path("/app/uploads/photos") if Path("/app/uploads").exists() else Path(__file__).resolve().parent.parent.parent / "uploads" / "photos"
-PHOTO_DIR.mkdir(parents=True, exist_ok=True)
 
 
 @register_tool("create_calendar_event", accepts_kwargs=True)
@@ -20,7 +14,6 @@ async def create_calendar_event(
     arguments: dict,
     db: AsyncSession,
     user_id: uuid.UUID,
-    images: list[str] | None = None,
     **kwargs,
 ) -> dict:
     """Create a CalendarEvent record in the database."""
@@ -71,24 +64,11 @@ async def create_calendar_event(
         edited=False,
     )
 
-    # Attach photos: from arguments (LLM-provided URLs) or from user's chat images (base64)
-    photo_urls = arguments.get("photo_urls", [])
-    if not photo_urls and images:
-        # Auto-save base64 images from chat to disk
-        for img_b64 in images:
-            try:
-                image_data = base64.b64decode(img_b64)
-                if len(image_data) > 5 * 1024 * 1024:
-                    continue
-                photo_id = uuid.uuid4()
-                filename = f"{photo_id}.jpg"
-                filepath = PHOTO_DIR / filename
-                filepath.write_bytes(image_data)
-                photo_urls.append(f"/api/v1/calendar/photos/{filename}")
-            except Exception:
-                continue
-    if photo_urls:
-        event.photos = photo_urls
+    # Attach photos: chat.py 已经在后台把图片存到磁盘了，
+    # image_urls 通过 kwargs 透传进来
+    image_urls = kwargs.get("image_urls") or []
+    if image_urls:
+        event.photos = image_urls
 
     db.add(event)
     await db.flush()
@@ -243,8 +223,7 @@ async def upload_event_photo(
     arguments: dict,
     db: AsyncSession,
     user_id: uuid.UUID,
-    images: list[str] | None = None,
-    **_kwargs,
+    **kwargs,
 ) -> dict:
     """Attach a photo to a calendar event."""
     event_id = uuid.UUID(arguments["event_id"])
@@ -258,29 +237,21 @@ async def upload_event_photo(
     if not event:
         return {"success": False, "error": "Event not found"}
 
-    # Prefer image from user's attached photos, fall back to arguments
-    img_b64 = (images[0] if images else None) or arguments.get("image_base64")
-    if not img_b64:
+    # chat.py 已在后台存好图片，image_urls 通过 kwargs 透传
+    image_urls = kwargs.get("image_urls") or []
+
+    if not image_urls:
         return {"success": False, "error": "No image provided. Ask the user to attach a photo."}
-    image_data = base64.b64decode(img_b64)
-    if len(image_data) > 5 * 1024 * 1024:
-        return {"success": False, "error": "Image must be under 5MB"}
 
-    photo_id = uuid.uuid4()
-    filename = f"{photo_id}.jpg"
-    filepath = PHOTO_DIR / filename
-    filepath.write_bytes(image_data)
-
-    photo_url = f"/api/v1/calendar/photos/{filename}"
     photos = list(event.photos) if event.photos else []
-    photos.append(photo_url)
+    photos.extend(image_urls)
     event.photos = photos
     await db.flush()
 
     return {
         "success": True,
         "event_id": str(event_id),
-        "photo_url": photo_url,
+        "photo_urls": image_urls,
         "card": {
             "type": "record",
             "pet_name": "",

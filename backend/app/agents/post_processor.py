@@ -1,13 +1,13 @@
-"""Deterministic post-processor — executes pre-analyzed actions when the LLM
-fails to call tools but claims it performed an action.
+"""Deterministic post-processor — last-resort fallback that executes
+pre-analyzed actions when both the LLM and the nudge mechanism failed
+to call the expected tools.
 
-This replaces the LLM retry mechanism (_retry_with_forced_tool) with instant
-deterministic execution. Zero additional LLM calls needed.
+Only high-confidence (≥0.8) suggested actions are executed.
+Zero additional LLM calls needed.
 """
 
 import json
 import logging
-import re
 from typing import Callable
 from uuid import UUID
 
@@ -19,24 +19,6 @@ from app.agents.tools import execute_tool
 from app.agents.validation import validate_tool_args
 
 logger = logging.getLogger(__name__)
-
-# Patterns indicating the LLM claimed to perform an action
-_CLAIMED_ACTION = re.compile(
-    r"已记录|已更新|已保存|已添加|已设置|已创建|已删除|已发送|已修改"
-    r"|记住了|更新好了|设好了|创建好了|添加好了|保存好了|改好了"
-    r"|帮你记|帮你添加|帮你设|帮你创建|帮你保存|帮你改"
-    r"|资料更新|档案更新|信息更新|性别更新|名字更新"
-    r"|记录到日历|记录到档案|添加到日历"
-    r"|I'?ve recorded|I'?ve updated|I'?ve saved|I'?ve added|I'?ve set|I'?ve created"
-    r"|I recorded|I updated|I saved|I added|I created|I set"
-    r"|recorded it|saved it|added it|updated it|created it|set it",
-    re.IGNORECASE,
-)
-
-
-def response_claims_action(response_text: str) -> bool:
-    """Check if the LLM's response text claims it performed an action."""
-    return bool(_CLAIMED_ACTION.search(response_text))
 
 
 async def execute_suggested_actions(

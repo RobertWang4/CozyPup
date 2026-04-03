@@ -64,31 +64,29 @@ def build_system_prompt(
 def build_messages(
     recent_messages: list[dict],
     user_message: str,
-    images: list[str] | None = None,
+    image_count: int = 0,
 ) -> list[dict]:
     """
     Build the messages list with recent history + current user message.
     Uses only recent 3-5 unsummarized messages (not full 20).
+
+    Images are NOT sent to the LLM here — they are attached by the executor
+    layer after tool calls. Only a text hint is added so the LLM knows
+    images are present and can decide intent accordingly.
     """
     messages: list[dict] = []
 
     # Recent messages (already filtered to 3-5 by caller)
-    # Content may be a string or multimodal list (when images are included)
     for msg in recent_messages:
         messages.append({
             "role": msg.get("role", "user"),
             "content": msg.get("content") or "",
         })
 
-    # Current user message (with optional images)
-    if images:
-        user_content: list[dict] = [{"type": "text", "text": user_message}]
-        for img_b64 in images:
-            user_content.append({
-                "type": "image_url",
-                "image_url": {"url": f"data:image/jpeg;base64,{img_b64}"},
-            })
-        messages.append({"role": "user", "content": user_content})
+    # Current user message (with image hint if photos attached)
+    if image_count > 0:
+        hint = f"\n[用户附带了{image_count}张图片]"
+        messages.append({"role": "user", "content": user_message + hint})
     else:
         messages.append({"role": "user", "content": user_message})
 

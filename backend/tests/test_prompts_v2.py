@@ -242,29 +242,22 @@ class TestBuildMessages:
         msgs = build_messages([{"role": "user"}], "hi")
         assert msgs[0]["content"] == ""
 
-    def test_images_creates_multimodal_content(self):
-        """When images are provided, user message should be multimodal."""
-        import base64
-
-        fake_img = base64.b64encode(b"fake-image-data").decode()
-        msgs = build_messages([], "看看这张照片", images=[fake_img])
+    def test_images_adds_text_hint(self):
+        """When images are present, a text hint is appended (no base64 sent to LLM)."""
+        msgs = build_messages([], "看看这张照片", image_count=1)
 
         assert len(msgs) == 1
         content = msgs[0]["content"]
-        assert isinstance(content, list)
-        assert content[0]["type"] == "text"
-        assert content[0]["text"] == "看看这张照片"
-        assert content[1]["type"] == "image_url"
-        assert "data:image/jpeg;base64," in content[1]["image_url"]["url"]
+        assert isinstance(content, str)
+        assert "看看这张照片" in content
+        assert "[用户附带了1张图片]" in content
 
-    def test_multiple_images(self):
-        import base64
-
-        fake_img = base64.b64encode(b"img").decode()
-        msgs = build_messages([], "两张照片", images=[fake_img, fake_img])
+    def test_multiple_images_hint(self):
+        msgs = build_messages([], "两张照片", image_count=2)
 
         content = msgs[0]["content"]
-        assert len(content) == 3  # 1 text + 2 images
+        assert isinstance(content, str)
+        assert "[用户附带了2张图片]" in content
 
 
 # ---------------------------------------------------------------------------
