@@ -618,9 +618,9 @@ _BASE_TOOL_DEFINITIONS = [
             "name": "create_daily_task",
             "description": (
                 "创建每日待办任务。\n"
-                "当用户想设置每天要做的事情时使用。\n"
-                "type='routine' 表示每天重复的常规任务（遛狗、喂食）。\n"
-                "type='special' 表示有起止日期的特殊任务（接下来7天吃益生菌）。\n"
+                "当用户想设置每天要做的事情时使用（遛狗、喂食、吃益生菌等）。\n"
+                "不传 end_date = 永久每天重复。传了 end_date = 到期自动结束。\n"
+                "用户说'到下周日'时必须算出具体日期传 end_date。\n"
                 "不要用于: 一次性提醒 (用 create_reminder)。\n"
                 "不要用于: 记录已发生的事 (用 create_calendar_event)。"
             ),
@@ -628,13 +628,12 @@ _BASE_TOOL_DEFINITIONS = [
                 "type": "object",
                 "properties": {
                     "title": {"type": "string", "description": "Task title, e.g. '遛狗', '吃益生菌'."},
-                    "type": {"type": "string", "enum": ["routine", "special"], "description": "routine = daily forever, special = date-bounded."},
                     "daily_target": {"type": "integer", "description": "How many times per day (default 1)."},
                     "pet_id": {"type": "string", "description": "Optional UUID of the pet this task is for."},
-                    "start_date": {"type": "string", "description": "Start date for special tasks (YYYY-MM-DD)."},
-                    "end_date": {"type": "string", "description": "End date for special tasks (YYYY-MM-DD)."},
+                    "start_date": {"type": "string", "description": "Start date (YYYY-MM-DD). Default: today."},
+                    "end_date": {"type": "string", "description": "End date (YYYY-MM-DD). Omit for permanent daily tasks."},
                 },
-                "required": ["title", "type"],
+                "required": ["title"],
             },
         },
     },

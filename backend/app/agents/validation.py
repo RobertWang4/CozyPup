@@ -236,8 +236,7 @@ def _validate_trigger_emergency(args: dict) -> list[str]:
 
 @_register("create_daily_task")
 def _validate_create_daily_task(args: dict) -> list[str]:
-    errors = _check_required(args, ["title", "type"])
-    errors += _check_enum(args, "type", _TASK_TYPES, "task type")
+    errors = _check_required(args, ["title"])
     errors += _check_uuid(args, "pet_id")
     errors += _check_date(args, "start_date")
     errors += _check_date(args, "end_date")

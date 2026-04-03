@@ -508,6 +508,7 @@ struct ChatView: View {
             LocationPickerCard(data: data)
         case .dailyTask(let data):
             DailyTaskCard(data: data)
+                .task { await dailyTaskStore.fetchToday() }
         case .calendarSync:
             ActionCard(
                 icon: "calendar.badge.plus", iconColor: Tokens.green,

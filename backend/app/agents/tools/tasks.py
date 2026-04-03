@@ -18,11 +18,13 @@ async def create_daily_task(
 ) -> dict:
     """Create a daily task for the user."""
     title = arguments["title"]
-    task_type = TaskType(arguments["type"])
     daily_target = arguments.get("daily_target", 1)
     pet_id_str = arguments.get("pet_id")
-    start_date_str = arguments.get("start_date")
+    start_date_str = arguments.get("start_date") or date.today().isoformat()
     end_date_str = arguments.get("end_date")
+
+    # Auto-determine type: has end_date → special, otherwise → routine
+    task_type = TaskType.special if end_date_str else TaskType.routine
 
     pet = None
     if pet_id_str:
@@ -36,10 +38,6 @@ async def create_daily_task(
     else:
         pet_id = None
 
-    # For special tasks, default start_date to today if not provided
-    if task_type == TaskType.special and not start_date_str:
-        start_date_str = date.today().isoformat()
-
     task = DailyTask(
         id=uuid.uuid4(),
         user_id=user_id,
@@ -47,7 +45,7 @@ async def create_daily_task(
         title=title,
         type=task_type,
         daily_target=daily_target,
-        start_date=date.fromisoformat(start_date_str) if start_date_str else None,
+        start_date=date.fromisoformat(start_date_str),
         end_date=date.fromisoformat(end_date_str) if end_date_str else None,
         active=True,
     )
