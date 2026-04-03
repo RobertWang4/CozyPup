@@ -43,7 +43,7 @@ _STRINGS: dict[str, dict[str, str]] = {
 规则:
 - 【语言】你必须使用中文回复，不要切换到其他语言
 - 用简短、温暖的语气回复
-- title 字段必须是 2-8 字的简短摘要，不要使用用户的原始句子
+- 调用工具时 title 参数必须是 2-8 字的简短摘要，不要使用用户的原始句子。注意：title 只是工具参数，不要在你的回复文本里输出"Title:"或"**Title:**"
 - 【事件 vs 状态】区分一次性事件和状态描述。"今天打了疫苗"→ create_calendar_event（有具体时间的动作）。"三针疫苗都打完了"→ update_pet_profile（描述完成状态，没有具体时间点，应记入档案而非日历）。关键判断：用户说的是「某天做了某事」还是「某事已完成/是某种状态」
 - 【多事件拆分】如果用户一句话提到了多件不同的事，必须拆分为多个独立的工具调用。例如"遛了狗还洗了澡"→ 两个 create_calendar_event；"记录吃了狗粮，提醒明天打疫苗"→ 一个 create_calendar_event + 一个 create_reminder。绝对不要合并成一条记录
 - 不确定时询问用户，不要猜测
@@ -75,7 +75,7 @@ Your responsibilities:
 Rules:
 - [LANGUAGE] You MUST reply in English. All your responses must be in English — never switch to Chinese or any other language
 - Reply in a brief, warm tone
-- The title field must be a short 2-8 word summary, not the user's original sentence
+- When calling tools, the title parameter must be a short 2-8 word summary, not the user's original sentence. Note: title is only a tool parameter — NEVER output "Title:" or "**Title:**" in your reply text
 - [Event vs Status] Distinguish one-time events from status descriptions. "Got vaccinated today" → create_calendar_event (datable action). "All 3 vaccine shots are done" → update_pet_profile (completion status, no specific date, belongs in profile not calendar). Key test: is the user saying "did X on a specific day" or "X is now complete / in some state"?
 - [Multi-event split] If the user mentions multiple different things in one message, you MUST split into separate tool calls. E.g. "walked the dog and gave a bath" → two create_calendar_event calls; "record ate dog food, and remind me to vaccinate tomorrow" → one create_calendar_event + one create_reminder. NEVER merge into one record
 - When unsure, ask the user — never guess
@@ -304,7 +304,7 @@ Output only JSON, nothing else.""",
 规则:
 1. 仔细分析任务描述，选择正确的工具
 2. 填写完整准确的参数
-3. title 字段必须是 2-8 字的简短摘要
+3. title 参数必须是 2-8 字的简短摘要
 4. 只调用一个工具，不要多次调用
 5. 如果任务不需要工具，返回空内容
 6. 【禁止捏造】只传任务描述中明确提到的字段值，绝对不要自己发明数据（如体重、生日等）。同时，任务描述中提到的每个信息都必须传到参数里，不能遗漏""",
@@ -314,7 +314,7 @@ Output only JSON, nothing else.""",
 Rules:
 1. Carefully analyze the task description and select the correct tool
 2. Fill in complete and accurate parameters
-3. The title field must be a short 2-8 word summary
+3. The title parameter must be a short 2-8 word summary
 4. Only call one tool — never call multiple
 5. If the task doesn't need a tool, return empty content
 6. [No fabrication] Only pass field values explicitly mentioned in the task description — never invent data (such as weight, birthday, etc.). Also, every piece of info mentioned in the task must be passed to the parameters — don't omit anything""",

@@ -4,6 +4,7 @@ struct RecordCard: View {
     let petName: String
     let date: String
     let category: String
+    var title: String?
     var onTap: (() -> Void)?
 
     var body: some View {
@@ -26,9 +27,15 @@ struct RecordCard: View {
                                 .font(Tokens.fontSubheadline)
                                 .foregroundColor(Tokens.green)
                             VStack(alignment: .leading, spacing: 1) {
-                                Text("\(petName) · \(category)")
-                                    .font(Tokens.fontSubheadline.weight(.medium))
-                                    .foregroundColor(Tokens.text)
+                                if let title, !title.isEmpty {
+                                    Text("\(petName) · \(title)")
+                                        .font(Tokens.fontSubheadline.weight(.medium))
+                                        .foregroundColor(Tokens.text)
+                                } else {
+                                    Text("\(petName) · \(category)")
+                                        .font(Tokens.fontSubheadline.weight(.medium))
+                                        .foregroundColor(Tokens.text)
+                                }
                                 Text(date)
                                     .font(Tokens.fontCaption)
                                     .foregroundColor(Tokens.textSecondary)
@@ -50,7 +57,10 @@ struct RecordCard: View {
 }
 
 #Preview {
-    RecordCard(petName: "豆豆", date: "2026-04-01", category: "饮食")
-        .padding()
-        .background(Tokens.bg)
+    VStack(spacing: 12) {
+        RecordCard(petName: "豆豆", date: "2026-04-01", category: "daily", title: "去公园玩")
+        RecordCard(petName: "豆豆", date: "2026-04-01", category: "diet")
+    }
+    .padding()
+    .background(Tokens.bg)
 }
