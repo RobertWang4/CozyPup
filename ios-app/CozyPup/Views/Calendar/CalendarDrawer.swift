@@ -9,6 +9,7 @@ struct CalendarDrawer: View {
     @EnvironmentObject var petStore: PetStore
     @EnvironmentObject var dailyTaskStore: DailyTaskStore
     @Binding var isPresented: Bool
+    var jumpToDate: String?
 
     @State private var year: Int
     @State private var month: Int
@@ -23,8 +24,9 @@ struct CalendarDrawer: View {
     @State private var isSelecting = false
     @State private var selectedEventIds: Set<String> = []
 
-    init(isPresented: Binding<Bool>) {
+    init(isPresented: Binding<Bool>, jumpToDate: String? = nil) {
         _isPresented = isPresented
+        self.jumpToDate = jumpToDate
         let cal = Calendar.current
         let now = Date()
         _year = State(initialValue: cal.component(.year, from: now))
@@ -176,6 +178,12 @@ struct CalendarDrawer: View {
         }
         .onChange(of: month) { Task { await calendarStore.fetchMonth(year: year, month: month + 1) } }
         .onChange(of: year) { Task { await calendarStore.fetchMonth(year: year, month: month + 1) } }
+        .onChange(of: jumpToDate) {
+            if let d = jumpToDate {
+                timelineTargetDate = d
+                mode = .timeline
+            }
+        }
         .background(Tokens.bg)
         .foregroundColor(Tokens.text)
     }

@@ -12,6 +12,7 @@ struct ChatView: View {
     @State private var isStreaming = false
     @State private var emergency: EmergencyData?
     @State private var showCalendar = false
+    @State private var calendarJumpDate: String?
     @State private var showSettings = false
     @State private var showCalendarSyncOptions = false
     @State private var settingsDeepLinkPetId: String?
@@ -245,7 +246,7 @@ struct ChatView: View {
         }
         // Timeline drawer (left)
         .overlay(alignment: .leading) {
-            CalendarDrawer(isPresented: $showCalendar)
+            CalendarDrawer(isPresented: $showCalendar, jumpToDate: calendarJumpDate)
                 .frame(width: drawerWidth)
                 .frame(maxHeight: .infinity)
                 .background(Tokens.bg)
@@ -435,6 +436,7 @@ struct ChatView: View {
             showSettings = false
             calendarDrag = 0
             settingsDrag = 0
+            calendarJumpDate = nil
         }
     }
 
@@ -470,7 +472,10 @@ struct ChatView: View {
         switch card {
         case .record(let data):
             RecordCard(petName: data.pet_name, date: data.date, category: data.category, title: data.title, onTap: {
-                showCalendar = true
+                calendarJumpDate = data.date
+                withAnimation(.easeInOut(duration: 0.35)) {
+                    showCalendar = true
+                }
             })
         case .map(let data):
             MapCard(items: data.items)
