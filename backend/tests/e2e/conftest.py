@@ -60,6 +60,7 @@ class ChatResult:
     raw_events: list[dict] = field(default_factory=list)
     elapsed_ms: int = 0
     error: str | None = None
+    trace: dict | None = None  # Debug trace data (when X-Debug: true)
 
     # -- Card helpers --
 
@@ -162,6 +163,8 @@ def _build_chat_result(raw_text: str, elapsed_ms: int) -> ChatResult:
             result.cards.append(data)
         elif etype == "emergency":
             result.emergency = data
+        elif etype == "__debug__":
+            result.trace = data
         elif etype == "done":
             result.session_id = data.get("session_id")
 
@@ -176,12 +179,13 @@ def _build_chat_result(raw_text: str, elapsed_ms: int) -> ChatResult:
 class E2EClient:
     """Simulates a real iOS user hitting the CozyPup API."""
 
-    def __init__(self, base_url: str):
+    def __init__(self, base_url: str, debug: bool = False):
         self.base_url = base_url.rstrip("/")
         self.api = f"{self.base_url}/api/v1"
         self.token: str | None = None
         self.user_id: str | None = None
         self.last_session_id: str | None = None
+        self.debug = debug  # Send X-Debug: true header
         self._client = httpx.AsyncClient(timeout=TIMEOUT)
 
     @property
@@ -231,11 +235,14 @@ class E2EClient:
         try:
             # Use streaming to handle SSE
             raw_parts = []
+            req_headers = {**self.headers, "Accept": "text/event-stream"}
+            if self.debug:
+                req_headers["X-Debug"] = "true"
             async with self._client.stream(
                 "POST",
                 f"{self.api}/chat",
                 json=body,
-                headers={**self.headers, "Accept": "text/event-stream"},
+                headers=req_headers,
                 timeout=TIMEOUT,
             ) as resp:
                 resp.raise_for_status()

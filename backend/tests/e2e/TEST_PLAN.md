@@ -1,8 +1,10 @@
 # CozyPup E2E 测试计划
 
-> 更新日期: 2026-03-28
+> 更新日期: 2026-04-03
 > 分类变更: `excretion`/`vaccine`/`deworming` 已合并为 `abnormal`/`medical`
-> 有效分类: `daily`, `diet`, `medical`, `abnormal`
+> 有效分类 (create_calendar_event): `daily`, `diet`, `medical`, `abnormal`
+> ⚠️ 注意: `query_calendar_events` 和 `update_calendar_event` 的 category enum 仍含旧值，需要同步修复
+> 工具总数: 27 (基于 `_BASE_TOOL_DEFINITIONS`)
 
 ## 运行方式
 
@@ -82,6 +84,7 @@ pytest tests/ --ignore=tests/e2e -v
 | 5.7 | "把花花名字改成咪咪" | profile_updated 卡片，名字变更 | `get_pets()` 有 name="咪咪" |
 | 5.8 | 已有小维，再说"我养了一只新狗叫小维" | 拒绝创建（防重复） | 无 pet_created 卡片 |
 | 5.9 | "删掉花花" | confirm_action 卡片 | `has_card("confirm_action")` |
+| 5.10 | "我有哪些宠物" | 调用 list_pets，回复列出所有宠物 | `result.text` 含宠物名字 |
 
 ---
 
@@ -110,8 +113,10 @@ pytest tests/ --ignore=tests/e2e -v
 |---|------|---------|---------|
 | 8.1 | "提醒我明天给小维喂药" | reminder 卡片, type=medication | `has_card("reminder")`, `trigger_at` 含明天日期 |
 | 8.2 | "下周二带小维去打疫苗，别忘了" | reminder 卡片, type=vaccine | `has_card("reminder")` |
-| 8.3 | "我有什么提醒？" | 列出所有活跃提醒 | `result.text` 非空 |
-| 8.4 | "取消明天喂药的提醒" | 提醒被删除 | `has_card("reminder_deleted")` 或回复确认 |
+| 8.3 | "我有什么提醒？" | 调用 list_reminders，列出所有活跃提醒 | `result.text` 非空 |
+| 8.4 | "取消明天喂药的提醒" | 调用 delete_reminder，提醒被删除 | `has_card("reminder_deleted")` 或回复确认 |
+| 8.5 | "把喂药提醒改到后天下午3点" | 调用 update_reminder，更新 trigger_at | 回复确认修改，提醒时间已更新 |
+| 8.6 | "取消所有提醒" | 调用 delete_all_reminders，清空全部 | 回复确认已清空，list_reminders 返回空 |
 
 ---
 
@@ -166,8 +171,9 @@ pytest tests/ --ignore=tests/e2e -v
 
 | # | 操作 | 期待结果 | 验证方式 |
 |---|------|---------|---------|
-| 14.1 | "小维很怕打雷，性格胆小" | profile 更新含 temperament | `get_pets()` profile 含性格信息 |
-| 14.2 | "帮我总结一下小维的档案" | 调用 summarize_pet_profile | `result.text` 含档案内容 |
+| 14.1 | "小维很怕打雷，性格胆小" | 静默调用 save_pet_profile_md，profile_md 更新含性格信息 | `get_pets()` profile_md 含性格信息 |
+| 14.2 | "帮我总结一下小维的档案" | 调用 summarize_pet_profile，返回完整档案文档 | `result.text` 含档案内容 |
+| 14.3 | 多轮对话提到新信息后检查 profile_md | save_pet_profile_md 被静默调用，文档包含历史+新信息 | pet.profile_md 含所有已知信息 |
 
 ---
 
@@ -192,6 +198,25 @@ pytest tests/ --ignore=tests/e2e -v
 | # | 操作 | 期待结果 | 验证方式 |
 |---|------|---------|---------|
 | 17.1 | 发送图片 + "帮我记录一下" | LLM 分析图片内容后记录事件 | record 卡片或相关操作 |
+| 17.2 | 发送图片 + "这是什么品种" | 调用 request_images 查看图片，回复品种信息 | `result.text` 含品种相关内容 |
+
+---
+
+## 十八、事件照片 (upload_event_photo)
+
+| # | 操作 | 期待结果 | 验证方式 |
+|---|------|---------|---------|
+| 18.1 | 先创建事件，再发送图片 + "把照片加到刚才的记录上" | 调用 upload_event_photo 附加照片 | 事件 API 返回含 photo_url |
+| 18.2 | 没有事件时发送图片 + "加到记录上" | 提示没有可关联的事件 | 回复引导用户先创建事件 |
+
+---
+
+## 十九、日历同步 (sync_calendar)
+
+| # | 操作 | 期待结果 | 验证方式 |
+|---|------|---------|---------|
+| 19.1 | "把事件同步到手机日历" | 调用 sync_calendar，前端弹出同步选项 | `has_card("sync_calendar")` 或相关 SSE 事件 |
+| 19.2 | "连接 Apple 日历" | 调用 sync_calendar | 同上 |
 
 ---
 
@@ -224,4 +249,39 @@ _CATEGORIES = {"daily", "diet", "medical", "abnormal"}
 _SPECIES = {"dog", "cat", "other"}
 _REMINDER_TYPES = {"medication", "vaccine", "checkup", "feeding", "grooming", "other"}
 _TASK_TYPES = {"routine", "special"}
+_EMERGENCY_ACTIONS = {"find_er", "call_vet", "first_aid"}
+_LANGUAGES = {"zh", "en"}
+_DAILY_TASK_ACTIONS = {"update", "delete", "deactivate", "delete_all"}
 ```
+
+## 工具覆盖清单 (27 tools from `_BASE_TOOL_DEFINITIONS`)
+
+| 工具名 | 测试章节 | 状态 |
+|--------|---------|------|
+| `create_calendar_event` | 二 (2.x) | ✅ |
+| `query_calendar_events` | 三 (3.x) | ✅ |
+| `update_calendar_event` | 四 (4.x) | ✅ |
+| `delete_calendar_event` | 四 (4.x) | ✅ |
+| `create_pet` | 五 (5.x) | ✅ |
+| `update_pet_profile` | 五 (5.x) | ✅ |
+| `delete_pet` | 五 (5.x) | ✅ |
+| `list_pets` | 五 (5.10) | ✅ |
+| `save_pet_profile_md` | 十四 (14.x) | ✅ |
+| `summarize_pet_profile` | 十四 (14.2) | ✅ |
+| `set_pet_avatar` | 六 (6.x) | ✅ |
+| `create_daily_task` | 七 (7.x) | ✅ |
+| `manage_daily_task` | 七 (7.3) | ✅ |
+| `create_reminder` | 八 (8.x) | ✅ |
+| `list_reminders` | 八 (8.3) | ✅ |
+| `update_reminder` | 八 (8.5) | ✅ |
+| `delete_reminder` | 八 (8.4) | ✅ |
+| `delete_all_reminders` | 八 (8.6) | ✅ |
+| `search_places` | 九 (9.x) | ✅ |
+| `search_places_text` | 九 (9.3) | ✅ |
+| `draft_email` | 十 (10.x) | ✅ |
+| `trigger_emergency` | 十一 (11.x) | ✅ |
+| `set_language` | 十二 (12.x) | ✅ |
+| `add_event_location` | 十六 (16.x) | ✅ |
+| `request_images` | 十七 (17.x) | ✅ |
+| `upload_event_photo` | 十八 (18.x) | ✅ |
+| `sync_calendar` | 十九 (19.x) | ✅ |

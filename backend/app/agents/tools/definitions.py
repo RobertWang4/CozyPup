@@ -58,11 +58,6 @@ _BASE_TOOL_DEFINITIONS = [
                         "type": "string",
                         "description": "Optional original user text that triggered this record.",
                     },
-                    "photo_urls": {
-                        "type": "array",
-                        "items": {"type": "string"},
-                        "description": "URLs of photos to attach to this event (if user sent images)",
-                    },
                 },
                 "required": ["event_date", "title", "category"],
             },
@@ -775,12 +770,44 @@ _BASE_TOOL_DEFINITIONS = [
             },
         },
     },
+    {
+        "type": "function",
+        "function": {
+            "name": "plan",
+            "description": (
+                "将复杂请求拆解为多个步骤，然后逐步执行。\n"
+                "【必须调用】当用户一句话里包含 ≥2 件不同的事时，必须先调用此工具拆分，再逐个执行。\n"
+                "例如: '遛了狗还洗了澡' → 2步, '记录吃狗粮，提醒明天打疫苗' → 2步。\n"
+                "不要用于: 单一事件 (直接调对应工具)。\n"
+                "每个 step 指定要调用的 tool 名和动作描述。plan 后立即开始执行第一步。"
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "steps": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "id": {"type": "integer", "description": "Step number, starting from 1."},
+                                "action": {"type": "string", "description": "What this step does, e.g. '记录遛狗 daily'."},
+                                "tool": {"type": "string", "description": "Tool name to call, e.g. 'create_calendar_event'."},
+                            },
+                            "required": ["id", "action", "tool"],
+                        },
+                        "description": "List of steps to execute in order.",
+                    },
+                },
+                "required": ["steps"],
+            },
+        },
+    },
 ]
 
 # Backward compatibility alias
 TOOL_DEFINITIONS = _BASE_TOOL_DEFINITIONS
 
-_tool_defs_cache: dict[str, list[dict]] = {}
+_tool_defs_cache: dict[str, list[dict]] = {}  # Cleared on module reload
 
 
 def get_tool_definitions(lang: str = "zh") -> list[dict]:

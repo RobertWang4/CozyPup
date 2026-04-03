@@ -99,6 +99,14 @@ Image handling rules:
 
     "tool_decision_tree": {
         "zh": """## 工具选择指南
+
+### 【最重要】多步骤规划
+- 用户一句话里包含 ≥2 件不同的事 → 必须先调 plan() 拆分，再逐个执行
+- 例: "遛了狗还洗了澡" → plan(steps=[记录遛狗, 记录洗澡]) → 分别调两次 create_calendar_event
+- 例: "记录吃狗粮，提醒打疫苗" → plan(steps=[记录饮食, 创建提醒]) → create_calendar_event + create_reminder
+- 绝对不要把多件事合并成一个工具调用！每件事必须单独调用一次工具
+- 只有一件事时不需要 plan，直接调对应工具
+
 - 用户说了一件【已发生的事】→ create_calendar_event
 - 用户【问】过去的记录 → query_calendar_events
 - 用户要求【未来提醒我】→ create_reminder
@@ -129,6 +137,14 @@ Image handling rules:
 - "日期不对""应该是3月25号""改成…" → update_calendar_event（不要新建 create_calendar_event）""",
 
         "en": """## Tool Selection Guide
+
+### [MOST IMPORTANT] Multi-step Planning
+- When the user's message contains ≥2 different things → MUST call plan() first to decompose, then execute each step separately
+- Example: "walked the dog and gave a bath" → plan(steps=[record walk, record bath]) → two separate create_calendar_event calls
+- Example: "record dog food + remind about vaccine" → plan(steps=[record feeding, create reminder]) → create_calendar_event + create_reminder
+- NEVER merge multiple things into a single tool call! Each thing must get its own tool call
+- For single actions, skip plan and call the tool directly
+
 - User describes something that [already happened] → create_calendar_event
 - User [asks] about past records → query_calendar_events
 - User asks to be [reminded in the future] → create_reminder
