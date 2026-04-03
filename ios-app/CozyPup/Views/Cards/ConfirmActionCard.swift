@@ -95,3 +95,36 @@ struct ConfirmActionCard: View {
         }
     }
 }
+
+#Preview("Pending") {
+    ConfirmActionCard(
+        message: "确认删除豆豆的疫苗记录？此操作不可撤销。",
+        status: .pending,
+        onConfirm: {},
+        onCancel: {}
+    )
+    .padding()
+    .background(Tokens.bg)
+}
+
+#Preview("Confirmed") {
+    ConfirmActionCard(
+        message: "已删除豆豆的疫苗记录",
+        status: .confirmed,
+        onConfirm: {},
+        onCancel: {}
+    )
+    .padding()
+    .background(Tokens.bg)
+}
+
+#Preview("Cancelled") {
+    ConfirmActionCard(
+        message: "已取消删除操作",
+        status: .cancelled,
+        onConfirm: {},
+        onCancel: {}
+    )
+    .padding()
+    .background(Tokens.bg)
+}

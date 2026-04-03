@@ -51,3 +51,13 @@ struct MapCard: View {
         }
     }
 }
+
+#Preview {
+    MapCard(items: [
+        MapItem(name: "朝阳公园", description: "宠物友好公园，有专门的狗狗活动区", distance: "1.2km"),
+        MapItem(name: "望京宠物医院", description: "24小时营业，设备齐全", distance: "2.5km"),
+        MapItem(name: "三里屯狗狗乐园", description: "室内外活动场地", distance: "3.8km"),
+    ])
+    .padding()
+    .background(Tokens.bg)
+}

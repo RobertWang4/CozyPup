@@ -56,3 +56,28 @@ struct ActionCard: View {
         }
     }
 }
+
+#Preview("With Tap") {
+    ActionCard(
+        icon: "calendar.badge.plus",
+        iconColor: Tokens.green,
+        label: "已记录到日历",
+        title: "豆豆 · 饮食",
+        subtitle: "2026-04-01",
+        onTap: {}
+    )
+    .padding()
+    .background(Tokens.bg)
+}
+
+#Preview("No Tap") {
+    ActionCard(
+        icon: "checkmark.circle",
+        iconColor: Tokens.blue,
+        label: "疫苗提醒已设置",
+        title: "豆豆 · 狂犬疫苗",
+        subtitle: "2026-05-15 10:00"
+    )
+    .padding()
+    .background(Tokens.bg)
+}

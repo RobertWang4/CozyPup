@@ -31,3 +31,9 @@ struct TypingIndicator: View {
             .offset(y: sin(phase + Double(index) * .pi / 1.5) * 4)
     }
 }
+
+#Preview {
+    TypingIndicator()
+        .padding()
+        .background(Tokens.bg)
+}

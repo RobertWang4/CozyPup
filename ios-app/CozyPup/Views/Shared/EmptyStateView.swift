@@ -24,3 +24,17 @@ struct EmptyStateView: View {
         .padding()
     }
 }
+
+#Preview("With Subtitle") {
+    EmptyStateView(
+        icon: "bubble.left.and.bubble.right",
+        title: "还没有消息",
+        subtitle: "和 CozyPup 聊聊你的宠物吧"
+    )
+    .background(Tokens.bg)
+}
+
+#Preview("No Subtitle") {
+    EmptyStateView(icon: "calendar", title: "今天没有事件")
+        .background(Tokens.bg)
+}

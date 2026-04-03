@@ -40,3 +40,8 @@ struct DisclaimerView: View {
         .background(Tokens.bg.ignoresSafeArea())
     }
 }
+
+#Preview {
+    DisclaimerView()
+        .environmentObject(AuthStore())
+}

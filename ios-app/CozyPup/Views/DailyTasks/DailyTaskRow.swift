@@ -114,3 +114,41 @@ struct DailyTaskRow: View {
         )
     }
 }
+
+#Preview("In Progress") {
+    DailyTaskRow(
+        task: DailyTask(
+            id: "1", title: "遛狗", type: "routine",
+            daily_target: 3, completed_count: 1,
+            pet: DailyTaskPet(id: "p1", name: "豆豆", color_hex: "E8835C"),
+            active: true, start_date: nil, end_date: nil
+        ),
+        onTap: {}
+    )
+    .background(Tokens.bg)
+}
+
+#Preview("Completed") {
+    DailyTaskRow(
+        task: DailyTask(
+            id: "2", title: "喂药", type: "special",
+            daily_target: 2, completed_count: 2,
+            pet: DailyTaskPet(id: "p1", name: "豆豆", color_hex: "6BA3BE"),
+            active: true, start_date: nil, end_date: nil
+        ),
+        onTap: {}
+    )
+    .background(Tokens.bg)
+}
+
+#Preview("Not Started") {
+    DailyTaskRow(
+        task: DailyTask(
+            id: "3", title: "刷牙", type: "routine",
+            daily_target: 1, completed_count: 0,
+            pet: nil, active: true, start_date: nil, end_date: nil
+        ),
+        onTap: {}
+    )
+    .background(Tokens.bg)
+}

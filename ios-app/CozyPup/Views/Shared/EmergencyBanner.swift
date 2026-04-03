@@ -44,3 +44,8 @@ struct EmergencyBanner: View {
         .padding(.horizontal, 12)
     }
 }
+
+#Preview {
+    EmergencyBanner(onFind: {}, onDismiss: {})
+        .background(Tokens.bg)
+}

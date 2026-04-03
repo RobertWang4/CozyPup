@@ -234,3 +234,23 @@ struct TimelineEventCard: View {
         }
     }
 }
+
+#Preview("Diet Event") {
+    TimelineEventCard(
+        event: CalendarEvent(petId: "p1", eventDate: "2026-04-01", eventTime: "08:30", title: "吃了狗粮200g，胃口不错", type: .log, category: .diet, rawText: "", source: .chat),
+        petColor: Color(hex: "E8835C"),
+        petName: "豆豆"
+    )
+    .padding()
+    .background(Tokens.bg)
+}
+
+#Preview("Medical Event") {
+    TimelineEventCard(
+        event: CalendarEvent(petId: "p1", eventDate: "2026-04-01", eventTime: "14:00", title: "狂犬疫苗第二针", type: .appointment, category: .medical, rawText: "", source: .chat),
+        petColor: Color(hex: "6BA3BE"),
+        petName: "豆豆"
+    )
+    .padding()
+    .background(Tokens.bg)
+}

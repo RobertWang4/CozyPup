@@ -48,3 +48,9 @@ struct RecordCard: View {
         }
     }
 }
+
+#Preview {
+    RecordCard(petName: "豆豆", date: "2026-04-01", category: "饮食")
+        .padding()
+        .background(Tokens.bg)
+}

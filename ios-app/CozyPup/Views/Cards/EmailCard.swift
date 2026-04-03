@@ -57,3 +57,12 @@ struct EmailCard: View {
         }
     }
 }
+
+#Preview {
+    EmailCard(
+        subject: "豆豆体检报告 - 2026年4月",
+        emailBody: "尊敬的宠物医生：\n\n我家金毛豆豆最近食欲不振，精神萎靡，希望预约一次全面体检。\n\n谢谢！"
+    )
+    .padding()
+    .background(Tokens.bg)
+}

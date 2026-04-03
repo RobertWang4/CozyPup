@@ -79,3 +79,28 @@ struct ShareSheet: UIViewControllerRepresentable {
 
     func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
 }
+
+// MARK: - Previews
+
+#Preview("AI Bubble") {
+    ChatBubble(role: .assistant, content: "你好！我是 CozyPup，你的宠物健康助手。今天可以帮你记录宠物的饮食、运动和健康情况。")
+        .padding()
+        .background(Tokens.bg)
+}
+
+#Preview("User Bubble") {
+    ChatBubble(role: .user, content: "我家狗今天不吃饭怎么办")
+        .padding()
+        .background(Tokens.bg)
+}
+
+#Preview("Long Message") {
+    ScrollView {
+        VStack(spacing: 12) {
+            ChatBubble(role: .user, content: "我家金毛今天早上开始不吃饭，精神也不太好，平时很活泼的，今天一直趴着不动")
+            ChatBubble(role: .assistant, content: "金毛不吃饭且精神萎靡需要注意。建议先观察以下几点：\n\n1. 是否有呕吐或腹泻\n2. 鼻头是否干燥发热\n3. 最近是否更换了狗粮\n4. 有没有误食异物的可能\n\n如果症状持续超过24小时，建议及时就医。")
+        }
+        .padding()
+    }
+    .background(Tokens.bg)
+}

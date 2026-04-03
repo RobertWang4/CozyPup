@@ -70,3 +70,11 @@ struct VoiceInputOverlay: View {
         }
     }
 }
+
+#Preview("Listening") {
+    VoiceInputOverlay(transcript: "我家狗今天不吃饭", audioLevel: 0.5, isCancelling: false)
+}
+
+#Preview("Cancelling") {
+    VoiceInputOverlay(transcript: "我家狗今天不吃饭", audioLevel: 0.3, isCancelling: true)
+}

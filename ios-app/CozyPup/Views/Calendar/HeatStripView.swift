@@ -73,3 +73,17 @@ struct HeatStripView: View {
         return Tokens.accent
     }
 }
+
+#Preview {
+    HeatStripView(
+        events: [
+            CalendarEvent(petId: "p1", eventDate: "2026-04-01", eventTime: "08:30", title: "早饭", type: .log, category: .diet, rawText: "早饭", source: .chat),
+            CalendarEvent(petId: "p1", eventDate: "2026-04-01", eventTime: "10:00", title: "遛狗", type: .log, category: .daily, rawText: "遛狗", source: .chat),
+            CalendarEvent(petId: "p1", eventDate: "2026-04-01", eventTime: "14:30", title: "打疫苗", type: .appointment, category: .medical, rawText: "打疫苗", source: .chat),
+            CalendarEvent(petId: "p1", eventDate: "2026-04-01", eventTime: "18:00", title: "晚饭", type: .log, category: .diet, rawText: "晚饭", source: .chat),
+        ],
+        pets: [Pet(name: "豆豆", species: .dog, breed: "金毛", birthday: nil, weight: 30, colorIndex: 0)]
+    )
+    .padding()
+    .background(Tokens.bg)
+}
