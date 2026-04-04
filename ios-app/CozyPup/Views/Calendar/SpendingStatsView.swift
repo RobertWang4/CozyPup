@@ -233,7 +233,8 @@ struct SpendingStatsView: View {
                         .cornerRadius(10)
 
                     VStack(alignment: .leading, spacing: 2) {
-                        Text(event.petName.flatMap { n in n.isEmpty ? nil : "\(n) · " } ?? "" + event.title)
+                        let petPrefix = event.petName.flatMap { n in n.isEmpty ? nil : "\(n) · " } ?? ""
+                        Text("\(petPrefix)\(event.title)")
                             .font(Tokens.fontBody)
                             .foregroundColor(Tokens.text)
                             .lineLimit(1)
@@ -335,8 +336,8 @@ struct SpendingStatsView: View {
             return String(format: "%.1fw", amount / 10000)
         }
         return amount.truncatingRemainder(dividingBy: 1) == 0
-            ? "¥\(Int(amount))"
-            : String(format: "¥%.0f", amount)
+            ? "$\(Int(amount))"
+            : String(format: "$%.0f", amount)
     }
 
     private func shortCurrency(_ amount: Double) -> String {

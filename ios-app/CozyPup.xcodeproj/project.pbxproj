@@ -25,6 +25,7 @@
 		65E430C2F8BC10AAF7F34ED4 /* UserProfileSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BB807C14C655DB7B5A4C94A /* UserProfileSheet.swift */; };
 		6C6DBA9BDCB701B90E25D163 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8DFA987EA363F0C2645FD64 /* OnboardingView.swift */; };
 		70C3D30CE2C49632B01A8EE8 /* SpeechService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3C84CB01CEA1113052604FF /* SpeechService.swift */; };
+		PUSH0003000000000000000000 /* PushManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = PUSH0002000000000000000000 /* PushManager.swift */; };
 		71B1FAE04C85E05B030755EB /* DailyTaskIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A53CF239073E3DD906CB833 /* DailyTaskIndicator.swift */; };
 		73F93BE6D6F9449ABA80CC90 /* DailyTaskRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 362B80213AB5146AE22941B7 /* DailyTaskRow.swift */; };
 		7680AF2AF4FE47DB7049794A /* L.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56F22249C794BE7E45685D4D /* L.swift */; };
@@ -130,9 +131,11 @@
 		E722C9266BF5B0325E6B52A6 /* MapCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapCard.swift; sourceTree = "<group>"; };
 		E953D8A8BA28DA30AE609878 /* PetProfileEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PetProfileEditor.swift; sourceTree = "<group>"; };
 		EBAD5792AB19AA7036912E67 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		PUSH0001000000000000000000 /* CozyPup.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = CozyPup.entitlements; sourceTree = "<group>"; };
 		EF65632CC6A30CD8137CBF57 /* ChatService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatService.swift; sourceTree = "<group>"; };
 		F098F57E511474AEEB173948 /* PhotoCropSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCropSheet.swift; sourceTree = "<group>"; };
 		F142E2AF757CA909CA959BD8 /* CalendarDrawer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarDrawer.swift; sourceTree = "<group>"; };
+		PUSH0002000000000000000000 /* PushManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushManager.swift; sourceTree = "<group>"; };
 		F3C84CB01CEA1113052604FF /* SpeechService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechService.swift; sourceTree = "<group>"; };
 		F9D034942C1B826D36D5E8D4 /* LegalPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegalPageView.swift; sourceTree = "<group>"; };
 		FBECB417FFCC3D48F84654B5 /* MonthGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonthGrid.swift; sourceTree = "<group>"; };
@@ -208,6 +211,7 @@
 			children = (
 				45AA8E3614CA2B9242759444 /* Assets.xcassets */,
 				D437A3D3656001306737E784 /* CozyPupApp.swift */,
+				PUSH0001000000000000000000 /* CozyPup.entitlements */,
 				EBAD5792AB19AA7036912E67 /* Info.plist */,
 				402C658B19F53A70267E6697 /* Models */,
 				97FCF82AD30BD1D3C16DB860 /* Services */,
@@ -251,6 +255,7 @@
 				6DCF2E30E5CF4BE404D7E58C /* APIClient.swift */,
 				EF65632CC6A30CD8137CBF57 /* ChatService.swift */,
 				D2586D01E7C42221ABD72995 /* LocationService.swift */,
+				PUSH0002000000000000000000 /* PushManager.swift */,
 				F3C84CB01CEA1113052604FF /* SpeechService.swift */,
 				6317F965EBC14FF6BCAEB152 /* CalendarSyncService.swift */,
 			);
@@ -482,6 +487,7 @@
 				885B288C97AAC7FAFAF5980E /* SettingsDrawer.swift in Sources */,
 				5F78F7E9EDC2C5131DCCD64A /* SingleDayTimelineView.swift in Sources */,
 				70C3D30CE2C49632B01A8EE8 /* SpeechService.swift in Sources */,
+				PUSH0003000000000000000000 /* PushManager.swift in Sources */,
 				EAA8056ECFEC461286CE8EAE /* CalendarSyncService.swift in Sources */,
 				58D0D0F3EA7BE82F6B9A0ED4 /* TimelineEventCard.swift in Sources */,
 				C71076A367C99C70DB2FA10D /* Tokens.swift in Sources */,
@@ -621,6 +627,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = CozyPup/CozyPup.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = SP9KQ7NFJN;
@@ -630,7 +637,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.robertwang.cozypup.dev;
+				PRODUCT_BUNDLE_IDENTIFIER = com.cozypup.app;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -640,6 +647,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = CozyPup/CozyPup.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = SP9KQ7NFJN;
@@ -649,7 +657,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.robertwang.cozypup.dev;
+				PRODUCT_BUNDLE_IDENTIFIER = com.cozypup.app;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
