@@ -585,7 +585,10 @@ async def run_orchestrator(
                 messages.append({"role": "user", "content": image_content})
 
     # 确保 response_text 不为空（除非有 confirm card 待处理）
-    result.response_text = "".join(text_parts)
+    import re as _re
+    raw_text = "".join(text_parts)
+    # Strip leaked XML/HTML tags from LLM output (grok sometimes outputs <parameter> or <xai:function_call>)
+    result.response_text = _re.sub(r"</?(?:parameter|xai:function_call|function_call)[^>]*>", "", raw_text).strip()
     if not result.response_text.strip() and not result.confirm_cards:
         fallback = t("fallback_error", lang)
         result.response_text = fallback

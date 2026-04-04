@@ -97,9 +97,9 @@ struct SingleDayTimelineView: View {
                         petColor: pet?.color ?? Tokens.accent,
                         petName: pet?.name ?? "",
                         allowPhotoUpload: true,
-                        onUpdate: { title, category, date, time in
+                        onUpdate: { title, category, date, time, cost in
                             calendarStore.update(evt.id, title: title, category: category,
-                                                 eventDate: date, eventTime: time)
+                                                 eventDate: date, eventTime: time, cost: cost)
                         },
                         onDelete: {
                             calendarStore.remove(evt.id)

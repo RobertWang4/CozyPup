@@ -3,7 +3,7 @@ import PhotosUI
 
 struct EventEditSheet: View {
     let event: CalendarEvent
-    var onSave: (String, EventCategory, String, String?) -> Void
+    var onSave: (String, EventCategory, String, String?, Double?) -> Void
     var onPhotoUpload: ((Data) async -> String?)?  // returns photo URL on success
     var onPhotoDelete: ((String) -> Void)?
     var onLocationUpdate: ((String, String, Double, Double, String) -> Void)?  // name, address, lat, lng, placeId
@@ -14,6 +14,7 @@ struct EventEditSheet: View {
     @State private var category: EventCategory
     @State private var date: String
     @State private var time: String
+    @State private var cost: String
     @State private var photos: [String]
     @State private var selectedPhotoItem: PhotosPickerItem?
     @State private var cropImage: UIImage?
@@ -28,7 +29,7 @@ struct EventEditSheet: View {
 
     init(
         event: CalendarEvent,
-        onSave: @escaping (String, EventCategory, String, String?) -> Void,
+        onSave: @escaping (String, EventCategory, String, String?, Double?) -> Void,
         onPhotoUpload: ((Data) async -> String?)? = nil,
         onPhotoDelete: ((String) -> Void)? = nil,
         onLocationUpdate: ((String, String, Double, Double, String) -> Void)? = nil,
@@ -44,6 +45,7 @@ struct EventEditSheet: View {
         _category = State(initialValue: event.category)
         _date = State(initialValue: event.eventDate)
         _time = State(initialValue: event.eventTime ?? "")
+        _cost = State(initialValue: event.cost.map { String(Int($0)) } ?? "")
         _photos = State(initialValue: event.photos)
         _locationName = State(initialValue: event.locationName)
         _locationAddress = State(initialValue: event.locationAddress)
@@ -102,7 +104,22 @@ struct EventEditSheet: View {
                         }
                     }
 
-                    // Card 3: Photos
+                    // Card 3: Cost
+                    formCard {
+                        cardField(label: Lang.shared.isZh ? "花费" : "Cost") {
+                            HStack {
+                                Text("¥")
+                                    .font(Tokens.fontBody)
+                                    .foregroundColor(Tokens.textTertiary)
+                                TextField(Lang.shared.isZh ? "金额（选填）" : "Amount (optional)", text: $cost)
+                                    .font(Tokens.fontBody)
+                                    .foregroundColor(Tokens.text)
+                                    .keyboardType(.decimalPad)
+                            }
+                        }
+                    }
+
+                    // Card 4: Photos
                     photoSection
 
                     // Card 4: Location
@@ -190,7 +207,8 @@ struct EventEditSheet: View {
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button(L.save) {
-                        onSave(title, category, date, time.isEmpty ? nil : time)
+                        let costVal = Double(cost)
+                        onSave(title, category, date, time.isEmpty ? nil : time, costVal)
                         // Also persist location if it was added/changed in this session
                         if let name = locationName, let lat = locationLat, let lng = locationLng {
                             onLocationUpdate?(name, locationAddress ?? "", lat, lng, placeId ?? "")

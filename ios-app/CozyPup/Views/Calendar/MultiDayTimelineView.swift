@@ -74,9 +74,9 @@ struct MultiDayTimelineView: View {
                                     lastTapTime = now
                                 }
                             },
-                            onUpdate: { id, title, category, date, time in
+                            onUpdate: { id, title, category, date, time, cost in
                                 calendarStore.update(id, title: title, category: category,
-                                                     eventDate: date, eventTime: time)
+                                                     eventDate: date, eventTime: time, cost: cost)
                             },
                             onDelete: { id in calendarStore.remove(id) },
                             onPhotoUpload: { id, imageData in
@@ -148,7 +148,7 @@ struct DayRow: View {
     @Binding var isSelecting: Bool
     @Binding var selectedEventIds: Set<String>
     let onTap: () -> Void
-    var onUpdate: ((String, String, EventCategory, String, String?) -> Void)?
+    var onUpdate: ((String, String, EventCategory, String, String?, Double?) -> Void)?
     var onDelete: ((String) -> Void)?
     var onPhotoUpload: ((String, Data) async -> String?)?
     var onPhotoDelete: ((String, String) -> Void)?
@@ -200,8 +200,8 @@ struct DayRow: View {
             if let onUpdate {
                 EventEditSheet(
                     event: evt,
-                    onSave: { title, category, date, time in
-                        onUpdate(evt.id, title, category, date, time)
+                    onSave: { title, category, date, time, cost in
+                        onUpdate(evt.id, title, category, date, time, cost)
                     },
                     onPhotoUpload: onPhotoUpload.map { upload in
                         { imageData in await upload(evt.id, imageData) }

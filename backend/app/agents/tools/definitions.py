@@ -38,7 +38,7 @@ _BASE_TOOL_DEFINITIONS = [
                     },
                     "title": {
                         "type": "string",
-                        "description": "Short description of the event, e.g. 'Fed 200g kibble' or 'Vomited twice'.",
+                        "description": "Short 2-8 word description. Do NOT include cost/price in title — use cost parameter instead. E.g. '看医生' not '看医生花300'.",
                     },
                     "category": {
                         "type": "string",
