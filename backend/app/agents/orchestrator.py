@@ -136,6 +136,31 @@ async def dispatch_tool(
 
     result.tools_called.add(fn_name)
 
+    # --- create_calendar_event: 拦截未提到的宠物 ---
+    if fn_name == "create_calendar_event" and fn_args.get("pet_id") and pets:
+        user_msgs = [m.get("content", "") for m in kwargs.get("_messages", []) if m.get("role") == "user" and isinstance(m.get("content"), str)]
+        last_user = user_msgs[-1] if user_msgs else ""
+        # Find which pets are mentioned by name
+        mentioned_pet_ids = set()
+        for p in pets:
+            pname = p.name if hasattr(p, "name") else p.get("name", "")
+            pid = str(p.id if hasattr(p, "id") else p.get("id", ""))
+            if pname and pname.lower() in last_user.lower():
+                mentioned_pet_ids.add(pid)
+        # If user mentioned specific pet(s) but this call is for an unmentioned pet, block it
+        if mentioned_pet_ids and fn_args["pet_id"] not in mentioned_pet_ids:
+            blocked_name = ""
+            for p in pets:
+                pid = str(p.id if hasattr(p, "id") else p.get("id", ""))
+                if pid == fn_args["pet_id"]:
+                    blocked_name = p.name if hasattr(p, "name") else p.get("name", "")
+            logger.info("pet_mismatch_blocked", extra={
+                "blocked_pet": blocked_name,
+                "mentioned": list(mentioned_pet_ids),
+                "user_text": last_user[:60],
+            })
+            return {"success": False, "error": f"用户只提到了特定的宠物，没有提到{blocked_name}。请只为用户提到的宠物创建事件。"}
+
     # --- create_calendar_event: 自动补全 cost ---
     if fn_name == "create_calendar_event" and fn_args.get("cost") is None:
         import re
