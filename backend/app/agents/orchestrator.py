@@ -136,6 +136,19 @@ async def dispatch_tool(
 
     result.tools_called.add(fn_name)
 
+    # --- create_calendar_event: 自动补全 cost ---
+    if fn_name == "create_calendar_event" and fn_args.get("cost") is None:
+        import re
+        user_msgs = [m.get("content", "") for m in kwargs.get("_messages", []) if m.get("role") == "user" and isinstance(m.get("content"), str)]
+        last_user = user_msgs[-1] if user_msgs else ""
+        # Match: 花了300/花了300块/花了300元/花了80块钱/1500元/cost 50
+        cost_match = re.search(r"花了?\s*(\d+(?:\.\d+)?)\s*[块元]|(\d+(?:\.\d+)?)\s*[块元]", last_user)
+        if cost_match:
+            amount = float(cost_match.group(1) or cost_match.group(2))
+            fn_args["cost"] = amount
+            tool_call["function"]["arguments"] = json.dumps(fn_args, ensure_ascii=False)
+            logger.info("cost_auto_fixed", extra={"extracted": amount, "user_text": last_user[:60]})
+
     # --- create_daily_task: 自动补全 end_date ---
     if fn_name == "create_daily_task" and not fn_args.get("end_date"):
         import re
