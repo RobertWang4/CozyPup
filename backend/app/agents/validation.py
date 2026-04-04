@@ -252,9 +252,10 @@ def _validate_create_daily_task(args: dict) -> list[str]:
 @_register("manage_daily_task")
 def _validate_manage_daily_task(args: dict) -> list[str]:
     errors = _check_required(args, ["action"])
-    errors += _check_enum(args, "action", {"update", "delete", "deactivate"}, "action")
+    errors += _check_enum(args, "action", {"update", "delete", "deactivate", "delete_all"}, "action")
     errors += _check_uuid(args, "task_id")
-    if not args.get("task_id") and not args.get("title"):
+    # delete_all doesn't need task_id or title
+    if args.get("action") != "delete_all" and not args.get("task_id") and not args.get("title"):
         errors.append("Either task_id or title is required to identify the task")
     return errors
 
