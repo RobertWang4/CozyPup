@@ -447,19 +447,45 @@ struct ChatView: View {
     // MARK: - Header
 
     private var header: some View {
-        HStack {
-            if !dailyTaskStore.tasks.isEmpty {
-                DailyTaskIndicator(showPopover: $showDailyTasks)
-            } else {
-                Color.clear.frame(width: Tokens.size.avatarSmall, height: Tokens.size.avatarSmall)
+        HStack(spacing: Tokens.spacing.sm) {
+            // Left: calendar + task check
+            Button {
+                withAnimation(.easeInOut(duration: 0.35)) { showCalendar = true }
+            } label: {
+                Image(systemName: "calendar")
+                    .font(.system(size: 16, weight: .medium))
+                    .foregroundColor(Tokens.textSecondary)
+                    .frame(width: Tokens.size.avatarSmall, height: Tokens.size.avatarSmall)
             }
+            .buttonStyle(.plain)
+
+            if !dailyTaskStore.tasks.isEmpty {
+                Button { showDailyTasks.toggle() } label: {
+                    Image(systemName: dailyTaskStore.allCompleted ? "checkmark.circle.fill" : "checkmark.circle")
+                        .font(.system(size: 16, weight: .medium))
+                        .foregroundColor(dailyTaskStore.allCompleted ? Tokens.green : Tokens.textSecondary)
+                        .frame(width: Tokens.size.avatarSmall, height: Tokens.size.avatarSmall)
+                }
+                .buttonStyle(.plain)
+            }
+
             Spacer()
             Image("logo")
                 .resizable()
                 .frame(width: 30, height: 30)
                 .cornerRadius(8)
             Spacer()
-            Color.clear.frame(width: Tokens.size.avatarSmall, height: Tokens.size.avatarSmall)
+
+            // Right: settings icon
+            Button {
+                withAnimation(.easeInOut(duration: 0.35)) { showSettings = true }
+            } label: {
+                Image(systemName: "gearshape")
+                    .font(.system(size: 16, weight: .medium))
+                    .foregroundColor(Tokens.textSecondary)
+                    .frame(width: Tokens.size.avatarSmall, height: Tokens.size.avatarSmall)
+            }
+            .buttonStyle(.plain)
         }
         .padding(.horizontal, Tokens.spacing.lg)
         .padding(.vertical, Tokens.spacing.xs)

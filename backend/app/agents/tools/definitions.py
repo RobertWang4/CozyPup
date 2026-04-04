@@ -619,8 +619,14 @@ _BASE_TOOL_DEFINITIONS = [
             "description": (
                 "创建每日待办任务。\n"
                 "当用户想设置每天要做的事情时使用（遛狗、喂食、吃益生菌等）。\n"
-                "不传 end_date = 永久每天重复。传了 end_date = 到期自动结束。\n"
-                "用户说'到下周日'时必须算出具体日期传 end_date。\n"
+                "【end_date 规则】\n"
+                "- 用户没提到截止时间 → 不传 end_date（永久重复）\n"
+                "- 用户说了截止时间 → 必须传 end_date！\n"
+                "  '到下周日' → 算出具体日期，如 2026-04-06\n"
+                "  '到4月10号' → end_date='2026-04-10'\n"
+                "  '接下来7天' → end_date = 今天 + 7 天\n"
+                "  '这周' → end_date = 本周日日期\n"
+                "漏传 end_date 是严重错误，等于把限期任务变成了永久任务。\n"
                 "不要用于: 一次性提醒 (用 create_reminder)。\n"
                 "不要用于: 记录已发生的事 (用 create_calendar_event)。"
             ),
@@ -631,7 +637,7 @@ _BASE_TOOL_DEFINITIONS = [
                     "daily_target": {"type": "integer", "description": "How many times per day (default 1)."},
                     "pet_id": {"type": "string", "description": "Optional UUID of the pet this task is for."},
                     "start_date": {"type": "string", "description": "Start date (YYYY-MM-DD). Default: today."},
-                    "end_date": {"type": "string", "description": "End date (YYYY-MM-DD). Omit for permanent daily tasks."},
+                    "end_date": {"type": "string", "description": "End date (YYYY-MM-DD). MUST pass when user mentions any deadline ('到X', 'until X', '接下来N天'). Omit ONLY for permanent tasks."},
                 },
                 "required": ["title"],
             },

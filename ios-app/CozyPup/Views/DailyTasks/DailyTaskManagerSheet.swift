@@ -9,9 +9,9 @@ struct DailyTaskManagerSheet: View {
 
     // Add form state
     @State private var newTitle = ""
-    @State private var newType = "routine"
     @State private var newTarget = 1
     @State private var newPetId: String?
+    @State private var hasDateRange = false
     @State private var newStartDate = Date()
     @State private var newEndDate = Date().addingTimeInterval(7 * 24 * 3600)
     @State private var isSaving = false
@@ -23,49 +23,26 @@ struct DailyTaskManagerSheet: View {
         return f
     }()
 
-    private let displayDateFormatter: DateFormatter = {
-        let f = DateFormatter()
-        f.dateFormat = "M月d日"
-        return f
-    }()
-
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: Tokens.spacing.md) {
-                    if !store.tasks.filter({ $0.type == "routine" }).isEmpty {
-                        taskSection("常规", tasks: store.tasks.filter { $0.type == "routine" })
-                    }
-                    if !store.tasks.filter({ $0.type == "special" }).isEmpty {
-                        taskSection("特殊", tasks: store.tasks.filter { $0.type == "special" })
-                    }
+                VStack(spacing: 0) {
                     if store.tasks.isEmpty {
-                        VStack(spacing: Tokens.spacing.sm) {
-                            Image(systemName: "leaf")
-                                .font(.system(size: 28))
-                                .foregroundColor(Tokens.green.opacity(0.4))
-                            Text("暂无待办")
-                                .font(Tokens.fontSubheadline)
-                                .foregroundColor(Tokens.textTertiary)
-                            Text("点击右上角 + 添加")
-                                .font(Tokens.fontCaption)
-                                .foregroundColor(Tokens.textTertiary.opacity(0.7))
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 60)
+                        emptyState
+                    } else {
+                        taskList
                     }
                 }
-                .padding(.horizontal, Tokens.spacing.md)
                 .padding(.top, Tokens.spacing.sm)
                 .padding(.bottom, Tokens.spacing.xl)
             }
             .background(Tokens.bg)
-            .navigationTitle("管理待办")
+            .navigationTitle(Lang.shared.isZh ? "管理待办" : "Tasks")
             .navigationBarTitleDisplayMode(.inline)
             .toolbarColorScheme(.light, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    Button("关闭") { dismiss() }
+                    Button(Lang.shared.isZh ? "关闭" : "Close") { dismiss() }
                         .font(Tokens.fontSubheadline)
                         .foregroundColor(Tokens.textSecondary)
                 }
@@ -82,15 +59,13 @@ struct DailyTaskManagerSheet: View {
         }
         .presentationDetents([.large])
         .presentationDragIndicator(.visible)
-        .sheet(isPresented: $showAddForm) {
-            addFormSheet
-        }
-        .alert("确认删除", isPresented: Binding(
+        .sheet(isPresented: $showAddForm) { addFormSheet }
+        .alert(Lang.shared.isZh ? "确认删除" : "Confirm Delete", isPresented: Binding(
             get: { deleteTarget != nil },
             set: { if !$0 { deleteTarget = nil } }
         )) {
-            Button("取消", role: .cancel) { deleteTarget = nil }
-            Button("删除", role: .destructive) {
+            Button(Lang.shared.isZh ? "取消" : "Cancel", role: .cancel) { deleteTarget = nil }
+            Button(Lang.shared.isZh ? "删除" : "Delete", role: .destructive) {
                 if let task = deleteTarget {
                     withAnimation(.easeOut(duration: 0.2)) {
                         store.tasks.removeAll { $0.id == task.id }
@@ -101,198 +76,252 @@ struct DailyTaskManagerSheet: View {
             }
         } message: {
             if let task = deleteTarget {
-                Text("确定要删除「\(task.title)」吗？")
+                Text(Lang.shared.isZh
+                     ? "确定要删除「\(task.title)」吗？"
+                     : "Delete \"\(task.title)\"?")
             }
         }
         .preferredColorScheme(.light)
     }
 
-    // MARK: - Task Section
+    // MARK: - Empty State
 
-    private func taskSection(_ title: String, tasks: [DailyTask]) -> some View {
-        VStack(alignment: .leading, spacing: Tokens.spacing.sm) {
-            Text(title)
-                .font(Tokens.fontCaption.weight(.semibold))
+    private var emptyState: some View {
+        VStack(spacing: Tokens.spacing.md) {
+            Image(systemName: "checkmark.circle")
+                .font(.system(size: 36, weight: .thin))
+                .foregroundColor(Tokens.textTertiary.opacity(0.5))
+            Text(Lang.shared.isZh ? "暂无待办" : "No tasks yet")
+                .font(Tokens.fontBody)
                 .foregroundColor(Tokens.textTertiary)
-                .textCase(.uppercase)
-                .tracking(0.8)
-                .padding(.leading, Tokens.spacing.xs)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 80)
+    }
 
-            VStack(spacing: 0) {
-                ForEach(tasks) { task in
-                    if task.id != tasks.first?.id {
-                        Divider().padding(.leading, Tokens.spacing.md)
+    // MARK: - Task List
+
+    private var taskList: some View {
+        VStack(spacing: 0) {
+            ForEach(store.tasks) { task in
+                if task.id != store.tasks.first?.id {
+                    Rectangle()
+                        .fill(Tokens.divider)
+                        .frame(height: 0.5)
+                        .padding(.leading, Tokens.spacing.lg + Tokens.spacing.md)
+                }
+                taskRow(task)
+            }
+        }
+        .background(Tokens.surface)
+        .cornerRadius(Tokens.radius)
+        .padding(.horizontal, Tokens.spacing.md)
+    }
+
+    private func taskRow(_ task: DailyTask) -> some View {
+        HStack(spacing: Tokens.spacing.sm) {
+            // Left accent bar
+            RoundedRectangle(cornerRadius: 1.5)
+                .fill(task.pet != nil ? Color(hex: task.pet!.color_hex) : Tokens.accent)
+                .frame(width: 3, height: 32)
+
+            VStack(alignment: .leading, spacing: 3) {
+                HStack(spacing: 6) {
+                    Text(task.title)
+                        .font(Tokens.fontBody)
+                        .foregroundColor(Tokens.text)
+                    if let pet = task.pet {
+                        Text(pet.name)
+                            .font(.system(size: 9, weight: .semibold))
+                            .foregroundColor(Color(hex: pet.color_hex))
+                            .padding(.horizontal, 5)
+                            .padding(.vertical, 2)
+                            .background(Color(hex: pet.color_hex).opacity(0.1))
+                            .cornerRadius(4)
                     }
-                    HStack(spacing: Tokens.spacing.sm) {
-                        VStack(alignment: .leading, spacing: 2) {
-                            HStack(spacing: 6) {
-                                Text(task.title)
-                                    .font(Tokens.fontBody)
-                                    .foregroundColor(Tokens.text)
-                                if let pet = task.pet {
-                                    Text(pet.name)
-                                        .font(.system(size: 9, weight: .semibold))
-                                        .foregroundColor(Color(hex: pet.color_hex))
-                                        .padding(.horizontal, 5)
-                                        .padding(.vertical, 2)
-                                        .background(Color(hex: pet.color_hex).opacity(0.12))
-                                        .cornerRadius(4)
-                                }
-                            }
-                            HStack(spacing: Tokens.spacing.xs) {
-                                Text("每天 \(task.daily_target) 次")
-                                    .font(Tokens.fontCaption)
-                                    .foregroundColor(Tokens.textSecondary)
-                                if task.type == "special",
-                                   let start = task.start_date, let end = task.end_date {
-                                    Text("·")
-                                        .foregroundColor(Tokens.textTertiary)
-                                    Text("\(start) → \(end)")
-                                        .font(Tokens.fontCaption)
-                                        .foregroundColor(Tokens.textTertiary)
-                                }
-                            }
-                        }
-                        Spacer()
-                        Button {
-                            deleteTarget = task
-                        } label: {
-                            Image(systemName: "minus.circle")
-                                .font(.system(size: 18))
-                                .foregroundColor(Tokens.red.opacity(0.6))
-                        }
-                        .buttonStyle(.plain)
+                }
+                HStack(spacing: 4) {
+                    Text(Lang.shared.isZh
+                         ? "每天 \(task.daily_target) 次"
+                         : "\(task.daily_target)x / day")
+                        .font(Tokens.fontCaption)
+                        .foregroundColor(Tokens.textSecondary)
+                    if let end = task.end_date {
+                        Text("·")
+                            .font(Tokens.fontCaption)
+                            .foregroundColor(Tokens.textTertiary)
+                        Text(Lang.shared.isZh
+                             ? "至 \(formatDateShort(end))"
+                             : "until \(formatDateShort(end))")
+                            .font(Tokens.fontCaption)
+                            .foregroundColor(Tokens.textTertiary)
                     }
-                    .padding(.horizontal, Tokens.spacing.md)
-                    .padding(.vertical, Tokens.spacing.sm + 2)
                 }
             }
-            .background(Tokens.surface)
-            .cornerRadius(Tokens.radius)
+
+            Spacer()
+
+            Button { deleteTarget = task } label: {
+                Image(systemName: "xmark")
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundColor(Tokens.textTertiary)
+                    .frame(width: 28, height: 28)
+                    .background(Tokens.bg.opacity(0.8))
+                    .clipShape(Circle())
+            }
+            .buttonStyle(.plain)
         }
+        .padding(.horizontal, Tokens.spacing.md)
+        .padding(.vertical, Tokens.spacing.sm + 2)
     }
 
     // MARK: - Add Form
 
     private var addFormSheet: some View {
         NavigationStack {
-            ScrollView {
-                VStack(spacing: Tokens.spacing.lg) {
-                    // Card 1: Name + Type
-                    formCard {
-                        cardField(label: "名称") {
-                            TextField("例如：遛狗、喂药", text: $newTitle)
+            VStack(spacing: 0) {
+                // Single continuous card
+                VStack(spacing: 0) {
+                    // Title field
+                    VStack(alignment: .leading, spacing: Tokens.spacing.xs) {
+                        Text(Lang.shared.isZh ? "名称" : "Title")
+                            .font(Tokens.fontCaption)
+                            .foregroundColor(Tokens.textTertiary)
+                        TextField(Lang.shared.isZh ? "例如：遛狗、喂药" : "e.g. Walk dog, Give meds", text: $newTitle)
+                            .font(Tokens.fontBody)
+                            .foregroundColor(Tokens.text)
+                    }
+                    .padding(.horizontal, Tokens.spacing.md)
+                    .padding(.vertical, Tokens.spacing.md)
+
+                    sectionDivider
+
+                    // Frequency
+                    HStack {
+                        Text(Lang.shared.isZh ? "每天" : "Daily")
+                            .font(Tokens.fontBody)
+                            .foregroundColor(Tokens.text)
+                        Spacer()
+                        HStack(spacing: 0) {
+                            Button {
+                                if newTarget > 1 { withAnimation(.snappy(duration: 0.15)) { newTarget -= 1 } }
+                            } label: {
+                                Image(systemName: "minus")
+                                    .font(.system(size: 12, weight: .semibold))
+                                    .foregroundColor(newTarget > 1 ? Tokens.text : Tokens.textTertiary)
+                                    .frame(width: 32, height: 28)
+                            }
+                            Text("\(newTarget)")
+                                .font(Tokens.fontBody.weight(.semibold).monospacedDigit())
+                                .foregroundColor(Tokens.accent)
+                                .frame(width: 24)
+                            Button {
+                                if newTarget < 10 { withAnimation(.snappy(duration: 0.15)) { newTarget += 1 } }
+                            } label: {
+                                Image(systemName: "plus")
+                                    .font(.system(size: 12, weight: .semibold))
+                                    .foregroundColor(newTarget < 10 ? Tokens.text : Tokens.textTertiary)
+                                    .frame(width: 32, height: 28)
+                            }
+                        }
+                        .background(Tokens.bg)
+                        .cornerRadius(Tokens.radiusSmall)
+                        Text(Lang.shared.isZh ? "次" : "times")
+                            .font(Tokens.fontBody)
+                            .foregroundColor(Tokens.textSecondary)
+                    }
+                    .padding(.horizontal, Tokens.spacing.md)
+                    .padding(.vertical, Tokens.spacing.sm + 4)
+
+                    sectionDivider
+
+                    // Date range toggle
+                    HStack {
+                        Image(systemName: hasDateRange ? "calendar.circle.fill" : "calendar.circle")
+                            .font(.system(size: 18))
+                            .foregroundColor(hasDateRange ? Tokens.accent : Tokens.textTertiary)
+                        Text(Lang.shared.isZh ? "设定期限" : "Set dates")
+                            .font(Tokens.fontBody)
+                            .foregroundColor(Tokens.text)
+                        Spacer()
+                        Toggle("", isOn: $hasDateRange.animation(.easeInOut(duration: 0.25)))
+                            .labelsHidden()
+                            .tint(Tokens.accent)
+                    }
+                    .padding(.horizontal, Tokens.spacing.md)
+                    .padding(.vertical, Tokens.spacing.sm + 2)
+
+                    // Date pickers (collapsed by default)
+                    if hasDateRange {
+                        sectionDivider
+
+                        HStack {
+                            Text(Lang.shared.isZh ? "从" : "From")
                                 .font(Tokens.fontBody)
-                                .foregroundColor(Tokens.text)
-                        }
-
-                        cardDivider
-
-                        cardField(label: "类型") {
-                            HStack(spacing: Tokens.spacing.sm) {
-                                typeChip("常规", value: "routine")
-                                typeChip("特殊", value: "special")
-                                Spacer()
-                            }
-                        }
-                    }
-
-                    // Card 2: Daily target
-                    formCard {
-                        cardField(label: "每天次数") {
-                            HStack {
-                                Text("\(newTarget) 次")
-                                    .font(Tokens.fontBody.weight(.medium))
-                                    .foregroundColor(Tokens.text)
-                                Spacer()
-                                HStack(spacing: 0) {
-                                    Button {
-                                        if newTarget > 1 { newTarget -= 1 }
-                                    } label: {
-                                        Image(systemName: "minus")
-                                            .font(.system(size: 13, weight: .medium))
-                                            .foregroundColor(Tokens.text)
-                                            .frame(width: 36, height: 32)
-                                    }
-                                    Rectangle()
-                                        .fill(Tokens.divider)
-                                        .frame(width: 0.5, height: 16)
-                                    Button {
-                                        if newTarget < 10 { newTarget += 1 }
-                                    } label: {
-                                        Image(systemName: "plus")
-                                            .font(.system(size: 13, weight: .medium))
-                                            .foregroundColor(Tokens.text)
-                                            .frame(width: 36, height: 32)
-                                    }
-                                }
-                                .background(Tokens.bg)
-                                .cornerRadius(8)
-                            }
-                        }
-                    }
-
-                    // Card 3: Date range (special only)
-                    if newType == "special" {
-                        formCard {
-                            cardField(label: "开始日期") {
-                                DatePicker(
-                                    "",
-                                    selection: $newStartDate,
-                                    displayedComponents: .date
-                                )
+                                .foregroundColor(Tokens.textSecondary)
+                            Spacer()
+                            DatePicker("", selection: $newStartDate, displayedComponents: .date)
                                 .datePickerStyle(.compact)
                                 .labelsHidden()
                                 .tint(Tokens.accent)
-                            }
+                                .environment(\.locale, Locale(identifier: Lang.shared.isZh ? "zh_CN" : "en_US"))
+                        }
+                        .padding(.horizontal, Tokens.spacing.md)
+                        .padding(.vertical, Tokens.spacing.sm)
 
-                            cardDivider
+                        sectionDivider
 
-                            cardField(label: "结束日期") {
-                                DatePicker(
-                                    "",
-                                    selection: $newEndDate,
-                                    in: newStartDate...,
-                                    displayedComponents: .date
-                                )
+                        HStack {
+                            Text(Lang.shared.isZh ? "到" : "Until")
+                                .font(Tokens.fontBody)
+                                .foregroundColor(Tokens.textSecondary)
+                            Spacer()
+                            DatePicker("", selection: $newEndDate, in: newStartDate..., displayedComponents: .date)
                                 .datePickerStyle(.compact)
                                 .labelsHidden()
                                 .tint(Tokens.accent)
-                            }
+                                .environment(\.locale, Locale(identifier: Lang.shared.isZh ? "zh_CN" : "en_US"))
                         }
+                        .padding(.horizontal, Tokens.spacing.md)
+                        .padding(.vertical, Tokens.spacing.sm)
                         .transition(.opacity.combined(with: .move(edge: .top)))
                     }
 
-                    // Card 4: Pet picker
+                    // Pet picker (inline, not separate section)
                     if !petStore.pets.isEmpty {
-                        VStack(alignment: .leading, spacing: Tokens.spacing.sm) {
-                            Text("关联宠物")
-                                .font(Tokens.fontCaption.weight(.medium))
-                                .foregroundColor(Tokens.textTertiary)
-                                .padding(.leading, Tokens.spacing.xs)
+                        sectionDivider
 
+                        HStack {
+                            Image(systemName: "pawprint")
+                                .font(.system(size: 14))
+                                .foregroundColor(Tokens.textTertiary)
                             ScrollView(.horizontal, showsIndicators: false) {
-                                HStack(spacing: Tokens.spacing.sm) {
-                                    petChip(nil, name: "不关联")
+                                HStack(spacing: 6) {
+                                    petChip(nil, name: Lang.shared.isZh ? "全部" : "All")
                                     ForEach(petStore.pets) { pet in
                                         petChip(pet.id, name: pet.name, colorHex: pet.colorHex)
                                     }
                                 }
                             }
                         }
+                        .padding(.horizontal, Tokens.spacing.md)
+                        .padding(.vertical, Tokens.spacing.sm + 2)
                     }
                 }
+                .background(Tokens.surface)
+                .cornerRadius(Tokens.radius)
                 .padding(.horizontal, Tokens.spacing.md)
                 .padding(.top, Tokens.spacing.sm)
-                .padding(.bottom, Tokens.spacing.xl)
+
+                Spacer()
             }
             .background(Tokens.bg)
-            .navigationTitle("添加待办")
+            .navigationTitle(Lang.shared.isZh ? "添加待办" : "New Task")
             .navigationBarTitleDisplayMode(.inline)
             .toolbarColorScheme(.light, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    Button("取消") {
+                    Button(Lang.shared.isZh ? "取消" : "Cancel") {
                         showAddForm = false
                         resetForm()
                     }
@@ -305,11 +334,12 @@ struct DailyTaskManagerSheet: View {
                         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
                         isSaving = true
                         Task {
-                            let startStr = newType == "special" ? dateFormatter.string(from: newStartDate) : nil
-                            let endStr = newType == "special" ? dateFormatter.string(from: newEndDate) : nil
+                            let startStr = hasDateRange ? dateFormatter.string(from: newStartDate) : nil
+                            let endStr = hasDateRange ? dateFormatter.string(from: newEndDate) : nil
+                            let type = hasDateRange ? "special" : "routine"
                             let success = await store.create(
                                 title: newTitle,
-                                type: newType,
+                                type: type,
                                 dailyTarget: newTarget,
                                 petId: newPetId,
                                 startDate: startStr,
@@ -323,10 +353,9 @@ struct DailyTaskManagerSheet: View {
                         }
                     } label: {
                         if isSaving {
-                            ProgressView()
-                                .scaleEffect(0.8)
+                            ProgressView().scaleEffect(0.8)
                         } else {
-                            Text("保存")
+                            Text(Lang.shared.isZh ? "保存" : "Save")
                                 .font(Tokens.fontSubheadline.weight(.semibold))
                                 .foregroundColor(
                                     newTitle.trimmingCharacters(in: .whitespaces).isEmpty
@@ -343,84 +372,58 @@ struct DailyTaskManagerSheet: View {
         .preferredColorScheme(.light)
     }
 
-    // MARK: - Form Card Components
+    // MARK: - Helpers
 
-    @ViewBuilder
-    private func formCard<Content: View>(@ViewBuilder content: () -> Content) -> some View {
-        VStack(spacing: 0) {
-            content()
-        }
-        .background(Tokens.surface)
-        .cornerRadius(Tokens.radius)
-    }
-
-    private var cardDivider: some View {
+    private var sectionDivider: some View {
         Rectangle()
             .fill(Tokens.divider)
             .frame(height: 0.5)
             .padding(.leading, Tokens.spacing.md)
     }
 
-    @ViewBuilder
-    private func cardField<Content: View>(label: String, @ViewBuilder content: () -> Content) -> some View {
-        VStack(alignment: .leading, spacing: Tokens.spacing.xs) {
-            Text(label)
-                .font(Tokens.fontCaption)
-                .foregroundColor(Tokens.textTertiary)
-            content()
-        }
-        .padding(.horizontal, Tokens.spacing.md)
-        .padding(.vertical, Tokens.spacing.sm + 2)
-    }
-
-    // MARK: - Chips
-
-    private func typeChip(_ label: String, value: String) -> some View {
-        Button {
-            withAnimation(.easeInOut(duration: 0.15)) {
-                newType = value
-            }
-        } label: {
-            Text(label)
-                .font(Tokens.fontSubheadline.weight(.medium))
-                .foregroundColor(newType == value ? Tokens.accent : Tokens.textSecondary)
-                .padding(.horizontal, 14)
-                .padding(.vertical, 7)
-                .background(newType == value ? Tokens.accentSoft : Tokens.bg)
-                .cornerRadius(Tokens.radiusSmall)
-        }
-        .buttonStyle(.plain)
-    }
-
     private func petChip(_ id: String?, name: String, colorHex: String? = nil) -> some View {
-        Button {
-            withAnimation(.easeInOut(duration: 0.15)) {
-                newPetId = id
-            }
+        let selected = newPetId == id
+        let chipColor = colorHex != nil ? Color(hex: colorHex!) : Tokens.accent
+        return Button {
+            withAnimation(.easeInOut(duration: 0.15)) { newPetId = id }
         } label: {
             Text(name)
-                .font(Tokens.fontSubheadline.weight(.medium))
-                .foregroundColor(newPetId == id
-                    ? (colorHex != nil ? Color(hex: colorHex!) : Tokens.accent)
-                    : Tokens.textSecondary)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 7)
-                .background(
-                    newPetId == id
-                    ? (colorHex != nil ? Color(hex: colorHex!).opacity(0.12) : Tokens.accentSoft)
-                    : Tokens.surface
-                )
+                .font(Tokens.fontCaption.weight(.medium))
+                .foregroundColor(selected ? chipColor : Tokens.textSecondary)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 5)
+                .background(selected ? chipColor.opacity(0.1) : Tokens.bg)
                 .cornerRadius(Tokens.radiusSmall)
+                .overlay(
+                    RoundedRectangle(cornerRadius: Tokens.radiusSmall)
+                        .strokeBorder(selected ? chipColor.opacity(0.3) : Color.clear, lineWidth: 0.5)
+                )
         }
         .buttonStyle(.plain)
+    }
+
+    private func formatDateShort(_ dateStr: String) -> String {
+        guard let date = DateFormatter.iso.date(from: dateStr) else { return dateStr }
+        let f = DateFormatter()
+        f.locale = Locale(identifier: Lang.shared.isZh ? "zh_CN" : "en_US")
+        f.dateFormat = Lang.shared.isZh ? "M月d日" : "MMM d"
+        return f.string(from: date)
     }
 
     private func resetForm() {
         newTitle = ""
         newTarget = 1
         newPetId = nil
-        newType = "routine"
+        hasDateRange = false
         newStartDate = Date()
         newEndDate = Date().addingTimeInterval(7 * 24 * 3600)
     }
+}
+
+private extension DateFormatter {
+    static let iso: DateFormatter = {
+        let f = DateFormatter()
+        f.dateFormat = "yyyy-MM-dd"
+        return f
+    }()
 }
