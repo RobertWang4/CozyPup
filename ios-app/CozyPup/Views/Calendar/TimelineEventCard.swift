@@ -6,7 +6,7 @@ struct TimelineEventCard: View {
     let petColor: Color
     let petName: String
     var allowPhotoUpload: Bool = false
-    var onUpdate: ((String, EventCategory, String, String?, Double?) -> Void)?
+    var onUpdate: ((String, EventCategory, String, String?, Double?, String?) -> Void)?
     var onDelete: (() -> Void)?
     var onPhotoUpload: ((Data) async -> String?)?
     var onPhotoDelete: ((String) -> Void)?

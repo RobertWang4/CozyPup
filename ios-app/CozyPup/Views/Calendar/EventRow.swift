@@ -4,7 +4,7 @@ struct EventRow: View {
     let event: CalendarEvent
     let petColor: Color
     var pet: Pet?
-    var onUpdate: (String, EventCategory, String, String?, Double?) -> Void
+    var onUpdate: (String, EventCategory, String, String?, Double?, String?) -> Void
     var onDelete: () -> Void
     var onLocationUpdate: ((String, String, Double, Double, String) -> Void)?
     var onLocationRemove: (() -> Void)?
@@ -96,7 +96,7 @@ struct EventRow: View {
     EventRow(
         event: CalendarEvent(petId: "p1", eventDate: "2026-04-01", eventTime: "08:30", title: "吃了狗粮200g + 鸡胸肉", type: .log, category: .diet, rawText: "", source: .chat),
         petColor: Color(hex: "E8835C"),
-        onUpdate: { _, _, _, _, _ in },
+        onUpdate: { _, _, _, _, _, _ in },
         onDelete: {}
     )
     .padding()
@@ -108,7 +108,7 @@ struct EventRow: View {
         event: CalendarEvent(petId: "p1", eventDate: "2026-04-01", eventTime: "14:00", title: "狂犬疫苗接种", type: .appointment, category: .medical, rawText: "", source: .chat),
         petColor: Color(hex: "6BA3BE"),
         pet: Pet(name: "豆豆", species: .dog, breed: "金毛", birthday: nil, weight: 30, colorIndex: 0),
-        onUpdate: { _, _, _, _, _ in },
+        onUpdate: { _, _, _, _, _, _ in },
         onDelete: {}
     )
     .padding()

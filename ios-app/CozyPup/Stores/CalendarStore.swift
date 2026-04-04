@@ -97,13 +97,14 @@ class CalendarStore: ObservableObject {
     }
 
     func update(_ id: String, title: String? = nil, category: EventCategory? = nil,
-                eventDate: String? = nil, eventTime: String? = nil, cost: Double? = nil) {
+                eventDate: String? = nil, eventTime: String? = nil, cost: Double? = nil, reminderAt: String? = nil) {
         guard let idx = events.firstIndex(where: { $0.id == id }) else { return }
         if let t = title { events[idx].title = t }
         if let c = category { events[idx].category = c }
         if let d = eventDate { events[idx].eventDate = d }
         if let t = eventTime { events[idx].eventTime = t }
         if let cost { events[idx].cost = cost }
+        events[idx].reminderAt = reminderAt  // nil clears, non-nil sets
         events[idx].edited = true
         saveLocal()
 

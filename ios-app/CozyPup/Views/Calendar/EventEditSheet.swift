@@ -3,7 +3,7 @@ import PhotosUI
 
 struct EventEditSheet: View {
     let event: CalendarEvent
-    var onSave: (String, EventCategory, String, String?, Double?) -> Void
+    var onSave: (String, EventCategory, String, String?, Double?, String?) -> Void  // title, category, date, time, cost, reminderAt
     var onPhotoUpload: ((Data) async -> String?)?  // returns photo URL on success
     var onPhotoDelete: ((String) -> Void)?
     var onLocationUpdate: ((String, String, Double, Double, String) -> Void)?  // name, address, lat, lng, placeId
@@ -15,6 +15,8 @@ struct EventEditSheet: View {
     @State private var date: String
     @State private var time: String
     @State private var cost: String
+    @State private var hasReminder: Bool
+    @State private var reminderDate: Date
     @State private var photos: [String]
     @State private var selectedPhotoItem: PhotosPickerItem?
     @State private var cropImage: UIImage?
@@ -29,7 +31,7 @@ struct EventEditSheet: View {
 
     init(
         event: CalendarEvent,
-        onSave: @escaping (String, EventCategory, String, String?, Double?) -> Void,
+        onSave: @escaping (String, EventCategory, String, String?, Double?, String?) -> Void,
         onPhotoUpload: ((Data) async -> String?)? = nil,
         onPhotoDelete: ((String) -> Void)? = nil,
         onLocationUpdate: ((String, String, Double, Double, String) -> Void)? = nil,
@@ -46,6 +48,14 @@ struct EventEditSheet: View {
         _date = State(initialValue: event.eventDate)
         _time = State(initialValue: event.eventTime ?? "")
         _cost = State(initialValue: event.cost.map { String(Int($0)) } ?? "")
+        _hasReminder = State(initialValue: event.reminderAt != nil)
+        let defaultReminder: Date = {
+            if let r = event.reminderAt, let d = ISO8601DateFormatter().date(from: r) { return d }
+            // Default: event date + time or now + 1 hour
+            if let d = Self.parseEventDateTime(event.eventDate, event.eventTime) { return d }
+            return Date().addingTimeInterval(3600)
+        }()
+        _reminderDate = State(initialValue: defaultReminder)
         _photos = State(initialValue: event.photos)
         _locationName = State(initialValue: event.locationName)
         _locationAddress = State(initialValue: event.locationAddress)
@@ -108,7 +118,7 @@ struct EventEditSheet: View {
                     formCard {
                         cardField(label: Lang.shared.isZh ? "花费" : "Cost") {
                             HStack {
-                                Text("¥")
+                                Text("$")
                                     .font(Tokens.fontBody)
                                     .foregroundColor(Tokens.textTertiary)
                                 TextField(Lang.shared.isZh ? "金额（选填）" : "Amount (optional)", text: $cost)
@@ -119,7 +129,40 @@ struct EventEditSheet: View {
                         }
                     }
 
-                    // Card 4: Photos
+                    // Card 4: Reminder
+                    formCard {
+                        Toggle(isOn: $hasReminder.animation(.easeInOut(duration: 0.2))) {
+                            HStack(spacing: Tokens.spacing.xs) {
+                                Image(systemName: hasReminder ? "bell.fill" : "bell")
+                                    .font(.system(size: 14))
+                                    .foregroundColor(hasReminder ? Tokens.accent : Tokens.textTertiary)
+                                Text(Lang.shared.isZh ? "提醒" : "Reminder")
+                                    .font(Tokens.fontBody)
+                                    .foregroundColor(Tokens.text)
+                            }
+                        }
+                        .tint(Tokens.accent)
+                        .padding(.horizontal, Tokens.spacing.md)
+                        .padding(.vertical, Tokens.spacing.sm + 2)
+
+                        if hasReminder {
+                            cardDivider
+                            HStack {
+                                Text(Lang.shared.isZh ? "时间" : "When")
+                                    .font(Tokens.fontBody)
+                                    .foregroundColor(Tokens.textSecondary)
+                                Spacer()
+                                DatePicker("", selection: $reminderDate)
+                                    .datePickerStyle(.compact)
+                                    .labelsHidden()
+                                    .tint(Tokens.accent)
+                            }
+                            .padding(.horizontal, Tokens.spacing.md)
+                            .padding(.vertical, Tokens.spacing.sm)
+                        }
+                    }
+
+                    // Card 5: Photos
                     photoSection
 
                     // Card 4: Location
@@ -208,7 +251,8 @@ struct EventEditSheet: View {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button(L.save) {
                         let costVal = Double(cost)
-                        onSave(title, category, date, time.isEmpty ? nil : time, costVal)
+                        let reminderAtVal = hasReminder ? ISO8601DateFormatter().string(from: reminderDate) : nil
+                        onSave(title, category, date, time.isEmpty ? nil : time, costVal, reminderAtVal)
                         // Also persist location if it was added/changed in this session
                         if let name = locationName, let lat = locationLat, let lng = locationLng {
                             onLocationUpdate?(name, locationAddress ?? "", lat, lng, placeId ?? "")
@@ -413,5 +457,15 @@ struct EventEditSheet: View {
                 .cornerRadius(Tokens.radiusSmall)
         }
         .buttonStyle(.plain)
+    }
+
+    private static func parseEventDateTime(_ dateStr: String, _ timeStr: String?) -> Date? {
+        let fmt = DateFormatter()
+        if let t = timeStr, !t.isEmpty {
+            fmt.dateFormat = "yyyy-MM-dd HH:mm"
+            return fmt.date(from: "\(dateStr) \(t)")
+        }
+        fmt.dateFormat = "yyyy-MM-dd"
+        return fmt.date(from: dateStr)
     }
 }

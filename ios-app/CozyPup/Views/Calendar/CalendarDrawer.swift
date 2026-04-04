@@ -343,9 +343,9 @@ struct CalendarDrawer: View {
                 ForEach(selectedEvents) { evt in
                     let pet = evt.petId.flatMap(petStore.getById)
                     let petColor = pet?.color ?? Tokens.accent
-                    EventRow(event: evt, petColor: petColor, pet: pet) { title, category, date, time, cost in
+                    EventRow(event: evt, petColor: petColor, pet: pet) { title, category, date, time, cost, reminderAt in
                         calendarStore.update(evt.id, title: title, category: category,
-                                             eventDate: date, eventTime: time, cost: cost)
+                                             eventDate: date, eventTime: time, cost: cost, reminderAt: reminderAt)
                     } onDelete: {
                         calendarStore.remove(evt.id)
                     }
