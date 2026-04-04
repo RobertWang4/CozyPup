@@ -48,6 +48,21 @@ pytest tests/ --ignore=tests/e2e -v
 | 2.8 | "小维拉稀了" | record 卡片, category=**abnormal** | `card["category"]=="abnormal"` (原 excretion→abnormal) |
 | 2.9 | "今天驱虫了" | record 卡片, category=**medical** | `card["category"]=="medical"` (原 deworming→medical) |
 | 2.10 | "小维今天游泳了" | record 卡片, category=**daily** | `card["category"]=="daily"` (新增 pattern) |
+| 2.11 | "带小维看医生花了300块" | record 卡片, cost=300 | `card["cost"]==300` |
+| 2.12 | "给小维洗澡花了80元" | record 卡片, cost=80 | `card["cost"]==80` |
+| 2.13 | "小维今天吃了狗粮"(无花费) | record 卡片, cost=None | `card["cost"] is None` |
+| 2.14 | "遛了狗，去宠物店买零食花了50块"(多事件+花费) | ≥2 record, 买零食 cost=50 | 遛狗 cost=None, 买零食 cost=50 |
+| 2.15 | "做体检花了1500" | record 卡片, cost=1500 | `card["cost"]==1500` |
+| 2.16 | "免费做了驱虫" | record 卡片, cost=None | `card["cost"] is None`（免费=不传cost） |
+
+---
+
+## 二(补)、修改/查询花费 (test_tool_calendar 2.2x)
+
+| # | 操作 | 期待结果 | 验证方式 |
+|---|------|---------|---------|
+| 2.21 | 先创建花费记录，再问"最近花了多少钱" | 回复包含花费总额 | `result.text` 含金额 |
+| 2.22 | "刚才体检其实花了2000" | update_calendar_event 修改 cost | 事件 cost 更新为 2000 |
 
 ---
 
