@@ -136,15 +136,53 @@ async def dispatch_tool(
 
     result.tools_called.add(fn_name)
 
-    # --- create_daily_task: 检查是否漏传 end_date ---
+    # --- create_daily_task: 自动补全 end_date ---
     if fn_name == "create_daily_task" and not fn_args.get("end_date"):
         import re
-        # 从最近的用户消息中检测截止时间意图
+        from datetime import date as _date, timedelta as _td
         user_msgs = [m.get("content", "") for m in kwargs.get("_messages", []) if m.get("role") == "user" and isinstance(m.get("content"), str)]
         last_user = user_msgs[-1] if user_msgs else ""
-        deadline_pattern = re.compile(r"到[下本]?周|到\d{1,2}[月号日]|到\d{4}|until|接下来\d+天|这周|本周")
-        if deadline_pattern.search(last_user):
-            return {"error": f"用户消息中包含截止时间（'{last_user[:30]}'），但你没有传 end_date 参数。请重新调用并传入正确的 end_date (YYYY-MM-DD 格式)。"}
+        today = _date.today()
+        extracted_end = None
+
+        # "到4月10号" / "到4月10日"
+        m = re.search(r"到(\d{1,2})月(\d{1,2})[号日]", last_user)
+        if m:
+            month, day = int(m.group(1)), int(m.group(2))
+            year = today.year if month >= today.month else today.year + 1
+            try:
+                extracted_end = _date(year, month, day)
+            except ValueError:
+                pass
+
+        # "到下周日" / "到下周六" etc
+        if not extracted_end:
+            m = re.search(r"到?下周([一二三四五六日天])", last_user)
+            if m:
+                weekday_map = {"一": 0, "二": 1, "三": 2, "四": 3, "五": 4, "六": 5, "日": 6, "天": 6}
+                target_wd = weekday_map.get(m.group(1), 6)
+                days_ahead = (target_wd - today.weekday()) % 7 + 7  # next week
+                extracted_end = today + _td(days=days_ahead)
+
+        # "接下来7天" / "接下来N天"
+        if not extracted_end:
+            m = re.search(r"接下来(\d+)天", last_user)
+            if m:
+                extracted_end = today + _td(days=int(m.group(1)))
+
+        # "这周" / "本周"
+        if not extracted_end and re.search(r"[这本]周", last_user):
+            days_to_sunday = 6 - today.weekday()
+            extracted_end = today + _td(days=max(days_to_sunday, 1))
+
+        if extracted_end:
+            fn_args["end_date"] = extracted_end.isoformat()
+            # Rewrite the tool_call arguments so execute_tool sees the fix
+            tool_call["function"]["arguments"] = json.dumps(fn_args, ensure_ascii=False)
+            logger.info("end_date_auto_fixed", extra={
+                "extracted": extracted_end.isoformat(),
+                "user_text": last_user[:60],
+            })
 
     # --- plan：多步骤规划，不走 DB ---
     if fn_name == "plan":
