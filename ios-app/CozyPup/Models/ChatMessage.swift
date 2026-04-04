@@ -10,6 +10,7 @@ struct RecordCardData: Codable, Equatable {
     let date: String
     let category: String
     let title: String?
+    let cost: Double?
     let old_date: String?  // present when event was moved to a different date
 }
 

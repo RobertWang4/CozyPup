@@ -42,11 +42,19 @@ struct TimelineEventCard: View {
                     }
                 }
 
-                // Title
-                Text(event.title)
-                    .font(Tokens.fontSubheadline)
-                    .foregroundColor(Tokens.text)
-                    .lineLimit(3)
+                // Title + cost
+                HStack(spacing: Tokens.spacing.xs) {
+                    Text(event.title)
+                        .font(Tokens.fontSubheadline)
+                        .foregroundColor(Tokens.text)
+                        .lineLimit(3)
+                    if let cost = event.cost, cost > 0 {
+                        Spacer()
+                        Text("¥\(Int(cost))")
+                            .font(Tokens.fontSubheadline.weight(.semibold))
+                            .foregroundColor(Tokens.accent)
+                    }
+                }
 
                 // Photo grid
                 if !event.photos.isEmpty {

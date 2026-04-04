@@ -497,7 +497,7 @@ struct ChatView: View {
     private func cardView(_ card: CardData) -> some View {
         switch card {
         case .record(let data):
-            RecordCard(petName: data.pet_name, date: data.date, category: data.category, title: data.title, onTap: {
+            RecordCard(petName: data.pet_name, date: data.date, category: data.category, title: data.title, cost: data.cost, onTap: {
                 calendarJumpDate = data.date
                 withAnimation(.easeInOut(duration: 0.35)) {
                     showCalendar = true

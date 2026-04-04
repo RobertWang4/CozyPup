@@ -5,6 +5,7 @@ struct RecordCard: View {
     let date: String
     let category: String
     var title: String?
+    var cost: Double?
     var onTap: (() -> Void)?
 
     var body: some View {
@@ -27,14 +28,21 @@ struct RecordCard: View {
                                 .font(Tokens.fontSubheadline)
                                 .foregroundColor(Tokens.green)
                             VStack(alignment: .leading, spacing: 1) {
-                                if let title, !title.isEmpty {
-                                    Text("\(petName) · \(title)")
-                                        .font(Tokens.fontSubheadline.weight(.medium))
-                                        .foregroundColor(Tokens.text)
-                                } else {
-                                    Text("\(petName) · \(category)")
-                                        .font(Tokens.fontSubheadline.weight(.medium))
-                                        .foregroundColor(Tokens.text)
+                                HStack(spacing: Tokens.spacing.xs) {
+                                    if let title, !title.isEmpty {
+                                        Text("\(petName) · \(title)")
+                                            .font(Tokens.fontSubheadline.weight(.medium))
+                                            .foregroundColor(Tokens.text)
+                                    } else {
+                                        Text("\(petName) · \(category)")
+                                            .font(Tokens.fontSubheadline.weight(.medium))
+                                            .foregroundColor(Tokens.text)
+                                    }
+                                    if let cost, cost > 0 {
+                                        Text("¥\(Int(cost))")
+                                            .font(Tokens.fontCaption.weight(.semibold))
+                                            .foregroundColor(Tokens.accent)
+                                    }
                                 }
                                 Text(date)
                                     .font(Tokens.fontCaption)
