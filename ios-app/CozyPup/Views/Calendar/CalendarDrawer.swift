@@ -1,7 +1,7 @@
 import SwiftUI
 
 enum CalendarMode {
-    case calendar, timeline, singleDay
+    case calendar, timeline, singleDay, spending
 }
 
 struct CalendarDrawer: View {
@@ -71,6 +71,23 @@ struct CalendarDrawer: View {
                 }
                 Spacer()
 
+                // Spending stats
+                Button {
+                    withAnimation(.easeInOut(duration: 0.25)) {
+                        mode = mode == .spending ? .timeline : .spending
+                    }
+                } label: {
+                    ZStack {
+                        Circle()
+                            .fill(mode == .spending ? Tokens.accent.opacity(0.15) : Tokens.surface)
+                            .frame(width: Tokens.size.buttonSmall, height: Tokens.size.buttonSmall)
+                        Text("¥")
+                            .font(.system(size: 15, weight: .semibold))
+                            .foregroundColor(mode == .spending ? Tokens.accent : Tokens.textSecondary)
+                    }
+                }
+                .buttonStyle(.plain)
+
                 // Task indicator
                 Button {
                     showTaskManager = true
@@ -94,10 +111,12 @@ struct CalendarDrawer: View {
             .padding(.horizontal, Tokens.spacing.lg)
             .padding(.top, 70)
 
-            // Category filter pills
-            categoryFilterRow
-                .padding(.horizontal, Tokens.spacing.lg)
-                .padding(.top, Tokens.spacing.sm)
+            // Category filter pills (hide in spending mode)
+            if mode != .spending {
+                categoryFilterRow
+                    .padding(.horizontal, Tokens.spacing.lg)
+                    .padding(.top, Tokens.spacing.sm)
+            }
 
             // Scrollable content area
             switch mode {
@@ -117,6 +136,12 @@ struct CalendarDrawer: View {
                         withAnimation(.easeInOut(duration: 0.3)) { mode = previousMode }
                     }
                 }
+
+            case .spending:
+                SpendingStatsView(year: $year, month: Binding(
+                    get: { month + 1 },  // CalendarDrawer uses 0-indexed month, SpendingStatsView uses 1-indexed
+                    set: { month = $0 - 1 }
+                ))
             }
         }
         .overlay(alignment: .bottom) {
