@@ -71,6 +71,7 @@ def _event_to_response(event: CalendarEvent, pets_by_id: dict | None = None) -> 
         location_lat=event.location_lat,
         location_lng=event.location_lng,
         place_id=event.place_id,
+        cost=event.cost,
         created_at=event.created_at.isoformat(),
     )
 
@@ -195,6 +196,8 @@ async def update_event(
         event.event_date = date.fromisoformat(req.event_date)
     if req.event_time is not None:
         event.event_time = time.fromisoformat(req.event_time)
+    if req.cost is not None:
+        event.cost = req.cost
 
     event.edited = True
     await db.commit()

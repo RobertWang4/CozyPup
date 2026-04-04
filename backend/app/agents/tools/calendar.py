@@ -50,6 +50,8 @@ async def create_calendar_event(
     if pet_ids_str and not pet_names:
         return {"success": False, "error": "No valid pets found for the given pet_id(s)"}
 
+    cost = arguments.get("cost")
+
     event = CalendarEvent(
         user_id=user_id,
         pet_id=first_pet_id,  # backward compat
@@ -62,6 +64,7 @@ async def create_calendar_event(
         raw_text=raw_text,
         source=EventSource.chat,
         edited=False,
+        cost=float(cost) if cost is not None else None,
     )
 
     # Attach photos: chat.py 已经在后台把图片存到磁盘了，
@@ -79,6 +82,7 @@ async def create_calendar_event(
         "date": arguments["event_date"],
         "category": arguments["category"],
         "title": title,
+        "cost": float(cost) if cost is not None else None,
     }
 
     return {
@@ -124,6 +128,7 @@ async def query_calendar_events(
                 "category": e.category.value,
                 "raw_text": e.raw_text,
                 "source": e.source.value,
+                "cost": e.cost,
             }
             for e in events
         ],
@@ -159,6 +164,8 @@ async def update_calendar_event(
         event.title = arguments["title"]
     if "category" in arguments:
         event.category = EventCategory(arguments["category"])
+    if "cost" in arguments:
+        event.cost = float(arguments["cost"]) if arguments["cost"] is not None else None
 
     event.edited = True
     await db.flush()

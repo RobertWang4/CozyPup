@@ -58,6 +58,14 @@ _BASE_TOOL_DEFINITIONS = [
                         "type": "string",
                         "description": "Optional original user text that triggered this record.",
                     },
+                    "cost": {
+                        "type": "number",
+                        "description": (
+                            "花费金额（可选）。用户提到花了多少钱时传入。\n"
+                            "只传数字，不传货币符号。例如用户说'花了200块' → cost=200。\n"
+                            "用户没提到金额就不要传。"
+                        ),
+                    },
                 },
                 "required": ["event_date", "title", "category"],
             },
@@ -132,6 +140,10 @@ _BASE_TOOL_DEFINITIONS = [
                         "type": "string",
                         "enum": ["diet", "excretion", "abnormal", "vaccine", "deworming", "medical", "daily"],
                         "description": "New category.",
+                    },
+                    "cost": {
+                        "type": "number",
+                        "description": "New cost amount.",
                     },
                 },
                 "required": ["event_id"],

@@ -92,6 +92,9 @@ def _validate_create_calendar_event(args: dict) -> list[str]:
     errors += _check_date(args, "event_date")
     errors += _check_enum(args, "category", _CATEGORIES, "category")
     errors += _check_time(args, "event_time")
+    cost = args.get("cost")
+    if cost is not None and (not isinstance(cost, (int, float)) or cost < 0):
+        errors.append(f"cost must be a non-negative number, got: {cost!r}")
     return errors
 
 

@@ -156,6 +156,7 @@ class CalendarEvent(Base):
     location_lat: Mapped[float | None] = mapped_column(Float)
     location_lng: Mapped[float | None] = mapped_column(Float)
     place_id: Mapped[str | None] = mapped_column(String(300))
+    cost: Mapped[float | None] = mapped_column(Float, nullable=True)  # spending amount
     reminder_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("reminders.id", ondelete="SET NULL"))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())

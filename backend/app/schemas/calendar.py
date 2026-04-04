@@ -27,6 +27,7 @@ class CalendarEventUpdate(BaseModel):
     category: EventCategory | None = None
     event_date: str | None = None
     event_time: str | None = None
+    cost: float | None = None
 
 
 class PetTag(BaseModel):
@@ -55,4 +56,5 @@ class CalendarEventResponse(BaseModel):
     location_lat: float | None = None
     location_lng: float | None = None
     place_id: str | None = None
+    cost: float | None = None
     created_at: str
