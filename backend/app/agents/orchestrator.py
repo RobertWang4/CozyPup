@@ -141,8 +141,8 @@ async def dispatch_tool(
         import re
         user_msgs = [m.get("content", "") for m in kwargs.get("_messages", []) if m.get("role") == "user" and isinstance(m.get("content"), str)]
         last_user = user_msgs[-1] if user_msgs else ""
-        # Match: 花了300/花了300块/花了300元/花了80块钱/1500元/cost 50
-        cost_match = re.search(r"花了?\s*(\d+(?:\.\d+)?)\s*[块元]|(\d+(?:\.\d+)?)\s*[块元]", last_user)
+        # Match: 花了300/花了300块/花了100/300元/cost 50
+        cost_match = re.search(r"花了?\s*(\d+(?:\.\d+)?)\s*[块元刀]?|(\d+(?:\.\d+)?)\s*[块元刀]", last_user)
         if cost_match:
             amount = float(cost_match.group(1) or cost_match.group(2))
             fn_args["cost"] = amount
