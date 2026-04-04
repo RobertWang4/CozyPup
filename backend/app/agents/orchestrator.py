@@ -136,6 +136,16 @@ async def dispatch_tool(
 
     result.tools_called.add(fn_name)
 
+    # --- create_daily_task: 检查是否漏传 end_date ---
+    if fn_name == "create_daily_task" and not fn_args.get("end_date"):
+        import re
+        # 从最近的用户消息中检测截止时间意图
+        user_msgs = [m.get("content", "") for m in kwargs.get("_messages", []) if m.get("role") == "user" and isinstance(m.get("content"), str)]
+        last_user = user_msgs[-1] if user_msgs else ""
+        deadline_pattern = re.compile(r"到[下本]?周|到\d{1,2}[月号日]|到\d{4}|until|接下来\d+天|这周|本周")
+        if deadline_pattern.search(last_user):
+            return {"error": f"用户消息中包含截止时间（'{last_user[:30]}'），但你没有传 end_date 参数。请重新调用并传入正确的 end_date (YYYY-MM-DD 格式)。"}
+
     # --- plan：多步骤规划，不走 DB ---
     if fn_name == "plan":
         steps = fn_args.get("steps", [])
@@ -491,7 +501,7 @@ async def run_orchestrator(
             tool_result = await dispatch_tool(
                 tc, db, user_id, session_id, result, on_card, lang,
                 pets=pets, images=images, image_urls=image_urls,
-                location=location,
+                location=location, _messages=messages,
             )
 
             trace.record("tool_dispatch", {
