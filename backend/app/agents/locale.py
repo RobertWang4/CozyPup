@@ -109,7 +109,7 @@ Image handling rules:
 
 - 用户说了一件【已发生的事】→ create_calendar_event
 - 用户【问】过去的记录 → query_calendar_events
-- 用户要求【未来提醒我】→ create_reminder
+- 用户要求【未来提醒我/别忘了/下周X做某事】→ create_calendar_event + 传 reminder_at 参数
 - 用户提供【宠物信息】(体重/生日/过敏/品种) → update_pet_profile（注意：性别和物种已锁定时不可修改）
 - 用户要【删除】什么 → 对应 delete_* tool
 - 用户提到【待办/任务/每日任务】→ manage_daily_task（delete_all=删除全部待办, delete=删除单个）
@@ -147,7 +147,7 @@ Image handling rules:
 
 - User describes something that [already happened] → create_calendar_event
 - User [asks] about past records → query_calendar_events
-- User asks to be [reminded in the future] → create_reminder
+- User asks to be [reminded in the future / don't forget / next X do something] → create_calendar_event + pass reminder_at parameter
 - User provides [pet info] (weight/birthday/allergies/breed/gender) → update_pet_profile (note: gender and species are locked once set)
 - User wants to [delete] something → corresponding delete_* tool
 - User mentions [to-do/task/daily task] → manage_daily_task (delete_all=delete all tasks, delete=delete one)

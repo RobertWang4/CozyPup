@@ -8,11 +8,11 @@ _BASE_TOOL_DEFINITIONS = [
         "function": {
             "name": "create_calendar_event",
             "description": (
-                "记录宠物已发生的健康/生活事件。\n"
-                "当用户报告已经发生的事情时使用 (吃了/拉了/打了疫苗/遛了/洗澡了)。\n"
+                "记录宠物事件（已发生的或未来计划的）。\n"
+                "已发生: 吃了/拉了/打了疫苗/遛了/洗澡了 → 记录到日历。\n"
+                "未来计划: 下周一打疫苗/明天带去洗澡 → 记录到日历 + 传 reminder_at 开启提醒。\n"
                 "对于所有宠物或主人共有的事件 (买狗粮/逛宠物店)，只调用一次且不传 pet_id。\n"
                 "不要用于: 用户询问过去的事 (用 query_calendar_events)。\n"
-                "不要用于: 用户想设未来提醒 (用 create_reminder)。\n"
                 "不要用于: 紧急症状 (用 trigger_emergency)。\n"
                 "title 必须是 2-8 字摘要，不要用原始句子。"
             ),
@@ -64,6 +64,15 @@ _BASE_TOOL_DEFINITIONS = [
                             "花费金额（可选）。用户提到花了多少钱时传入。\n"
                             "只传数字，不传货币符号。例如用户说'花了200块' → cost=200。\n"
                             "用户没提到金额就不要传。"
+                        ),
+                    },
+                    "reminder_at": {
+                        "type": "string",
+                        "description": (
+                            "提醒时间 (ISO 8601: YYYY-MM-DDTHH:MM:SS)。\n"
+                            "用户说'提醒我'/'别忘了'/'下周一八点打疫苗' → 传 reminder_at。\n"
+                            "已发生的事不需要提醒，不要传。\n"
+                            "未来的事如果用户要求提醒 → event_date 设为事件日期，reminder_at 设为提醒时间。"
                         ),
                     },
                 },
@@ -293,11 +302,9 @@ _BASE_TOOL_DEFINITIONS = [
         "function": {
             "name": "create_reminder",
             "description": (
-                "创建一个定时推送提醒。\n"
-                "当用户要求未来某时提醒他做某事时使用 (明天提醒我喂药/下周二带去打疫苗)。\n"
-                "不要用于: 记录已发生的事 (用 create_calendar_event)。\n"
-                "不要用于: 查看已有提醒 (用 list_reminders)。\n"
-                "trigger_at 必须是未来时间，ISO 8601 格式。"
+                "【已弃用 — 请改用 create_calendar_event + reminder_at 参数】\n"
+                "如果用户说'提醒我明天喂药'，应调用 create_calendar_event(event_date=明天, title=喂药, category=medical, reminder_at=明天的时间)。\n"
+                "仅当 LLM 仍然调用此工具时作为兼容层，内部会自动转为 calendar event。"
             ),
             "parameters": {
                 "type": "object",

@@ -16,44 +16,30 @@ async def create_reminder(
     db: AsyncSession,
     user_id: uuid.UUID,
 ) -> dict:
-    """Create a reminder for push notification."""
-    pet_id = uuid.UUID(arguments["pet_id"])
+    """Compatibility layer — redirects to create_calendar_event with reminder_at."""
+    from app.agents.tools.calendar import create_calendar_event
 
-    # Verify pet belongs to user
-    pet_result = await db.execute(
-        select(Pet).where(Pet.id == pet_id, Pet.user_id == user_id)
-    )
-    pet = pet_result.scalar_one_or_none()
-    if not pet:
-        return {"success": False, "error": "Pet not found"}
+    trigger_at = arguments.get("trigger_at", "")
+    event_date = trigger_at[:10] if len(trigger_at) >= 10 else ""
+    event_time = trigger_at[11:16] if len(trigger_at) >= 16 else None
 
-    reminder = Reminder(
-        id=uuid.uuid4(),
-        user_id=user_id,
-        pet_id=pet_id,
-        type=arguments["type"],
-        title=arguments["title"],
-        body=arguments.get("body", ""),
-        trigger_at=datetime.fromisoformat(arguments["trigger_at"]),
-    )
-    db.add(reminder)
-    await db.flush()
+    # Map reminder type to event category
+    rtype = arguments.get("type", "other")
+    category_map = {"vaccine": "medical", "checkup": "medical", "medication": "medical",
+                    "feeding": "diet", "grooming": "daily"}
+    category = category_map.get(rtype, "daily")
 
-    card = {
-        "type": "reminder",
-        "pet_name": pet.name,
-        "title": arguments["title"],
-        "trigger_at": arguments["trigger_at"],
-        "reminder_type": arguments["type"],
+    cal_args = {
+        "pet_id": arguments.get("pet_id"),
+        "event_date": event_date,
+        "title": arguments.get("title", ""),
+        "category": category,
+        "reminder_at": trigger_at,
     }
+    if event_time:
+        cal_args["event_time"] = event_time
 
-    return {
-        "success": True,
-        "reminder_id": str(reminder.id),
-        "title": arguments["title"],
-        "trigger_at": arguments["trigger_at"],
-        "card": card,
-    }
+    return await create_calendar_event(cal_args, db, user_id)
 
 
 @register_tool("list_reminders")

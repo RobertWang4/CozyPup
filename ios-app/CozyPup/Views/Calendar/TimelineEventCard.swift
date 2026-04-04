@@ -35,6 +35,11 @@ struct TimelineEventCard: View {
                             .font(Tokens.fontCaption2.weight(.medium))
                             .foregroundColor(categoryColor)
                             .tracking(0.5)
+                        if event.reminderAt != nil {
+                            Image(systemName: "bell.fill")
+                                .font(.system(size: 10))
+                                .foregroundColor(Tokens.accent)
+                        }
                         Spacer()
                         if let time = event.eventTime {
                             Text(time)
@@ -51,7 +56,7 @@ struct TimelineEventCard: View {
                             .lineLimit(3)
                         if let cost = event.cost, cost > 0 {
                             Spacer()
-                            Text("¥\(Int(cost))")
+                            Text("$\(Int(cost))")
                                 .font(Tokens.fontSubheadline.weight(.semibold))
                                 .foregroundColor(Tokens.accent)
                         }
@@ -181,21 +186,27 @@ struct TimelineEventCard: View {
             } else if event.photos.count == 2 {
                 HStack(spacing: Tokens.spacing.xs) {
                     ForEach(event.photos, id: \.self) { urlStr in
-                        photoItem(urlStr)
-                            .frame(maxWidth: .infinity)
-                            .frame(height: 140)
-                            .clipped()
-                            .cornerRadius(Tokens.radiusSmall)
+                        GeometryReader { geo in
+                            photoItem(urlStr)
+                                .frame(width: geo.size.width, height: geo.size.height)
+                                .clipped()
+                        }
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 140)
+                        .cornerRadius(Tokens.radiusSmall)
                     }
                 }
             } else {
                 let columns = [GridItem(.flexible(), spacing: Tokens.spacing.xs), GridItem(.flexible(), spacing: Tokens.spacing.xs)]
                 LazyVGrid(columns: columns, spacing: Tokens.spacing.xs) {
                     ForEach(event.photos, id: \.self) { urlStr in
-                        photoItem(urlStr)
-                            .frame(height: 120)
-                            .clipped()
-                            .cornerRadius(Tokens.radiusSmall)
+                        GeometryReader { geo in
+                            photoItem(urlStr)
+                                .frame(width: geo.size.width, height: geo.size.height)
+                                .clipped()
+                        }
+                        .frame(height: 140)
+                        .cornerRadius(Tokens.radiusSmall)
                     }
                 }
             }

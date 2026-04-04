@@ -6,6 +6,7 @@ struct RecordCard: View {
     let category: String
     var title: String?
     var cost: Double?
+    var hasReminder: Bool = false
     var onTap: (() -> Void)?
 
     var body: some View {
@@ -39,8 +40,13 @@ struct RecordCard: View {
                                             .foregroundColor(Tokens.text)
                                     }
                                     if let cost, cost > 0 {
-                                        Text("¥\(Int(cost))")
+                                        Text("$\(Int(cost))")
                                             .font(Tokens.fontCaption.weight(.semibold))
+                                            .foregroundColor(Tokens.accent)
+                                    }
+                                    if hasReminder {
+                                        Image(systemName: "bell.fill")
+                                            .font(.system(size: 10))
                                             .foregroundColor(Tokens.accent)
                                     }
                                 }

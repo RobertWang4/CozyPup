@@ -72,6 +72,7 @@ def _event_to_response(event: CalendarEvent, pets_by_id: dict | None = None) -> 
         location_lng=event.location_lng,
         place_id=event.place_id,
         cost=event.cost,
+        reminder_at=event.reminder_at.isoformat() if event.reminder_at else None,
         created_at=event.created_at.isoformat(),
     )
 

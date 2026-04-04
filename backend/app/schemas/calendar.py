@@ -57,4 +57,5 @@ class CalendarEventResponse(BaseModel):
     location_lng: float | None = None
     place_id: str | None = None
     cost: float | None = None
+    reminder_at: str | None = None
     created_at: str

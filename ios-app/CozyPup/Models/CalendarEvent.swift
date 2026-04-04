@@ -46,9 +46,11 @@ struct CalendarEvent: Identifiable, Codable, Equatable {
     var locationLng: Double?
     var placeId: String?
     var cost: Double?
+    var reminderAt: String?
 
     enum CodingKeys: String, CodingKey {
         case id, title, type, category, source, edited, photos, cost
+        case reminderAt = "reminder_at"
         case petId = "pet_id"
         case eventDate = "event_date"
         case eventTime = "event_time"
@@ -87,6 +89,7 @@ struct CalendarEvent: Identifiable, Codable, Equatable {
         locationLng = try c.decodeIfPresent(Double.self, forKey: .locationLng)
         placeId = try c.decodeIfPresent(String.self, forKey: .placeId)
         cost = try c.decodeIfPresent(Double.self, forKey: .cost)
+        reminderAt = try c.decodeIfPresent(String.self, forKey: .reminderAt)
     }
 
     init(petId: String?, eventDate: String, eventTime: String?, title: String,

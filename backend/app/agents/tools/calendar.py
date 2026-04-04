@@ -51,6 +51,14 @@ async def create_calendar_event(
         return {"success": False, "error": "No valid pets found for the given pet_id(s)"}
 
     cost = arguments.get("cost")
+    reminder_at_str = arguments.get("reminder_at")
+    reminder_at = None
+    if reminder_at_str:
+        from datetime import datetime as _dt
+        try:
+            reminder_at = _dt.fromisoformat(reminder_at_str)
+        except ValueError:
+            pass
 
     event = CalendarEvent(
         user_id=user_id,
@@ -65,6 +73,7 @@ async def create_calendar_event(
         source=EventSource.chat,
         edited=False,
         cost=float(cost) if cost is not None else None,
+        reminder_at=reminder_at,
     )
 
     # Attach photos: chat.py 已经在后台把图片存到磁盘了，
@@ -83,6 +92,7 @@ async def create_calendar_event(
         "category": arguments["category"],
         "title": title,
         "cost": float(cost) if cost is not None else None,
+        "reminder_at": reminder_at_str,
     }
 
     return {
