@@ -539,7 +539,7 @@ struct ChatView: View {
             LocationPickerCard(data: data)
         case .dailyTask(let data):
             DailyTaskCard(data: data)
-                .task { await dailyTaskStore.fetchToday() }
+                .onAppear { Task { await dailyTaskStore.fetchToday() } }
         case .calendarSync:
             ActionCard(
                 icon: "calendar.badge.plus", iconColor: Tokens.green,
@@ -676,6 +676,10 @@ struct ChatView: View {
             }
             chatStore.save()
             isStreaming = false
+
+            // Always refresh daily tasks after any chat response —
+            // LLM may have created/deleted tasks, or claimed it did without calling tools
+            await dailyTaskStore.fetchToday()
         }
     }
 

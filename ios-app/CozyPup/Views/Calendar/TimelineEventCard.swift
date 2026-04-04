@@ -6,7 +6,7 @@ struct TimelineEventCard: View {
     let petColor: Color
     let petName: String
     var allowPhotoUpload: Bool = false
-    var onUpdate: ((String, EventCategory, String, String?) -> Void)?
+    var onUpdate: ((String, EventCategory, String, String?, Double?) -> Void)?
     var onDelete: (() -> Void)?
     var onPhotoUpload: ((Data) async -> String?)?
     var onPhotoDelete: ((String) -> Void)?
@@ -20,46 +20,44 @@ struct TimelineEventCard: View {
     @State private var fullScreenImage: UIImage?
 
     var body: some View {
-        HStack(spacing: 0) {
-            // Left accent bar
-            RoundedRectangle(cornerRadius: 1.5)
-                .fill(categoryColor)
-                .frame(width: 3)
-                .padding(.vertical, 12)
+        VStack(spacing: 0) {
+            HStack(spacing: 0) {
+                // Left accent bar
+                RoundedRectangle(cornerRadius: 1.5)
+                    .fill(categoryColor)
+                    .frame(width: 3)
+                    .padding(.vertical, 12)
 
-            VStack(alignment: .leading, spacing: Tokens.spacing.xs) {
-                // Header: category + time
-                HStack {
-                    Text(event.category.label.uppercased())
-                        .font(Tokens.fontCaption2.weight(.medium))
-                        .foregroundColor(categoryColor)
-                        .tracking(0.5)
-                    Spacer()
-                    if let time = event.eventTime {
-                        Text(time)
-                            .font(Tokens.fontCaption)
-                            .foregroundColor(Tokens.textTertiary)
-                    }
-                }
-
-                // Title + cost
-                HStack(spacing: Tokens.spacing.xs) {
-                    Text(event.title)
-                        .font(Tokens.fontSubheadline)
-                        .foregroundColor(Tokens.text)
-                        .lineLimit(3)
-                    if let cost = event.cost, cost > 0 {
+                VStack(alignment: .leading, spacing: Tokens.spacing.xs) {
+                    // Header: category + time
+                    HStack {
+                        Text(event.category.label.uppercased())
+                            .font(Tokens.fontCaption2.weight(.medium))
+                            .foregroundColor(categoryColor)
+                            .tracking(0.5)
                         Spacer()
-                        Text("¥\(Int(cost))")
-                            .font(Tokens.fontSubheadline.weight(.semibold))
-                            .foregroundColor(Tokens.accent)
+                        if let time = event.eventTime {
+                            Text(time)
+                                .font(Tokens.fontCaption)
+                                .foregroundColor(Tokens.textTertiary)
+                        }
                     }
-                }
 
-                // Photo grid
-                if !event.photos.isEmpty {
-                    photoGrid
-                }
+                    // Title + cost
+                    HStack(spacing: Tokens.spacing.xs) {
+                        Text(event.title)
+                            .font(Tokens.fontSubheadline)
+                            .foregroundColor(Tokens.text)
+                            .lineLimit(3)
+                        if let cost = event.cost, cost > 0 {
+                            Spacer()
+                            Text("¥\(Int(cost))")
+                                .font(Tokens.fontSubheadline.weight(.semibold))
+                                .foregroundColor(Tokens.accent)
+                        }
+                    }
+
+                    // Photos moved outside padding below
 
                 // Location
                 if let locName = event.locationName, let lat = event.locationLat, let lng = event.locationLng {
@@ -102,6 +100,14 @@ struct TimelineEventCard: View {
             .padding(.leading, 12)
             .padding(.vertical, 14)
             .padding(.trailing, Tokens.spacing.md)
+        }
+
+            // Photos — edge-to-edge inside card
+            if !event.photos.isEmpty {
+                photoGrid
+                    .padding(.horizontal, Tokens.spacing.sm)
+                    .padding(.bottom, Tokens.spacing.sm)
+            }
         }
         .background(Tokens.surface)
         .cornerRadius(14)
@@ -158,33 +164,38 @@ struct TimelineEventCard: View {
     // MARK: - Photo Grid
 
     private var photoGrid: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: Tokens.spacing.xs) {
-                ForEach(event.photos, id: \.self) { urlStr in
-                    ZStack(alignment: .topTrailing) {
-                        CachedAsyncImage(url: photoURL(urlStr)) { image in
-                            image.resizable().scaledToFill()
-                        } placeholder: {
-                            Tokens.placeholderBg
-                        }
-                        .frame(width: 72, height: 72)
-                        .clipped()
-                        .cornerRadius(Tokens.radiusSmall)
-                        .onTapGesture {
-                            loadFullScreenImage(from: urlStr)
-                        }
-
-                        if onPhotoDelete != nil {
-                            Button {
-                                onPhotoDelete?(urlStr)
-                            } label: {
-                                Image(systemName: "xmark.circle.fill")
-                                    .font(.system(size: 16))
-                                    .foregroundColor(.white)
-                                    .shadow(radius: 2)
-                            }
-                            .offset(x: 4, y: -4)
-                        }
+        VStack(spacing: Tokens.spacing.xs) {
+            if event.photos.count == 1 {
+                // Single photo: full width, aspect fill
+                CachedAsyncImage(url: photoURL(event.photos[0])) { image in
+                    image.resizable().scaledToFill()
+                } placeholder: {
+                    Tokens.placeholderBg
+                }
+                .frame(maxWidth: .infinity)
+                .frame(height: 200)
+                .clipped()
+                .cornerRadius(Tokens.radiusSmall)
+                .contentShape(Rectangle())
+                .onTapGesture { loadFullScreenImage(from: event.photos[0]) }
+            } else if event.photos.count == 2 {
+                HStack(spacing: Tokens.spacing.xs) {
+                    ForEach(event.photos, id: \.self) { urlStr in
+                        photoItem(urlStr)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 140)
+                            .clipped()
+                            .cornerRadius(Tokens.radiusSmall)
+                    }
+                }
+            } else {
+                let columns = [GridItem(.flexible(), spacing: Tokens.spacing.xs), GridItem(.flexible(), spacing: Tokens.spacing.xs)]
+                LazyVGrid(columns: columns, spacing: Tokens.spacing.xs) {
+                    ForEach(event.photos, id: \.self) { urlStr in
+                        photoItem(urlStr)
+                            .frame(height: 120)
+                            .clipped()
+                            .cornerRadius(Tokens.radiusSmall)
                     }
                 }
             }
@@ -200,6 +211,19 @@ struct TimelineEventCard: View {
                 .ignoresSafeArea()
                 .presentationBackground(.clear)
             }
+        }
+    }
+
+    @ViewBuilder
+    private func photoItem(_ urlStr: String) -> some View {
+        CachedAsyncImage(url: photoURL(urlStr)) { image in
+            image.resizable().scaledToFill()
+        } placeholder: {
+            Tokens.placeholderBg
+        }
+        .contentShape(Rectangle())
+        .onTapGesture {
+            loadFullScreenImage(from: urlStr)
         }
     }
 

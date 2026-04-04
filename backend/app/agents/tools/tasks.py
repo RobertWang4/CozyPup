@@ -92,7 +92,8 @@ async def manage_daily_task(
         )
         tasks = result.scalars().all()
         if not tasks:
-            return {"success": True, "action": "delete_all", "deleted_count": 0, "message": "No active tasks to delete"}
+            return {"success": True, "action": "delete_all", "deleted_count": 0, "message": "No active tasks to delete",
+                    "card": {"type": "daily_task_deleted", "title": "没有待办需要删除"}}
         deleted_titles = [t.title for t in tasks]
         for t in tasks:
             await db.delete(t)
@@ -122,7 +123,8 @@ async def manage_daily_task(
         )
         tasks = result.scalars().all()
         if not tasks:
-            return {"success": True, "action": "delete_all", "deleted_count": 0, "message": "No active tasks to delete"}
+            return {"success": True, "action": "delete_all", "deleted_count": 0, "message": "No active tasks to delete",
+                    "card": {"type": "daily_task_deleted", "title": "没有待办需要删除"}}
         deleted_titles = [t.title for t in tasks]
         for t in tasks:
             await db.delete(t)
