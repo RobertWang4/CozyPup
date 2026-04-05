@@ -93,9 +93,7 @@ struct ChatView: View {
                                         if !msg.content.isEmpty {
                                             ChatBubble(role: msg.role, content: msg.content)
                                         }
-                                        ForEach(Array(msg.cards.enumerated()), id: \.offset) { _, card in
-                                            cardView(card)
-                                        }
+                                        cardListView(msg.cards)
                                     }
                                 }
                                 if isStreaming, let last = chatStore.messages.last, last.content.isEmpty {
@@ -492,6 +490,44 @@ struct ChatView: View {
     }
 
     // MARK: - Cards
+
+    /// Groups consecutive placeDetail cards into a paged TabView; renders all other cards individually.
+    @ViewBuilder
+    private func cardListView(_ cards: [CardData]) -> some View {
+        let groups = groupCards(cards)
+        ForEach(Array(groups.enumerated()), id: \.offset) { _, group in
+            if group.count > 1, case .placeDetail = group[0] {
+                // Multiple placeDetail cards → paged TabView
+                let details: [PlaceDetailCardData] = group.compactMap { if case .placeDetail(let d) = $0 { return d } else { return nil } }
+                TabView {
+                    ForEach(Array(details.enumerated()), id: \.offset) { _, data in
+                        ScrollView {
+                            PlaceDetailCard(data: data)
+                        }
+                    }
+                }
+                .tabViewStyle(.page(indexDisplayMode: .automatic))
+                .frame(height: 420)
+            } else {
+                ForEach(Array(group.enumerated()), id: \.offset) { _, card in
+                    cardView(card)
+                }
+            }
+        }
+    }
+
+    /// Groups consecutive placeDetail cards together; other cards are 1-element groups.
+    private func groupCards(_ cards: [CardData]) -> [[CardData]] {
+        var groups: [[CardData]] = []
+        for card in cards {
+            if case .placeDetail = card, let last = groups.last, case .placeDetail = last.first {
+                groups[groups.count - 1].append(card)
+            } else {
+                groups.append([card])
+            }
+        }
+        return groups
+    }
 
     @ViewBuilder
     private func cardView(_ card: CardData) -> some View {
