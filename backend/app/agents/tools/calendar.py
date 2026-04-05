@@ -262,15 +262,17 @@ async def upload_event_photo(
         return {"success": False, "error": "No image provided. Ask the user to attach a photo."}
 
     photos = list(event.photos) if event.photos else []
-    photos.extend(image_urls)
+    added = [url for url in image_urls if url not in photos]
+    if not added:
+        return {"success": True, "message": f"Photos already attached to '{event.title}'."}
+    photos.extend(added)
     event.photos = photos
+    flag_modified(event, "photos")
     await db.flush()
 
     return {
         "success": True,
-        "event_id": str(event_id),
-        "photo_urls": image_urls,
-        "message": f"Added {len(image_urls)} photo(s) to event '{event.title}'.",
+        "message": f"Added {len(added)} photo(s) to event '{event.title}'.",
     }
 
 
