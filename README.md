@@ -1,10 +1,21 @@
 # CozyPup
 
+**English** | [中文](README.zh.md)
+
 AI-powered pet health assistant. One chat interface handles everything — recording events, managing pet profiles, finding nearby vets, setting reminders. No forms, no buttons, no onboarding wizards. Users talk to the AI, and the AI executes.
 
 Native SwiftUI iOS app + FastAPI Python backend + PostgreSQL (Neon) + LLM via LiteLLM.
 
 **Live on Google Cloud Run.** iOS app in TestFlight.
+
+## Screenshots
+
+<p align="center">
+  <img src="Photos/IMG_1022.PNG" width="200" alt="Home — voice input">
+  <img src="Photos/IMG_1025.PNG" width="200" alt="Chat — event recording + place search">
+  <img src="Photos/IMG_1026.PNG" width="200" alt="Place detail card with reviews">
+  <img src="Photos/IMG_1027.PNG" width="200" alt="Calendar timeline">
+</p>
 
 ---
 
@@ -333,7 +344,7 @@ backend/app/
 
 ---
 
-## Running Locally
+## Development
 
 ### Backend
 ```bash
@@ -344,7 +355,7 @@ uvicorn app.main:app --reload --port 8000
 ```
 
 ### iOS
-Open `ios-app/CozyPup.xcodeproj` in Xcode → Cmd+R.
+Open `ios-app/CozyPup.xcodeproj` in Xcode → Cmd+R. Requires Xcode 16+, deployment target iOS 17.0.
 
 ### Tests
 ```bash
