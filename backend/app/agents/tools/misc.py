@@ -76,14 +76,16 @@ async def search_places(
         "places": places_for_card,
     }
 
-    # Text summary for LLM
+    # Text summary for LLM (include place_id so LLM can call get_place_details later)
     top_results = []
-    for p in places_for_card[:5]:
-        parts = [f"{p['name']} — {p['address']}"]
-        if p.get("distance"):
-            parts.append(f"({p['distance']}, {p['duration']})")
+    for i, p in enumerate(places_for_card[:5]):
+        parts = [f"{i+1}. {p['name']}"]
         if p.get("rating"):
             parts.append(f"⭐{p['rating']}")
+        if p.get("distance"):
+            parts.append(f"{p['distance']}")
+        parts.append(f"[place_id={p['place_id']}]")
+        parts.append(f"[lat={p['lat']}, lng={p['lng']}]")
         top_results.append(" ".join(parts))
 
     return {
