@@ -307,10 +307,25 @@ async def remove_event_photo(
     flag_modified(event, "photos")
     await db.flush()
 
+    # Get pet name for card
+    pet_name = ""
+    if event.pet_id:
+        pet_result = await db.execute(select(Pet).where(Pet.id == event.pet_id))
+        pet = pet_result.scalar_one_or_none()
+        if pet:
+            pet_name = pet.name
+
     return {
         "success": True,
         "remaining_count": len(photos),
         "message": f"Removed photo {photo_index + 1} from '{event.title}'. {len(photos)} photo(s) remaining.",
+        "card": {
+            "type": "record",
+            "pet_name": pet_name,
+            "date": str(event.event_date),
+            "category": event.category.value if event.category else "daily",
+            "title": event.title,
+        },
     }
 
 
