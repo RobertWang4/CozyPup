@@ -16,7 +16,7 @@ struct PlaceCard: View {
                 }
             }
             .tabViewStyle(.page(indexDisplayMode: .automatic))
-            .frame(height: 160)
+            .frame(height: 190)
         }
         .padding(Tokens.spacing.md)
         .background(Tokens.surface)

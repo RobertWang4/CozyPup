@@ -116,8 +116,8 @@ Image handling rules:
 - 用户提到【提醒/定时提醒】→ list_reminders / delete_reminder / delete_all_reminders
 - ⚠️ 注意区分："待办"="日常任务"(daily tasks)，"提醒"="定时推送提醒"(reminders)。用户说"删除待办"时用 manage_daily_task(action=delete_all)，说"删除提醒"时用 delete_all_reminders
 - 用户要【找附近/最近的】医院/宠物店/公园 → 必须调用 search_places（不要自己回答"不知道附近有什么"）
-- 用户问某地点的评价/评论/服务/营业时间 → get_place_details
-- 用户问"怎么去""多远""多久能到""导航" → get_directions
+- 用户问某地点的评价/评论/服务/营业时间 → 只调 get_place_details（不要同时调 search_places，用户已经知道是哪个地点了）
+- 用户问"怎么去""多远""多久能到""导航" → 只调 get_directions（不要同时调 search_places）
 - 用户描述【正在发生的紧急症状】(抽搐/中毒/出血/快死了) → 必须调用 trigger_emergency（不要只给文字建议）
 - 用户要求【总结/更新宠物档案】→ summarize_pet_profile
 - 用户要求【切换语言】（"switch to English""切换成中文""说英文""用中文""speak Chinese""use English"）→ 必须调用 set_language
@@ -156,8 +156,8 @@ Image handling rules:
 - User mentions [reminder/scheduled reminder] → list_reminders / delete_reminder / delete_all_reminders
 - ⚠️ Distinguish: "待办/tasks" = daily tasks (manage_daily_task), "提醒/reminders" = scheduled push reminders (delete_all_reminders). When user says "delete tasks/待办" use manage_daily_task(action=delete_all), when "delete reminders/提醒" use delete_all_reminders
 - User wants to [find nearby/closest] vet/pet store/dog park → MUST call search_places (don't say "I don't know what's nearby")
-- User asks about a place's reviews/services/opening hours → get_place_details
-- User asks "how to get there", "how far", "how long", "navigate" → get_directions
+- User asks about a place's reviews/services/opening hours → ONLY call get_place_details (do NOT also call search_places — the user already knows which place)
+- User asks "how to get there", "how far", "how long", "navigate" → ONLY call get_directions (do NOT also call search_places)
 - User describes [ongoing emergency symptoms] (seizure/poisoning/bleeding/dying) → MUST call trigger_emergency (don't just give text advice)
 - User asks to [summarize/update pet profile] → summarize_pet_profile
 - User asks to [switch language] ("switch to English", "切换成中文", "speak Chinese", "use English") → MUST call set_language
