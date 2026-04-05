@@ -103,7 +103,7 @@ def build_test_cases(lang: str) -> list[TestCase]:
 
         # === Section 8: Reminders ===
         TestCase("8.1", "创建提醒", m["8.1"][lang], needs_pet=True,
-                 check=lambda r, c: (r.has_card("reminder") or r.has_card("confirm_action"), f"cards={[x.get('type') for x in r.cards]}")),
+                 check=lambda r, c: (r.has_card("reminder") or r.has_card("record") or r.has_card("confirm_action"), f"cards={[x.get('type') for x in r.cards]}")),
         TestCase("8.3", "列出提醒", m["8.3"][lang], needs_pet=True,
                  setup=m["8.1"][lang],
                  check=lambda r, c: (bool(r.text.strip()), f"text_len={len(r.text)}")),

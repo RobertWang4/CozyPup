@@ -371,6 +371,7 @@ async def _capture_non_streaming(
                 tool_choice="auto",
                 temperature=0.3,
                 stream=False,
+                drop_params=True,
                 **llm_extra_kwargs(),
             ),
             timeout=60,
@@ -411,6 +412,7 @@ async def _stream_completion(
             tool_choice="auto",
             temperature=0.3,
             stream=True,
+            drop_params=True,
             **llm_extra_kwargs(),
         )
 
@@ -614,7 +616,7 @@ async def run_orchestrator(
     raw_text = "".join(text_parts)
     # Strip leaked XML/HTML tags from LLM output (grok sometimes outputs <parameter> or <xai:function_call>)
     result.response_text = _re.sub(r"</?(?:parameter|xai:function_call|function_call)[^>]*>", "", raw_text).strip()
-    if not result.response_text.strip() and not result.confirm_cards:
+    if not result.response_text.strip() and not result.confirm_cards and not result.cards:
         fallback = t("fallback_error", lang)
         result.response_text = fallback
         if on_token:
