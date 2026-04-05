@@ -2,9 +2,11 @@ import SwiftUI
 
 struct PlaceDetailCard: View {
     let data: PlaceDetailCardData
+    @State private var expandedReviews: Set<Int> = []
+    @State private var showHours = false
 
     var body: some View {
-        VStack(alignment: .leading, spacing: Tokens.spacing.md) {
+        VStack(alignment: .leading, spacing: Tokens.spacing.sm) {
             // Header
             HStack {
                 VStack(alignment: .leading, spacing: Tokens.spacing.xxs) {
@@ -14,6 +16,7 @@ struct PlaceDetailCard: View {
                     Text(data.address)
                         .font(Tokens.fontCaption)
                         .foregroundColor(Tokens.textSecondary)
+                        .lineLimit(1)
                 }
                 Spacer()
                 if let isOpen = data.isOpen {
@@ -27,6 +30,7 @@ struct PlaceDetailCard: View {
                 }
             }
 
+            // Rating
             if let rating = data.rating {
                 HStack(spacing: 4) {
                     ForEach(0..<5, id: \.self) { i in
@@ -40,9 +44,11 @@ struct PlaceDetailCard: View {
                 }
             }
 
+            // Reviews
             if let reviews = data.reviews, !reviews.isEmpty {
                 VStack(alignment: .leading, spacing: Tokens.spacing.sm) {
-                    ForEach(Array(reviews.enumerated()), id: \.offset) { _, review in
+                    ForEach(Array(reviews.enumerated()), id: \.offset) { index, review in
+                        let isExpanded = expandedReviews.contains(index)
                         VStack(alignment: .leading, spacing: Tokens.spacing.xxs) {
                             HStack {
                                 Text(review.author)
@@ -61,25 +67,53 @@ struct PlaceDetailCard: View {
                             Text(review.text)
                                 .font(Tokens.fontCaption)
                                 .foregroundColor(Tokens.textSecondary)
-                                .lineLimit(3)
+                                .lineLimit(isExpanded ? nil : 2)
+                            Button {
+                                withAnimation(.easeInOut(duration: 0.2)) {
+                                    if isExpanded {
+                                        expandedReviews.remove(index)
+                                    } else {
+                                        expandedReviews.insert(index)
+                                    }
+                                }
+                            } label: {
+                                Text(isExpanded ? "收起" : "展开")
+                                    .font(Tokens.fontCaption2)
+                                    .foregroundColor(Tokens.accent)
+                            }
                         }
                     }
                 }
             }
 
+            // Hours (collapsed by default)
             if let hours = data.openingHours, !hours.isEmpty {
                 VStack(alignment: .leading, spacing: Tokens.spacing.xxs) {
-                    Text("Hours")
-                        .font(Tokens.fontCaption.weight(.medium))
-                        .foregroundColor(Tokens.text)
-                    ForEach(hours, id: \.self) { line in
-                        Text(line)
-                            .font(Tokens.fontCaption2)
-                            .foregroundColor(Tokens.textSecondary)
+                    Button {
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            showHours.toggle()
+                        }
+                    } label: {
+                        HStack(spacing: Tokens.spacing.xs) {
+                            Text("Hours")
+                                .font(Tokens.fontCaption.weight(.medium))
+                                .foregroundColor(Tokens.text)
+                            Image(systemName: showHours ? "chevron.up" : "chevron.down")
+                                .font(.caption2)
+                                .foregroundColor(Tokens.textSecondary)
+                        }
+                    }
+                    if showHours {
+                        ForEach(hours, id: \.self) { line in
+                            Text(line)
+                                .font(Tokens.fontCaption2)
+                                .foregroundColor(Tokens.textSecondary)
+                        }
                     }
                 }
             }
 
+            // Action buttons
             HStack(spacing: Tokens.spacing.sm) {
                 if let phone = data.phone {
                     Button {
@@ -128,8 +162,8 @@ struct PlaceDetailCard: View {
         rating: 4.5,
         phone: "+1 613-555-0123",
         reviews: [
-            PlaceReview(author: "John D.", rating: 5, text: "Great vet! Very caring with my dog.", time: "2 weeks ago"),
-            PlaceReview(author: "Jane S.", rating: 4, text: "Good service, bit pricey.", time: "1 month ago"),
+            PlaceReview(author: "John D.", rating: 5, text: "Great vet! Very caring with my dog. The staff was incredibly friendly and knowledgeable about pet health issues.", time: "2 weeks ago"),
+            PlaceReview(author: "Jane S.", rating: 4, text: "Good service, bit pricey but worth it for the quality of care they provide.", time: "1 month ago"),
         ],
         isOpen: true,
         openingHours: ["Mon-Fri: 9:00 AM - 6:00 PM", "Sat: 10:00 AM - 4:00 PM", "Sun: Closed"],

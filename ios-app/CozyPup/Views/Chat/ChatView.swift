@@ -501,13 +501,12 @@ struct ChatView: View {
                 let details: [PlaceDetailCardData] = group.compactMap { if case .placeDetail(let d) = $0 { return d } else { return nil } }
                 TabView {
                     ForEach(Array(details.enumerated()), id: \.offset) { _, data in
-                        ScrollView {
-                            PlaceDetailCard(data: data)
-                        }
+                        PlaceDetailCard(data: data)
+                            .padding(.bottom, Tokens.spacing.lg)
                     }
                 }
                 .tabViewStyle(.page(indexDisplayMode: .automatic))
-                .frame(height: 420)
+                .frame(height: 380)
             } else {
                 ForEach(Array(group.enumerated()), id: \.offset) { _, card in
                     cardView(card)
