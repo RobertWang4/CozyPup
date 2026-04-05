@@ -16,7 +16,11 @@ struct PlaceCard: View {
                 }
             }
             .tabViewStyle(.page(indexDisplayMode: .automatic))
-            .frame(height: 190)
+            .frame(height: 200)
+            .onAppear {
+                UIPageControl.appearance().currentPageIndicatorTintColor = UIColor(Tokens.accent)
+                UIPageControl.appearance().pageIndicatorTintColor = UIColor(Tokens.accent.opacity(0.25))
+            }
         }
         .padding(Tokens.spacing.md)
         .background(Tokens.surface)

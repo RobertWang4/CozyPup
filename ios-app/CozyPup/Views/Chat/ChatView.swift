@@ -506,7 +506,7 @@ struct ChatView: View {
                     }
                 }
                 .tabViewStyle(.page(indexDisplayMode: .automatic))
-                .frame(height: 380)
+                .frame(height: 400)
             } else {
                 ForEach(Array(group.enumerated()), id: \.offset) { _, card in
                     cardView(card)
