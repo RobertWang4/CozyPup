@@ -128,6 +128,10 @@ Image handling rules:
 2. trigger_emergency: 用户说宠物"抽搐""中毒""快死了""出血""呼吸困难" → 必须调用，不要只给建议
 3. set_language: 用户说"switch to English""切换成中文""说英文" → 必须调用，不要只用目标语言回复
 
+### 【重要】事件 + 地点关联
+- 当对话上下文中已有 search_places 的结果（place_id、坐标），用户说"去这个""记录上""就去那里"时 → 必须用 plan 拆分：先 create_calendar_event 创建事件，再 add_event_location 把地点关联上去
+- 不要只创建事件而不关联地点！用户提到了具体地点就必须关联
+
 ### 【重要】create_pet vs update_pet_profile
 - create_pet 仅用于用户明确说"我有了一只新宠物"或"我养了一只新的"等场景
 - 如果用户提到的宠物名字已经在上面的宠物列表中，说明这只宠物已经存在。此时必须用 update_pet_profile，绝对不要再次调用 create_pet 创建重复的宠物
@@ -167,6 +171,10 @@ Image handling rules:
 1. search_places: User asks about "nearby", "closest", "find" + vet/dog park/pet store → MUST call, don't reply "I don't know what's nearby"
 2. trigger_emergency: User says pet is "seizing", "poisoned", "dying", "bleeding", "can't breathe" → MUST call, don't just give advice
 3. set_language: User says "switch to English", "切换成中文", "speak English" → MUST call, don't just reply in the target language
+
+### [IMPORTANT] Event + Location association
+- When conversation context already has search_places results (place_id, coordinates), and user says "let's go there", "record it", "book that one" → MUST use plan to split: first create_calendar_event, then add_event_location to attach the place
+- Do NOT just create the event without attaching the location! If a specific place was mentioned, always associate it
 
 ### [IMPORTANT] create_pet vs update_pet_profile
 - create_pet is ONLY for when the user explicitly says "I have a new pet" or "I just got a new pet"
