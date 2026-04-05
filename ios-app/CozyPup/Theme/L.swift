@@ -28,6 +28,7 @@ enum L {
     static var editPet: String { z ? "编辑宠物" : "Edit Pet" }
     static var language: String { z ? "语言" : "Language" }
     static var responseLang: String { z ? "系统语言" : "System Language" }
+    static var syncToAppleCalendar: String { z ? "同步到 Apple 日历" : "Sync to Apple Calendar" }
     static var notifications: String { z ? "通知" : "Notifications" }
     static var pushNotifications: String { z ? "推送通知" : "Push Notifications" }
     static var medReminders: String { z ? "用药提醒" : "Medication Reminders" }

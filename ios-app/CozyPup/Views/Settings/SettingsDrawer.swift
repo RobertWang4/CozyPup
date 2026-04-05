@@ -78,7 +78,7 @@ struct SettingsDrawer: View {
             }
             Button(L.cancel, role: .cancel) { }
         }
-        .confirmationDialog("同步到 Apple 日历", isPresented: $showCalendarSyncOptions, titleVisibility: .visible) {
+        .confirmationDialog(L.syncToAppleCalendar, isPresented: $showCalendarSyncOptions, titleVisibility: .visible) {
             Button("Sync all history") {
                 Task {
                     CalendarSyncService.shared.setSyncEnabled(true)
@@ -219,8 +219,8 @@ struct SettingsDrawer: View {
                 }
                 .listRowBackground(Tokens.surface)
 
-                Section("日历") {
-                    Toggle("同步到 Apple 日历", isOn: $calendarSync)
+                Section(L.calendar) {
+                    Toggle(L.syncToAppleCalendar, isOn: $calendarSync)
                         .onChange(of: calendarSync) { _, newValue in
                             if newValue {
                                 showCalendarSyncOptions = true
