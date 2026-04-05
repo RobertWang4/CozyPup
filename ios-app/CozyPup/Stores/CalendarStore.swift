@@ -41,6 +41,11 @@ class CalendarStore: ObservableObject {
             events.removeAll { $0.eventDate.hasPrefix(prefix) }
             events.append(contentsOf: fetched)
             saveLocal()
+
+            // Sync fetched events to Apple Calendar
+            if CalendarSyncService.shared.isSyncEnabled {
+                Task { await CalendarSyncService.shared.bulkSync(events: fetched) }
+            }
         } catch {
             print("CalendarStore.fetchMonth failed: \(error)")
         }
