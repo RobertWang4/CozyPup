@@ -77,7 +77,7 @@ struct FullScreenImageViewer: View {
                             Spacer()
                         }
                         .padding(.horizontal, Tokens.spacing.md)
-                        .padding(.top, geo.safeAreaInsets.top + Tokens.spacing.sm)
+                        .padding(.top, geo.safeAreaInsets.top + Tokens.spacing.lg)
                         Spacer()
                     }
                 }

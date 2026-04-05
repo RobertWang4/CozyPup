@@ -157,6 +157,8 @@ class AuthStore: ObservableObject {
             if let data = try? JSONEncoder().encode(userInfo) {
                 UserDefaults.standard.set(data, forKey: authKey)
             }
+            // Request push notification permission after successful login
+            await PushManager.shared.requestPermissionAndRegister()
         } catch {
             errorMessage = "Failed to fetch user info"
         }

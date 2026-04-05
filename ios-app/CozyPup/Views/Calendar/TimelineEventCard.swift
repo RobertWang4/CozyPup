@@ -171,18 +171,26 @@ struct TimelineEventCard: View {
     private var photoGrid: some View {
         VStack(spacing: Tokens.spacing.xs) {
             if event.photos.count == 1 {
-                // Single photo: full width, aspect fill
-                CachedAsyncImage(url: photoURL(event.photos[0])) { image in
-                    image.resizable().scaledToFill()
-                } placeholder: {
-                    Tokens.placeholderBg
+                // Single photo: half width, same height as multi-photo
+                HStack {
+                    GeometryReader { geo in
+                        CachedAsyncImage(url: photoURL(event.photos[0])) { image in
+                            image.resizable().scaledToFill()
+                        } placeholder: {
+                            Tokens.placeholderBg
+                        }
+                        .frame(width: geo.size.width, height: geo.size.height)
+                        .clipped()
+                    }
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 140)
+                    .cornerRadius(Tokens.radiusSmall)
+                    .contentShape(Rectangle())
+                    .onTapGesture { loadFullScreenImage(from: event.photos[0]) }
+
+                    Spacer()
+                        .frame(maxWidth: .infinity)
                 }
-                .frame(maxWidth: .infinity)
-                .frame(height: 200)
-                .clipped()
-                .cornerRadius(Tokens.radiusSmall)
-                .contentShape(Rectangle())
-                .onTapGesture { loadFullScreenImage(from: event.photos[0]) }
             } else if event.photos.count == 2 {
                 HStack(spacing: Tokens.spacing.xs) {
                     ForEach(event.photos, id: \.self) { urlStr in

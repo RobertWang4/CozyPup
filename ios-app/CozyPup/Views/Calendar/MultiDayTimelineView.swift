@@ -296,16 +296,16 @@ struct DayRow: View {
 
                         if !evt.photos.isEmpty {
                             ScrollView(.horizontal, showsIndicators: false) {
-                                HStack(spacing: 4) {
+                                HStack(spacing: Tokens.spacing.sm) {
                                     ForEach(evt.photos, id: \.self) { urlStr in
                                         CachedAsyncImage(url: APIClient.shared.avatarURL(urlStr)) { image in
                                             image.resizable().scaledToFill()
                                         } placeholder: {
                                             Tokens.placeholderBg
                                         }
-                                        .frame(width: 48, height: 36)
+                                        .frame(width: 80, height: 80)
                                         .clipped()
-                                        .cornerRadius(6)
+                                        .cornerRadius(Tokens.radiusSmall)
                                         .onTapGesture {
                                             if !isSelecting {
                                                 loadFullScreenImage(from: urlStr)
@@ -314,8 +314,21 @@ struct DayRow: View {
                                     }
                                 }
                                 .padding(.leading, Tokens.spacing.md)
-                                .padding(.top, 4)
+                                .padding(.top, Tokens.spacing.xs)
                             }
+                        }
+
+                        if let cost = evt.cost, cost > 0 {
+                            HStack(spacing: 3) {
+                                Image(systemName: "yensign.circle")
+                                    .font(.system(size: 8))
+                                Text("¥\(cost, specifier: cost == cost.rounded() ? "%.0f" : "%.2f")")
+                                    .font(Tokens.fontCaption2)
+                                    .lineLimit(1)
+                            }
+                            .foregroundColor(Tokens.orange)
+                            .padding(.leading, Tokens.spacing.md)
+                            .padding(.top, 2)
                         }
 
                         if let loc = evt.locationName, !loc.isEmpty {

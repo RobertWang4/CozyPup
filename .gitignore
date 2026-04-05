@@ -26,6 +26,9 @@ backend/logs/error_snapshots/*.json
 .env
 .env.local
 
+# APNs keys
+AuthKey_*.p8
+
 # Google/Firebase config (contains client IDs)
 GoogleService-Info.plist
 
@@ -41,9 +44,9 @@ backend/server_stderr.log
 # Playwright/MCP logs
 .playwright-mcp/*.log
 
-# Claude Code superpowers dev logs
-.superpowers/**/.server.log
-.superpowers/**/.server.pid
+# Claude Code working files
+.superpowers/
+.claude/
 
 # Claude Code worktrees
 .claude/worktrees/
@@ -52,8 +55,8 @@ backend/server_stderr.log
 claude-progress.txt
 
 # E2E test reports (generated, not tracked)
-backend/tests/e2e/reports/*.md
-backend/tests/e2e/reports/failures/
+backend/tests/e2e/reports/
+
 
 # Superpowers plans/specs (Claude Code working docs)
 docs/superpowers/
