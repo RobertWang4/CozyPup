@@ -30,6 +30,12 @@ _SWITCH_LANGUAGE_PATTERN = re.compile(
     re.I,
 )
 
+_INTRODUCE_PATTERN = re.compile(
+    r"你能做什么|有什么功能|怎么用|能干[什嘛]么|你会[什嘛]么|介绍一下|你是谁|你是什么"
+    r"|what can you do|how.*(?:use|work)|features|help me|what.*app.*do|who are you",
+    re.I,
+)
+
 _SUMMARIZE_PROFILE_PATTERN = re.compile(
     r"总结.*(?:档案|资料|信息)|更新.*档案|整理.*档案|summary.*profile"
     r"|summarize.*profile|汇总|生成.*报告",
@@ -93,6 +99,15 @@ def detect(
                 confidence=0.85,
                 confirm_description=t("confirm_set_avatar", lang).format(pet_name=pet_name),
             ))
+
+    # --- Introduce product ---
+    if _INTRODUCE_PATTERN.search(message):
+        actions.append(SuggestedAction(
+            tool_name="introduce_product",
+            arguments={},
+            confidence=0.9,
+            confirm_description="Introduce product features",
+        ))
 
     # --- Switch language ---
     if _SWITCH_LANGUAGE_PATTERN.search(message):

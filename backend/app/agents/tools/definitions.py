@@ -909,6 +909,24 @@ _BASE_TOOL_DEFINITIONS = [
             },
         },
     },
+    {
+        "type": "function",
+        "function": {
+            "name": "introduce_product",
+            "description": (
+                "向用户介绍 Cozy Pup 的功能和使用方式。\n"
+                "【必须调用】以下场景必须调用此工具：\n"
+                "1. 新用户的第一条消息（系统提示会标注）\n"
+                "2. 用户问「你能做什么」「有什么功能」「怎么用」「帮助」\n"
+                "不要用于: 用户已经在正常使用中，不需要重复介绍。"
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {},
+                "required": [],
+            },
+        },
+    },
 ]
 
 # Backward compatibility alias

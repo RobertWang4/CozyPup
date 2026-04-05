@@ -134,6 +134,7 @@ Image handling rules:
 - 用户描述【正在发生的紧急症状】(抽搐/中毒/出血/快死了) → 必须调用 trigger_emergency（不要只给文字建议）
 - 用户要求【总结/更新宠物档案】→ summarize_pet_profile
 - 用户要求【切换语言】（"switch to English""切换成中文""说英文""用中文""speak Chinese""use English"）→ 必须调用 set_language
+- 新用户第一次对话 / 用户问"你能做什么""有什么功能""怎么用" → introduce_product
 - 用户只是聊天/问问题 → 不调工具，直接回复
 
 ### 【关键：这些工具必须被调用，不能用文字回复代替】
@@ -179,6 +180,7 @@ Image handling rules:
 - User describes [ongoing emergency symptoms] (seizure/poisoning/bleeding/dying) → MUST call trigger_emergency (don't just give text advice)
 - User asks to [summarize/update pet profile] → summarize_pet_profile
 - User asks to [switch language] ("switch to English", "切换成中文", "speak Chinese", "use English") → MUST call set_language
+- New user's first message / user asks "what can you do", "how to use", "features", "help" → introduce_product
 - User is just chatting / asking questions → no tool, reply directly
 
 ### [CRITICAL: These tools MUST be called — never substitute with text replies]
@@ -801,6 +803,15 @@ Notes:
     "tool_desc_get_directions": {
         "zh": "获取路线信息（距离、时间）",
         "en": "Get directions (distance, travel time)",
+    },
+    "tool_desc_introduce_product": {
+        "en": (
+            "Introduce Cozy Pup's features and usage to the user.\n"
+            "[MUST CALL] Call this tool when:\n"
+            "1. This is a new user's first message (system will indicate)\n"
+            "2. User asks 'what can you do', 'features', 'how to use', 'help'\n"
+            "Do NOT use for: users already actively using the app."
+        ),
     },
     "tool_desc_add_event_location": {
         "en": (

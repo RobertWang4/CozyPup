@@ -165,6 +165,11 @@ def _validate_draft_email(args: dict) -> list[str]:
     return _check_required(args, ["subject", "body"])
 
 
+@_register("introduce_product")
+def _validate_introduce_product(args: dict) -> list[str]:
+    return []
+
+
 @_register("update_calendar_event")
 def _validate_update_calendar_event(args: dict) -> list[str]:
     errors = _check_required(args, ["event_id"])

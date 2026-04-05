@@ -281,3 +281,22 @@ async def get_directions_tool(
         "duration": result["duration"],
         "mode": mode,
     }
+
+
+@register_tool("introduce_product")
+async def introduce_product(arguments: dict, **_kwargs) -> dict:
+    """Return product capabilities for the LLM to introduce to the user."""
+    return {
+        "success": True,
+        "capabilities": {
+            "record": "记录宠物日常（饮食、散步、洗澡、异常症状等）到日历",
+            "medical": "记录医疗事件（疫苗、驱虫、体检）+ 设置提醒",
+            "find_places": "搜索附近宠物医院、宠物店、狗公园，查看评价和导航",
+            "reminders": "设置定时提醒（喂药、打疫苗、体检等）",
+            "pet_profile": "管理宠物档案（体重、生日、品种、过敏信息等）",
+            "spending": "记录宠物消费，查看统计",
+            "emergency": "紧急情况快速响应（中毒、抽搐等）",
+            "email": "生成兽医沟通邮件",
+        },
+        "hint": "用自然语言向用户介绍以上功能，语气友好，举几个具体例子让用户知道怎么用。不要列出所有功能的清单，而是像朋友一样自然地介绍。",
+    }

@@ -310,6 +310,12 @@ async def _event_generator(
                 f"{action.tool_name}({json.dumps(action.arguments, ensure_ascii=False)})"
             )
 
+    # 首次用户检测：无历史消息 + 无上下文摘要 = 新用户第一条消息
+    is_first_message = not context_messages and not session.context_summary
+    if is_first_message:
+        first_hint = "introduce_product() — 这是新用户的第一条消息，先介绍产品功能" if lang == "zh" else "introduce_product() — This is a new user's first message, introduce product features first"
+        preprocessor_hints.append(first_hint)
+
     # 多事件检测：如果用户一句话里提到了多个事件/提醒，
     # 提示 LLM 每个事件要单独调用一次工具（否则 LLM 容易只调一次）
     event_count = sum(1 for a in suggested_actions if a.tool_name == "create_calendar_event")
