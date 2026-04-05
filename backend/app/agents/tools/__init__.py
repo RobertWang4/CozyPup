@@ -31,6 +31,8 @@ from app.agents.tools.calendar import (
 )
 from app.agents.tools.misc import (
     draft_email,
+    get_directions_tool,
+    get_place_details_tool,
     search_places,
     set_language,
     trigger_emergency,
@@ -87,6 +89,8 @@ __all__ = [
     "draft_email",
     "set_language",
     "trigger_emergency",
+    "get_place_details_tool",
+    "get_directions_tool",
 ]
 
 

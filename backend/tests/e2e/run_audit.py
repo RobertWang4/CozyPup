@@ -111,7 +111,15 @@ def build_test_cases(lang: str) -> list[TestCase]:
         # === Section 9: Search Places ===
         TestCase("9.1", "搜索宠物医院", m["9.1"][lang], needs_pet=True,
                  location=ottawa_loc,
-                 check=lambda r, c: (r.has_card("map") or r.has_card("places") or bool(r.text.strip()), f"cards={[x.get('type') for x in r.cards]}")),
+                 check=lambda r, c: (r.has_card("place_card") or r.has_card("map") or bool(r.text.strip()), f"cards={[x.get('type') for x in r.cards]}")),
+        TestCase("9.4", "查看地点评价", m["9.4"][lang], needs_pet=True,
+                 location=ottawa_loc,
+                 setup=m["9.1"][lang],
+                 check=lambda r, c: (r.has_card("place_detail") or bool(r.text.strip()), f"cards={[x.get('type') for x in r.cards]}")),
+        TestCase("9.5", "导航到地点", m["9.5"][lang], needs_pet=True,
+                 location=ottawa_loc,
+                 setup=m["9.1"][lang],
+                 check=lambda r, c: (r.has_card("directions") or bool(r.text.strip()), f"cards={[x.get('type') for x in r.cards]}")),
 
         # === Section 10: Email ===
         TestCase("10.1", "草拟邮件", m["10.1"][lang], needs_pet=True,

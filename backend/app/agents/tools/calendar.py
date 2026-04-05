@@ -265,26 +265,11 @@ async def upload_event_photo(
     event.photos = photos
     await db.flush()
 
-    # Get pet name for card display
-    pet_name = ""
-    if event.pet_id:
-        from app.models import Pet
-        pet_result = await db.execute(select(Pet).where(Pet.id == event.pet_id))
-        pet = pet_result.scalar_one_or_none()
-        if pet:
-            pet_name = pet.name
-
     return {
         "success": True,
         "event_id": str(event_id),
         "photo_urls": image_urls,
-        "card": {
-            "type": "photo_added",
-            "pet_name": pet_name,
-            "date": str(event.event_date),
-            "title": event.title,
-            "photo_count": len(image_urls),
-        },
+        "message": f"Added {len(image_urls)} photo(s) to event '{event.title}'.",
     }
 
 

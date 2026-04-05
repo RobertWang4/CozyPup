@@ -503,8 +503,12 @@ struct ChatView: View {
                     showCalendar = true
                 }
             })
-        case .map(let data):
-            MapCard(items: data.items)
+        case .placeCard(let data):
+            PlaceCard(data: data)
+        case .placeDetail(let data):
+            PlaceDetailCard(data: data)
+        case .directions(let data):
+            DirectionsCard(data: data)
         case .email(let data):
             EmailCard(subject: data.subject, emailBody: data.body)
         case .petCreated(let data):

@@ -146,6 +146,20 @@ def _validate_search_places(args: dict) -> list[str]:
     return _check_required(args, ["query"])
 
 
+@_register("get_place_details")
+def _validate_get_place_details(args: dict) -> list[str]:
+    return _check_required(args, ["place_id"])
+
+
+@_register("get_directions")
+def _validate_get_directions(args: dict) -> list[str]:
+    errors = _check_required(args, ["dest_lat", "dest_lng", "dest_name"])
+    mode = args.get("mode", "driving")
+    if mode not in {"driving", "walking"}:
+        args["mode"] = "driving"
+    return errors
+
+
 @_register("draft_email")
 def _validate_draft_email(args: dict) -> list[str]:
     return _check_required(args, ["subject", "body"])

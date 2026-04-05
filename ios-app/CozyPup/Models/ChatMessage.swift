@@ -15,16 +15,75 @@ struct RecordCardData: Codable, Equatable {
     let old_date: String?  // present when event was moved to a different date
 }
 
-struct MapItem: Codable, Equatable {
+struct PlaceItem: Codable, Equatable {
+    let placeId: String
     let name: String
-    let description: String
-    let distance: String
+    let address: String
+    let rating: Double?
+    let isOpen: Bool?
+    let lat: Double
+    let lng: Double
+    let distance: String?
+    let duration: String?
+
+    enum CodingKeys: String, CodingKey {
+        case placeId = "place_id"
+        case name, address, rating
+        case isOpen = "is_open"
+        case lat, lng, distance, duration
+    }
 }
 
-struct MapCardData: Codable, Equatable {
+struct PlaceCardData: Codable, Equatable {
     let type: String
-    let title: String
-    let items: [MapItem]
+    let query: String
+    let places: [PlaceItem]
+}
+
+struct PlaceReview: Codable, Equatable {
+    let author: String
+    let rating: Int
+    let text: String
+    let time: String
+}
+
+struct PlaceDetailCardData: Codable, Equatable {
+    let type: String
+    let name: String
+    let address: String
+    let rating: Double?
+    let phone: String?
+    let reviews: [PlaceReview]?
+    let isOpen: Bool?
+    let openingHours: [String]?
+    let website: String?
+    let googleMapsUrl: String?
+
+    enum CodingKeys: String, CodingKey {
+        case type, name, address, rating, phone, reviews
+        case isOpen = "is_open"
+        case openingHours = "opening_hours"
+        case website
+        case googleMapsUrl = "google_maps_url"
+    }
+}
+
+struct DirectionsCardData: Codable, Equatable {
+    let type: String
+    let destName: String
+    let destLat: Double
+    let destLng: Double
+    let distance: String
+    let duration: String
+    let mode: String
+
+    enum CodingKeys: String, CodingKey {
+        case type
+        case destName = "dest_name"
+        case destLat = "dest_lat"
+        case destLng = "dest_lng"
+        case distance, duration, mode
+    }
 }
 
 struct EmailCardData: Codable, Equatable {
@@ -128,7 +187,9 @@ struct LocationPickerCardData: Codable, Equatable {
 
 enum CardData: Codable, Equatable {
     case record(RecordCardData)
-    case map(MapCardData)
+    case placeCard(PlaceCardData)
+    case placeDetail(PlaceDetailCardData)
+    case directions(DirectionsCardData)
     case email(EmailCardData)
     case petCreated(PetCreatedCardData)
     case petUpdated(PetUpdatedCardData)
@@ -144,8 +205,12 @@ enum CardData: Codable, Equatable {
         let container = try decoder.singleValueContainer()
         if let d = try? container.decode(RecordCardData.self), d.type == "record" {
             self = .record(d)
-        } else if let d = try? container.decode(MapCardData.self), d.type == "map" {
-            self = .map(d)
+        } else if let d = try? container.decode(PlaceCardData.self), d.type == "place_card" {
+            self = .placeCard(d)
+        } else if let d = try? container.decode(PlaceDetailCardData.self), d.type == "place_detail" {
+            self = .placeDetail(d)
+        } else if let d = try? container.decode(DirectionsCardData.self), d.type == "directions" {
+            self = .directions(d)
         } else if let d = try? container.decode(EmailCardData.self), d.type == "email" {
             self = .email(d)
         } else if let d = try? container.decode(PetCreatedCardData.self), d.type == "pet_created" {
@@ -178,7 +243,9 @@ enum CardData: Codable, Equatable {
         var container = encoder.singleValueContainer()
         switch self {
         case .record(let d): try container.encode(d)
-        case .map(let d): try container.encode(d)
+        case .placeCard(let d): try container.encode(d)
+        case .placeDetail(let d): try container.encode(d)
+        case .directions(let d): try container.encode(d)
         case .email(let d): try container.encode(d)
         case .petCreated(let d): try container.encode(d)
         case .petUpdated(let d): try container.encode(d)

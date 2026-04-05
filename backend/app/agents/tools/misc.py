@@ -1,5 +1,6 @@
 """Miscellaneous tool handlers: places, email, language, emergency."""
 
+import asyncio
 import uuid
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -36,25 +37,59 @@ async def search_places(
             "message": f"No results found for '{query}' nearby.",
         }
 
+    # Build enriched place list
+    places_for_card = [
+        {
+            "place_id": p.get("place_id", ""),
+            "name": p["name"],
+            "address": p["address"],
+            "rating": p.get("rating"),
+            "is_open": p.get("open_now"),
+            "lat": p["lat"],
+            "lng": p["lng"],
+            "distance": None,
+            "duration": None,
+        }
+        for p in places
+    ]
+
+    # Enrich top 5 with distance/duration
+    top_n = min(5, len(places_for_card))
+    direction_tasks = [
+        places_service.get_directions(
+            origin_lat=location["lat"],
+            origin_lng=location["lng"],
+            dest_lat=p["lat"],
+            dest_lng=p["lng"],
+        )
+        for p in places_for_card[:top_n]
+    ]
+    directions = await asyncio.gather(*direction_tasks, return_exceptions=True)
+    for i, d in enumerate(directions):
+        if isinstance(d, dict):
+            places_for_card[i]["distance"] = d.get("distance")
+            places_for_card[i]["duration"] = d.get("duration")
+
     card = {
-        "type": "map",
+        "type": "place_card",
         "query": query,
-        "places": [
-            {
-                "name": p["name"],
-                "address": p["address"],
-                "rating": p.get("rating"),
-                "lat": p["lat"],
-                "lng": p["lng"],
-            }
-            for p in places
-        ],
+        "places": places_for_card,
     }
+
+    # Text summary for LLM
+    top_results = []
+    for p in places_for_card[:5]:
+        parts = [f"{p['name']} — {p['address']}"]
+        if p.get("distance"):
+            parts.append(f"({p['distance']}, {p['duration']})")
+        if p.get("rating"):
+            parts.append(f"⭐{p['rating']}")
+        top_results.append(" ".join(parts))
 
     return {
         "success": True,
-        "places_count": len(places),
-        "top_results": [f"{p['name']} — {p['address']}" for p in places[:5]],
+        "places_count": len(places_for_card),
+        "top_results": top_results,
         "card": card,
     }
 
@@ -160,4 +195,87 @@ async def search_places_text(
         "success": True,
         "places": places,
         "places_count": len(places),
+    }
+
+
+@register_tool("get_place_details")
+async def get_place_details_tool(
+    arguments: dict,
+    db: AsyncSession,
+    user_id: uuid.UUID,
+    **_kwargs,
+) -> dict:
+    """Get detailed info for a single place."""
+    from app.services.places import places_service
+
+    place_id = arguments["place_id"]
+    detail = await places_service.get_place_details(place_id)
+    if not detail:
+        return {"success": False, "error": f"No details found for place_id: {place_id}"}
+
+    return {
+        "success": True,
+        "card": {
+            "type": "place_detail",
+            "name": detail["name"],
+            "address": detail["address"],
+            "rating": detail.get("rating"),
+            "phone": detail.get("phone"),
+            "reviews": detail.get("reviews", [])[:3],
+            "is_open": detail.get("is_open"),
+            "opening_hours": detail.get("opening_hours", []),
+            "website": detail.get("website"),
+            "google_maps_url": detail.get("google_maps_url"),
+        },
+        "detail": detail,
+    }
+
+
+@register_tool("get_directions", accepts_kwargs=True)
+async def get_directions_tool(
+    arguments: dict,
+    db: AsyncSession,
+    user_id: uuid.UUID,
+    location: dict | None = None,
+    **_kwargs,
+) -> dict:
+    """Get directions from user's location to a destination."""
+    if not location or "lat" not in location or "lng" not in location:
+        return {
+            "success": False,
+            "error": "No location available. Ask the user to share their location.",
+        }
+
+    from app.services.places import places_service
+
+    dest_lat = arguments["dest_lat"]
+    dest_lng = arguments["dest_lng"]
+    dest_name = arguments.get("dest_name", "")
+    mode = arguments.get("mode", "driving")
+
+    result = await places_service.get_directions(
+        origin_lat=location["lat"],
+        origin_lng=location["lng"],
+        dest_lat=dest_lat,
+        dest_lng=dest_lng,
+        mode=mode,
+    )
+
+    if not result:
+        return {"success": False, "error": "No route found."}
+
+    return {
+        "success": True,
+        "card": {
+            "type": "directions",
+            "dest_name": dest_name,
+            "dest_lat": dest_lat,
+            "dest_lng": dest_lng,
+            "distance": result["distance"],
+            "duration": result["duration"],
+            "mode": mode,
+        },
+        "distance": result["distance"],
+        "duration": result["duration"],
+        "mode": mode,
     }

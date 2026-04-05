@@ -60,7 +60,9 @@
 		D7EF6BD5206BF3B30C294354 /* Pet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A64F760C22D68D06ECA76404 /* Pet.swift */; };
 		D8425461FC00D2E8DECB8021 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 4B60F559B4A4D8C5CC3A9B42 /* GoogleSignIn */; };
 		DBF96E2B35FB712BC97A1C27 /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2586D01E7C42221ABD72995 /* LocationService.swift */; };
-		DDE0B95A2BBD3D6913475404 /* MapCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = E722C9266BF5B0325E6B52A6 /* MapCard.swift */; };
+		AA10000100000000PLACE0001 /* PlaceCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA20000100000000PLACE0001 /* PlaceCard.swift */; };
+		AA10000200000000PLACE0002 /* PlaceDetailCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA20000200000000PLACE0002 /* PlaceDetailCard.swift */; };
+		AA10000300000000PLACE0003 /* DirectionsCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA20000300000000PLACE0003 /* DirectionsCard.swift */; };
 		E4CE679EF88093851EBC91E0 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE52D72C580AA7D599BDCEAC /* ChatView.swift */; };
 		E67C92566B3C14D978EF14FC /* DailyTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D71B2C5B757189B616D2339 /* DailyTask.swift */; };
 		EA6F86AD25C72F589A001B9F /* EmailCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FDC9E1441AC78B6C6632FD0 /* EmailCard.swift */; };
@@ -128,7 +130,9 @@
 		E49D254E58DB8AEDD31BF3B0 /* CameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
 		E59EDD63ED4B5127A8B5D2DC /* CalendarEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarEvent.swift; sourceTree = "<group>"; };
 		E6D276B8E4BE99D3CA63F74F /* EventRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventRow.swift; sourceTree = "<group>"; };
-		E722C9266BF5B0325E6B52A6 /* MapCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapCard.swift; sourceTree = "<group>"; };
+		AA20000100000000PLACE0001 /* PlaceCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceCard.swift; sourceTree = "<group>"; };
+		AA20000200000000PLACE0002 /* PlaceDetailCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceDetailCard.swift; sourceTree = "<group>"; };
+		AA20000300000000PLACE0003 /* DirectionsCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectionsCard.swift; sourceTree = "<group>"; };
 		E953D8A8BA28DA30AE609878 /* PetProfileEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PetProfileEditor.swift; sourceTree = "<group>"; };
 		EBAD5792AB19AA7036912E67 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		PUSH0001000000000000000000 /* CozyPup.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = CozyPup.entitlements; sourceTree = "<group>"; };
@@ -353,7 +357,9 @@
 				B3E6D92A11C84F5DA0728561 /* DailyTaskCard.swift */,
 				3FDC9E1441AC78B6C6632FD0 /* EmailCard.swift */,
 				83B07BC50E00F919A66D1227 /* LocationPickerCard.swift */,
-				E722C9266BF5B0325E6B52A6 /* MapCard.swift */,
+				AA20000100000000PLACE0001 /* PlaceCard.swift */,
+				AA20000200000000PLACE0002 /* PlaceDetailCard.swift */,
+				AA20000300000000PLACE0003 /* DirectionsCard.swift */,
 				FFCDE79E9D9654B2E99B6A3E /* RecordCard.swift */,
 			);
 			path = Cards;
@@ -473,7 +479,9 @@
 				A2F4C81B44D72E5CF8190347 /* DailyTaskCard.swift in Sources */,
 				DBF96E2B35FB712BC97A1C27 /* LocationService.swift in Sources */,
 				51487E55A5465BDA994D245C /* LoginView.swift in Sources */,
-				DDE0B95A2BBD3D6913475404 /* MapCard.swift in Sources */,
+				AA10000100000000PLACE0001 /* PlaceCard.swift in Sources */,
+				AA10000200000000PLACE0002 /* PlaceDetailCard.swift in Sources */,
+				AA10000300000000PLACE0003 /* DirectionsCard.swift in Sources */,
 				7731ABF813BF951F3E213A76 /* MonthGrid.swift in Sources */,
 				F4A3272C45AD63DCE10F2E44 /* MultiDayTimelineView.swift in Sources */,
 				6C6DBA9BDCB701B90E25D163 /* OnboardingView.swift in Sources */,

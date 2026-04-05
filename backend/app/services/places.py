@@ -175,5 +175,102 @@ class PlacesService:
         logger.info("places_text_search", extra={"query": query, "result_count": len(results)})
         return results
 
+    async def get_place_details(self, place_id: str) -> dict | None:
+        """Fetch detailed info for a single place."""
+        cache_key = f"detail:{place_id}"
+        cached = self._get_cached(cache_key)
+        if cached:
+            return cached[0] if cached else None
+
+        url = "https://maps.googleapis.com/maps/api/place/details/json"
+        params = {
+            "place_id": place_id,
+            "fields": "name,formatted_address,formatted_phone_number,rating,reviews,opening_hours,website,url,user_ratings_total",
+            "key": self.api_key,
+        }
+
+        try:
+            async with httpx.AsyncClient(timeout=10.0) as client:
+                resp = await client.get(url, params=params)
+                resp.raise_for_status()
+                data = resp.json()
+        except Exception as exc:
+            logger.error("places_detail_error", extra={
+                "error_type": type(exc).__name__,
+                "error_message": str(exc)[:200],
+                "place_id": place_id,
+            })
+            return None
+
+        r = data.get("result")
+        if not r:
+            return None
+
+        result = {
+            "name": r.get("name", ""),
+            "address": r.get("formatted_address", ""),
+            "phone": r.get("formatted_phone_number"),
+            "rating": r.get("rating"),
+            "review_count": r.get("user_ratings_total", 0),
+            "reviews": [
+                {
+                    "author": rev.get("author_name", ""),
+                    "rating": rev.get("rating", 0),
+                    "text": rev.get("text", ""),
+                    "time": rev.get("relative_time_description", ""),
+                }
+                for rev in (r.get("reviews") or [])[:3]
+            ],
+            "opening_hours": [
+                line for line in (r.get("opening_hours", {}).get("weekday_text") or [])
+            ],
+            "is_open": (r.get("opening_hours") or {}).get("open_now"),
+            "website": r.get("website"),
+            "google_maps_url": r.get("url"),
+        }
+
+        self._set_cached(cache_key, [result])
+        return result
+
+    async def get_directions(
+        self,
+        origin_lat: float,
+        origin_lng: float,
+        dest_lat: float,
+        dest_lng: float,
+        mode: str = "driving",
+    ) -> dict | None:
+        """Get route summary between two points."""
+        url = "https://maps.googleapis.com/maps/api/directions/json"
+        params = {
+            "origin": f"{origin_lat},{origin_lng}",
+            "destination": f"{dest_lat},{dest_lng}",
+            "mode": mode,
+            "key": self.api_key,
+        }
+
+        try:
+            async with httpx.AsyncClient(timeout=10.0) as client:
+                resp = await client.get(url, params=params)
+                resp.raise_for_status()
+                data = resp.json()
+        except Exception as exc:
+            logger.error("places_directions_error", extra={
+                "error_type": type(exc).__name__,
+                "error_message": str(exc)[:200],
+            })
+            return None
+
+        routes = data.get("routes", [])
+        if not routes:
+            return None
+
+        leg = routes[0]["legs"][0]
+        return {
+            "distance": leg["distance"]["text"],
+            "duration": leg["duration"]["text"],
+            "mode": mode,
+        }
+
 
 places_service = PlacesService(api_key=settings.google_places_api_key)

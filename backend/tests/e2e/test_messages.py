@@ -62,6 +62,8 @@ MESSAGES = {
     # ═══ 九、搜索地点 ═══
     "9.1": {"zh": "附近有宠物医院吗", "en": "Are there any pet hospitals nearby?"},
     "9.2": {"zh": "帮我找最近的狗公园", "en": "Help me find the nearest dog park"},
+    "9.4": {"zh": "第一家评价怎么样？", "en": "How are the reviews for the first one?"},
+    "9.5": {"zh": "怎么去那里？", "en": "How do I get there?"},
 
     # ═══ 十、草拟邮件 ═══
     "10.1": {

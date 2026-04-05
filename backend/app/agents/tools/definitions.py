@@ -758,6 +758,63 @@ _BASE_TOOL_DEFINITIONS = [
     {
         "type": "function",
         "function": {
+            "name": "get_place_details",
+            "description": (
+                "查询地点的详细信息（评论、营业时间、电话等）。\n"
+                "【何时调用】用户问某个地点的评价、服务项目、营业时间、能不能做X时调用。\n"
+                "需要 place_id（来自 search_places 的返回值）。\n"
+                "不要用于: 搜索地点（用 search_places）。"
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "place_id": {
+                        "type": "string",
+                        "description": "Google Place ID from search_places result.",
+                    },
+                },
+                "required": ["place_id"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "get_directions",
+            "description": (
+                "获取从用户当前位置到目的地的路线信息。\n"
+                "【何时调用】用户说'怎么去''导航''多远''多久能到'时调用。\n"
+                "需要目的地坐标（来自 search_places 的返回值）。\n"
+                "不要用于: 搜索地点（用 search_places）。"
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "dest_lat": {
+                        "type": "number",
+                        "description": "Destination latitude.",
+                    },
+                    "dest_lng": {
+                        "type": "number",
+                        "description": "Destination longitude.",
+                    },
+                    "dest_name": {
+                        "type": "string",
+                        "description": "Destination place name (for display).",
+                    },
+                    "mode": {
+                        "type": "string",
+                        "enum": ["driving", "walking"],
+                        "description": "Travel mode. Default: driving.",
+                    },
+                },
+                "required": ["dest_lat", "dest_lng", "dest_name"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
             "name": "request_images",
             "description": (
                 "请求查看用户附带的图片。\n"
