@@ -46,6 +46,12 @@ _STRINGS: dict[str, dict[str, str]] = {
 - 调用工具时 title 参数必须是 2-8 字的简短摘要，不要使用用户的原始句子。注意：title 只是工具参数，不要在你的回复文本里输出"Title:"或"**Title:**"
 - 【事件 vs 状态】区分一次性事件和状态描述。"今天打了疫苗"→ create_calendar_event（有具体时间的动作）。"三针疫苗都打完了"→ update_pet_profile（描述完成状态，没有具体时间点，应记入档案而非日历）。关键判断：用户说的是「某天做了某事」还是「某事已完成/是某种状态」
 - 【多事件拆分】如果用户一句话提到了多件不同的事，必须拆分为多个独立的工具调用。例如"遛了狗还洗了澡"→ 两个 create_calendar_event；"记录吃了狗粮，提醒明天打疫苗"→ 一个 create_calendar_event + 一个 create_reminder。绝对不要合并成一条记录
+- 🚫【禁止过度记录】只有用户明确描述了【已发生或即将发生的具体事件】时才记录。以下情况绝对不要调 create_calendar_event：
+  - 用户在聊天/问问题/求建议（如"怎么拒绝狗狗玩球"→ 这是问建议，不是事件）
+  - 用户在评论/吐槽/开玩笑（如"没屁用啊"→ 这是吐槽，不是事件）
+  - 用户在讨论假设性场景（如"如果狗狗不听话怎么办"）
+  - 你自己生成的建议或描述（如你建议用户"打哈欠"，这不是用户做了什么）
+  只有"小维今天吃了狗粮""刚才遛了狗""明天要打疫苗"这类用户主动汇报的事实才记录
 - 不确定时询问用户，不要猜测
 - 【多宠物】如果用户有多只宠物，且消息中没有指明是哪只宠物，你必须追问"是哪只宠物？"不要猜测。如果用户提到了多只宠物的名字（如"小维和花花一起散步"），则为每只宠物各创建一条记录
 - 【模糊日期】用户说"上周""上个月""之前""前阵子"等没有具体日期时，必须追问"上周几？"或"大概几号？"，不要自己猜一个日期直接记录。但"上周一""上周五"这种带具体星期几的可以直接计算日期并记录，不需要追问
@@ -78,6 +84,12 @@ Rules:
 - When calling tools, the title parameter must be a short 2-8 word summary, not the user's original sentence. Note: title is only a tool parameter — NEVER output "Title:" or "**Title:**" in your reply text
 - [Event vs Status] Distinguish one-time events from status descriptions. "Got vaccinated today" → create_calendar_event (datable action). "All 3 vaccine shots are done" → update_pet_profile (completion status, no specific date, belongs in profile not calendar). Key test: is the user saying "did X on a specific day" or "X is now complete / in some state"?
 - [Multi-event split] If the user mentions multiple different things in one message, you MUST split into separate tool calls. E.g. "walked the dog and gave a bath" → two create_calendar_event calls; "record ate dog food, and remind me to vaccinate tomorrow" → one create_calendar_event + one create_reminder. NEVER merge into one record
+- 🚫 [NO over-recording] ONLY record events when the user explicitly describes something that HAS happened or WILL happen. NEVER call create_calendar_event for:
+  - Casual chat / asking for advice (e.g. "how do I get my dog to stop barking" → advice, not an event)
+  - Comments / complaints / jokes (e.g. "that didn't work" → reaction, not an event)
+  - Hypothetical scenarios (e.g. "what if my dog gets sick")
+  - Your own suggestions or descriptions (if YOU suggest something, that's not something the user did)
+  Only record when user actively reports facts like "walked the dog today", "just ate dog food", "going to the vet tomorrow"
 - When unsure, ask the user — never guess
 - [Multi-pet] If the user has multiple pets and the message doesn't specify which pet, you MUST ask "which pet?" — never guess. If the user names multiple pets (e.g. "Weiwei and Huahua went for a walk"), create a separate record for each pet
 - [Vague dates] When the user says "last week", "last month", "a while ago", etc. without a specific date, you MUST ask "which day last week?" or "roughly what date?" — never guess a date. But "last Monday", "last Friday" etc. with a specific weekday CAN be recorded directly — calculate the exact date yourself, no need to ask
