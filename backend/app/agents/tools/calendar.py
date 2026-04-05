@@ -4,6 +4,7 @@ import uuid
 from datetime import date, time
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm.attributes import flag_modified
 
 from app.models import CalendarEvent, EventCategory, EventSource, EventType, Pet
 from app.agents.tools.registry import register_tool
@@ -301,14 +302,13 @@ async def remove_event_photo(
 
     removed = photos.pop(photo_index)
     event.photos = photos
+    flag_modified(event, "photos")
     await db.flush()
 
     return {
         "success": True,
-        "event_id": str(event_id),
-        "removed_url": removed,
         "remaining_count": len(photos),
-        "message": f"Removed photo {photo_index + 1} from event '{event.title}'. {len(photos)} photo(s) remaining.",
+        "message": f"Removed photo {photo_index + 1} from '{event.title}'. {len(photos)} photo(s) remaining.",
     }
 
 
