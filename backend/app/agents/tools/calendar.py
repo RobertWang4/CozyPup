@@ -273,6 +273,45 @@ async def upload_event_photo(
     }
 
 
+@register_tool("remove_event_photo")
+async def remove_event_photo(
+    arguments: dict,
+    db: AsyncSession,
+    user_id: uuid.UUID,
+) -> dict:
+    """Remove a specific photo from a calendar event."""
+    event_id = uuid.UUID(arguments["event_id"])
+    photo_index = arguments.get("photo_index", 0)
+
+    result = await db.execute(
+        select(CalendarEvent).where(
+            CalendarEvent.id == event_id, CalendarEvent.user_id == user_id
+        )
+    )
+    event = result.scalar_one_or_none()
+    if not event:
+        return {"success": False, "error": "Event not found"}
+
+    photos = list(event.photos) if event.photos else []
+    if not photos:
+        return {"success": False, "error": "Event has no photos."}
+
+    if photo_index < 0 or photo_index >= len(photos):
+        return {"success": False, "error": f"Invalid photo_index {photo_index}. Event has {len(photos)} photo(s) (0-indexed)."}
+
+    removed = photos.pop(photo_index)
+    event.photos = photos
+    await db.flush()
+
+    return {
+        "success": True,
+        "event_id": str(event_id),
+        "removed_url": removed,
+        "remaining_count": len(photos),
+        "message": f"Removed photo {photo_index + 1} from event '{event.title}'. {len(photos)} photo(s) remaining.",
+    }
+
+
 @register_tool("add_event_location")
 async def add_event_location(
     arguments: dict,

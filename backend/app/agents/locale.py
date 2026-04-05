@@ -112,6 +112,7 @@ Image handling rules:
 - 用户要求【未来提醒我/别忘了/下周X做某事】→ create_calendar_event + 传 reminder_at 参数
 - 用户提供【宠物信息】(体重/生日/过敏/品种) → update_pet_profile（注意：性别和物种已锁定时不可修改）
 - 用户要【删除】什么 → 对应 delete_* tool
+- 用户要删除事件中的某张照片 → remove_event_photo（需要 event_id + photo_index）
 - 用户提到【待办/任务/每日任务】→ manage_daily_task（delete_all=删除全部待办, delete=删除单个）
 - 用户提到【提醒/定时提醒】→ list_reminders / delete_reminder / delete_all_reminders
 - ⚠️ 注意区分："待办"="日常任务"(daily tasks)，"提醒"="定时推送提醒"(reminders)。用户说"删除待办"时用 manage_daily_task(action=delete_all)，说"删除提醒"时用 delete_all_reminders
@@ -156,6 +157,7 @@ Image handling rules:
 - User asks to be [reminded in the future / don't forget / next X do something] → create_calendar_event + pass reminder_at parameter
 - User provides [pet info] (weight/birthday/allergies/breed/gender) → update_pet_profile (note: gender and species are locked once set)
 - User wants to [delete] something → corresponding delete_* tool
+- User wants to remove a specific photo from an event → remove_event_photo (needs event_id + photo_index)
 - User mentions [to-do/task/daily task] → manage_daily_task (delete_all=delete all tasks, delete=delete one)
 - User mentions [reminder/scheduled reminder] → list_reminders / delete_reminder / delete_all_reminders
 - ⚠️ Distinguish: "待办/tasks" = daily tasks (manage_daily_task), "提醒/reminders" = scheduled push reminders (delete_all_reminders). When user says "delete tasks/待办" use manage_daily_task(action=delete_all), when "delete reminders/提醒" use delete_all_reminders
@@ -775,6 +777,10 @@ Notes:
             "Use when the user provides a specific place name or address to look up.\n"
             "Returns place details including coordinates."
         ),
+    },
+    "tool_desc_remove_event_photo": {
+        "zh": "删除事件中的某张照片",
+        "en": "Remove a specific photo from an event",
     },
     "tool_desc_get_place_details": {
         "zh": "查询地点详细信息（评论、营业时间、电话等）",

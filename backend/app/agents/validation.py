@@ -241,6 +241,16 @@ def _validate_upload_event_photo(args: dict) -> list[str]:
     return errors
 
 
+@_register("remove_event_photo")
+def _validate_remove_event_photo(args: dict) -> list[str]:
+    errors = _check_required(args, ["event_id", "photo_index"])
+    errors += _check_uuid(args, "event_id")
+    idx = args.get("photo_index")
+    if idx is not None and (not isinstance(idx, int) or idx < 0):
+        errors.append("photo_index must be a non-negative integer")
+    return errors
+
+
 @_register("list_reminders")
 def _validate_list_reminders(args: dict) -> list[str]:
     return []

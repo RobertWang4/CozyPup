@@ -26,6 +26,7 @@ from app.agents.tools.calendar import (
     create_calendar_event,
     delete_calendar_event,
     query_calendar_events,
+    remove_event_photo,
     update_calendar_event,
     upload_event_photo,
 )
@@ -69,6 +70,7 @@ __all__ = [
     "update_calendar_event",
     "delete_calendar_event",
     "upload_event_photo",
+    "remove_event_photo",
     # pets
     "create_pet",
     "update_pet_profile",

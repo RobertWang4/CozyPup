@@ -553,6 +553,32 @@ _BASE_TOOL_DEFINITIONS = [
     {
         "type": "function",
         "function": {
+            "name": "remove_event_photo",
+            "description": (
+                "删除日历事件中的某一张照片。\n"
+                "【何时调用】用户说要删掉某张照片时调用。\n"
+                "需要 event_id 和 photo_index（从0开始的序号）。\n"
+                "先用 query_calendar_events 查到事件，确认照片数量后再调用。"
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "event_id": {
+                        "type": "string",
+                        "description": "UUID of the event.",
+                    },
+                    "photo_index": {
+                        "type": "integer",
+                        "description": "0-based index of the photo to remove.",
+                    },
+                },
+                "required": ["event_id", "photo_index"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
             "name": "set_language",
             "description": (
                 "切换应用界面显示语言。\n"
