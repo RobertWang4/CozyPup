@@ -85,8 +85,7 @@ async def verify_apple_token(id_token: str) -> dict:
             id_token,
             public_key,
             algorithms=["RS256"],
-            audience=settings.apple_bundle_id if hasattr(settings, "apple_bundle_id") else None,
-            options={"verify_aud": False},  # relax for dev
+            audience=settings.apple_bundle_id,
         )
     except jwt.InvalidTokenError as e:
         raise HTTPException(status_code=401, detail=f"Apple token invalid: {e}")

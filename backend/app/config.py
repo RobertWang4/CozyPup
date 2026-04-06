@@ -21,6 +21,7 @@ class Settings(BaseSettings):
     apns_key_path: str = ""        # Path to .p8 key file
     apns_key_id: str = ""          # 10-char Key ID from Apple Developer
     apns_team_id: str = ""         # Apple Developer Team ID
+    apple_bundle_id: str = "com.cozypup.app"  # Also used for Apple Sign-In audience verification
     apns_bundle_id: str = "com.cozypup.app"
     apns_use_sandbox: bool = True  # True for dev, False for production
 
