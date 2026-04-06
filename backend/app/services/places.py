@@ -185,7 +185,7 @@ class PlacesService:
         url = "https://maps.googleapis.com/maps/api/place/details/json"
         params = {
             "place_id": place_id,
-            "fields": "name,formatted_address,formatted_phone_number,rating,reviews,opening_hours,website,url,user_ratings_total",
+            "fields": "name,formatted_address,formatted_phone_number,rating,reviews,opening_hours,website,url,user_ratings_total,geometry",
             "key": self.api_key,
         }
 
@@ -227,6 +227,8 @@ class PlacesService:
             "is_open": (r.get("opening_hours") or {}).get("open_now"),
             "website": r.get("website"),
             "google_maps_url": r.get("url"),
+            "lat": r.get("geometry", {}).get("location", {}).get("lat"),
+            "lng": r.get("geometry", {}).get("location", {}).get("lng"),
         }
 
         self._set_cached(cache_key, [result])
