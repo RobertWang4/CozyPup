@@ -208,7 +208,7 @@ async def upload_avatar(
         raise HTTPException(status_code=400, detail="Image must be under 5MB")
 
     if settings.gcs_bucket:
-        avatar_url = gcs_upload_avatar(str(pet_id), content, file.content_type)
+        gcs_upload_avatar(str(pet_id), content, file.content_type)
     else:
         # Local fallback for development without GCS
         from pathlib import Path
@@ -217,9 +217,9 @@ async def upload_avatar(
         ext = file.content_type.split("/")[-1].replace("jpeg", "jpg")
         filepath = upload_dir / f"{pet_id}.{ext}"
         filepath.write_bytes(content)
-        avatar_url = f"/api/v1/pets/{pet_id}/avatar"
 
-    pet.avatar_url = avatar_url
+    # Always use relative URL — iOS avatarURL() builds the full URL from this
+    pet.avatar_url = f"/api/v1/pets/{pet_id}/avatar"
     await db.commit()
     await db.refresh(pet)
     logger.info("avatar_uploaded", extra={"pet_id": str(pet.id)})
