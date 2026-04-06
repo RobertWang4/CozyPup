@@ -458,10 +458,16 @@ async def _event_generator(
     # Nudge 机制（在 orchestrator 内部）已处理大部分"LLM 不调工具"的情况。
     # 这里只处理 nudge 也失败后的最终兜底：如果仍然没有工具被调用，
     # 但预处理有高置信度建议，直接确定性执行。
+    from app.agents.constants import NUDGE_TOOLS
     no_tools_called = not result.cards and not result.confirm_cards and not result.tools_called
-    has_high_confidence = any(a.confidence >= 0.8 for a in suggested_actions)
+    # Only fallback for critical tools (search_places, trigger_emergency, set_language)
+    # Other pre-processor suggestions are advisory — trust the LLM's judgment
+    critical_missed = any(
+        a.confidence >= 0.8 and a.tool_name in NUDGE_TOOLS
+        for a in suggested_actions
+    )
 
-    if no_tools_called and has_high_confidence:
+    if no_tools_called and critical_missed:
         trace.record("post_processor_fallback", {
             "triggered": True,
             "suggested_count": len(suggested_actions),
@@ -470,8 +476,10 @@ async def _event_generator(
             "response_preview": result.response_text[:100],
             "suggested_count": len(suggested_actions),
         })
+        # Only execute critical tools in fallback, not all suggestions
+        critical_actions = [a for a in suggested_actions if a.tool_name in NUDGE_TOOLS]
         fallback_cards = await execute_suggested_actions(
-            suggested_actions, db, user_id,
+            critical_actions, db, user_id,
             on_card=None,
             location=request.location,
         )

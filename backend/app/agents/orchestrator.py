@@ -311,10 +311,17 @@ def _find_missed_tools(
     suggested_actions: list[SuggestedAction],
     tools_called: set[str],
 ) -> list[SuggestedAction]:
-    """找出高置信度的预测工具中，LLM 没有调用的。"""
+    """找出高置信度的预测工具中，LLM 没有调用的。
+
+    只对 NUDGE_TOOLS 中的关键工具进行催促（search_places, trigger_emergency,
+    set_language）。其他工具的预处理建议仅供参考，不强制。
+    """
+    from app.agents.constants import NUDGE_TOOLS
     return [
         a for a in suggested_actions
-        if a.confidence >= NUDGE_CONFIDENCE and a.tool_name not in tools_called
+        if a.confidence >= NUDGE_CONFIDENCE
+        and a.tool_name not in tools_called
+        and a.tool_name in NUDGE_TOOLS
     ]
 
 
