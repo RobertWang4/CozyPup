@@ -345,18 +345,32 @@ backend/app/
 
 ## 开发
 
-### 后端
+### 安装
 ```bash
 cd backend
-source .venv/bin/activate
+python -m venv .venv && source .venv/bin/activate
 pip install -e .
+```
+
+### 运行
+```bash
 uvicorn app.main:app --reload --port 8000
 ```
 
-### iOS
-在 Xcode 中打开 `ios-app/CozyPup.xcodeproj` → Cmd+R。需要 Xcode 16+，部署目标 iOS 17.0。
+### 数据库迁移
+```bash
+alembic upgrade head                          # 执行迁移
+alembic revision --autogenerate -m "msg"      # 创建迁移
+```
 
 ### 测试
 ```bash
-cd backend && pytest tests/ -v
+pytest tests/ -v                              # 全部测试
+pytest tests/test_auth.py -v                  # 单个文件
+```
+
+### E2E 审计（LLM 工具调用准确性）
+```bash
+python tests/e2e/run_audit.py --lang zh               # 完整审计
+python tests/e2e/run_audit.py --lang zh --case 1.1    # 单个用例
 ```

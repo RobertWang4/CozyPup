@@ -346,18 +346,32 @@ backend/app/
 
 ## Development
 
-### Backend
+### Setup
 ```bash
 cd backend
-source .venv/bin/activate
+python -m venv .venv && source .venv/bin/activate
 pip install -e .
+```
+
+### Run
+```bash
 uvicorn app.main:app --reload --port 8000
 ```
 
-### iOS
-Open `ios-app/CozyPup.xcodeproj` in Xcode → Cmd+R. Requires Xcode 16+, deployment target iOS 17.0.
+### Database Migrations
+```bash
+alembic upgrade head                          # apply migrations
+alembic revision --autogenerate -m "msg"      # create migration
+```
 
 ### Tests
 ```bash
-cd backend && pytest tests/ -v
+pytest tests/ -v                              # all tests
+pytest tests/test_auth.py -v                  # single file
+```
+
+### E2E Audit (LLM tool-calling accuracy)
+```bash
+python tests/e2e/run_audit.py --lang zh               # full audit
+python tests/e2e/run_audit.py --lang zh --case 1.1    # single case
 ```

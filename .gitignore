@@ -32,8 +32,10 @@ AuthKey_*.p8
 # Google/Firebase config (contains client IDs)
 GoogleService-Info.plist
 
+# iOS app (private, not open-sourced)
+ios-app/
+
 # Xcode
-ios-app/build/
 *.xcuserstate
 xcuserdata/
 
