@@ -233,11 +233,13 @@ async def get_avatar(pet_id: uuid.UUID):
         from google.cloud import storage as gcs
         client = gcs.Client()
         bucket = client.bucket(settings.gcs_bucket)
+        import time
         for ext in ("jpg", "png", "webp"):
             blob = bucket.blob(f"avatars/{pet_id}.{ext}")
             if blob.exists():
+                base_url = get_avatar_url(f"avatars/{pet_id}.{ext}")
                 return RedirectResponse(
-                    url=get_avatar_url(f"avatars/{pet_id}.{ext}"),
+                    url=f"{base_url}?v={int(time.time())}",
                     status_code=302,
                 )
         raise HTTPException(status_code=404, detail="No avatar uploaded")

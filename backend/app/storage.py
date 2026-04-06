@@ -33,6 +33,7 @@ def upload_avatar(pet_id: str, data: bytes, content_type: str) -> str:
 
     bucket = _get_bucket()
     blob = bucket.blob(blob_name)
+    blob.cache_control = "no-cache, max-age=0"
     blob.upload_from_string(data, content_type=content_type)
 
     url = get_avatar_url(blob_name, settings.gcs_bucket)
