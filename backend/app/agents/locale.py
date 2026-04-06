@@ -809,8 +809,9 @@ Notes:
             "Introduce Cozy Pup's features and usage to the user.\n"
             "[MUST CALL] Call this tool when:\n"
             "1. This is a new user's first message (system will indicate)\n"
-            "2. User asks 'what can you do', 'features', 'how to use', 'help'\n"
-            "Do NOT use for: users already actively using the app."
+            "2. User asks 'what can you do', 'features', 'how to use', 'help', 'what can I record'\n"
+            "When calling this tool, do NOT call any other tools (e.g. create_calendar_event).\n"
+            "The user is asking about features, NOT recording an event."
         ),
     },
     "tool_desc_add_event_location": {

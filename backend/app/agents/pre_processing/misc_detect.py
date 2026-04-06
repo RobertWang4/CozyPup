@@ -32,7 +32,8 @@ _SWITCH_LANGUAGE_PATTERN = re.compile(
 
 _INTRODUCE_PATTERN = re.compile(
     r"你能做什么|有什么功能|怎么用|能干[什嘛]么|你会[什嘛]么|介绍一下|你是谁|你是什么"
-    r"|what can you do|how.*(?:use|work)|features|help me|what.*app.*do|who are you",
+    r"|能记录什么|可以记录什么|记录.*推荐|还有什么.*记录|都能.*记录"
+    r"|what can you do|how.*(?:use|work)|features|help me|what.*app.*do|who are you|what.*record",
     re.I,
 )
 
