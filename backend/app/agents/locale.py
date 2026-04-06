@@ -145,7 +145,8 @@ Image handling rules:
 3. set_language: 用户说"switch to English""切换成中文""说英文" → 必须调用，不要只用目标语言回复
 
 ### 【重要】事件 + 地点关联
-- 当对话上下文中已有 search_places 的结果（place_id、坐标），用户说"去这个""记录上""就去那里"时 → 必须用 plan 拆分：先 create_calendar_event 创建事件，再 add_event_location 把地点关联上去
+- 事件尚未创建时：用户提到地点 → plan 拆分：先 create_calendar_event 创建事件，再 add_event_location 关联地点
+- 事件已经创建（上一轮刚记录的）：用户说"关联这个地方""加上地点""记录地点" → 只调 add_event_location，绝对不要再调 create_calendar_event 创建重复事件
 - 不要只创建事件而不关联地点！用户提到了具体地点就必须关联
 
 ### 【重要】create_pet vs update_pet_profile
@@ -191,7 +192,8 @@ Image handling rules:
 3. set_language: User says "switch to English", "切换成中文", "speak English" → MUST call, don't just reply in the target language
 
 ### [IMPORTANT] Event + Location association
-- When conversation context already has search_places results (place_id, coordinates), and user says "let's go there", "record it", "book that one" → MUST use plan to split: first create_calendar_event, then add_event_location to attach the place
+- Event NOT yet created: user mentions a place → use plan to split: first create_calendar_event, then add_event_location to attach the place
+- Event ALREADY created (from a previous turn): user says "associate this place", "add location", "tag the location" → ONLY call add_event_location. Do NOT call create_calendar_event again — the event already exists
 - Do NOT just create the event without attaching the location! If a specific place was mentioned, always associate it
 
 ### [IMPORTANT] create_pet vs update_pet_profile
