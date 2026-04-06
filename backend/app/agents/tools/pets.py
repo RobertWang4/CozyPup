@@ -575,6 +575,9 @@ async def set_pet_avatar(
         "pet_id": str(pet_id),
         "source": "image_urls" if image_urls else ("photo_url" if photo_url else "base64_fallback"),
         "image_data_len": len(image_data) if image_data else 0,
+        "image_urls": image_urls[:3] if image_urls else [],
+        "photo_url": photo_url,
+        "has_images_kwarg": bool(kwargs.get("images")),
     })
     if not image_data:
         return {"success": False, "error": "No image provided. Ask the user to attach a photo."}
