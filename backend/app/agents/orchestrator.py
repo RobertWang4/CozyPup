@@ -575,6 +575,12 @@ async def run_orchestrator(
         }
         messages.append(assistant_msg)
 
+        # If introduce_product is among the tool calls, skip all other tools
+        # (LLM sometimes incorrectly records events when user is just asking about features)
+        tool_names_in_round = {tc["function"]["name"] for tc in tool_calls}
+        if "introduce_product" in tool_names_in_round and len(tool_calls) > 1:
+            tool_calls = [tc for tc in tool_calls if tc["function"]["name"] == "introduce_product"]
+
         for tc in tool_calls:
             tool_result = await dispatch_tool(
                 tc, db, user_id, session_id, result, on_card, lang,
