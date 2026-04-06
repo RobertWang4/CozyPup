@@ -17,6 +17,14 @@ _CALENDAR_PATTERNS = [
     (re.compile(r"遛了|遛狗|散步|走了|洗澡|grooming|walk|park|公园|玩|游泳", re.I), "daily", 0.85),
 ]
 
+# Correction phrases — "不是X，是Y" is fixing an existing record, not a new event
+# When detected, suppress calendar hint so LLM uses update_calendar_event instead
+_CORRECTION_OVERRIDE = re.compile(
+    r"不是.*[，,].*是|改成|应该是|写错了|记错了|搞错了|日期不对|标题不对"
+    r"|not.*should be|wrong.*change|fix.*to|correct.*to",
+    re.I,
+)
+
 # Completion/status phrases — "都打完了" describes a state, not an event
 # When detected, suppress calendar hint so LLM decides on its own
 _STATUS_OVERRIDE = re.compile(
@@ -38,7 +46,8 @@ def detect(
     actions: list[SuggestedAction] = []
 
     is_status = bool(_STATUS_OVERRIDE.search(message))
-    if is_question or is_status:
+    is_correction = bool(_CORRECTION_OVERRIDE.search(message))
+    if is_question or is_status or is_correction:
         return actions
 
     matched_categories = []
