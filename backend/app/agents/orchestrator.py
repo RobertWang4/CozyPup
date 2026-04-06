@@ -12,6 +12,7 @@ Unified Agent Loop — 统一的 orchestrator，替代旧的 4 路径架构。
 
 import json
 import logging
+import re
 from dataclasses import dataclass, field
 from typing import Callable, Awaitable
 
@@ -427,9 +428,16 @@ async def _stream_completion(
             delta = chunk.choices[0].delta
 
             if delta.content:
-                text_parts.append(delta.content)
-                if on_token:
-                    await maybe_await(on_token, delta.content)
+                # Filter out LLM XML tag leaks (e.g. Grok outputs <parameter>, <xai:function_call>)
+                chunk_text = delta.content
+                if "<" in chunk_text and ("parameter" in chunk_text or "xai:" in chunk_text or "function_call" in chunk_text):
+                    chunk_text = re.sub(r"</?(?:parameter|xai:?\w*|function_call)[^>]*>", "", chunk_text)
+                if chunk_text.strip():
+                    text_parts.append(chunk_text)
+                    if on_token:
+                        await maybe_await(on_token, chunk_text)
+                else:
+                    text_parts.append(delta.content)  # keep original for tool parsing
 
             if delta.tool_calls:
                 for tc_delta in delta.tool_calls:
