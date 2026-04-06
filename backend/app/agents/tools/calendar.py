@@ -347,11 +347,31 @@ async def add_event_location(
     if not event:
         return {"success": False, "error": "Event not found"}
 
+    place_id = arguments.get("place_id", "")
+    lat = arguments.get("lat")
+    lng = arguments.get("lng")
+
+    # If we have a place_id, fetch authoritative coordinates from Google Places
+    # instead of trusting LLM-provided lat/lng (often passes user location by mistake)
+    if place_id:
+        try:
+            from app.services.places import places_service
+            details = await places_service.get_place_details(place_id)
+            if details and details.get("lat") and details.get("lng"):
+                lat = details["lat"]
+                lng = details["lng"]
+                if details.get("name"):
+                    arguments["location_name"] = details["name"]
+                if details.get("address"):
+                    arguments["location_address"] = details["address"]
+        except Exception:
+            pass  # Fall back to LLM-provided values
+
     event.location_name = arguments.get("location_name", "")
     event.location_address = arguments.get("location_address", "")
-    event.location_lat = arguments.get("lat")
-    event.location_lng = arguments.get("lng")
-    event.place_id = arguments.get("place_id", "")
+    event.location_lat = lat
+    event.location_lng = lng
+    event.place_id = place_id
     await db.flush()
 
     return {
