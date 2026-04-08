@@ -260,6 +260,13 @@ async def _event_generator(
         db, session.id, user_id, MessageRole.user, request.message,
     )
 
+    from app.debug.trace_logger import trace_log
+    trace_log("chat_request", data={
+        "message": request.message,
+        "image_urls": [img[:100] for img in (request.images or [])],
+        "session_id": session_id,
+    })
+
     # ========== Phase 1: 并行预处理 ==========
 
     # Stage 1: 顺序 DB 查询（同一个 AsyncSession 不支持并发操作）
@@ -540,6 +547,15 @@ async def _event_generator(
             "event": "__debug__",
             "data": json.dumps(trace.to_dict(), ensure_ascii=False, default=str),
         }
+
+    trace_log("chat_response", data={
+        "final_text": result.response_text[:500] if result.response_text else "",
+        "cards": [c.get("type", "unknown") for c in all_cards] if all_cards else [],
+        "tools_called": list(result.tools_called),
+        "total_prompt_tokens": getattr(result, "total_prompt_tokens", None),
+        "total_completion_tokens": getattr(result, "total_completion_tokens", None),
+        "model": getattr(result, "model_used", ""),
+    })
 
     # 发送 done 事件 — iOS 端收到后停止 loading 动画，标记流结束
     yield {
