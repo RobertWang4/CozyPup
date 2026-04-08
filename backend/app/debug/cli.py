@@ -63,6 +63,46 @@ def _freshness_timestamp(delta: timedelta) -> str:
 
 
 # ---------------------------------------------------------------------------
+# lookup — find user_id by email
+# ---------------------------------------------------------------------------
+
+@cli.command()
+@click.argument("email")
+def lookup(email: str):
+    """Find user ID by email address."""
+    import asyncio
+    from app.database import async_session
+    from app.models import User
+    from sqlalchemy import select
+
+    async def _find():
+        async with async_session() as db:
+            # Exact match first, then prefix/contains
+            stmt = select(User).where(User.email == email)
+            user = (await db.execute(stmt)).scalar_one_or_none()
+            if user:
+                return [user]
+            # Partial match
+            stmt = select(User).where(User.email.ilike(f"%{email}%"))
+            return (await db.execute(stmt)).scalars().all()
+
+    users = asyncio.run(_find())
+
+    if not users:
+        click.echo(f"No user found matching '{email}'")
+        return
+
+    for u in users:
+        click.echo(f"  {u.id}  {u.email}  ({u.auth_provider})")
+
+    if len(users) == 1:
+        click.echo(f"\nQuick commands:")
+        uid = str(users[0].id)
+        click.echo(f"  debug requests --user {uid} --last 10")
+        click.echo(f"  debug tokens --user {uid} --period 7d")
+
+
+# ---------------------------------------------------------------------------
 # trace — full request chain from Cloud Logging
 # ---------------------------------------------------------------------------
 
