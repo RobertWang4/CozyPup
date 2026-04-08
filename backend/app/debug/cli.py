@@ -2,6 +2,7 @@
 
 import json
 import re
+import subprocess
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -12,45 +13,272 @@ from .error_capture import SNAPSHOTS_DIR, ErrorSnapshot, load_snapshot
 from .test_generator import generate_test_file
 
 
+GCP_PROJECT = "cozypup-39487"
+TRACE_LOGGER = "cozypup.trace"
+
+
 @click.group()
 def cli():
     """PetPal debug CLI — trace requests, inspect errors, generate tests."""
     pass
 
 
+# ---------------------------------------------------------------------------
+# gcloud helpers
+# ---------------------------------------------------------------------------
+
+def _gcloud_read(filter_expr: str, limit: int = 100, order: str = "asc") -> list[dict]:
+    """Run gcloud logging read and return parsed JSON entries."""
+    cmd = [
+        "gcloud", "logging", "read",
+        filter_expr,
+        f"--project={GCP_PROJECT}",
+        "--format=json",
+        f"--limit={limit}",
+    ]
+    if order == "asc":
+        cmd.append("--order=asc")
+    try:
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
+        if result.returncode != 0:
+            return []
+        return json.loads(result.stdout) if result.stdout.strip() else []
+    except (subprocess.TimeoutExpired, json.JSONDecodeError):
+        return []
+
+
+def _parse_trace_entry(entry: dict) -> dict | None:
+    """Extract trace fields from a Cloud Logging entry."""
+    payload = entry.get("jsonPayload") or {}
+    msg = payload.get("message", "")
+    try:
+        return json.loads(msg)
+    except (json.JSONDecodeError, TypeError):
+        return None
+
+
+def _freshness_timestamp(delta: timedelta) -> str:
+    """Return ISO timestamp for Cloud Logging freshness filter."""
+    return (datetime.now(timezone.utc) - delta).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+# ---------------------------------------------------------------------------
+# trace — full request chain from Cloud Logging
+# ---------------------------------------------------------------------------
+
 @cli.command()
 @click.argument("correlation_id")
 def trace(correlation_id: str):
-    """Show all log events for a request by correlation ID."""
-    try:
-        snap = load_snapshot(correlation_id)
-    except FileNotFoundError:
-        click.echo(f"No snapshot found for {correlation_id}")
+    """Show full request trace by correlation ID (from Cloud Logging)."""
+    filter_expr = (
+        f'jsonPayload.message=~"\\"{correlation_id}\\"" '
+        f'AND jsonPayload.logger="{TRACE_LOGGER}"'
+    )
+    entries = _gcloud_read(filter_expr, limit=50)
+
+    if not entries:
+        # Fallback to error snapshots
+        try:
+            snap = load_snapshot(correlation_id)
+        except FileNotFoundError:
+            click.echo(f"No trace found for {correlation_id}")
+            return
+        ts = _format_ts(snap.timestamp)
+        user = snap.user_id or snap.correlation_context.get("user_id", "") or "anonymous"
+        click.echo(f"Trace for {correlation_id} (error snapshot only)")
+        click.echo(f"  Timestamp:  {ts}")
+        click.echo(f"  User:       {user}")
+        click.echo(f"  Error type: {snap.error_type}")
+        click.echo(f"  Message:    {snap.error_message}")
+        if snap.traceback:
+            click.echo(f"\nTraceback:\n{snap.traceback}")
         return
 
-    ts = _format_ts(snap.timestamp)
-    user = snap.user_id or snap.correlation_context.get("user_id", "") or "anonymous"
-    click.echo(f"Trace for {correlation_id}")
-    click.echo(f"  Timestamp:  {ts}")
-    click.echo(f"  User:       {user}")
-    click.echo(f"  Category:   {snap.category}")
-    click.echo(f"  Module:     {snap.module}")
-    click.echo(f"  Error type: {snap.error_type}")
-    click.echo(f"  Message:    {snap.error_message}")
+    parsed = [_parse_trace_entry(e) for e in entries]
+    parsed = [p for p in parsed if p]
 
-    request_data = snap.request_data
-    if request_data:
-        method = request_data.get("method", "GET").upper()
-        path = request_data.get("path", "/")
-        body = request_data.get("body")
-        click.echo(f"  Request:    {method} {path}")
-        click.echo(f"  Body:       {body}")
+    if not parsed:
+        click.echo(f"No trace entries found for {correlation_id}")
+        return
 
-    if snap.traceback:
-        click.echo("")
-        click.echo("Traceback:")
-        click.echo(snap.traceback)
+    first = parsed[0]
+    click.echo("=" * 60)
+    click.echo(f" Trace: {correlation_id}")
+    click.echo(f" User:  {first.get('user_id', 'unknown')}")
+    click.echo("=" * 60)
+    click.echo()
 
+    for i, p in enumerate(parsed, 1):
+        log_type = p.get("log_type", "unknown")
+        rd = p.get("round")
+        data = p.get("data", {})
+        round_str = f"  (round {rd})" if rd is not None else ""
+
+        click.echo(f"[{i}] {log_type}{round_str}")
+
+        if log_type == "chat_request":
+            click.echo(f"    Message: {data.get('message', '')[:80]}")
+            imgs = data.get("image_urls", [])
+            if imgs:
+                click.echo(f"    Images: {imgs}")
+            click.echo(f"    Session: {data.get('session_id', '')}")
+
+        elif log_type == "llm_request":
+            click.echo(f"    Model: {data.get('model', '')}")
+            click.echo(f"    Messages: {data.get('message_count', '?')} messages")
+            for m in data.get("messages_preview", []):
+                content = m.get("content", "")[:80]
+                click.echo(f"      [{m.get('role')}] {content}")
+
+        elif log_type == "llm_response":
+            click.echo(f"    Prompt tokens: {data.get('prompt_tokens', 'N/A')}")
+            click.echo(f"    Completion tokens: {data.get('completion_tokens', 'N/A')}")
+            tcs = data.get("tool_calls", [])
+            if tcs:
+                for tc in tcs:
+                    click.echo(f"    Tool call: {tc.get('name')}({tc.get('arguments', '')})")
+            else:
+                preview = data.get("text_preview", "")[:100]
+                if preview:
+                    click.echo(f"    Text: {preview}")
+
+        elif log_type == "tool_call":
+            click.echo(f"    Tool: {data.get('tool_name', '')}")
+            click.echo(f"    Arguments: {data.get('arguments', '')}")
+
+        elif log_type == "tool_result":
+            click.echo(f"    Tool: {data.get('tool_name', '')}")
+            success = data.get("success")
+            status = "SUCCESS" if success else "FAILED"
+            click.echo(f"    Status: {status}")
+            err = data.get("error")
+            if err:
+                click.echo(f"    Error: {err}")
+
+        elif log_type == "chat_response":
+            click.echo(f"    Text: {data.get('final_text', '')[:100]}")
+            click.echo(f"    Cards: {data.get('cards', [])}")
+            click.echo(f"    Tools: {data.get('tools_called', [])}")
+            pt = data.get("total_prompt_tokens")
+            ct = data.get("total_completion_tokens")
+            if pt is not None or ct is not None:
+                click.echo(f"    Total: prompt={pt}  completion={ct}")
+
+        click.echo()
+
+
+# ---------------------------------------------------------------------------
+# requests — recent chat requests for a user
+# ---------------------------------------------------------------------------
+
+@cli.command("requests")
+@click.option("--user", required=True, help="User ID (prefix match)")
+@click.option("--last", default=10, help="Number of recent requests (default: 10)")
+def requests_cmd(user: str, last: int):
+    """List recent chat requests for a user."""
+    filter_expr = (
+        f'jsonPayload.message=~"\\"{user}\\"" '
+        f'AND jsonPayload.message=~"\\"chat_request\\"" '
+        f'AND jsonPayload.logger="{TRACE_LOGGER}"'
+    )
+    entries = _gcloud_read(filter_expr, limit=last, order="desc")
+
+    if not entries:
+        click.echo(f"No requests found for user {user}")
+        return
+
+    parsed = [_parse_trace_entry(e) for e in entries]
+    parsed = [p for p in parsed if p and p.get("log_type") == "chat_request"]
+
+    if not parsed:
+        click.echo(f"No chat_request entries found for user {user}")
+        return
+
+    click.echo(f"{'#':<3} {'Correlation ID':<20} {'Message':<50}")
+    click.echo("-" * 75)
+
+    for i, p in enumerate(parsed, 1):
+        cid = p.get("correlation_id", "")[:18]
+        data = p.get("data", {})
+        msg = data.get("message", "")[:48]
+        click.echo(f"{i:<3} {cid:<20} {msg:<50}")
+
+    click.echo(f"\nTip: Run 'debug trace <correlation_id>' to see full trace")
+
+
+# ---------------------------------------------------------------------------
+# tokens — token usage summary
+# ---------------------------------------------------------------------------
+
+@cli.command("tokens")
+@click.option("--user", default=None, help="User ID (prefix match, omit for all users)")
+@click.option("--period", default="7d", help="Time window: 1d, 7d, 30d (default: 7d)")
+def tokens(user: str | None, period: str):
+    """Show token usage summary."""
+    delta = _parse_since(period)
+    if delta is None:
+        click.echo(f"Invalid period: {period}. Use 1h, 1d, 7d, 30d etc.")
+        return
+
+    filter_expr = (
+        f'jsonPayload.message=~"\\"chat_response\\"" '
+        f'AND jsonPayload.logger="{TRACE_LOGGER}" '
+        f'AND timestamp>="{_freshness_timestamp(delta)}"'
+    )
+    if user:
+        filter_expr += f' AND jsonPayload.message=~"\\"{user}\\""'
+
+    entries = _gcloud_read(filter_expr, limit=1000)
+
+    if not entries:
+        click.echo("No usage data found.")
+        return
+
+    parsed = [_parse_trace_entry(e) for e in entries]
+    parsed = [p for p in parsed if p and p.get("log_type") == "chat_response"]
+
+    if not parsed:
+        click.echo("No chat_response entries found.")
+        return
+
+    total_requests = len(parsed)
+
+    # Aggregate by model
+    by_model: dict[str, dict] = {}
+    for p in parsed:
+        data = p.get("data", {})
+        model = data.get("model", "unknown") or "unknown"
+        pt = data.get("total_prompt_tokens") or 0
+        ct = data.get("total_completion_tokens") or 0
+
+        if model not in by_model:
+            by_model[model] = {"requests": 0, "prompt": 0, "completion": 0}
+        by_model[model]["requests"] += 1
+        by_model[model]["prompt"] += pt
+        by_model[model]["completion"] += ct
+
+    user_label = user[:12] if user else "all users"
+    click.echo(f"User: {user_label}")
+    click.echo(f"Period: last {period}")
+    click.echo(f"Requests: {total_requests}")
+    click.echo()
+    click.echo(f"{'Model':<45} {'Requests':>8}  {'Prompt':>12}  {'Completion':>12}")
+    click.echo("-" * 85)
+
+    total_prompt = 0
+    total_completion = 0
+    for model, stats in sorted(by_model.items()):
+        click.echo(f"{model:<45} {stats['requests']:>8}  {stats['prompt']:>12,}  {stats['completion']:>12,}")
+        total_prompt += stats["prompt"]
+        total_completion += stats["completion"]
+
+    click.echo("-" * 85)
+    click.echo(f"{'Total':<45} {total_requests:>8}  {total_prompt:>12,}  {total_completion:>12,}")
+
+
+# ---------------------------------------------------------------------------
+# Existing error-based commands
+# ---------------------------------------------------------------------------
 
 @cli.command()
 @click.option("--module", default=None, help="Filter by module path")
@@ -255,6 +483,10 @@ def users(since: str):
 
     click.echo(f"\nTotal: {len(snapshots)} errors across {len(user_groups)} users")
 
+
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
 
 def _get_user_id(snap: ErrorSnapshot) -> str:
     """Extract user_id from snapshot, checking both top-level and correlation_context."""
