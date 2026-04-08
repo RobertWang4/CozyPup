@@ -29,7 +29,7 @@ xcodebuild -project CozyPup.xcodeproj -scheme CozyPup \
   -destination 'platform=iOS Simulator,name=iPhone 17 Pro' build
 ```
 
-Or open `ios-app/CozyPup.xcodeproj` in Xcode and Cmd+R. Bundle ID: `com.robertwang.cozypup.dev`, deployment target iOS 17.0.
+Or open `ios-app/CozyPup.xcodeproj` in Xcode and Cmd+R. Bundle ID: `com.cozypup.app`, deployment target iOS 17.0.
 
 ### Tests
 
@@ -229,7 +229,7 @@ gcloud run services describe backend --region=northamerica-northeast1 --project=
 
 **Avatars**: GCS bucket `cozypup-avatars` (public read)
 
-**Secrets**: Managed via Secret Manager (DATABASE_URL, JWT_SECRET, MODEL_API_BASE, MODEL_API_KEY, GOOGLE_PLACES_API_KEY, DEEPGRAM_API_KEY)
+**Secrets**: Managed via Secret Manager (DATABASE_URL, JWT_SECRET, MODEL_API_BASE, MODEL_API_KEY, GOOGLE_PLACES_API_KEY)
 
 ## Environment
 
@@ -240,6 +240,17 @@ Backend env vars are managed via Cloud Run (secrets in Secret Manager, plain var
 - **Done**: All REST APIs, database models, iOS SwiftUI frontend, frontend-backend integration, Constrained Agent architecture, plan tool (multi-step planning), E2E audit infrastructure
 - **Not done**: Phase 4 push notifications, RAG knowledge base, Phase 5 宠物共享（多主人共享 + 会员体系）
 - **Spec**: `docs/superpowers/specs/2026-03-17-petcare-agent-design.md` has the full architecture (incl. design system, agent evolution roadmap, iOS standards)
+
+## TODO: Production Readiness
+
+### Security
+- **禁用 `/auth/dev` 端点** — 生产环境必须关掉，否则任何人可以伪装成任意用户
+- **CORS 配置审查** — API 公开可访问，确认只允许必要的 origins
+
+### Scalability
+- **Neon 数据库连接数** — 免费版有连接数限制，用户增长后最先碰到瓶颈，考虑连接池或升级
+- **LLM API 限流** — 取决于中转站的 rate limit，需要确认并加 fallback
+- **LLM Observability 升级路径** — 用户量上来后考虑 OpenTelemetry + Cloud Trace，或 Langfuse（开源 LLM 追踪）
 
 ## How to Add a New Tool (Checklist)
 
