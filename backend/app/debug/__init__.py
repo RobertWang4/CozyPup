@@ -21,6 +21,7 @@ from .error_types import (
 )
 from .error_capture import capture_error, save_snapshot, load_snapshot
 from .test_generator import generate_test_file
+from .trace_logger import trace_log
 
 __all__ = [
     "setup_logging",
@@ -31,4 +32,5 @@ __all__ = [
     "AuthError", "ValidationError", "ErrorCategory",
     "capture_error", "save_snapshot", "load_snapshot",
     "generate_test_file",
+    "trace_log",
 ]

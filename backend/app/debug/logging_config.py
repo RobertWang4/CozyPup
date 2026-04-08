@@ -72,6 +72,7 @@ def setup_logging(level: str = "DEBUG", module_levels: dict[str, str] | None = N
         "httpx": "WARNING",
         "httpcore": "WARNING",
         "litellm": "WARNING",
+        "cozypup.trace": "INFO",
     }
     effective_levels = {**default_module_levels, **(module_levels or {})}
     for module, lvl in effective_levels.items():
