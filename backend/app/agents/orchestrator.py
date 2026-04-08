@@ -47,6 +47,9 @@ class OrchestratorResult:
     confirm_cards: list[dict] = field(default_factory=list)
     tools_called: set[str] = field(default_factory=set)
     plan_steps: list[dict] = field(default_factory=list)  # Steps from plan() tool
+    total_prompt_tokens: int = 0
+    total_completion_tokens: int = 0
+    model_used: str = ""
 
 
 # ---------------------------------------------------------------------------
@@ -398,12 +401,13 @@ async def _stream_completion(
     lang: str = "zh",
     trace: TraceCollector = INACTIVE_TRACE,
     round_num: int = 0,
-) -> tuple[str, list[dict]]:
-    """流式调用 LLM，返回 (文本, tool_calls 列表)。"""
+) -> tuple[str, list[dict], dict]:
+    """流式调用 LLM，返回 (文本, tool_calls 列表, usage_dict)。"""
     import asyncio
 
     text_parts = []
     tool_calls_map = {}
+    usage = {}
 
     # If trace is active, fire parallel non-streaming call to capture full JSON
     capture_task = None
@@ -420,6 +424,7 @@ async def _stream_completion(
             tool_choice="auto",
             temperature=0.3,
             stream=True,
+            stream_options={"include_usage": True},
             drop_params=True,
             **llm_extra_kwargs(),
         )
@@ -456,11 +461,19 @@ async def _stream_completion(
                     if tc_delta.function and tc_delta.function.arguments:
                         tc["function"]["arguments"] += tc_delta.function.arguments
 
+            # Capture usage from final chunk (provider-dependent)
+            if hasattr(chunk, "usage") and chunk.usage:
+                u = chunk.usage
+                usage = {
+                    "prompt_tokens": getattr(u, "prompt_tokens", 0) or 0,
+                    "completion_tokens": getattr(u, "completion_tokens", 0) or 0,
+                }
+
     except Exception as exc:
         logger.error("stream_completion_error", extra={"error": str(exc)[:300]})
         if capture_task:
             capture_task.cancel()
-        return "".join(text_parts), []
+        return "".join(text_parts), [], {}
 
     # Wait for capture task to finish (don't block too long)
     if capture_task:
@@ -469,7 +482,7 @@ async def _stream_completion(
         except (asyncio.TimeoutError, Exception):
             pass  # Capture is best-effort
 
-    return "".join(text_parts), [tool_calls_map[i] for i in sorted(tool_calls_map)]
+    return "".join(text_parts), [tool_calls_map[i] for i in sorted(tool_calls_map)], usage
 
 
 # ---------------------------------------------------------------------------
@@ -499,9 +512,12 @@ async def run_orchestrator(
     - 图片分析（request_images 作为普通工具处理）
     - Nudge（LLM 遗漏预期工具时催促重试一次）
     """
+    from app.debug.trace_logger import trace_log
+
     lang = kwargs.pop("lang", "zh")
     result = OrchestratorResult()
     use_model = model or settings.model
+    result.model_used = use_model
 
     # 构建初始消息列表
     messages = [{"role": "system", "content": system_prompt}]
@@ -523,10 +539,37 @@ async def run_orchestrator(
             micro_compact(messages)
 
         # --- 流式调 LLM ---
-        round_text, tool_calls = await _stream_completion(
+        round_text, tool_calls, usage = await _stream_completion(
             messages, use_model, on_token, lang=lang,
             trace=trace, round_num=round_num,
         )
+
+        # Accumulate token usage
+        result.total_prompt_tokens += usage.get("prompt_tokens", 0)
+        result.total_completion_tokens += usage.get("completion_tokens", 0)
+
+        # Log LLM request
+        trace_log("llm_request", round=round_num, data={
+            "model": use_model,
+            "message_count": len(messages),
+            "messages_preview": [
+                {"role": m["role"], "content": (m.get("content") or "")[:200]}
+                for m in messages[-3:]
+            ],
+        })
+
+        # Log LLM response
+        trace_log("llm_response", round=round_num, data={
+            "model": use_model,
+            "text_length": len(round_text),
+            "text_preview": round_text[:300] if round_text else "",
+            "tool_calls": [
+                {"name": tc["function"]["name"], "arguments": tc["function"]["arguments"]}
+                for tc in tool_calls
+            ] if tool_calls else [],
+            "prompt_tokens": usage.get("prompt_tokens"),
+            "completion_tokens": usage.get("completion_tokens"),
+        })
 
         # --- 没有 tool_calls：检查 plan nag / nudge 或退出 ---
         if not tool_calls:
@@ -597,11 +640,26 @@ async def run_orchestrator(
             tool_calls = [tc for tc in tool_calls if tc["function"]["name"] == "introduce_product"]
 
         for tc in tool_calls:
+            tc_name = tc["function"]["name"]
+            tc_args_str = tc["function"]["arguments"]
+
+            trace_log("tool_call", round=round_num, data={
+                "tool_name": tc_name,
+                "arguments": tc_args_str,
+            })
+
             tool_result = await dispatch_tool(
                 tc, db, user_id, session_id, result, on_card, lang,
                 pets=pets, images=images, image_urls=image_urls,
                 location=location, _messages=messages,
             )
+
+            trace_log("tool_result", round=round_num, data={
+                "tool_name": tc_name,
+                "success": tool_result.get("success"),
+                "error": tool_result.get("error"),
+                "result_keys": list(tool_result.keys()),
+            })
 
             trace.record("tool_dispatch", {
                 "round": round_num,
