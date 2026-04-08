@@ -42,12 +42,22 @@ cd backend && pytest tests/test_auth.py -v    # single file
 
 ```bash
 cd backend
-debug trace <correlation_id>          # inspect error snapshot
+
+# --- Request Tracing (Cloud Logging) ---
+debug lookup <email>                  # find user_id by email (supports partial match)
+debug requests --user <user_id> --last 10   # recent chat requests for a user
+debug trace <correlation_id>          # full request chain: user msg → LLM → tools → response
+debug tokens --user <user_id> --period 7d   # token usage summary (per-model breakdown)
+debug tokens --period 30d             # all users token usage
+
+# --- Error Debugging (local snapshots) ---
 debug errors --module app.routers.pets --last 10
 debug modules --since 24h             # error counts by module
 debug replay <correlation_id>         # replay failed request
 debug generate-test <correlation_id>  # auto-generate pytest from error
 ```
+
+**Trace logging**: Always-on structured JSON logs at every pipeline step (chat_request → llm_request → llm_response → tool_call → tool_result → chat_response). Written to `cozypup.trace` logger → stdout → Cloud Logging. Each entry carries `correlation_id` and `user_id` from ContextVars. Token usage extracted from streaming chunks when provider supports it.
 
 ## Architecture
 
