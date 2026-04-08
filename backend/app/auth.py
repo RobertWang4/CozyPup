@@ -96,21 +96,57 @@ async def verify_apple_token(id_token: str) -> dict:
     }
 
 
+_google_keys_cache: dict | None = None
+
+
+async def _get_google_public_keys() -> dict:
+    global _google_keys_cache
+    if _google_keys_cache is None:
+        async with httpx.AsyncClient() as client:
+            resp = await client.get("https://www.googleapis.com/oauth2/v3/certs")
+            resp.raise_for_status()
+            _google_keys_cache = resp.json()
+    return _google_keys_cache
+
+
 async def verify_google_token(id_token: str) -> dict:
-    """Verify Google ID token via tokeninfo endpoint and return {email, name}."""
-    async with httpx.AsyncClient() as client:
-        resp = await client.get(
-            "https://oauth2.googleapis.com/tokeninfo",
-            params={"id_token": id_token},
+    """Verify Google ID token locally via JWKS and return {email, name}."""
+    keys = await _get_google_public_keys()
+    header = jwt.get_unverified_header(id_token)
+
+    key_data = None
+    for k in keys.get("keys", []):
+        if k["kid"] == header.get("kid"):
+            key_data = k
+            break
+
+    if not key_data:
+        # Key not found — refresh cache once and retry
+        global _google_keys_cache
+        _google_keys_cache = None
+        keys = await _get_google_public_keys()
+        for k in keys.get("keys", []):
+            if k["kid"] == header.get("kid"):
+                key_data = k
+                break
+
+    if not key_data:
+        raise HTTPException(status_code=401, detail="Google token: key not found")
+
+    public_key = jwt.algorithms.RSAAlgorithm.from_jwk(key_data)
+    try:
+        payload = jwt.decode(
+            id_token,
+            public_key,
+            algorithms=["RS256"],
+            audience=settings.google_client_id,
         )
+    except jwt.InvalidTokenError as e:
+        raise HTTPException(status_code=401, detail=f"Google token invalid: {e}")
 
-    if resp.status_code != 200:
-        raise HTTPException(status_code=401, detail="Google token invalid")
-
-    data = resp.json()
     return {
-        "email": data.get("email", ""),
-        "name": data.get("name"),
+        "email": payload.get("email", ""),
+        "name": payload.get("name"),
     }
 
 

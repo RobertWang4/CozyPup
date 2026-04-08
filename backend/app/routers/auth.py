@@ -63,6 +63,9 @@ def _make_tokens(user: User) -> AuthResponse:
         access_token=create_access_token(user_id),
         refresh_token=create_refresh_token(user_id),
         user_id=user_id,
+        email=user.email,
+        name=user.name,
+        auth_provider=user.auth_provider,
     )
 
 
@@ -134,14 +137,3 @@ async def update_me(
         auth_provider=user.auth_provider,
         phone_number=user.phone_number,
     )
-
-
-@router.get("/deepgram-token")
-async def get_deepgram_token(
-    user_id: uuid.UUID = Depends(get_current_user_id),
-):
-    """Return Deepgram API key for authenticated users."""
-    from app.config import settings
-    if not settings.deepgram_api_key:
-        raise HTTPException(status_code=503, detail="Speech service not configured")
-    return {"token": settings.deepgram_api_key}

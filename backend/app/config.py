@@ -15,13 +15,14 @@ class Settings(BaseSettings):
     jwt_secret: str = "change-me-in-production"
     jwt_access_expire_minutes: int = 60
     jwt_refresh_expire_days: int = 30
-    deepgram_api_key: str = ""
+
 
     # APNs push notifications
     apns_key_path: str = ""        # Path to .p8 key file
     apns_key_id: str = ""          # 10-char Key ID from Apple Developer
     apns_team_id: str = ""         # Apple Developer Team ID
     apple_bundle_id: str = "com.cozypup.app"  # Also used for Apple Sign-In audience verification
+    google_client_id: str = "496617144117-73j9krtarupr8as09cka2tg06sn4cke8.apps.googleusercontent.com"
     apns_bundle_id: str = "com.cozypup.app"
     apns_use_sandbox: bool = True  # True for dev, False for production
 

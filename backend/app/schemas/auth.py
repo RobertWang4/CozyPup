@@ -9,6 +9,9 @@ class AuthResponse(BaseModel):
     access_token: str
     refresh_token: str
     user_id: str
+    email: str | None = None
+    name: str | None = None
+    auth_provider: str | None = None
 
 
 class RefreshRequest(BaseModel):
