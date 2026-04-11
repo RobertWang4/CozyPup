@@ -46,6 +46,7 @@
 		ACC8DEDAA3BCE7642D22C250 /* ChatStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50750BC93A661BAE576D418E /* ChatStore.swift */; };
 		B0BE23343ADC65DAF3EEF9A3 /* AuthStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 913C15A464B82E869A8EA6E8 /* AuthStore.swift */; };
 		B21CAB20F3E00F67BF64675A /* DailyTaskStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E831C8CE60089D202386C70 /* DailyTaskStore.swift */; };
+		C998476087AE4EF9AD4B365C /* SubscriptionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE19542780E14C1D952ADB72 /* SubscriptionStore.swift */; };
 		B26546A329CCAA0E29AF43B5 /* ConfirmActionCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDD76A395C37067B90C0DFD7 /* ConfirmActionCard.swift */; };
 		B88F419864D7ACC602B34023 /* VoiceInputOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0966E4141F24A98CBF3DA68 /* VoiceInputOverlay.swift */; };
 		C0A91D7D044C8CB2E17B6497 /* CustomScrollIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 341089EEBFBBC68CDDB0439D /* CustomScrollIndicator.swift */; };
@@ -84,6 +85,7 @@
 		1D8DC0ADAB2E88C2F59583DA /* PetStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PetStore.swift; sourceTree = "<group>"; };
 		2BB807C14C655DB7B5A4C94A /* UserProfileSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileSheet.swift; sourceTree = "<group>"; };
 		2E831C8CE60089D202386C70 /* DailyTaskStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyTaskStore.swift; sourceTree = "<group>"; };
+		BE19542780E14C1D952ADB72 /* SubscriptionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionStore.swift; sourceTree = "<group>"; };
 		3295CA4BEC61EA4CB1EFA88A /* PinchGestureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinchGestureView.swift; sourceTree = "<group>"; };
 		33E08B0B44AEEB61CFD807D9 /* HeatStripView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeatStripView.swift; sourceTree = "<group>"; };
 		341089EEBFBBC68CDDB0439D /* CustomScrollIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomScrollIndicator.swift; sourceTree = "<group>"; };
@@ -172,6 +174,7 @@
 				50750BC93A661BAE576D418E /* ChatStore.swift */,
 				2E831C8CE60089D202386C70 /* DailyTaskStore.swift */,
 				1D8DC0ADAB2E88C2F59583DA /* PetStore.swift */,
+				BE19542780E14C1D952ADB72 /* SubscriptionStore.swift */,
 			);
 			path = Stores;
 			sourceTree = "<group>";
@@ -467,6 +470,7 @@
 				659FBF24CAFB29690F329FA4 /* DailyTaskPopover.swift in Sources */,
 				73F93BE6D6F9449ABA80CC90 /* DailyTaskRow.swift in Sources */,
 				B21CAB20F3E00F67BF64675A /* DailyTaskStore.swift in Sources */,
+				C998476087AE4EF9AD4B365C /* SubscriptionStore.swift in Sources */,
 				00792BDF6314E02750687CE4 /* DisclaimerView.swift in Sources */,
 				EA6F86AD25C72F589A001B9F /* EmailCard.swift in Sources */,
 				FC5BC1932B70E128C7F1B81B /* EmergencyBanner.swift in Sources */,
