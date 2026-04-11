@@ -4,7 +4,6 @@ import logging
 
 import litellm
 
-from app.agents import llm_extra_kwargs
 from app.config import settings
 
 logger = logging.getLogger(__name__)
@@ -12,6 +11,7 @@ logger = logging.getLogger(__name__)
 
 async def embed_text(text: str) -> list[float]:
     """Generate a 1536-dim embedding for a single text string."""
+    from app.agents import llm_extra_kwargs  # lazy import to avoid circular deps
     response = await litellm.aembedding(
         model=settings.embedding_model,
         input=[text],

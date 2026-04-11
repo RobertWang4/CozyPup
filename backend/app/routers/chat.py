@@ -518,6 +518,23 @@ async def _event_generator(
     except Exception as e:
         logger.warning("profile_extractor_save_error", extra={"error": str(e)[:200]})
 
+    # --- RAG: 异步生成本轮对话的 embedding ---
+    async def _write_embedding_bg():
+        try:
+            from app.rag.writer import write_chat_embedding
+            from app.database import async_session as _async_session
+            emb_content = f"用户: {request.message}\n助手: {result.response_text[:500]}"
+            async with _async_session() as bg_db:
+                await write_chat_embedding(
+                    db=bg_db,
+                    user_id=user_id,
+                    source_id=session.id,
+                    content=emb_content,
+                )
+        except Exception as e:
+            logger.warning("embedding_bg_error", extra={"error": str(e)[:200]})
+    _track_task(_write_embedding_bg())
+
     # 保存助手的完整回复到数据库（包含所有卡片的 JSON）
     all_cards = result.cards + result.confirm_cards
     cards_json = json.dumps(all_cards) if all_cards else None
