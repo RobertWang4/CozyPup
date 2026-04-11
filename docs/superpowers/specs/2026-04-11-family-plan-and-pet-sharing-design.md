@@ -29,20 +29,20 @@ Product IDs:
 4. Partner clicks email link → opens app → auto-accepts invite
 5. Partner's `subscription_status` set to `"active"`, linked to payer
 
-### Upgrade (Individual → Duo)
+### Upgrade / Downgrade
 
-- Must stay on same billing cycle (weekly→weekly, monthly→monthly)
-- Pro-rated: `upgrade_cost = (duo_price - individual_price) × (remaining_days / cycle_days)`
-- Example: weekly individual $1.99, 3 days left → ($2.99 - $1.99) × 3/7 = $0.43
-- Current cycle continues (not reset), next renewal at duo price
+All plan changes (individual ↔ duo, weekly ↔ monthly ↔ yearly) are handled by Apple's auto-renewable subscription system. Apple automatically pro-rates upgrades and schedules downgrades at the end of the current period.
 
-### Downgrade (Duo → Individual)
+**Our backend only needs to:**
+- On `verify`: check the `product_id` to determine if it's individual or duo
+- If duo: allow inviting one partner
+- If downgraded from duo to individual (detected via App Store Server Notifications or next verify):
+  - Partner's `subscription_status` → `"expired"`
+  - Partner receives notification
+  - Shared pets enter the Pet Sharing unlink flow (see section 2)
+  - Partner can still READ data but cannot modify until they get their own subscription
 
-- Payer downgrades to individual plan
-- Partner's `subscription_status` → `"expired"`
-- Partner receives notification
-- Shared pets enter the Pet Sharing unlink flow (see section 2)
-- Partner can still READ data but cannot modify until they get their own subscription
+**Subscription is auto-renewable (continuous)**. Users cancel anytime via iOS Settings. No one-time purchase option. Paywall should mention: "Cancel anytime in Settings".
 
 ### Data Model Changes
 
