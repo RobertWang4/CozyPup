@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     # Emergency model — only used when emergency keywords are detected (e.g. seizure, poisoning).
     # Typically a more capable/accurate model for safety-critical responses.
     emergency_model: str = "openai/kimi-k2.5"
+    embedding_model: str = "openai/text-embedding-3-small"
     model_api_base: str = ""   # Proxy base URL (e.g. https://api.shubiaobiao.cn/v1)
     model_api_key: str = ""    # Proxy API key
     google_places_api_key: str = ""
