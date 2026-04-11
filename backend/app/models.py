@@ -72,6 +72,10 @@ class User(Base):
     phone_number: Mapped[str | None] = mapped_column(String(20))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+    subscription_status: Mapped[str] = mapped_column(String(20), nullable=False, server_default="trial")  # "trial" | "active" | "expired"
+    trial_start_date: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    subscription_expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    subscription_product_id: Mapped[str | None] = mapped_column(String(100))
 
     pets: Mapped[list["Pet"]] = relationship(back_populates="owner", cascade="all, delete-orphan")
     sessions: Mapped[list["ChatSession"]] = relationship(back_populates="user", cascade="all, delete-orphan")
