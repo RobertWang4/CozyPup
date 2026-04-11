@@ -8,10 +8,32 @@ class ChatStore: ObservableObject {
     private let messagesKey = "cozypup_chat_messages"
     private let sessionKey = "cozypup_chat_session"
     private let welcomeKey = "cozypup_has_seen_welcome"
+    private let messageCountKey = "cozypup_total_message_count"
+    private let softPaywallCountKey = "cozypup_soft_paywall_count"
+    private let softPaywallDateKey = "cozypup_soft_paywall_date"
 
     var hasSeenWelcome: Bool {
         get { UserDefaults.standard.bool(forKey: welcomeKey) }
         set { UserDefaults.standard.set(newValue, forKey: welcomeKey) }
+    }
+
+    var totalMessageCount: Int {
+        get { UserDefaults.standard.integer(forKey: messageCountKey) }
+        set { UserDefaults.standard.set(newValue, forKey: messageCountKey) }
+    }
+
+    var softPaywallShownCount: Int {
+        get { UserDefaults.standard.integer(forKey: softPaywallCountKey) }
+        set { UserDefaults.standard.set(newValue, forKey: softPaywallCountKey) }
+    }
+
+    var lastSoftPaywallDate: Date? {
+        get { UserDefaults.standard.object(forKey: softPaywallDateKey) as? Date }
+        set { UserDefaults.standard.set(newValue, forKey: softPaywallDateKey) }
+    }
+
+    func incrementMessageCount() {
+        totalMessageCount += 1
     }
 
     init() { load() }

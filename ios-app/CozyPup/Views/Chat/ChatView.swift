@@ -5,12 +5,15 @@ struct ChatView: View {
     @EnvironmentObject var calendarStore: CalendarStore
     @EnvironmentObject var petStore: PetStore
     @EnvironmentObject var dailyTaskStore: DailyTaskStore
+    @EnvironmentObject var subscriptionStore: SubscriptionStore
     @StateObject private var speech = SpeechService()
     @StateObject private var location = LocationService()
 
     @State private var inputText = ""
     @State private var isStreaming = false
     @State private var emergency: EmergencyData?
+    @State private var showSoftPaywall = false
+    @State private var showHardPaywall = false
     @State private var showCalendar = false
     @State private var calendarJumpDate: String?
     @State private var showSettings = false
@@ -168,26 +171,39 @@ struct ChatView: View {
                     .transition(.move(edge: .bottom).combined(with: .opacity))
                 }
 
-                ChatInputBar(
-                    text: $inputText,
-                    pendingPhotos: $pendingPhotos,
-                    isStreaming: isStreaming,
-                    isListening: speech.isListening,
-                    transcript: speech.transcript,
-                    audioLevel: speech.audioLevel,
-                    onSend: sendMessage,
-                    onMicDown: startVoice,
-                    onMicUp: releaseVoice,
-                    onMicCancel: cancelVoice,
-                    dragOffsetOut: $voiceDragOffset
-                )
-                .allowsHitTesting(!showSettings && !showCalendar)
-                // Hide input bar when drawer is open so keyboard doesn't push it up
-                .frame(height: (showSettings || showCalendar) ? 0 : nil)
-                .clipped()
-                .onChange(of: inputText) { _, newValue in
-                    withAnimation(.easeOut(duration: 0.15)) {
-                        showSlashMenu = newValue == "/"
+                if case .expired = subscriptionStore.status {
+                    Text("订阅后继续对话")
+                        .font(Tokens.fontSubheadline)
+                        .foregroundColor(Tokens.textTertiary)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, Tokens.spacing.md)
+                        .background(Tokens.surface)
+                        .onTapGesture { showHardPaywall = true }
+                        .allowsHitTesting(!showSettings && !showCalendar)
+                        .frame(height: (showSettings || showCalendar) ? 0 : nil)
+                        .clipped()
+                } else {
+                    ChatInputBar(
+                        text: $inputText,
+                        pendingPhotos: $pendingPhotos,
+                        isStreaming: isStreaming,
+                        isListening: speech.isListening,
+                        transcript: speech.transcript,
+                        audioLevel: speech.audioLevel,
+                        onSend: sendMessage,
+                        onMicDown: startVoice,
+                        onMicUp: releaseVoice,
+                        onMicCancel: cancelVoice,
+                        dragOffsetOut: $voiceDragOffset
+                    )
+                    .allowsHitTesting(!showSettings && !showCalendar)
+                    // Hide input bar when drawer is open so keyboard doesn't push it up
+                    .frame(height: (showSettings || showCalendar) ? 0 : nil)
+                    .clipped()
+                    .onChange(of: inputText) { _, newValue in
+                        withAnimation(.easeOut(duration: 0.15)) {
+                            showSlashMenu = newValue == "/"
+                        }
                     }
                 }
             }
@@ -337,6 +353,27 @@ struct ChatView: View {
         }
         .task {
             await dailyTaskStore.fetchToday()
+        }
+        .task {
+            if case .expired = subscriptionStore.status {
+                showHardPaywall = true
+            }
+        }
+        .onChange(of: subscriptionStore.status) { _, newStatus in
+            if case .expired = newStatus {
+                showHardPaywall = true
+            }
+        }
+        .sheet(isPresented: $showSoftPaywall) {
+            PaywallSheet(isHard: false) { showSoftPaywall = false }
+                .presentationDetents([.medium])
+                .environmentObject(subscriptionStore)
+        }
+        .sheet(isPresented: $showHardPaywall) {
+            PaywallSheet(isHard: true)
+                .presentationDetents([.medium])
+                .interactiveDismissDisabled(true)
+                .environmentObject(subscriptionStore)
         }
         .onReceive(NotificationCenter.default.publisher(for: UIApplication.willResignActiveNotification)) { _ in
             // App interrupted (swipe up, notification, phone call) — cancel voice to prevent stuck state
@@ -743,6 +780,20 @@ struct ChatView: View {
             }
             chatStore.save()
             isStreaming = false
+
+            // Track message count and check soft paywall
+            chatStore.incrementMessageCount()
+            if case .trial(let daysLeft) = subscriptionStore.status,
+               daysLeft < 7,
+               chatStore.totalMessageCount >= 10,
+               chatStore.softPaywallShownCount < 2 {
+                if chatStore.lastSoftPaywallDate == nil ||
+                   !Calendar.current.isDateInToday(chatStore.lastSoftPaywallDate!) {
+                    showSoftPaywall = true
+                    chatStore.softPaywallShownCount += 1
+                    chatStore.lastSoftPaywallDate = Date()
+                }
+            }
 
             // Always refresh daily tasks after any chat response —
             // LLM may have created/deleted tasks, or claimed it did without calling tools
