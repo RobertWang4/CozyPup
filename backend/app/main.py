@@ -15,6 +15,7 @@ from app.routers.pets import router as pets_router
 from app.routers.reminders import router as reminders_router
 from app.routers.places import router as places_router
 from app.routers.tasks import router as tasks_router
+from app.routers.subscription import router as subscription_router
 from app.middleware.rate_limit import ChatRateLimitMiddleware
 from app.debug.middleware import (
     CorrelationMiddleware,
@@ -51,6 +52,7 @@ app.include_router(chat_history_router)
 app.include_router(devices_router)
 app.include_router(tasks_router)
 app.include_router(places_router)
+app.include_router(subscription_router)
 
 # Register middleware (outermost runs first — last add = outermost)
 app.add_middleware(ChatRateLimitMiddleware)
