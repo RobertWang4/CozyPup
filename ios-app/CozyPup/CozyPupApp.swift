@@ -64,6 +64,8 @@ struct CozyPupApp: App {
     @StateObject private var chatStore = ChatStore()
     @StateObject private var dailyTaskStore = DailyTaskStore()
     @StateObject private var subscriptionStore = SubscriptionStore()
+    @State private var pendingShareToken: String?
+    @State private var showMergeSheet = false
     var body: some Scene {
         WindowGroup {
             Group {
@@ -85,16 +87,36 @@ struct CozyPupApp: App {
             .environmentObject(subscriptionStore)
             .environmentObject(Lang.shared)
             .onOpenURL { url in
-                guard url.scheme == "cozypup",
-                      url.host == "calendar",
-                      url.pathComponents.count >= 3,
-                      url.pathComponents[1] == "event" else { return }
-                let eventId = url.pathComponents[2]
-                NotificationCenter.default.post(
-                    name: .openCalendarEvent,
-                    object: nil,
-                    userInfo: ["eventId": eventId]
-                )
+                guard url.scheme == "cozypup" else { return }
+
+                if url.host == "share",
+                   let token = URLComponents(url: url, resolvingAgainstBaseURL: false)?
+                       .queryItems?.first(where: { $0.name == "token" })?.value {
+                    pendingShareToken = token
+                    showMergeSheet = true
+                    return
+                }
+
+                if url.host == "calendar",
+                   url.pathComponents.count >= 3,
+                   url.pathComponents[1] == "event" {
+                    let eventId = url.pathComponents[2]
+                    NotificationCenter.default.post(
+                        name: .openCalendarEvent,
+                        object: nil,
+                        userInfo: ["eventId": eventId]
+                    )
+                }
+            }
+            .sheet(isPresented: $showMergeSheet) {
+                if let token = pendingShareToken {
+                    PetMergeSheet(shareToken: token) {
+                        showMergeSheet = false
+                        pendingShareToken = nil
+                    }
+                    .environmentObject(petStore)
+                    .presentationDetents([.medium, .large])
+                }
             }
             .task {
                 if auth.isAuthenticated {

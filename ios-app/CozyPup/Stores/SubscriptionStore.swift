@@ -21,7 +21,10 @@ class SubscriptionStore: ObservableObject {
     @Published var trialStats: TrialStats?
     @Published var isPurchasing = false
 
-    static let productIDs = ["com.cozypup.app.weekly", "com.cozypup.app.monthly", "com.cozypup.app.yearly"]
+    static let productIDs = [
+        "com.cozypup.app.weekly", "com.cozypup.app.monthly", "com.cozypup.app.yearly",
+        "com.cozypup.app.weekly.duo", "com.cozypup.app.monthly.duo", "com.cozypup.app.yearly.duo",
+    ]
 
     private var transactionListener: Task<Void, Never>?
 
