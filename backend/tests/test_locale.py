@@ -49,7 +49,7 @@ def test_t_tool_decision_tree():
 
 def test_t_emergency_hint():
     zh = t("emergency_hint", "zh")
-    assert "检测到" in zh
+    assert "紧急关键词检测" in zh
     en = t("emergency_hint", "en")
     assert "detected" in en
-    assert "检测到" not in en
+    assert "紧急关键词检测" not in en

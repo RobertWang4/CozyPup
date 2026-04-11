@@ -50,8 +50,8 @@ class TestTrace:
         assert "req-cli-001" in result.output
         assert "ValueError" in result.output
         assert "something broke" in result.output
-        assert "POST /api/pets" in result.output
         assert "Traceback ..." in result.output
+        # Note: request_data (method/path) is not shown in the snapshot-only trace view
 
     def test_trace_not_found(self, tmp_path, monkeypatch):
         monkeypatch.setattr("app.debug.cli.SNAPSHOTS_DIR", tmp_path)
@@ -60,7 +60,7 @@ class TestTrace:
         runner = CliRunner()
         result = runner.invoke(cli, ["trace", "nonexistent"])
         assert result.exit_code == 0
-        assert "No snapshot found" in result.output
+        assert "No trace found" in result.output
 
 
 class TestErrors:

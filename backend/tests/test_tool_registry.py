@@ -13,10 +13,14 @@ def test_all_handlers_registered():
     """Every tool in definitions should have a registered handler."""
     from app.agents.tools.definitions import _BASE_TOOL_DEFINITIONS
 
+    # Exclude tools handled specially outside the registry:
+    # - request_images: client-side tool, no backend handler
+    # - plan: handled directly in orchestrator.dispatch_tool, not via registry
+    ORCHESTRATOR_HANDLED = {"request_images", "plan"}
     defined_names = {
         t["function"]["name"]
         for t in _BASE_TOOL_DEFINITIONS
-        if t["function"]["name"] != "request_images"
+        if t["function"]["name"] not in ORCHESTRATOR_HANDLED
     }
 
     registered = get_registered_tools()

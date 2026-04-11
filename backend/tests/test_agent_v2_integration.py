@@ -683,16 +683,20 @@ async def test_orchestrator_error_recovery():
 # ============================================
 @pytest.mark.asyncio
 async def test_nudge_fires_when_llm_skips_tools():
-    """When pre-processor expects tools but LLM ignores, nudge triggers and LLM retries."""
+    """When pre-processor expects a NUDGE_TOOLS tool but LLM ignores, nudge triggers.
+
+    Nudge only fires for tools in NUDGE_TOOLS (search_places, trigger_emergency,
+    set_language). Using search_places here to exercise the nudge path.
+    """
     from app.agents.pre_processing.types import SuggestedAction
 
     # Round 1: LLM just chats (ignores tool intent)
-    round1_chunks = _make_stream_chunks(content="好的~三妹吃狗粮啦")
+    round1_chunks = _make_stream_chunks(content="附近有宠物医院哦")
     # Round 2 (after nudge): LLM calls tool
-    tool_args = {"pet_id": "abc", "event_date": "2026-03-24", "title": "吃狗粮", "category": "diet"}
-    round2_chunks = _make_stream_chunks(tool_calls=[{"name": "create_calendar_event", "args": tool_args}])
+    search_args = {"query": "宠物医院", "location": "current"}
+    round2_chunks = _make_stream_chunks(tool_calls=[{"name": "search_places", "args": search_args}])
     # Round 3: follow-up
-    round3_chunks = _make_stream_chunks(content="已记录")
+    round3_chunks = _make_stream_chunks(content="找到了几家医院")
 
     call_count = 0
     async def mock_completion(**kwargs):
@@ -704,11 +708,11 @@ async def test_nudge_fires_when_llm_skips_tools():
             return MockAsyncIterator(round2_chunks)
         return MockAsyncIterator(round3_chunks)
 
-    mock_execute = AsyncMock(return_value={"success": True, "card": {"type": "record"}})
+    mock_execute = AsyncMock(return_value={"success": True, "card": {"type": "places"}})
 
     suggested = [SuggestedAction(
-        tool_name="create_calendar_event",
-        arguments=tool_args,
+        tool_name="search_places",
+        arguments=search_args,
         confidence=0.9,
     )]
 
@@ -716,13 +720,13 @@ async def test_nudge_fires_when_llm_skips_tools():
          patch("app.agents.orchestrator.validate_tool_args", return_value=[]), \
          patch("app.agents.orchestrator.execute_tool", mock_execute):
         result = await run_orchestrator(
-            message="三妹吃了狗粮",
+            message="附近哪里有宠物医院",
             system_prompt="test",
-            context_messages=[{"role": "user", "content": "三妹吃了狗粮"}],
+            context_messages=[{"role": "user", "content": "附近哪里有宠物医院"}],
             db=AsyncMock(), user_id="user-1",
             suggested_actions=suggested,
         )
 
     assert call_count == 3  # initial + nudge + follow-up
     assert len(result.cards) == 1
-    assert "create_calendar_event" in result.tools_called
+    assert "search_places" in result.tools_called

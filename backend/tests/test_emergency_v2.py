@@ -47,7 +47,7 @@ def test_build_emergency_hint():
     assert "中毒" in hint
     assert "抽搐" in hint
     assert "trigger_emergency" in hint
-    assert "不触发" in hint  # includes anti-false-positive instruction
+    assert "唯一豁免" in hint  # includes exemption/false-positive instruction
 
 
 def test_build_emergency_hint_single_keyword():
