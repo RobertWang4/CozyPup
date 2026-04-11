@@ -244,21 +244,17 @@ async def _event_generator(
       Phase 4: 后处理（兜底执行、档案提取、消息保存、上下文压缩）
     """
 
-    # ========== Phase 0: 会话 & 消息保存 ==========
+    # ========== Phase 0: 会话初始化 ==========
 
     # 1. 获取或创建当日会话
     session = await _get_or_create_session(db, user_id)
     session_id = str(session.id)
 
-    # 2. 立即保存用户消息（不等图片写入完成，优先让 LLM 开始处理）
-    #    图片写入通过 run_in_executor 在线程池中并行进行
+    # 2. 启动图片保存（在线程池中并行运行，不阻塞主流程）
     image_save_task = None
     if request.images:
         loop = asyncio.get_event_loop()
         image_save_task = loop.run_in_executor(None, _save_images_to_disk, request.images)
-    await _save_message(
-        db, session.id, user_id, MessageRole.user, request.message,
-    )
 
     from app.debug.trace_logger import trace_log
     trace_log("chat_request", data={
@@ -296,8 +292,13 @@ async def _event_generator(
             "keywords": emergency_result.keywords,
         })
 
-    # Stage 3: 加载最近的历史消息作为上下文
+    # Stage 3: 加载最近的历史消息作为上下文（必须在保存用户消息之前，避免重复）
     context_messages = await _get_recent_messages(db, session.id, limit=MAX_CONTEXT_MESSAGES)
+
+    # Stage 4: 保存用户消息到 DB（在查询 context 之后，避免当前消息出现在历史中导致重复）
+    await _save_message(
+        db, session.id, user_id, MessageRole.user, request.message,
+    )
 
     # ========== Phase 2: 构建 Prompt ==========
 
