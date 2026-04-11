@@ -5,7 +5,13 @@ from datetime import datetime, timedelta, timezone
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
+import pytest_asyncio
+from fastapi.testclient import TestClient
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
+from app.auth import get_current_user_id
+from app.database import Base, get_db
+from app.main import app
 from app.routers.subscription import _compute_status, TRIAL_DAYS
 from app.models import User
 
@@ -261,3 +267,187 @@ class TestVerifyEndpoint:
         assert response.status == "active"
         delta = response.expires_at - datetime.now(timezone.utc)
         assert 364 <= delta.days <= 365
+
+
+# ---------------------------------------------------------------------------
+# HTTP-level integration tests (TestClient + in-memory SQLite)
+# ---------------------------------------------------------------------------
+
+@pytest_asyncio.fixture
+async def _sqlite_engine():
+    engine = create_async_engine("sqlite+aiosqlite:///:memory:")
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    yield engine
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.drop_all)
+    await engine.dispose()
+
+
+@pytest_asyncio.fixture
+async def _db(_sqlite_engine):
+    factory = async_sessionmaker(
+        _sqlite_engine, class_=AsyncSession, expire_on_commit=False
+    )
+    async with factory() as session:
+        yield session
+
+
+def _http_client(db_session: AsyncSession, user_id: uuid.UUID) -> TestClient:
+    """Build a TestClient with DB and auth overrides."""
+
+    async def _override_db():
+        yield db_session
+
+    async def _override_user_id():
+        return user_id
+
+    app.dependency_overrides[get_db] = _override_db
+    app.dependency_overrides[get_current_user_id] = _override_user_id
+    client = TestClient(app, raise_server_exceptions=False)
+    return client
+
+
+async def _create_user(
+    db: AsyncSession,
+    *,
+    status: str = "trial",
+    trial_start_date=None,
+    subscription_expires_at=None,
+) -> User:
+    # SQLite stores datetimes without timezone, so strip tzinfo to avoid
+    # "can't subtract offset-naive and offset-aware datetimes" errors when
+    # the middleware/router reads values back from the DB.
+    def _naive(dt):
+        return dt.replace(tzinfo=None) if dt is not None else None
+
+    user = User(
+        id=uuid.uuid4(),
+        email=f"test_{uuid.uuid4().hex[:6]}@example.com",
+        auth_provider="dev",
+        subscription_status=status,
+        trial_start_date=_naive(trial_start_date),
+        subscription_expires_at=_naive(subscription_expires_at),
+    )
+    db.add(user)
+    await db.commit()
+    await db.refresh(user)
+    return user
+
+
+class TestExpiredUserBlockedFromChat:
+    @pytest.mark.asyncio
+    async def test_expired_user_gets_403_on_post_chat(self, _db):
+        """User with expired subscription → POST /chat returns 403 subscription_expired.
+
+        The trial→expired promotion (trial_start_date arithmetic) is covered by unit
+        tests in TestComputeStatus. Here we test the HTTP gate with a user whose status
+        is already stored as 'expired' in the DB — the same state after auto-promotion.
+        """
+        user = await _create_user(_db, status="expired")
+        client = _http_client(_db, user.id)
+        try:
+            response = client.post(
+                "/api/v1/chat",
+                json={"message": "hello", "session_id": None},
+            )
+            assert response.status_code == 403
+            body = response.json()
+            assert body["detail"]["code"] == "subscription_expired"
+        finally:
+            app.dependency_overrides.clear()
+
+    @pytest.mark.asyncio
+    async def test_active_trial_user_is_not_blocked(self, _db):
+        """User in active trial (no trial_start_date set yet) is NOT blocked on POST /chat."""
+        # No trial_start_date → middleware sees trial with None → skips date check → no block.
+        # The chat endpoint itself may error for other reasons; we only care it isn't 403
+        # with code='subscription_expired'.
+        user = await _create_user(_db, status="trial")
+        client = _http_client(_db, user.id)
+        try:
+            response = client.post(
+                "/api/v1/chat",
+                json={"message": "hello", "session_id": None},
+            )
+            assert response.status_code != 403 or (
+                response.json().get("detail", {}).get("code") != "subscription_expired"
+            )
+        finally:
+            app.dependency_overrides.clear()
+
+
+class TestExpiredUserCanRead:
+    @pytest.mark.asyncio
+    async def test_expired_user_can_get_pets(self, _db):
+        """Expired user can still call GET /pets — read endpoints are never blocked."""
+        user = await _create_user(_db, status="expired")
+        client = _http_client(_db, user.id)
+        try:
+            response = client.get("/api/v1/pets")
+            # 200 (empty list) — NOT 403
+            assert response.status_code == 200
+        finally:
+            app.dependency_overrides.clear()
+
+    @pytest.mark.asyncio
+    async def test_expired_user_can_get_subscription_status(self, _db):
+        """Expired user can read /subscription/status — GET is always allowed."""
+        user = await _create_user(_db, status="expired")
+        client = _http_client(_db, user.id)
+        try:
+            response = client.get("/api/v1/subscription/status")
+            assert response.status_code == 200
+            assert response.json()["status"] == "expired"
+        finally:
+            app.dependency_overrides.clear()
+
+
+class TestVerifyActivatesSubscription:
+    @pytest.mark.asyncio
+    async def test_verify_sets_active_status_and_returns_expires_at(self, _db):
+        """POST /subscription/verify with a valid transaction activates the subscription."""
+        user = await _create_user(_db, status="trial")
+        client = _http_client(_db, user.id)
+        try:
+            response = client.post(
+                "/api/v1/subscription/verify",
+                json={
+                    "transaction_id": "txn_test_001",
+                    "product_id": "com.cozypup.monthly",
+                },
+            )
+            assert response.status_code == 200
+            body = response.json()
+            assert body["status"] == "active"
+            assert body["expires_at"] is not None
+        finally:
+            app.dependency_overrides.clear()
+
+    @pytest.mark.asyncio
+    async def test_verify_allows_post_chat_after_activation(self, _db):
+        """After verify, an expired user should no longer be blocked on POST /chat."""
+        user = await _create_user(_db, status="expired")
+        client = _http_client(_db, user.id)
+        try:
+            # Activate subscription
+            verify_resp = client.post(
+                "/api/v1/subscription/verify",
+                json={
+                    "transaction_id": "txn_test_002",
+                    "product_id": "com.cozypup.monthly",
+                },
+            )
+            assert verify_resp.status_code == 200
+
+            # POST /chat should now pass the subscription gate (may fail for other
+            # reasons like missing session, but not 403 subscription_expired)
+            chat_resp = client.post(
+                "/api/v1/chat",
+                json={"message": "hello", "session_id": None},
+            )
+            assert chat_resp.status_code != 403
+            if chat_resp.status_code == 403:
+                assert chat_resp.json().get("detail", {}).get("code") != "subscription_expired"
+        finally:
+            app.dependency_overrides.clear()
