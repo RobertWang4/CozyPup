@@ -289,6 +289,15 @@ def _validate_manage_daily_task(args: dict) -> list[str]:
     return errors
 
 
+@_register("search_knowledge")
+def _validate_search_knowledge(args: dict) -> list[str]:
+    errors = _check_required(args, ["query"])
+    errors += _check_uuid(args, "pet_id")
+    if args.get("species") and args["species"] not in _SPECIES:
+        errors.append(f"Invalid species: {args['species']!r} (expected dog/cat/other)")
+    return errors
+
+
 def validate_tool_args(tool_name: str, arguments: dict) -> list[str]:
     """Validate tool arguments against the schema.
 

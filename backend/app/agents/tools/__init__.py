@@ -18,6 +18,7 @@ import app.agents.tools.pets      # noqa: F401
 import app.agents.tools.reminders # noqa: F401
 import app.agents.tools.misc      # noqa: F401
 import app.agents.tools.tasks     # noqa: F401
+import app.agents.tools.knowledge  # noqa: F401
 
 from app.agents.tools.registry import get_registered_tools
 
@@ -30,6 +31,7 @@ from app.agents.tools.calendar import (
     update_calendar_event,
     upload_event_photo,
 )
+from app.agents.tools.knowledge import search_knowledge
 from app.agents.tools.misc import (
     draft_email,
     get_directions_tool,
@@ -93,6 +95,8 @@ __all__ = [
     "trigger_emergency",
     "get_place_details_tool",
     "get_directions_tool",
+    # knowledge
+    "search_knowledge",
 ]
 
 

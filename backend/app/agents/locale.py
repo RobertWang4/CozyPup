@@ -137,6 +137,8 @@ Image handling rules:
 - 用户要求【总结/更新宠物档案】→ summarize_pet_profile
 - 用户要求【切换语言】（"switch to English""切换成中文""说英文""用中文""speak Chinese""use English"）→ 必须调用 set_language
 - 新用户第一次对话 / 用户问"你能做什么""有什么功能""怎么用" → introduce_product
+- 用户描述宠物【健康问题/症状/疾病/用药/饮食疑问】→ 必须调用 search_knowledge
+- 用户发了【宠物照片】问健康问题 → search_knowledge（用图片观察到的特征作为 query）
 - 用户只是聊天/问问题 → 不调工具，直接回复
 
 ### 【关键：这些工具必须被调用，不能用文字回复代替】
@@ -184,6 +186,8 @@ Image handling rules:
 - User asks to [summarize/update pet profile] → summarize_pet_profile
 - User asks to [switch language] ("switch to English", "切换成中文", "speak Chinese", "use English") → MUST call set_language
 - New user's first message / user asks "what can you do", "how to use", "features", "help" → introduce_product
+- User describes pet health issues/symptoms/illness/medication/diet questions → must call search_knowledge
+- User sends pet photo asking about health → search_knowledge (use observed symptoms from image as query)
 - User is just chatting / asking questions → no tool, reply directly
 
 ### [CRITICAL: These tools MUST be called — never substitute with text replies]
@@ -842,6 +846,10 @@ Notes:
             "Can match by task_id (exact) or title keyword (fuzzy).\n"
             "Do NOT use for: creating new tasks (use create_daily_task)."
         ),
+    },
+    "tool_desc_search_knowledge": {
+        "zh": "检索宠物健康知识库和用户历史记录，用于回答健康相关问题。",
+        "en": "Search pet health knowledge base and user history to answer health-related questions.",
     },
     "fallback_error": {
         "zh": "抱歉，处理时遇到了问题，请再说一次。",

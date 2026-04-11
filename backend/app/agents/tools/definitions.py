@@ -928,6 +928,37 @@ _BASE_TOOL_DEFINITIONS = [
             },
         },
     },
+    {
+        "type": "function",
+        "function": {
+            "name": "search_knowledge",
+            "description": (
+                "检索宠物健康知识库和用户历史记录，用于回答健康相关问题。\n"
+                "【必须调用】用户描述宠物健康问题、症状、疾病、用药、饮食疑问时。\n"
+                "如果用户发了图片（如呕吐物/皮肤/便便），从图片中观察到的症状特征作为 query。\n"
+                "不要用于: 闲聊、创建日程、记录事件（用对应工具）。"
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "query": {
+                        "type": "string",
+                        "description": "搜索关键词，描述症状或健康问题",
+                    },
+                    "pet_id": {
+                        "type": "string",
+                        "description": "相关宠物的 UUID，可选。明确知道是哪只宠物时传入",
+                    },
+                    "species": {
+                        "type": "string",
+                        "enum": ["dog", "cat"],
+                        "description": "物种，用于过滤知识库",
+                    },
+                },
+                "required": ["query"],
+            },
+        },
+    },
 ]
 
 # Backward compatibility alias
