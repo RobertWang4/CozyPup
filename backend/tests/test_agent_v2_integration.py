@@ -493,7 +493,7 @@ def test_prompt_cache_friendly_order():
 
     tree_pos = prompt.find("工具选择")
     summary_pos = prompt.find("对话摘要")
-    hint_pos = prompt.find("⚠️")
+    hint_pos = prompt.find("⚠️ 检测到紧急关键词")
     preprocessor_pos = prompt.find("系统检测到")
 
     assert tree_pos < summary_pos, "Tool guide should come before session summary"
