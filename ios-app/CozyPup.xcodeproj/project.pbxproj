@@ -47,6 +47,7 @@
 		B0BE23343ADC65DAF3EEF9A3 /* AuthStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 913C15A464B82E869A8EA6E8 /* AuthStore.swift */; };
 		B21CAB20F3E00F67BF64675A /* DailyTaskStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E831C8CE60089D202386C70 /* DailyTaskStore.swift */; };
 		C998476087AE4EF9AD4B365C /* SubscriptionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE19542780E14C1D952ADB72 /* SubscriptionStore.swift */; };
+		PAY0001000000000000000001 /* PaywallSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = PAY0002000000000000000002 /* PaywallSheet.swift */; };
 		B26546A329CCAA0E29AF43B5 /* ConfirmActionCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDD76A395C37067B90C0DFD7 /* ConfirmActionCard.swift */; };
 		B88F419864D7ACC602B34023 /* VoiceInputOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0966E4141F24A98CBF3DA68 /* VoiceInputOverlay.swift */; };
 		C0A91D7D044C8CB2E17B6497 /* CustomScrollIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 341089EEBFBBC68CDDB0439D /* CustomScrollIndicator.swift */; };
@@ -86,6 +87,7 @@
 		2BB807C14C655DB7B5A4C94A /* UserProfileSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileSheet.swift; sourceTree = "<group>"; };
 		2E831C8CE60089D202386C70 /* DailyTaskStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyTaskStore.swift; sourceTree = "<group>"; };
 		BE19542780E14C1D952ADB72 /* SubscriptionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionStore.swift; sourceTree = "<group>"; };
+		PAY0002000000000000000002 /* PaywallSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallSheet.swift; sourceTree = "<group>"; };
 		3295CA4BEC61EA4CB1EFA88A /* PinchGestureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinchGestureView.swift; sourceTree = "<group>"; };
 		33E08B0B44AEEB61CFD807D9 /* HeatStripView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeatStripView.swift; sourceTree = "<group>"; };
 		341089EEBFBBC68CDDB0439D /* CustomScrollIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomScrollIndicator.swift; sourceTree = "<group>"; };
@@ -317,10 +319,19 @@
 				B4F5C5C94DD235615FE4F6D9 /* Chat */,
 				AFFF3AF1FD7FC581979843BB /* DailyTasks */,
 				B87F8D61AFFA06F863A975FE /* Extensions */,
+				PAY0003000000000000000003 /* Paywall */,
 				AB05AA687060A2ADDA2BA81E /* Settings */,
 				A1AD7054EED742146144B174 /* Shared */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		PAY0003000000000000000003 /* Paywall */ = {
+			isa = PBXGroup;
+			children = (
+				PAY0002000000000000000002 /* PaywallSheet.swift */,
+			);
+			path = Paywall;
 			sourceTree = "<group>";
 		};
 		B4F5C5C94DD235615FE4F6D9 /* Chat */ = {
@@ -514,6 +525,7 @@
 				06CC3E51A0D3F3CB0DF919E9 /* CachedAsyncImage.swift in Sources */,
 				F49A9885B071C199C20CF809 /* LocationPickerSheet.swift in Sources */,
 				8EC0BA8575B497F7C1BAD383 /* SpendingStatsView.swift in Sources */,
+				PAY0001000000000000000001 /* PaywallSheet.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
