@@ -32,8 +32,9 @@ Product IDs:
 ### Upgrade (Individual → Duo)
 
 - Must stay on same billing cycle (weekly→weekly, monthly→monthly)
-- Pro-rated: `upgrade_cost = duo_price - individual_price × (remaining_days / cycle_days)`
-- New cycle starts from upgrade date
+- Pro-rated: `upgrade_cost = (duo_price - individual_price) × (remaining_days / cycle_days)`
+- Example: weekly individual $1.99, 3 days left → ($2.99 - $1.99) × 3/7 = $0.43
+- Current cycle continues (not reset), next renewal at duo price
 
 ### Downgrade (Duo → Individual)
 
