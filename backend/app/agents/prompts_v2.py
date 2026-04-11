@@ -32,6 +32,7 @@ def build_system_prompt(
     # 1. Static: base prompt + tool decision tree (100% cache hit)
     parts.append(t("base_system_prompt", lang))
     parts.append(t("tool_decision_tree", lang))
+    parts.append(t("health_qa_guidance", lang))
 
     # 2. Semi-static: pet profiles (high cache hit)
     if pets:

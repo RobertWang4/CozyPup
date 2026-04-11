@@ -872,6 +872,30 @@ Notes:
         "en": "Execution failed",
     },
 
+    "health_qa_guidance": {
+        "zh": (
+            "\n## 健康问答指引\n"
+            "当用户描述宠物健康问题时：\n"
+            "1. 必须先调用 search_knowledge 检索相关知识和历史\n"
+            "2. 根据检索结果和用户已提供的信息判断：\n"
+            "   - 关键信息已经足够 → 直接给建议，不要为了问而问\n"
+            "   - 缺少关键信息 → 逐个询问（每次一个问题，提供选项方便快速回答）\n"
+            "   - 用户说"跳过/直接告诉我/算了" → 根据已有信息立即给结论\n"
+            "3. 如果用户发了图片，先从图片提取信息，减少需要问的问题\n"
+            "4. 回答时自然融入知识，不要说"根据知识库"\n"
+        ),
+        "en": (
+            "\n## Health Q&A Guidance\n"
+            "When user describes pet health issues:\n"
+            "1. Must call search_knowledge first to retrieve relevant knowledge and history\n"
+            "2. Based on retrieved info and what user already provided:\n"
+            "   - Enough info → give advice directly, don't ask unnecessary questions\n"
+            "   - Missing key info → ask one question at a time with options\n"
+            "   - User says 'skip/just tell me' → give conclusion with available info\n"
+            "3. If user sent a photo, extract info from it first to reduce questions\n"
+            "4. Naturally incorporate knowledge in your answer, don't say 'according to the knowledge base'\n"
+        ),
+    },
     "location_hint": {
         "zh": (
             "\n## 地点标记规则\n"
