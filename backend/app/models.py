@@ -55,6 +55,7 @@ class SourceType(str, enum.Enum):
     chat_turn = "chat_turn"
     daily_summary = "daily_summary"
     calendar_event = "calendar_event"
+    knowledge_base = "knowledge_base"
 
 
 # ---------- Models ----------
@@ -243,7 +244,7 @@ class Embedding(Base):
     __tablename__ = "embeddings"
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    user_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=True)
     pet_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("pets.id", ondelete="SET NULL"))
     source_type: Mapped[SourceType] = mapped_column(Enum(SourceType), nullable=False)
     source_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False)
@@ -251,6 +252,20 @@ class Embedding(Base):
     embedding: Mapped[list] = mapped_column(Vector(1536), nullable=False)
     metadata_json: Mapped[dict | None] = mapped_column(JSON)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class KnowledgeArticle(Base):
+    __tablename__ = "knowledge_articles"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    title: Mapped[str] = mapped_column(String(500), nullable=False)
+    content: Mapped[str] = mapped_column(Text, nullable=False)
+    category: Mapped[str] = mapped_column(String(100), nullable=False)
+    species: Mapped[str] = mapped_column(String(20), nullable=False, default="all")
+    url: Mapped[str | None] = mapped_column(String(2000))
+    metadata_json: Mapped[dict | None] = mapped_column(JSON)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
 
 class DailySummary(Base):
