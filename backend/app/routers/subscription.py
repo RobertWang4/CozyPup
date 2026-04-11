@@ -106,7 +106,9 @@ async def verify_purchase(
 
     user.subscription_status = "active"
     user.subscription_product_id = req.product_id
-    if "yearly" in req.product_id:
+    if "weekly" in req.product_id:
+        user.subscription_expires_at = datetime.now(timezone.utc) + timedelta(days=7)
+    elif "yearly" in req.product_id:
         user.subscription_expires_at = datetime.now(timezone.utc) + timedelta(days=365)
     else:
         user.subscription_expires_at = datetime.now(timezone.utc) + timedelta(days=30)

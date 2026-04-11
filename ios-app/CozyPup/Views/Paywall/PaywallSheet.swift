@@ -56,20 +56,20 @@ struct PaywallSheet: View {
                 }
             }
 
-            Text("喜欢 CozyPup 吗？")
+            Text("Enjoying CozyPup?")
                 .font(Tokens.fontTitle)
                 .foregroundColor(Tokens.text)
 
             if case .trial(let daysLeft) = subscriptionStore.status {
-                Text("试用还剩 \(daysLeft) 天")
+                Text("\(daysLeft) days left in trial")
                     .font(Tokens.fontSubheadline)
                     .foregroundColor(Tokens.textSecondary)
             }
 
             VStack(alignment: .leading, spacing: Tokens.spacing.sm) {
-                benefitRow("无限 AI 对话 & 健康咨询")
-                benefitRow("智能提醒 & 日历管理")
-                benefitRow("附近宠物医院搜索")
+                benefitRow("Unlimited AI chat & health advice")
+                benefitRow("Smart reminders & calendar")
+                benefitRow("Nearby vet clinic search")
             }
             .padding(.vertical, Tokens.spacing.sm)
 
@@ -79,7 +79,7 @@ struct PaywallSheet: View {
                 }
                 withAnimation { showPricing = true }
             } label: {
-                Text("查看方案")
+                Text("View Plans")
                     .font(Tokens.fontBody.weight(.semibold))
                     .foregroundColor(Tokens.white)
                     .frame(maxWidth: .infinity)
@@ -89,7 +89,7 @@ struct PaywallSheet: View {
             }
 
             Button { onDismiss?() } label: {
-                Text("暂不需要")
+                Text("Not now")
                     .font(Tokens.fontCaption)
                     .foregroundColor(Tokens.textTertiary)
             }
@@ -100,20 +100,20 @@ struct PaywallSheet: View {
 
     private var hardPaywallContent: some View {
         VStack(spacing: Tokens.spacing.md) {
-            Text("这 7 天，CozyPup 帮你")
+            Text("In 7 days, CozyPup helped you")
                 .font(Tokens.fontTitle)
                 .foregroundColor(Tokens.text)
 
             if let stats = subscriptionStore.trialStats {
                 HStack(spacing: Tokens.spacing.xl) {
-                    statBubble(value: stats.chat_count, label: "次对话", color: Tokens.accent)
-                    statBubble(value: stats.reminder_count, label: "个提醒", color: Tokens.blue)
-                    statBubble(value: stats.event_count, label: "条记录", color: Tokens.green)
+                    statBubble(value: stats.chat_count, label: "chats", color: Tokens.accent)
+                    statBubble(value: stats.reminder_count, label: "reminders", color: Tokens.blue)
+                    statBubble(value: stats.event_count, label: "records", color: Tokens.green)
                 }
                 .padding(.vertical, Tokens.spacing.sm)
             }
 
-            Text("继续让 CozyPup 照顾你的毛孩子 🐶")
+            Text("Keep CozyPup caring for your furry friend 🐶")
                 .font(Tokens.fontSubheadline)
                 .foregroundColor(Tokens.textSecondary)
 
@@ -123,25 +123,37 @@ struct PaywallSheet: View {
 
     // MARK: - Pricing
 
+    private func tierLabel(for product: StoreKit.Product) -> String {
+        if product.id.contains("weekly") { return "Weekly" }
+        if product.id.contains("yearly") { return "Yearly" }
+        return "Monthly"
+    }
+
+    private func savingsBadge(for product: StoreKit.Product) -> String? {
+        if product.id.contains("monthly") { return "Save 19%" }
+        if product.id.contains("yearly") { return "Save 29%" }
+        return nil
+    }
+
     private var pricingContent: some View {
         VStack(spacing: Tokens.spacing.md) {
             HStack(spacing: Tokens.spacing.sm) {
                 ForEach(subscriptionStore.products, id: \.id) { product in
-                    let isYearly = product.id.contains("yearly")
+                    let isRecommended = product.id.contains("monthly")
                     Button {
                         selectedProduct = product
                     } label: {
                         VStack(spacing: Tokens.spacing.xs) {
-                            if isYearly {
-                                Text("推荐")
+                            if let badge = savingsBadge(for: product) {
+                                Text(badge)
                                     .font(Tokens.fontCaption2.weight(.semibold))
                                     .foregroundColor(Tokens.white)
                                     .padding(.horizontal, Tokens.spacing.sm)
                                     .padding(.vertical, 2)
-                                    .background(Tokens.accent)
+                                    .background(isRecommended ? Tokens.accent : Tokens.green)
                                     .cornerRadius(Tokens.spacing.sm)
                             }
-                            Text(isYearly ? "年付" : "月付")
+                            Text(tierLabel(for: product))
                                 .font(Tokens.fontCaption)
                                 .foregroundColor(Tokens.textSecondary)
                             Text(product.displayPrice)
@@ -176,7 +188,7 @@ struct PaywallSheet: View {
             }
 
             Button {
-                guard let product = selectedProduct ?? subscriptionStore.products.last else { return }
+                guard let product = selectedProduct ?? subscriptionStore.products.first(where: { $0.id.contains("monthly") }) ?? subscriptionStore.products.last else { return }
                 Task {
                     do {
                         try await subscriptionStore.purchase(product)
@@ -194,7 +206,7 @@ struct PaywallSheet: View {
                         .background(Tokens.accent.opacity(0.7))
                         .cornerRadius(Tokens.radiusSmall)
                 } else {
-                    Text("订阅")
+                    Text("Subscribe")
                         .font(Tokens.fontBody.weight(.semibold))
                         .foregroundColor(Tokens.white)
                         .frame(maxWidth: .infinity)
@@ -208,7 +220,7 @@ struct PaywallSheet: View {
             Button {
                 Task { await subscriptionStore.restorePurchases() }
             } label: {
-                Text("恢复购买")
+                Text("Restore Purchase")
                     .font(Tokens.fontCaption)
                     .foregroundColor(Tokens.textTertiary)
             }
