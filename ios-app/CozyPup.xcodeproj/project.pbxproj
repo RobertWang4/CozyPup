@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		00792BDF6314E02750687CE4 /* DisclaimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1FDA644076F4501C37D7F50 /* DisclaimerView.swift */; };
 		02D15CD57C05B41B9D6E12A3 /* ChatBubble.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9AAE2E80AD09A59E7BE2756 /* ChatBubble.swift */; };
+		A1B2C3D4E5F60789ABCD1234 /* QuickActionCards.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C3D4E5F6071234ABCD5678 /* QuickActionCards.swift */; };
 		06CC3E51A0D3F3CB0DF919E9 /* CachedAsyncImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF1AC786D70AD0CA016CA68A /* CachedAsyncImage.swift */; };
 		11DE02B8DAA886EB61A80137 /* HapticsHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85BEFBE5AF9B8344BCA4EFD5 /* HapticsHelper.swift */; };
 		191F072FED032F208CB5C627 /* UIImage+Resize.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E36A8E57B2E2E3490CD9A49 /* UIImage+Resize.swift */; };
@@ -131,6 +132,7 @@
 		BD6C5858ED844B5C8C619918 /* TypingIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypingIndicator.swift; sourceTree = "<group>"; };
 		C689DAF84CC613060400869F /* CozyPup.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = CozyPup.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9AAE2E80AD09A59E7BE2756 /* ChatBubble.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatBubble.swift; sourceTree = "<group>"; };
+		B2C3D4E5F6071234ABCD5678 /* QuickActionCards.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickActionCards.swift; sourceTree = "<group>"; };
 		D2586D01E7C42221ABD72995 /* LocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
 		D437A3D3656001306737E784 /* CozyPupApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CozyPupApp.swift; sourceTree = "<group>"; };
 		E49D254E58DB8AEDD31BF3B0 /* CameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
@@ -341,6 +343,7 @@
 				C9AAE2E80AD09A59E7BE2756 /* ChatBubble.swift */,
 				4A2A47F1B802976D3FF06DA5 /* ChatInputBar.swift */,
 				AE52D72C580AA7D599BDCEAC /* ChatView.swift */,
+				B2C3D4E5F6071234ABCD5678 /* QuickActionCards.swift */,
 				BD6C5858ED844B5C8C619918 /* TypingIndicator.swift */,
 				A0966E4141F24A98CBF3DA68 /* VoiceInputOverlay.swift */,
 			);
@@ -468,6 +471,7 @@
 				EAA20519C0D066535047820C /* CameraView.swift in Sources */,
 				02D15CD57C05B41B9D6E12A3 /* ChatBubble.swift in Sources */,
 				3063EC602BF64B2CF4A89883 /* ChatInputBar.swift in Sources */,
+				A1B2C3D4E5F60789ABCD1234 /* QuickActionCards.swift in Sources */,
 				D5FA653E9B82083C5D63B0D2 /* ChatMessage.swift in Sources */,
 				8C479A4CCAAB3EA751F08C51 /* ChatService.swift in Sources */,
 				ACC8DEDAA3BCE7642D22C250 /* ChatStore.swift in Sources */,

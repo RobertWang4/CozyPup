@@ -64,21 +64,36 @@ struct ChatView: View {
                     ScrollView {
                         VStack(spacing: 0) {
                             if chatStore.messages.isEmpty {
-                                if petStore.pets.isEmpty {
-                                    EmptyStateView(
-                                        icon: "pawprint.fill",
-                                        title: L.welcomeTitle,
-                                        subtitle: L.welcomeSubtitle
-                                    )
-                                    .frame(minHeight: 400)
-                                } else {
-                                    EmptyStateView(
-                                        icon: "bubble.left.and.bubble.right",
-                                        title: L.askAnything,
-                                        subtitle: L.askSubtitle
-                                    )
-                                    .frame(minHeight: 400)
+                                VStack(spacing: Tokens.spacing.md) {
+                                    // Welcome message (first time only)
+                                    if !chatStore.hasSeenWelcome {
+                                        HStack(alignment: .top, spacing: Tokens.spacing.sm) {
+                                            Image("logo")
+                                                .resizable()
+                                                .frame(width: 28, height: 28)
+                                                .cornerRadius(14)
+                                            Text("你好！我是 CozyPup，你的宠物专属管家 🐾\n\n我可以帮你：记录健康状况、设置疫苗提醒、查找附近宠物医院、解答养宠问题。\n\n先告诉我你家毛孩子叫什么吧～")
+                                                .font(Tokens.fontBody)
+                                                .foregroundColor(Tokens.text)
+                                                .padding(Tokens.spacing.md)
+                                                .background(Tokens.bubbleAi)
+                                                .cornerRadius(Tokens.radius)
+                                        }
+                                        .padding(.horizontal, Tokens.spacing.md)
+                                        .padding(.top, Tokens.spacing.xl)
+                                    }
+
+                                    Spacer()
+
+                                    // Quick action cards
+                                    QuickActionCards { message in
+                                        inputText = message
+                                        sendMessage()
+                                        chatStore.hasSeenWelcome = true
+                                    }
+                                    .padding(.bottom, Tokens.spacing.lg)
                                 }
+                                .frame(minHeight: 400)
                             }
                             VStack(spacing: 10) {
                                 ForEach(chatStore.messages) { msg in
