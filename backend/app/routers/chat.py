@@ -37,6 +37,7 @@ from app.agents.context_agent import trigger_summary_if_needed           # 上�
 from app.agents.trace_collector import TraceCollector, INACTIVE_TRACE    # Debug trace 收集器
 from app.agents.tools import execute_tool                                # 工具执行器（用于 confirm-action 直接执行）
 from app.auth import get_current_user_id                                 # JWT 认证依赖，提取 user_id
+from app.middleware.subscription import require_active_subscription      # 订阅状态检查
 from app.config import settings                                          # 全局配置（模型名、API key 等）
 from app.database import get_db                                          # 数据库会话依赖
 from app.models import Chat, ChatSession, MessageRole, Pet               # SQLAlchemy 数据模型
@@ -582,7 +583,7 @@ async def _event_generator(
     }
 
 
-@router.post("/chat")
+@router.post("/chat", dependencies=[Depends(require_active_subscription)])
 async def chat(
     request: ChatRequest,
     raw_request: Request,

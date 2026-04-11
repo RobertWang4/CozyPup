@@ -1,5 +1,6 @@
 import logging
 import uuid
+from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
@@ -46,6 +47,8 @@ async def _find_or_create_user(
             email=email,
             name=name,
             auth_provider=provider,
+            subscription_status="trial",
+            trial_start_date=datetime.now(timezone.utc),
         )
         db.add(user)
         await db.commit()
