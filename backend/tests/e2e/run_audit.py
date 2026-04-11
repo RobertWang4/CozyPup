@@ -44,6 +44,17 @@ class TestCase:
         self.depends_on = depends_on
 
 
+def _get_tools_called(result: ChatResult) -> list[str]:
+    """Extract tools_called from debug trace (recorded in orchestrator_result step)."""
+    if not result.trace:
+        return []
+    for step in reversed(result.trace.get("steps", [])):
+        data = step.get("data", {})
+        if isinstance(data, dict) and "tools_called" in data:
+            return data["tools_called"]
+    return []
+
+
 def build_test_cases(lang: str) -> list[TestCase]:
     """Build all test cases from TEST_PLAN, parametrized by language."""
     m = MESSAGES
@@ -158,6 +169,28 @@ def build_test_cases(lang: str) -> list[TestCase]:
                  check=lambda r, c: (bool(r.text.strip()), f"text_len={len(r.text)}")),
         TestCase("20.4", "混合记录+提醒", m["20.4"][lang], needs_pet=True,
                  check=lambda r, c: (len(r.cards) >= 2, f"card_count={len(r.cards)}, types={[x.get('type') for x in r.cards]}")),
+
+        # === Section 21: Health Q&A (RAG) ===
+        TestCase("21.1", "健康问答-呕吐", m["21.1"][lang], needs_pet=True,
+                 check=lambda r, c: (
+                     "search_knowledge" in _get_tools_called(r),
+                     f"tools={_get_tools_called(r)}"
+                 )),
+        TestCase("21.2", "健康问答-带宠物", m["21.2"][lang], needs_pet=True,
+                 check=lambda r, c: (
+                     "search_knowledge" in _get_tools_called(r),
+                     f"tools={_get_tools_called(r)}"
+                 )),
+        TestCase("21.3", "非健康问题-不触发", m["21.3"][lang], needs_pet=True,
+                 check=lambda r, c: (
+                     "search_knowledge" not in _get_tools_called(r),
+                     f"tools={_get_tools_called(r)}"
+                 )),
+        TestCase("21.4", "英文健康问答", m["21.4"][lang], no_pet=True,
+                 check=lambda r, c: (
+                     "search_knowledge" in _get_tools_called(r),
+                     f"tools={_get_tools_called(r)}"
+                 )),
     ]
     return cases
 

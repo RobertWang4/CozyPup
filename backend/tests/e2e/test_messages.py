@@ -124,4 +124,10 @@ MESSAGES = {
         "zh": "记录一下小维今天吃了狗粮，还有提醒我明天带他去打疫苗",
         "en": "Record that Weiwei ate dog food today, and remind me to take him for vaccination tomorrow",
     },
+
+    # ═══ 二十一、健康问答 (RAG) ═══
+    "21.1": {"zh": "维尼呕吐了怎么办", "en": "What should I do if my dog is vomiting?"},
+    "21.2": {"zh": "维尼最近老是拉肚子", "en": "My dog Weiwei has had diarrhea recently"},
+    "21.3": {"zh": "帮我记录维尼今天吃了狗粮", "en": "Record that Weiwei ate dog food today"},
+    "21.4": {"zh": "My dog has been vomiting, what should I do?", "en": "My dog has been vomiting, what should I do?"},
 }

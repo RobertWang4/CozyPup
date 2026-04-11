@@ -3,7 +3,7 @@
 > Updated: 2026-04-04
 > Category changes: `excretion`/`vaccine`/`deworming` merged into `abnormal`/`medical`
 > Valid categories (create_calendar_event): `daily`, `diet`, `medical`, `abnormal`
-> Total tools: 27 (from `_BASE_TOOL_DEFINITIONS`)
+> Total tools: 28 (from `_BASE_TOOL_DEFINITIONS`)
 
 ## How to Run
 
@@ -246,6 +246,17 @@ pytest tests/e2e/ -v --tb=short
 
 ---
 
+## 21. Health Q&A (RAG)
+
+| # | Input | Expected | Validation |
+|---|-------|----------|------------|
+| 21.1 | "维尼呕吐了怎么办" | `search_knowledge` called with query containing "呕吐" | tool called, text non-empty |
+| 21.2 | "维尼最近老是拉肚子" | `search_knowledge` called with pet_id | tool + pet_id present |
+| 21.3 | "帮我记录维尼今天吃了狗粮" | `create_calendar_event` called, NOT `search_knowledge` | no search_knowledge |
+| 21.4 | "My dog has been vomiting, what should I do?" | `search_knowledge` called | tool called |
+
+---
+
 ## Category Reference
 
 | Old Category | New Category | Trigger Words |
@@ -270,7 +281,7 @@ _LANGUAGES = {"zh", "en"}
 _DAILY_TASK_ACTIONS = {"update", "delete", "deactivate", "delete_all"}
 ```
 
-## Tool Coverage Checklist (27 tools from `_BASE_TOOL_DEFINITIONS`)
+## Tool Coverage Checklist (28 tools from `_BASE_TOOL_DEFINITIONS`)
 
 | Tool | Test Section | Status |
 |------|-------------|--------|
@@ -303,3 +314,4 @@ _DAILY_TASK_ACTIONS = {"update", "delete", "deactivate", "delete_all"}
 | `request_images` | 17 (17.x) | Covered |
 | `upload_event_photo` | 18 (18.x) | Covered |
 | `sync_calendar` | 19 (19.x) | Covered |
+| `search_knowledge` | 21 (21.x) | Covered |
