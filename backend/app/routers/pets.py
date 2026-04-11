@@ -92,10 +92,9 @@ async def list_pets(
     user_id: uuid.UUID = Depends(get_current_user_id),
     db: AsyncSession = Depends(get_db),
 ):
-    result = await db.execute(
-        select(Pet).where(Pet.user_id == user_id).order_by(Pet.created_at)
-    )
-    return [_pet_to_response(p) for p in result.scalars().all()]
+    from app.agents.tools.ownership import get_user_pets
+    pets = await get_user_pets(db, user_id)
+    return [_pet_to_response(p) for p in pets]
 
 
 @router.get("/{pet_id}", response_model=PetResponse)
@@ -104,10 +103,8 @@ async def get_pet(
     user_id: uuid.UUID = Depends(get_current_user_id),
     db: AsyncSession = Depends(get_db),
 ):
-    result = await db.execute(
-        select(Pet).where(Pet.id == pet_id, Pet.user_id == user_id)
-    )
-    pet = result.scalar_one_or_none()
+    from app.agents.tools.ownership import can_access_pet
+    pet = await can_access_pet(db, str(pet_id), user_id)
     if not pet:
         raise HTTPException(status_code=404, detail="Pet not found")
     return _pet_to_response(pet)

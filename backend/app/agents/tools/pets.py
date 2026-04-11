@@ -33,11 +33,9 @@ _SPECIES_ZH = {"dog": "狗", "cat": "猫", "other": "其他"}
 async def verify_pet_ownership(
     db: AsyncSession, pet_id: str, user_id: uuid.UUID
 ) -> Pet | None:
-    """Verify pet belongs to user. Returns Pet or None."""
-    result = await db.execute(
-        select(Pet).where(Pet.id == uuid.UUID(pet_id), Pet.user_id == user_id)
-    )
-    return result.scalar_one_or_none()
+    """Verify pet belongs to user (owner or co-owner). Returns Pet or None."""
+    from app.agents.tools.ownership import can_access_pet
+    return await can_access_pet(db, pet_id, user_id)
 
 
 def generate_initial_profile_md(

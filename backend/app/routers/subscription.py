@@ -113,6 +113,22 @@ async def verify_purchase(
     else:
         user.subscription_expires_at = datetime.now(timezone.utc) + timedelta(days=30)
 
+    # If downgrading from duo to individual, revoke partner
+    if ".duo" not in req.product_id and user.family_role == "payer":
+        member_q = await db.execute(
+            select(User).where(User.family_payer_id == user.id)
+        )
+        member = member_q.scalar_one_or_none()
+        if member:
+            member.family_role = None
+            member.family_payer_id = None
+            member.subscription_status = "expired"
+            logger.info("family_auto_revoked_on_downgrade", extra={
+                "payer_id": str(user_id),
+                "member_id": str(member.id),
+            })
+        user.family_role = None
+
     await db.commit()
     logger.info("subscription_activated", extra={
         "user_id": str(user_id),
