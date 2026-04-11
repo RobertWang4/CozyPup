@@ -19,7 +19,7 @@ from typing import Callable, Awaitable
 import litellm
 
 from app.agents import llm_extra_kwargs
-from app.agents.constants import CONFIRM_TOOLS, maybe_await
+from app.agents.constants import CONFIRM_TOOLS, SKIP_ROUND2_TOOLS, maybe_await
 from app.agents.locale import t
 from app.agents.micro_compact import micro_compact
 from app.agents.pending_actions import store_action
@@ -486,6 +486,55 @@ async def _stream_completion(
 
 
 # ---------------------------------------------------------------------------
+# Skip Round 2 — 简单 CRUD 工具成功后跳过第二轮 LLM 调用
+# ---------------------------------------------------------------------------
+
+def _can_skip_round2(
+    tool_calls: list[dict],
+    tool_results_map: dict[str, dict],
+    result: OrchestratorResult,
+    round_text: str,
+) -> bool:
+    """Check if we can skip the next LLM round after tool execution.
+
+    Conditions (ALL must be true):
+    1. LLM produced text in this round (used as the response)
+    2. All tools in this round are in SKIP_ROUND2_TOOLS
+    3. No tool returned an error (errors need LLM to explain/retry)
+    4. No images were injected (need LLM to analyze them)
+    5. No pending plan steps (need to continue executing)
+    """
+    # Must have streaming text from Round 1 to use as response
+    if not round_text or not round_text.strip():
+        return False
+
+    tool_names = {tc["function"]["name"] for tc in tool_calls}
+
+    # All tools must be in the skip set
+    if not tool_names.issubset(SKIP_ROUND2_TOOLS):
+        return False
+
+    # No errors — if any tool failed, LLM needs to see the error and retry/explain
+    for name, tr in tool_results_map.items():
+        if tr.get("error"):
+            return False
+
+    # No image injection (request_images needs LLM to interpret)
+    for tr in tool_results_map.values():
+        if "_inject_images" in tr:
+            return False
+
+    # No unfinished plan steps
+    if result.plan_steps:
+        planned_tools = {s["tool"] for s in result.plan_steps}
+        executed = result.tools_called - {"plan"}
+        if planned_tools - executed:
+            return False
+
+    return True
+
+
+# ---------------------------------------------------------------------------
 # run_orchestrator — 统一 Agent Loop 主入口
 # ---------------------------------------------------------------------------
 
@@ -639,6 +688,7 @@ async def run_orchestrator(
         if "introduce_product" in tool_names_in_round and len(tool_calls) > 1:
             tool_calls = [tc for tc in tool_calls if tc["function"]["name"] == "introduce_product"]
 
+        tool_results_map = {}  # tc_name → tool_result for skip_round2 check
         for tc in tool_calls:
             tc_name = tc["function"]["name"]
             tc_args_str = tc["function"]["arguments"]
@@ -653,6 +703,8 @@ async def run_orchestrator(
                 pets=pets, images=images, image_urls=image_urls,
                 location=location, _messages=messages,
             )
+
+            tool_results_map[tc_name] = tool_result
 
             trace_log("tool_result", round=round_num, data={
                 "tool_name": tc_name,
@@ -689,6 +741,20 @@ async def run_orchestrator(
                         "image_url": {"url": f"data:image/jpeg;base64,{img_b64}"},
                     })
                 messages.append({"role": "user", "content": image_content})
+
+        # --- Skip Round 2: if all tools are simple CRUD and succeeded,
+        # use the LLM's Round 1 streaming text as the final response.
+        # This saves ~8000 prompt tokens per skipped round. ---
+        if _can_skip_round2(tool_calls, tool_results_map, result, round_text):
+            trace.record("skip_round2", {
+                "round": round_num,
+                "tools": list(tool_names_in_round),
+            })
+            logger.info("skip_round2", extra={
+                "round": round_num,
+                "tools": list(tool_names_in_round),
+            })
+            break
 
     # 确保 response_text 不为空（除非有 confirm card 待处理）
     import re as _re
