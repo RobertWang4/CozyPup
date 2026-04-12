@@ -77,6 +77,16 @@ async def verify_apple_token(id_token: str) -> dict:
             break
 
     if not key_data:
+        # Key not found — refresh cache once and retry
+        global _apple_keys_cache
+        _apple_keys_cache = None
+        keys = await _get_apple_public_keys()
+        for k in keys.get("keys", []):
+            if k["kid"] == header.get("kid"):
+                key_data = k
+                break
+
+    if not key_data:
         raise HTTPException(status_code=401, detail="Apple token: key not found")
 
     public_key = jwt.algorithms.RSAAlgorithm.from_jwk(key_data)
@@ -147,6 +157,7 @@ async def verify_google_token(id_token: str) -> dict:
     return {
         "email": payload.get("email", ""),
         "name": payload.get("name"),
+        "picture": payload.get("picture"),
     }
 
 

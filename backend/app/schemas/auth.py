@@ -12,6 +12,7 @@ class AuthResponse(BaseModel):
     email: str | None = None
     name: str | None = None
     auth_provider: str | None = None
+    avatar_url: str | None = None
 
 
 class RefreshRequest(BaseModel):

@@ -18,14 +18,31 @@ struct UserProfileSheet: View {
                 // Avatar + name
                 Section {
                     VStack(spacing: Tokens.spacing.md) {
-                        Circle()
-                            .fill(Tokens.accent)
+                        if let avatarUrl = auth.user?.avatarUrl,
+                           !avatarUrl.isEmpty,
+                           let url = URL(string: avatarUrl) {
+                            AsyncImage(url: url) { image in
+                                image.resizable().scaledToFill()
+                            } placeholder: {
+                                Circle().fill(Tokens.accent)
+                                    .overlay(
+                                        Text(String(nameText.prefix(1).isEmpty ? "U" : nameText.prefix(1)))
+                                            .foregroundColor(Tokens.white)
+                                            .font(.system(size: 32, weight: .semibold))
+                                    )
+                            }
                             .frame(width: Tokens.size.avatarLarge, height: Tokens.size.avatarLarge)
-                            .overlay(
-                                Text(String(nameText.prefix(1).isEmpty ? "U" : nameText.prefix(1)))
-                                    .foregroundColor(Tokens.white)
-                                    .font(.system(size: 32, weight: .semibold))
-                            )
+                            .clipShape(Circle())
+                        } else {
+                            Circle()
+                                .fill(Tokens.accent)
+                                .frame(width: Tokens.size.avatarLarge, height: Tokens.size.avatarLarge)
+                                .overlay(
+                                    Text(String(nameText.prefix(1).isEmpty ? "U" : nameText.prefix(1)))
+                                        .foregroundColor(Tokens.white)
+                                        .font(.system(size: 32, weight: .semibold))
+                                )
+                        }
 
                         if editingName {
                             TextField(lang.isZh ? "输入名字" : "Enter name", text: $nameText)
@@ -172,7 +189,7 @@ struct UserProfileSheet: View {
             struct UserResp: Decodable { let id: String; let email: String; let name: String?; let auth_provider: String }
             do {
                 let resp: UserResp = try await APIClient.shared.request("PATCH", "/auth/me", body: UpdateBody(name: trimmed))
-                let updated = UserInfo(name: resp.name ?? trimmed, email: resp.email, provider: resp.auth_provider)
+                let updated = UserInfo(name: resp.name ?? trimmed, email: resp.email, provider: resp.auth_provider, avatarUrl: auth.user?.avatarUrl)
                 auth.user = updated
                 if let data = try? JSONEncoder().encode(updated) {
                     UserDefaults.standard.set(data, forKey: "cozypup_auth")

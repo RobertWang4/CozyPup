@@ -36,7 +36,8 @@ router = APIRouter(prefix="/api/v1/auth", tags=["auth"])
 
 
 async def _find_or_create_user(
-    db: AsyncSession, email: str, name: str | None, provider: str
+    db: AsyncSession, email: str, name: str | None, provider: str,
+    avatar_url: str | None = None,
 ) -> User:
     result = await db.execute(select(User).where(User.email == email))
     user = result.scalar_one_or_none()
@@ -47,6 +48,7 @@ async def _find_or_create_user(
             email=email,
             name=name,
             auth_provider=provider,
+            avatar_url=avatar_url or "",
             subscription_status="trial",
             trial_start_date=datetime.now(timezone.utc),
         )
@@ -55,6 +57,10 @@ async def _find_or_create_user(
         await db.refresh(user)
         logger.info("user_created", extra={"user_id": str(user.id), "provider": provider})
     else:
+        # Update avatar on every login (Google may change profile photo)
+        if avatar_url and avatar_url != user.avatar_url:
+            user.avatar_url = avatar_url
+            await db.commit()
         logger.info("user_login", extra={"user_id": str(user.id), "provider": provider})
 
     return user
@@ -69,6 +75,7 @@ def _make_tokens(user: User) -> AuthResponse:
         email=user.email,
         name=user.name,
         auth_provider=user.auth_provider,
+        avatar_url=user.avatar_url or None,
     )
 
 
@@ -89,7 +96,7 @@ async def login_apple(req: AuthRequest, db: AsyncSession = Depends(get_db)):
 @router.post("/google", response_model=AuthResponse)
 async def login_google(req: AuthRequest, db: AsyncSession = Depends(get_db)):
     info = await verify_google_token(req.id_token)
-    user = await _find_or_create_user(db, info["email"], info.get("name"), "google")
+    user = await _find_or_create_user(db, info["email"], info.get("name"), "google", avatar_url=info.get("picture"))
     return _make_tokens(user)
 
 
