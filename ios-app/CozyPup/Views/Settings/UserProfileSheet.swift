@@ -11,6 +11,8 @@ struct UserProfileSheet: View {
     @FocusState private var nameFocused: Bool
     @State private var showFamilySettings = false
     @State private var showDuoPaywall = false
+    @State private var showDeleteConfirm = false
+    @State private var isDeleting = false
 
     var body: some View {
         NavigationStack {
@@ -90,7 +92,7 @@ struct UserProfileSheet: View {
                     } label: {
                         HStack {
                             Label {
-                                Text("Duo Plan")
+                                Text(lang.isZh ? "双人计划" : "Duo Plan")
                                     .font(Tokens.fontBody)
                                     .foregroundColor(Tokens.text)
                             } icon: {
@@ -125,16 +127,14 @@ struct UserProfileSheet: View {
                 }
                 .listRowBackground(Tokens.surface)
 
-                // Logout
+                // Delete account
                 Section {
                     Button(role: .destructive) {
-                        Haptics.medium()
-                        auth.logout()
-                        dismiss()
+                        showDeleteConfirm = true
                     } label: {
                         HStack {
                             Spacer()
-                            Label(L.logOut, systemImage: "rectangle.portrait.and.arrow.right")
+                            Label(lang.isZh ? "注销账号" : "Delete Account", systemImage: "trash")
                             Spacer()
                         }
                     }
@@ -175,6 +175,38 @@ struct UserProfileSheet: View {
                 .presentationDetents([.large])
                 .environmentObject(subscriptionStore)
         }
+        .alert(
+            lang.isZh ? "确认注销账号？" : "Delete Account?",
+            isPresented: $showDeleteConfirm
+        ) {
+            Button(lang.isZh ? "取消" : "Cancel", role: .cancel) {}
+            Button(lang.isZh ? "注销" : "Delete", role: .destructive) {
+                Task { await deleteAccount() }
+            }
+        } message: {
+            Text(lang.isZh
+                ? "注销后所有数据将被永久删除，包括宠物档案、聊天记录、日历事件等，且无法恢复。"
+                : "All data will be permanently deleted, including pet profiles, chat history, calendar events, etc. This cannot be undone.")
+        }
+        .overlay {
+            if isDeleting {
+                Tokens.dimOverlay.opacity(0.35).ignoresSafeArea()
+                ProgressView()
+            }
+        }
+    }
+
+    private func deleteAccount() async {
+        isDeleting = true
+        struct DeleteResp: Decodable { let status: String }
+        do {
+            let _: DeleteResp = try await APIClient.shared.request("DELETE", "/auth/me")
+            auth.logout()
+            dismiss()
+        } catch {
+            print("[Account] delete failed: \(error)")
+        }
+        isDeleting = false
     }
 
     private func saveName() {

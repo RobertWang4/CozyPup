@@ -15,7 +15,7 @@ from app.auth import (
     verify_token,
 )
 from app.database import get_db
-from app.models import User
+from app.models import User, FamilyInvite, Pet, PetCoOwner
 from pydantic import BaseModel
 
 from app.schemas.auth import (
@@ -147,3 +147,85 @@ async def update_me(
         auth_provider=user.auth_provider,
         phone_number=user.phone_number,
     )
+
+
+@router.delete("/me")
+async def delete_account(
+    user_id: uuid.UUID = Depends(get_current_user_id),
+    db: AsyncSession = Depends(get_db),
+):
+    """Delete user account and all associated data.
+
+    Handles:
+    - Duo Plan: if payer, convert member to independent subscription
+    - Shared pets: if owner, transfer to co-owner; if co-owner, just remove
+    - Cascade deletes: sessions, chats, reminders, events, device tokens
+    """
+    result = await db.execute(select(User).where(User.id == user_id))
+    user = result.scalar_one_or_none()
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    # --- Handle Duo Plan ---
+    if user.family_role == "payer":
+        # Find the member and convert to independent subscription
+        member_q = await db.execute(
+            select(User).where(User.family_payer_id == user_id)
+        )
+        member = member_q.scalar_one_or_none()
+        if member:
+            member.family_role = None
+            member.family_payer_id = None
+            logger.info("duo_dissolved_on_delete", extra={
+                "payer_id": str(user_id),
+                "member_id": str(member.id),
+            })
+        # Cancel pending invites
+        pending_q = await db.execute(
+            select(FamilyInvite).where(
+                FamilyInvite.inviter_id == user_id,
+                FamilyInvite.status == "pending",
+            )
+        )
+        for invite in pending_q.scalars().all():
+            invite.status = "revoked"
+
+    elif user.family_role == "member":
+        user.family_role = None
+        user.family_payer_id = None
+
+    # --- Handle shared pets ---
+    owned_pets_q = await db.execute(
+        select(Pet).where(Pet.user_id == user_id)
+    )
+    for pet in owned_pets_q.scalars().all():
+        co_owner_q = await db.execute(
+            select(PetCoOwner).where(PetCoOwner.pet_id == pet.id)
+        )
+        co_owner = co_owner_q.scalars().first()
+        if co_owner:
+            # Transfer ownership to first co-owner
+            pet.user_id = co_owner.user_id
+            await db.execute(
+                PetCoOwner.__table__.delete().where(
+                    PetCoOwner.pet_id == pet.id,
+                    PetCoOwner.user_id == co_owner.user_id,
+                )
+            )
+            logger.info("pet_transferred_on_delete", extra={
+                "pet_id": str(pet.id),
+                "from": str(user_id),
+                "to": str(co_owner.user_id),
+            })
+
+    # Remove co-owner entries where this user is a co-owner
+    await db.execute(
+        PetCoOwner.__table__.delete().where(PetCoOwner.user_id == user_id)
+    )
+
+    # --- Delete user (cascade deletes everything else) ---
+    await db.delete(user)
+    await db.commit()
+
+    logger.info("account_deleted", extra={"user_id": str(user_id)})
+    return {"status": "deleted"}
