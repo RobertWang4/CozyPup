@@ -24,15 +24,6 @@ struct DailyTaskPopover: View {
                 }
                 Spacer()
                 Button {
-                    NotificationCenter.default.post(name: .openSavedChats, object: nil)
-                } label: {
-                    Image(systemName: "clock.arrow.circlepath")
-                        .font(Tokens.fontCaption)
-                        .foregroundColor(Tokens.accent)
-                }
-                .buttonStyle(.plain)
-                .padding(.trailing, Tokens.spacing.xs)
-                Button {
                     withAnimation(.easeOut(duration: 0.2)) { isPresented = false }
                 } label: {
                     Image(systemName: "xmark")
