@@ -189,7 +189,11 @@ All current `debug` commands (`lookup`, `trace`, `requests`, `tokens`, `errors`,
 
 ## 5. Phase 1 — Observability 2.0
 
-Phase 1 is the "error debugging" piece. Its central promise: **one command gets you from a user complaint to a full picture of what went wrong**, including their original message, images, pet context, session history, and the full pipeline trace.
+Phase 1 is the heart of this spec. Its **central promise**:
+
+> One command gets everything about a user — profile, subscription, pets, full chat history, and every error they've hit — and from any chat message I can drill into the complete pipeline that produced it: what they typed, what images they sent, what prompt the LLM received, what the LLM replied, which tools were called with which arguments, what each tool returned, and how the next round of the loop produced the final output.
+
+Two commands deliver this. `admin user inspect` is the top-down aggregate view; `admin trace` is the bottom-up pipeline view. Every row in `inspect` carries a `correlation_id` so you can drill into `trace` without copy-pasting identifiers.
 
 ### 5.1 `admin user inspect <id|email>`
 
@@ -226,48 +230,117 @@ The flagship observability command. It produces an aggregated report drawn from 
 
 Implementation sketch:
 
-- DB read: `users`, `pets`, `chat_sessions`, latest aggregates (token usage last 7d/24h).
+- DB read: `users`, `pets`, `chat_sessions`, `chats` (the message table — joined for full chat history), latest aggregates (token usage last 7d/24h).
 - Cloud Logging read: `chat_request` + `error_snapshot` entries for this user, last N hours, bucketed by time. We already persist `user_id` on every trace entry, so this is a gcloud filter query.
 - Audit log read: any admin actions against this user.
-- All three merged in memory into the activity timeline.
+- All four merged in memory into the activity timeline. **Each row is annotated with its `correlation_id`** (from the `chats.correlation_id` column we start persisting in this phase — see §5.3), so drilling into any message with `admin trace <cid>` is always one step away.
 
 Flags:
 
-- `--since 24h|7d|30d` (default 24h)
-- `--last-error` — skip the aggregate view and jump straight to `admin trace` for the most recent error
-- `--json` — emit a structured report instead of the table
+- `--since 24h|7d|30d|all` (default 24h). `all` shows the full chat history since account creation.
+- `--chats all` — swap the default 20-event "recent activity" block for the **complete chat history** of the user. Pairs with `--since all` for a full archive view.
+- `--chats errors` — show only the user's messages that resulted in an error (on screen and in the pipeline). Fastest path from "the user is unhappy" to "here's what broke."
+- `--last-error` — skip the aggregate view entirely and jump straight to `admin trace` for the most recent error this user encountered. Equivalent to running `admin user inspect --chats errors` and piping the top `correlation_id` into `admin trace`.
+- `--session <id>` — scope the activity block to a single chat session.
+- `--json` — emit a structured report instead of the table. Every entry in the JSON carries `correlation_id`, `session_id`, `timestamp`, `role`, `content`, and `error` (nullable object).
+
+The JSON shape of the activity list is deliberately designed so that an AI assistant piping `admin user inspect --json | jq` can iterate messages and call `admin trace` for each error without any string parsing.
 
 ### 5.2 `admin trace <correlation_id>`
 
-Upgraded version of today's `debug trace`. The current command dumps the trace entries sequentially. The new version adds:
+The complete pipeline view for a single chat turn. Given any `correlation_id` — whether pulled from an error report, from `admin user inspect`, or from a user's bug screenshot — this command reconstructs the **entire path** from the user's input to the final output that was streamed back to their device.
 
-1. **User context header**: pet names/species/chronic conditions at the time of request.
-2. **Session history snippet**: the 4 previous turns in the same session, so "what were they talking about" is obvious.
-3. **Per-step timing** relative to request start.
-4. **Image thumbnails**: when the request had images, print the URLs plus a `[view]` link; `--open-images` opens them in the default browser.
-5. **Tool round visualization**: round 1/2/3 tool calls are grouped under their corresponding `llm_request`.
-6. **Error attachment**: if the trace corresponds to an error snapshot, the stack trace is inline at the step where the error happened, not appended at the end.
-7. **Next-action footer**: `admin replay`, `admin trace --raw`, `admin trace --llm-full`.
+**The full pipeline shown, in order, for every trace:**
+
+1. **User input** — the raw user message, the raw image URLs (with clickable/openable thumbnails), the session id, the chat session's recent history tail (previous 4 turns), and the client version if known.
+2. **Pre-processing** — language detection, emergency keyword match result, pre-processed tool suggestions, and the pet snapshot (each pet's species/breed/age/weight/chronic conditions at request time — pulled from the stored snapshot, not live DB, so historical traces are accurate).
+3. **LLM request (round 1)** — the full message array sent to the LLM: system prompt, history, current user turn. The available tool catalog (count + name list by default, `--show-tools` to print the full JSON schemas). Model name, temperature, streaming flag.
+4. **LLM response (round 1)** — the content the LLM produced, token counts (prompt / completion / total), and the list of `tool_calls` it requested with their full JSON arguments.
+5. **Tool execution** — for each tool call: the tool name, the validated arguments, the handler module path, the full return value (card JSON included), and any side effects recorded (DB writes, cards emitted to iOS).
+6. **LLM request (round 2+)** — subsequent rounds if the orchestrator went back to the LLM with tool results. Each round's messages, response, and tool calls are printed in order, indented under the round header, so a multi-step plan execution is visually a tree.
+7. **Final output** — the `chat_response` event: the text that was streamed to the user, the cards emitted, any emergency escalation, and the assistant message id that got persisted to `chats`.
+8. **Error overlay** — if any step raised, the stack trace is inlined **at the step where it happened**, not appended at the bottom. Everything before the error is still shown so you can see the context that led to it.
+
+Additional visual/UX features on top of today's `debug trace`:
+
+- **Per-step timing** relative to request start (e.g. `+2140ms`).
+- **Round grouping**: each LLM round and its associated tool calls are boxed together so it's obvious which tool results fed which follow-up LLM call.
+- **Image handling**: `--open-images` opens attached image URLs in the default browser. Thumbnails inline in iTerm2 when supported.
+- **Next-action footer**: suggested follow-up commands (`admin replay`, `admin trace --raw`, `admin trace --llm-full`).
 
 Flags:
 
-- `--raw` — dump the raw JSON entries, same as today.
-- `--replay` — reconstruct the request payload and re-POST it to the backend with a special `X-Admin-Replay: true` header. The replay is tagged with a new correlation id and writes a `trace_replay_of:<original>` audit row. Requires `--reason`.
-- `--llm-full` — when the debug collector captured a parallel non-streaming LLM call, print its full response. (Existing mechanism; we just surface it here.)
+- `--raw` — dump the raw JSON trace entries in the order they were logged, no pretty rendering. For machine consumption and for when the pretty view is hiding something.
+- `--show-tools` — include the full JSON schemas of the available tools in the round 1 section (off by default because it's verbose).
+- `--show-system-prompt` — include the full system prompt text (off by default; it's long and usually stable).
+- `--replay` — reconstruct the request payload and re-POST it to the backend with an `X-Admin-Replay: true` header. The replay is tagged with a new correlation id and writes a `trace_replay_of:<original>` audit row. Requires `--reason`.
+- `--llm-full` — when the debug collector captured a parallel non-streaming LLM call, print its full response including any content that was streamed in chunks.
+- `--json` — same content as the pretty view, but as a structured document with one object per pipeline step.
 
 ### 5.3 Capturing richer trace context
 
-Current `chat_request` trace only logs `message`, `image_urls[:100]`, `session_id`. We extend it to also persist:
+To make "drill from any chat message to its full pipeline" work reliably, we need two things: the DB row for a message must know its trace, and the trace itself must carry enough context to be self-contained.
+
+**Persist `correlation_id` on the `chats` table.** Add a nullable `correlation_id` column on the `chats` model. When the chat router writes the user turn and the assistant turn to the DB, it stores the current request's correlation id. This is the join key that powers `admin user inspect` → `admin trace`: every message in the activity list has its `correlation_id` already embedded, and the operator can pipe it into `admin trace` with no guesswork.
+
+**Extend the `chat_request` trace payload.** Current `chat_request` trace only logs `message`, `image_urls[:100]`, `session_id`. We extend it to also persist:
 
 - `pet_snapshot`: compact JSON of the pets at request time (`[{id, name, species, breed, age_months, weight_kg, chronic_conditions}]`). This lets future trace views show pet context without re-querying live DB (which may have changed).
 - `session_history_tail`: last 4 `{role, content_preview}` pairs from the session, truncated at 200 chars each.
 - `client_version`: pulled from `User-Agent` or a new `X-Client-Version` header the iOS app starts sending.
+- `image_urls_full`: the full image URLs (not the `[:100]` truncation), so `--open-images` can actually open them. Storage cost is bounded because the chat_request event is once per request.
 
 These fields are added to the existing `trace_log("chat_request", ...)` payload in `backend/app/routers/chat.py`. Size is bounded (few KB), and goes into the same Cloud Logging sink.
 
+**Extend `llm_response` trace payload.** Today it logs `model`, `prompt_tokens`, `completion_tokens`, `tool_calls`. We also persist the full `content` text (the model's non-tool-call output for the round). Without this, `admin trace` cannot show "what the LLM actually said in round 1" for non-streaming rounds, which is a gap.
+
+**Extend `tool_result` trace payload.** Today it logs tool name and a success flag. We add `result` (the full return value, including the emitted card JSON) so `admin trace` can show what each tool actually returned without replaying.
+
 For `error_snapshot`: we already persist request body. We additionally attach `correlation_id` (already present) and `user_id` (already present) so `admin user inspect` can join by user.
 
-### 5.4 `admin errors recent`
+**Size guardrails.** Each trace entry is capped at 64 KB after JSON serialization; if an image URL list or a tool result would exceed that, the overflow is truncated and a `_truncated: true` marker is added. Cloud Logging's own entry size limit is 256 KB, so we stay well under it.
+
+### 5.4 The end-to-end drill-down workflow
+
+This is the single most important workflow in the CLI and it deserves an explicit walk-through.
+
+```
+# Robert receives a support ticket: "Robert, the app broke when I sent a photo
+# of my dog's wound this morning." User email: alice@example.com
+
+$ admin user inspect alice@example.com --chats errors
+  → shows Alice's profile + the 3 messages that led to errors in the last 24h
+  → the most recent one is 10:02  "[image] 这个伤口严重吗"  correlation 7a2f...
+
+$ admin trace 7a2f
+  → full pipeline:
+      [01] user sent "这个伤口严重吗" + 1 image (thumbnails shown)
+      [02] pet snapshot: 豆豆 (dog, 柴犬, 3y), Luna (cat, 英短, 5y, CKD stage 2)
+      [03] session tail: last 4 turns (they had been discussing 豆豆's appetite)
+      [04] language=zh, emergency=false
+      [05] LLM round 1: grok-4-1-fast, 8 messages, 1 image
+              content:    "从图片看伤口有渗出..."
+              tool_calls: log_event(category=health, pet_id=豆豆, ...)
+              tokens:     1823 in / 412 out
+      [06] tool log_event → ok, card emitted
+      [07] LLM round 2: BLOW UP — KeyError: 'tool_result'
+              app/agents/orchestrator.py:287
+              (full stack)
+
+# Robert now knows:
+#   - The exact message
+#   - The exact image
+#   - The exact tool call and its result
+#   - The exact place in the orchestrator that failed
+#   - The exact pet context at that moment
+
+# Fix, replay to verify, done:
+$ admin trace 7a2f --replay --reason "verify orchestrator fix"
+```
+
+This is the **one-command promise**: from a user complaint with nothing but an email, you are two commands away from every byte of context needed to understand what happened.
+
+### 5.5 `admin errors recent`
 
 Dashboard-style command for proactive error discovery:
 
@@ -280,7 +353,7 @@ admin errors recent --since 24h --group-by user
 
 Groups errors by (module, error_type) or (user) and shows counts, sample correlation ids, and "most recent" timestamps. Built on the existing error snapshot loader plus Cloud Logging search.
 
-### 5.5 `admin user export <id>`
+### 5.6 `admin user export <id>`
 
 GDPR-friendly bundle. Zips:
 
@@ -290,7 +363,7 @@ GDPR-friendly bundle. Zips:
 
 Writes to a local `./export-<user_id>-<timestamp>.zip`. Mandatory `--reason`. Audited. Fields containing bcrypt hashes or refresh tokens are redacted.
 
-### 5.6 `admin user impersonate <id>`
+### 5.7 `admin user impersonate <id>`
 
 Issues a short-lived `scope=user` JWT for the target user. Used to reproduce a bug from the user's perspective (curl the chat endpoint, or paste the token into an iOS simulator build):
 
