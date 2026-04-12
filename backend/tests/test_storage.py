@@ -39,3 +39,34 @@ class TestGetAvatarUrl:
     def test_returns_public_url(self):
         url = get_avatar_url("avatars/abc-123.jpg", "cozypup-avatars")
         assert url == "https://storage.googleapis.com/cozypup-avatars/avatars/abc-123.jpg"
+
+
+class TestUploadUserAvatar:
+    def test_user_avatar_blob_path_format(self, monkeypatch):
+        from app import storage
+
+        captured = {}
+
+        class FakeBlob:
+            def __init__(self, name): self.name = name; self.cache_control = None
+            def upload_from_string(self, data, content_type=None):
+                captured["data"] = data
+                captured["content_type"] = content_type
+
+        class FakeBucket:
+            def blob(self, name):
+                captured["blob_name"] = name
+                return FakeBlob(name)
+
+        class FakeClient:
+            def bucket(self, name): return FakeBucket()
+
+        monkeypatch.setattr(storage, "_get_client", lambda: FakeClient())
+        monkeypatch.setattr(storage.settings, "gcs_bucket", "test-bucket")
+
+        url = storage.upload_user_avatar("user-123", b"imagebytes", "image/jpeg")
+
+        assert captured["blob_name"].startswith("users/user-123/")
+        assert captured["blob_name"].endswith(".jpg")
+        assert captured["data"] == b"imagebytes"
+        assert url.startswith("https://storage.googleapis.com/test-bucket/users/user-123/")

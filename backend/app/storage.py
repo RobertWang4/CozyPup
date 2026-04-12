@@ -41,6 +41,27 @@ def upload_avatar(pet_id: str, data: bytes, content_type: str) -> str:
     return url
 
 
+def upload_user_avatar(user_id: str, data: bytes, content_type: str) -> str:
+    """Upload a user profile avatar to GCS, return public URL.
+
+    Uses users/<user_id>/<timestamp>.<ext> so re-uploads bust CDN cache
+    naturally without needing a ?v= query param.
+    """
+    import time
+
+    ext = _ext_from_content_type(content_type)
+    blob_name = f"users/{user_id}/{int(time.time())}.{ext}"
+
+    bucket = _get_bucket()
+    blob = bucket.blob(blob_name)
+    blob.cache_control = "public, max-age=31536000"
+    blob.upload_from_string(data, content_type=content_type)
+
+    url = get_avatar_url(blob_name, settings.gcs_bucket)
+    logger.info("user_avatar_uploaded_gcs", extra={"user_id": user_id, "blob": blob_name})
+    return url
+
+
 def get_avatar_url(blob_name: str, bucket_name: str | None = None) -> str:
     """Return the public URL for a GCS object."""
     bucket_name = bucket_name or settings.gcs_bucket
