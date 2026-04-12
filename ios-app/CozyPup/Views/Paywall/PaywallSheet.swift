@@ -72,8 +72,10 @@ struct PaywallSheet: View {
 
                     // ───── Headline ─────
                     VStack(alignment: .leading, spacing: Tokens.spacing.xs) {
-                        Text("👑")
-                            .font(.system(size: 32))
+                        Image("logo")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 48, height: 48)
                             .padding(.bottom, Tokens.spacing.xs)
 
                         (
