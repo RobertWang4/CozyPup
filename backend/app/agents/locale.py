@@ -523,6 +523,18 @@ Notes:
         "zh": "清空所有提醒",
         "en": "Delete all reminders",
     },
+    "desc_daily_task_delete": {
+        "zh": "删除待办「{title}」",
+        "en": "Delete daily task \"{title}\"",
+    },
+    "desc_daily_task_delete_all": {
+        "zh": "清空所有每日待办",
+        "en": "Delete all daily tasks",
+    },
+    "desc_daily_task_deactivate": {
+        "zh": "暂停待办「{title}」",
+        "en": "Pause daily task \"{title}\"",
+    },
     "desc_draft_email": {
         "zh": "草拟邮件: {subject}",
         "en": "Draft email: {subject}",

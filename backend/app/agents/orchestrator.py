@@ -19,7 +19,7 @@ from typing import Callable, Awaitable
 import litellm
 
 from app.agents import llm_extra_kwargs
-from app.agents.constants import CONFIRM_TOOLS, SKIP_ROUND2_TOOLS, maybe_await
+from app.agents.constants import SKIP_ROUND2_TOOLS, maybe_await, needs_confirm
 from app.agents.locale import t
 from app.agents.micro_compact import micro_compact
 from app.agents.pending_actions import store_action
@@ -96,6 +96,15 @@ def _describe_tool_call(fn_name: str, fn_args: dict, pets: list | None = None, l
         return t("desc_delete_reminder", lang)
     if fn_name == "delete_all_reminders":
         return t("desc_delete_all_reminders", lang)
+    if fn_name == "manage_daily_task":
+        action = fn_args.get("action", "")
+        title = fn_args.get("title", "") or (fn_args.get("updates") or {}).get("title", "")
+        if action == "delete_all":
+            return t("desc_daily_task_delete_all", lang)
+        if action == "delete":
+            return t("desc_daily_task_delete", lang).format(title=title)
+        if action == "deactivate":
+            return t("desc_daily_task_deactivate", lang).format(title=title)
     if fn_name == "draft_email":
         return t("desc_draft_email", lang).format(subject=fn_args.get('subject', ''))
     if fn_name == "save_pet_profile_md":
@@ -248,7 +257,7 @@ async def dispatch_tool(
         }
 
     # --- Confirm gate：破坏性工具需要用户确认 ---
-    if fn_name in CONFIRM_TOOLS and session_id:
+    if needs_confirm(fn_name, fn_args) and session_id:
         desc = _describe_tool_call(fn_name, fn_args, pets=pets, lang=lang)
         action_id = await store_action(
             db=db, user_id=str(user_id), session_id=str(session_id),
