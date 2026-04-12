@@ -148,9 +148,10 @@ struct UserProfileSheet: View {
         .presentationDragIndicator(.visible)
         .presentationBackground(Tokens.bg)
         .onAppear { nameText = auth.user?.name ?? "" }
-        .sheet(isPresented: $showFamilySettings) {
-            FamilySettingsView()
-                .presentationDetents([.medium, .large])
+        .fullScreenCover(isPresented: $showFamilySettings) {
+            FamilySettingsView {
+                showFamilySettings = false
+            }
         }
         .sheet(isPresented: $showDuoPaywall) {
             PaywallSheet(isHard: false, initialDuo: true) { showDuoPaywall = false }
