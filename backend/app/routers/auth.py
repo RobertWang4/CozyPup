@@ -2,10 +2,12 @@ import logging
 import uuid
 from datetime import datetime, timezone
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.config import settings
+from app.storage import upload_user_avatar as gcs_upload_user_avatar
 from app.auth import (
     create_access_token,
     create_refresh_token,
@@ -231,3 +233,41 @@ async def delete_account(
 
     logger.info("account_deleted", extra={"user_id": str(user_id)})
     return {"status": "deleted"}
+
+
+@router.post("/me/avatar")
+async def upload_avatar(
+    file: UploadFile = File(...),
+    user_id: uuid.UUID = Depends(get_current_user_id),
+    db: AsyncSession = Depends(get_db),
+):
+    """Upload the current user's profile avatar."""
+    if file.content_type not in ("image/jpeg", "image/png", "image/heic", "image/webp"):
+        raise HTTPException(status_code=400, detail="Only JPEG, PNG, HEIC, or WebP images are allowed")
+
+    content = await file.read()
+    if len(content) > 5 * 1024 * 1024:
+        raise HTTPException(status_code=400, detail="Image must be under 5MB")
+
+    result = await db.execute(select(User).where(User.id == user_id))
+    user = result.scalar_one_or_none()
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    if settings.gcs_bucket:
+        url = gcs_upload_user_avatar(str(user_id), content, file.content_type)
+    else:
+        from pathlib import Path
+        upload_dir = Path(__file__).resolve().parent.parent / "uploads" / "users"
+        upload_dir.mkdir(parents=True, exist_ok=True)
+        ext = file.content_type.split("/")[-1].replace("jpeg", "jpg")
+        filepath = upload_dir / f"{user_id}.{ext}"
+        filepath.write_bytes(content)
+        url = f"/api/v1/auth/me/avatar/file"  # not served; dev only
+
+    user.avatar_url = url
+    await db.commit()
+    await db.refresh(user)
+
+    logger.info("user_avatar_uploaded", extra={"user_id": str(user_id)})
+    return {"avatar_url": url}
