@@ -114,7 +114,7 @@ struct SettingsDrawer: View {
         }
         .sheet(isPresented: $showPaywall) {
             PaywallSheet(isHard: false) { showPaywall = false }
-                .presentationDetents([.medium, .large])
+                .presentationDetents([.large])
                 .environmentObject(subscriptionStore)
         }
     }
