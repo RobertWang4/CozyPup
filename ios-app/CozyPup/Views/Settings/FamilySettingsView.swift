@@ -92,20 +92,29 @@ struct FamilySettingsView: View {
                 Text("Partner's email")
                     .font(Tokens.fontCaption.weight(.medium))
                     .foregroundColor(Tokens.textSecondary)
-                TextField("name@example.com", text: $inviteEmail)
-                    .textContentType(.emailAddress)
-                    .keyboardType(.emailAddress)
-                    .autocapitalization(.none)
-                    .disableAutocorrection(true)
-                    .font(Tokens.fontBody)
-                    .foregroundColor(Tokens.text)
-                    .padding(Tokens.spacing.sm)
-                    .background(Tokens.bg)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: Tokens.radiusSmall)
-                            .stroke(Tokens.border, lineWidth: 1)
-                    )
-                    .cornerRadius(Tokens.radiusSmall)
+
+                ZStack(alignment: .leading) {
+                    if inviteEmail.isEmpty {
+                        Text("name@example.com")
+                            .font(Tokens.fontBody)
+                            .foregroundColor(Tokens.textTertiary)
+                    }
+                    TextField("", text: $inviteEmail)
+                        .textContentType(.emailAddress)
+                        .keyboardType(.emailAddress)
+                        .autocapitalization(.none)
+                        .disableAutocorrection(true)
+                        .font(Tokens.fontBody)
+                        .foregroundColor(Tokens.text)
+                        .tint(Tokens.accent)
+                }
+                .padding(Tokens.spacing.sm)
+                .background(Tokens.bg)
+                .overlay(
+                    RoundedRectangle(cornerRadius: Tokens.radiusSmall)
+                        .stroke(Tokens.border, lineWidth: 1)
+                )
+                .cornerRadius(Tokens.radiusSmall)
             }
 
             if let message {
