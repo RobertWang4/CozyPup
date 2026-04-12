@@ -26,8 +26,6 @@ struct PetFormView: View {
     @State private var pendingGender: String?
     @State private var speciesLocked = false
     @State private var genderLocked = false
-    @State private var showShareSheet = false
-    @State private var showUnshareSheet = false
 
     /// Live pet from store (updates after avatar upload)
     private var currentPet: Pet? {
@@ -319,53 +317,6 @@ struct PetFormView: View {
 
             Spacer().frame(height: Tokens.spacing.xs)
 
-            // Share pet (only when editing an existing pet)
-            if let pet = editingPet {
-                if pet.isCoOwned == true {
-                    // Co-owner: show Leave button
-                    Button {
-                        showUnshareSheet = true
-                    } label: {
-                        HStack(spacing: 8) {
-                            Image(systemName: "person.2.slash")
-                                .font(.system(size: 14))
-                            Text("Leave Shared Pet")
-                                .font(Tokens.fontCallout.weight(.medium))
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 14)
-                        .background(Tokens.surface)
-                        .foregroundColor(Tokens.red)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: Tokens.radius)
-                                .stroke(Tokens.red.opacity(0.3), lineWidth: 1)
-                        )
-                        .cornerRadius(Tokens.radius)
-                    }
-                } else {
-                    // Owner: show Share button
-                    Button {
-                        showShareSheet = true
-                    } label: {
-                        HStack(spacing: 8) {
-                            Image(systemName: "qrcode")
-                                .font(.system(size: 14))
-                            Text("Share with Partner")
-                                .font(Tokens.fontCallout.weight(.medium))
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 14)
-                        .background(Tokens.surface)
-                        .foregroundColor(Tokens.accent)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: Tokens.radius)
-                                .stroke(Tokens.accent.opacity(0.3), lineWidth: 1)
-                        )
-                        .cornerRadius(Tokens.radius)
-                    }
-                }
-            }
-
             // Save button
             Button {
                 Haptics.light()
@@ -390,24 +341,6 @@ struct PetFormView: View {
                 Button(L.cancel) { onCancel() }
                     .foregroundColor(Tokens.textSecondary)
                     .font(Tokens.fontSubheadline)
-            }
-        }
-        .sheet(isPresented: $showShareSheet) {
-            if let pet = editingPet {
-                PetShareSheet(petId: pet.id, petName: pet.name)
-                    .presentationDetents([.medium])
-            }
-        }
-        .sheet(isPresented: $showUnshareSheet) {
-            if let pet = editingPet {
-                PetUnshareSheet(petId: pet.id, petName: pet.name, onDone: {
-                    showUnshareSheet = false
-                    Task {
-                        await petStore?.fetchFromAPI()
-                        onCancel?()
-                    }
-                })
-                .presentationDetents([.medium])
             }
         }
         .onTapGesture { UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil) }

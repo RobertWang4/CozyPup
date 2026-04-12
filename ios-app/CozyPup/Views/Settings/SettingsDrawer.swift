@@ -24,6 +24,8 @@ struct SettingsDrawer: View {
     @State private var scannedToken: String?
     @State private var showMergeSheet = false
     @State private var showFamilySettings = false
+    @State private var showPetShareSheet: Pet?
+    @State private var showPetUnshareSheet: Pet?
 
     private let prefsKey = "cozypup_notification_prefs"
 
@@ -144,6 +146,20 @@ struct SettingsDrawer: View {
         .sheet(isPresented: $showFamilySettings) {
             FamilySettingsView()
                 .presentationDetents([.medium, .large])
+        }
+        .sheet(item: $showPetShareSheet) { pet in
+            PetShareSheet(petId: pet.id, petName: pet.name)
+                .presentationDetents([.medium])
+        }
+        .sheet(item: $showPetUnshareSheet) { pet in
+            PetUnshareSheet(petId: pet.id, petName: pet.name, onDone: {
+                showPetUnshareSheet = nil
+                Task {
+                    await petStore.fetchFromAPI()
+                    withAnimation { editingPetId = nil }
+                }
+            })
+            .presentationDetents([.medium])
         }
     }
 
@@ -404,6 +420,32 @@ struct SettingsDrawer: View {
                             .foregroundColor(Tokens.text)
                             .frame(width: Tokens.size.buttonMedium, height: Tokens.size.buttonMedium)
                             .contentShape(Rectangle())
+                    }
+                }
+                // Share / Leave button on top-right when editing an existing pet
+                if let pet = pet {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        if pet.isCoOwned == true {
+                            Button {
+                                showPetUnshareSheet = pet
+                            } label: {
+                                Image(systemName: "person.2.slash")
+                                    .font(Tokens.fontBody.weight(.semibold))
+                                    .foregroundColor(Tokens.red)
+                                    .frame(width: Tokens.size.buttonMedium, height: Tokens.size.buttonMedium)
+                                    .contentShape(Rectangle())
+                            }
+                        } else {
+                            Button {
+                                showPetShareSheet = pet
+                            } label: {
+                                Image(systemName: "qrcode")
+                                    .font(Tokens.fontBody.weight(.semibold))
+                                    .foregroundColor(Tokens.accent)
+                                    .frame(width: Tokens.size.buttonMedium, height: Tokens.size.buttonMedium)
+                                    .contentShape(Rectangle())
+                            }
+                        }
                     }
                 }
             }
