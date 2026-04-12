@@ -35,6 +35,7 @@
 		7731ABF813BF951F3E213A76 /* MonthGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBECB417FFCC3D48F84654B5 /* MonthGrid.swift */; };
 		7E98B4FE09F40D553F3312A0 /* CalendarEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = E59EDD63ED4B5127A8B5D2DC /* CalendarEvent.swift */; };
 		858DEA8563727562E8ACE8BC /* CozyPupApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D437A3D3656001306737E784 /* CozyPupApp.swift */; };
+		APPCFG00000000000000002 /* AppConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = APPCFG00000000000000001 /* AppConfig.swift */; };
 		885B288C97AAC7FAFAF5980E /* SettingsDrawer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6F1DE010DA6010A14147BF8 /* SettingsDrawer.swift */; };
 		8C479A4CCAAB3EA751F08C51 /* ChatService.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF65632CC6A30CD8137CBF57 /* ChatService.swift */; };
 		8EC0BA8575B497F7C1BAD383 /* SpendingStatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 672B2FDA2C5B4BF54603A7DE /* SpendingStatsView.swift */; };
@@ -151,6 +152,7 @@
 		B2C3D4E5F6071234ABCD5678 /* QuickActionCards.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickActionCards.swift; sourceTree = "<group>"; };
 		D2586D01E7C42221ABD72995 /* LocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
 		D437A3D3656001306737E784 /* CozyPupApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CozyPupApp.swift; sourceTree = "<group>"; };
+		APPCFG00000000000000001 /* AppConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfig.swift; sourceTree = "<group>"; };
 		E49D254E58DB8AEDD31BF3B0 /* CameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
 		E59EDD63ED4B5127A8B5D2DC /* CalendarEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarEvent.swift; sourceTree = "<group>"; };
 		E6D276B8E4BE99D3CA63F74F /* EventRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventRow.swift; sourceTree = "<group>"; };
@@ -240,6 +242,7 @@
 			children = (
 				45AA8E3614CA2B9242759444 /* Assets.xcassets */,
 				D437A3D3656001306737E784 /* CozyPupApp.swift */,
+				APPCFG00000000000000001 /* AppConfig.swift */,
 				PUSH0001000000000000000000 /* CozyPup.entitlements */,
 				EBAD5792AB19AA7036912E67 /* Info.plist */,
 				402C658B19F53A70267E6697 /* Models */,
@@ -512,6 +515,7 @@
 				E4CE679EF88093851EBC91E0 /* ChatView.swift in Sources */,
 				B26546A329CCAA0E29AF43B5 /* ConfirmActionCard.swift in Sources */,
 				858DEA8563727562E8ACE8BC /* CozyPupApp.swift in Sources */,
+				APPCFG00000000000000002 /* AppConfig.swift in Sources */,
 				C0A91D7D044C8CB2E17B6497 /* CustomScrollIndicator.swift in Sources */,
 				E67C92566B3C14D978EF14FC /* DailyTask.swift in Sources */,
 				71B1FAE04C85E05B030755EB /* DailyTaskIndicator.swift in Sources */,
