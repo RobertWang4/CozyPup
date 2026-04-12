@@ -6,6 +6,8 @@ class SubscriptionStatusResponse(BaseModel):
     status: str  # "trial" | "active" | "expired"
     trial_days_left: int | None = None
     expires_at: datetime | None = None
+    product_id: str | None = None
+    is_duo: bool = False
 
 
 class TrialStatsResponse(BaseModel):

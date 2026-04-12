@@ -20,6 +20,8 @@ class SubscriptionStore: ObservableObject {
     @Published var products: [Product] = []
     @Published var trialStats: TrialStats?
     @Published var isPurchasing = false
+    @Published var isDuo: Bool = false
+    @Published var currentProductId: String?
 
     static let productIDs = [
         "com.cozypup.app.weekly", "com.cozypup.app.monthly", "com.cozypup.app.yearly",
@@ -43,6 +45,8 @@ class SubscriptionStore: ObservableObject {
             let status: String
             let trial_days_left: Int?
             let expires_at: String?
+            let product_id: String?
+            let is_duo: Bool?
         }
         do {
             let resp: StatusResp = try await APIClient.shared.request("GET", "/subscription/status")
@@ -54,6 +58,8 @@ class SubscriptionStore: ObservableObject {
             default:
                 status = .expired
             }
+            currentProductId = resp.product_id
+            isDuo = resp.is_duo ?? false
         } catch {
             await checkStoreKitEntitlements()
         }

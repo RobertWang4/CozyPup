@@ -4,6 +4,7 @@ import StoreKit
 struct PaywallSheet: View {
     @EnvironmentObject var subscriptionStore: SubscriptionStore
     let isHard: Bool
+    var initialDuo: Bool = false
     var onDismiss: (() -> Void)? = nil
 
     @State private var selectedTier: PlanTier = .monthly
@@ -253,6 +254,7 @@ struct PaywallSheet: View {
             }
         }
         .task {
+            isDuo = initialDuo
             await subscriptionStore.loadProducts()
             if isHard {
                 await subscriptionStore.loadTrialStats()

@@ -59,6 +59,8 @@ async def get_status(
         status=status,
         trial_days_left=days_left,
         expires_at=user.subscription_expires_at,
+        product_id=user.subscription_product_id,
+        is_duo=bool(user.subscription_product_id and ".duo" in user.subscription_product_id),
     )
 
 
