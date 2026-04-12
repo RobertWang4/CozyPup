@@ -20,91 +20,113 @@ struct SavedChatsSheet: View {
     @State private var selectedSession: SessionItem?
 
     var body: some View {
-        NavigationStack {
-            Group {
-                if isLoading {
-                    ProgressView()
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                } else if saved.isEmpty && recent.isEmpty {
-                    VStack(spacing: Tokens.spacing.md) {
-                        Image(systemName: "bookmark.slash")
-                            .font(.largeTitle)
-                            .foregroundColor(Tokens.textTertiary)
-                        Text("还没有保存的对话")
-                            .font(Tokens.fontBody)
-                            .foregroundColor(Tokens.textSecondary)
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                } else {
-                    List {
-                        if !saved.isEmpty {
-                            Section {
-                                ForEach(saved) { item in
-                                    Button { selectedSession = item } label: {
-                                        HStack {
-                                            Text(item.title ?? "对话")
-                                                .font(Tokens.fontBody)
-                                                .foregroundColor(Tokens.text)
-                                            Spacer()
-                                            Text(item.session_date)
-                                                .font(Tokens.fontCaption)
-                                                .foregroundColor(Tokens.textSecondary)
-                                        }
-                                    }
-                                }
-                            } header: {
-                                Label("已保存", systemImage: "bookmark.fill")
-                            }
-                        }
+        VStack(spacing: 0) {
+            // Header
+            HStack {
+                Button { onDismiss() } label: {
+                    Image(systemName: "xmark")
+                        .font(Tokens.fontSubheadline)
+                        .foregroundColor(Tokens.textSecondary)
+                        .frame(width: 28, height: 28)
+                        .background(Tokens.surface)
+                        .clipShape(Circle())
+                }
+                Spacer()
+                Text("历史对话")
+                    .font(Tokens.fontHeadline)
+                    .foregroundColor(Tokens.text)
+                Spacer()
+                // Balance the close button
+                Color.clear.frame(width: 28, height: 28)
+            }
+            .padding(.horizontal, Tokens.spacing.md)
+            .padding(.top, Tokens.spacing.md)
+            .padding(.bottom, Tokens.spacing.sm)
 
+            if isLoading {
+                Spacer()
+                ProgressView().tint(Tokens.accent)
+                Spacer()
+            } else if saved.isEmpty && recent.isEmpty {
+                Spacer()
+                VStack(spacing: Tokens.spacing.md) {
+                    Image(systemName: "bookmark.slash")
+                        .font(.largeTitle)
+                        .foregroundColor(Tokens.textTertiary)
+                    Text("还没有保存的对话")
+                        .font(Tokens.fontBody)
+                        .foregroundColor(Tokens.textSecondary)
+                }
+                Spacer()
+            } else {
+                ScrollView {
+                    VStack(alignment: .leading, spacing: Tokens.spacing.lg) {
+                        if !saved.isEmpty {
+                            sectionView(
+                                title: "已保存",
+                                icon: "bookmark.fill",
+                                items: saved,
+                                showTitle: true
+                            )
+                        }
                         if !recent.isEmpty {
-                            Section {
-                                ForEach(recent) { item in
-                                    Button { selectedSession = item } label: {
-                                        HStack {
-                                            Text(item.session_date)
-                                                .font(Tokens.fontBody)
-                                                .foregroundColor(Tokens.text)
-                                            Spacer()
-                                            if let exp = item.expires_at {
-                                                Text(formatExpiry(exp))
-                                                    .font(Tokens.fontCaption)
-                                                    .foregroundColor(Tokens.textTertiary)
-                                            }
-                                        }
-                                    }
-                                }
-                            } header: {
-                                Label("最近对话", systemImage: "clock.arrow.circlepath")
-                            }
+                            sectionView(
+                                title: "最近对话",
+                                icon: "clock.arrow.circlepath",
+                                items: recent,
+                                showTitle: false
+                            )
                         }
                     }
-                    .listStyle(.insetGrouped)
-                    .scrollContentBackground(.hidden)
+                    .padding(.horizontal, Tokens.spacing.md)
+                    .padding(.vertical, Tokens.spacing.sm)
                 }
-            }
-            .background(Tokens.bg)
-            .navigationTitle("历史对话")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button { onDismiss() } label: {
-                        Image(systemName: "xmark")
-                            .foregroundColor(Tokens.textSecondary)
-                    }
-                }
-            }
-            .navigationDestination(item: $selectedSession) { item in
-                ReadOnlyChatView(
-                    sessionId: item.id,
-                    title: item.title ?? item.session_date,
-                    onResume: { messages in
-                        onResume(item.id, messages)
-                    }
-                )
             }
         }
+        .frame(maxWidth: .infinity)
+        .background(Tokens.bg.ignoresSafeArea())
+        .sheet(item: $selectedSession) { item in
+            ReadOnlyChatView(
+                sessionId: item.id,
+                title: item.title ?? item.session_date,
+                onResume: { messages in
+                    onResume(item.id, messages)
+                }
+            )
+            .presentationDetents([.large])
+        }
         .task { await loadSessions() }
+    }
+
+    private func sectionView(title: String, icon: String, items: [SessionItem], showTitle: Bool) -> some View {
+        VStack(alignment: .leading, spacing: Tokens.spacing.sm) {
+            Label(title, systemImage: icon)
+                .font(Tokens.fontCaption.weight(.semibold))
+                .foregroundColor(Tokens.textSecondary)
+
+            VStack(spacing: 0) {
+                ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
+                    Button { selectedSession = item } label: {
+                        HStack {
+                            Text(showTitle ? (item.title ?? "对话") : item.session_date)
+                                .font(Tokens.fontBody)
+                                .foregroundColor(Tokens.text)
+                            Spacer()
+                            Text(showTitle ? item.session_date : formatExpiry(item.expires_at ?? ""))
+                                .font(Tokens.fontCaption)
+                                .foregroundColor(Tokens.textTertiary)
+                        }
+                        .padding(.vertical, Tokens.spacing.sm + Tokens.spacing.xs)
+                        .padding(.horizontal, Tokens.spacing.md)
+                    }
+                    if index < items.count - 1 {
+                        Divider().padding(.leading, Tokens.spacing.md)
+                    }
+                }
+            }
+            .background(Tokens.surface)
+            .cornerRadius(Tokens.radiusSmall)
+        }
     }
 
     private func loadSessions() async {
