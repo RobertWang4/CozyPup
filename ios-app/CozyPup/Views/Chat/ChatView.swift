@@ -417,6 +417,9 @@ struct ChatView: View {
                 cancelVoice()
             }
         }
+        .onReceive(NotificationCenter.default.publisher(for: .openSavedChats)) { _ in
+            showSavedChats = true
+        }
     }
 
     // MARK: - Drawer Gestures

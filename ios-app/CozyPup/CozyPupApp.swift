@@ -130,4 +130,5 @@ struct CozyPupApp: App {
 
 extension Notification.Name {
     static let openCalendarEvent = Notification.Name("openCalendarEvent")
+    static let openSavedChats = Notification.Name("openSavedChats")
 }
