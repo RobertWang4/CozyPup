@@ -9,6 +9,8 @@ struct SingleDayTimelineView: View {
     var onBack: () -> Void
 
     @State private var currentDate: String
+    @State private var newEventDraft: CalendarEvent?
+    @State private var showDayChat = false
     @GestureState private var dragOffset: CGFloat = 0
 
     init(date: String, filterPetId: String?, filterCategory: EventCategory? = nil, onBack: @escaping () -> Void) {
@@ -68,11 +70,28 @@ struct SingleDayTimelineView: View {
                     }
                     Spacer()
                     Button {
-                        NotificationCenter.default.post(name: .openSavedChats, object: nil)
+                        showDayChat = true
                     } label: {
                         Image(systemName: "clock.arrow.circlepath")
                             .font(Tokens.fontSubheadline)
                             .foregroundColor(Tokens.accent)
+                    }
+                    Button {
+                        newEventDraft = CalendarEvent(
+                            petId: filterPetId ?? petStore.pets.first?.id,
+                            eventDate: currentDate,
+                            eventTime: nil,
+                            title: "",
+                            type: .log,
+                            category: filterCategory ?? .daily,
+                            rawText: "",
+                            source: .manual
+                        )
+                    } label: {
+                        Image(systemName: "plus")
+                            .font(Tokens.fontSubheadline.weight(.semibold))
+                            .foregroundColor(Tokens.accent)
+                            .padding(.leading, Tokens.spacing.md)
                     }
                 }
                 .padding(.horizontal, Tokens.spacing.md)
@@ -140,6 +159,30 @@ struct SingleDayTimelineView: View {
                 }
             }
             .padding(.top, Tokens.spacing.sm)
+        }
+        .sheet(isPresented: $showDayChat) {
+            DayChatSheet(date: currentDate)
+                .presentationDetents([.medium, .large])
+        }
+        .sheet(item: $newEventDraft) { draft in
+            EventEditSheet(
+                event: draft,
+                onSave: { title, category, date, time, cost, reminderAt in
+                    var newEvent = CalendarEvent(
+                        petId: draft.petId,
+                        eventDate: date,
+                        eventTime: time,
+                        title: title,
+                        type: .log,
+                        category: category,
+                        rawText: title,
+                        source: .manual
+                    )
+                    newEvent.cost = cost
+                    newEvent.reminderAt = reminderAt
+                    calendarStore.add(newEvent)
+                }
+            )
         }
         .offset(x: dragOffset)
         .gesture(
