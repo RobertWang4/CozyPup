@@ -121,6 +121,9 @@ class ChatSession(Base):
     context_summary: Mapped[dict | None] = mapped_column(JSONB, nullable=True)  # compressed chat history from Context Agent
     summarized_up_to: Mapped[int | None] = mapped_column(sa.Integer, nullable=True)  # last message ID included in summary
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    is_saved: Mapped[bool] = mapped_column(sa.Boolean, nullable=False, server_default=sa.text("false"))
+    title: Mapped[str | None] = mapped_column(String(100))
+    expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
     context_summary: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     summarized_up_to: Mapped[int | None] = mapped_column(sa.Integer, nullable=True)
