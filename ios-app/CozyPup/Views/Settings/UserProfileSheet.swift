@@ -18,6 +18,7 @@ struct UserProfileSheet: View {
 
     @State private var avatarItem: PhotosPickerItem?
     @State private var isUploadingAvatar = false
+    @State private var avatarErrorMessage: String?
 
     @State private var safariURL: URL?
     @State private var showDisclaimer = false
@@ -85,6 +86,17 @@ struct UserProfileSheet: View {
             Text(lang.isZh
                 ? "注销后所有数据将被永久删除，包括宠物档案、聊天记录、日历事件等，且无法恢复。"
                 : "All data will be permanently deleted, including pet profiles, chat history, calendar events, etc. This cannot be undone.")
+        }
+        .alert(
+            lang.isZh ? "头像上传失败" : "Avatar Upload Failed",
+            isPresented: Binding(
+                get: { avatarErrorMessage != nil },
+                set: { if !$0 { avatarErrorMessage = nil } }
+            )
+        ) {
+            Button(lang.isZh ? "好" : "OK", role: .cancel) {}
+        } message: {
+            Text(avatarErrorMessage ?? "")
         }
         .overlay {
             if isDeleting || isUploadingAvatar {
@@ -189,11 +201,13 @@ struct UserProfileSheet: View {
             }
 
             Button {
-                Task {
-                    guard let scene = UIApplication.shared.connectedScenes
-                        .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene
-                    else { return }
-                    try? await AppStore.showManageSubscriptions(in: scene)
+                // Always open the real App Store subscriptions page via URL.
+                // AppStore.showManageSubscriptions(in:) only sees sandbox purchases
+                // in debug builds, so a paid user sees an empty sheet. The URL
+                // deep-link opens the production App Store account page reliably
+                // across debug / TestFlight / production builds.
+                if let url = URL(string: "itms-apps://apps.apple.com/account/subscriptions") {
+                    UIApplication.shared.open(url)
                 }
             } label: {
                 HStack {
@@ -358,7 +372,18 @@ struct UserProfileSheet: View {
         isUploadingAvatar = true
         defer { isUploadingAvatar = false; avatarItem = nil }
 
-        guard let data = try? await item.loadTransferable(type: Data.self) else { return }
+        let data: Data
+        do {
+            guard let loaded = try await item.loadTransferable(type: Data.self) else {
+                avatarErrorMessage = lang.isZh ? "无法读取所选图片。" : "Couldn't read the selected image."
+                return
+            }
+            data = loaded
+        } catch {
+            avatarErrorMessage = lang.isZh ? "无法读取所选图片。" : "Couldn't read the selected image."
+            return
+        }
+
         struct Resp: Decodable { let avatar_url: String }
         do {
             let raw = try await APIClient.shared.uploadMultipart(
@@ -369,8 +394,21 @@ struct UserProfileSheet: View {
             )
             let resp = try JSONDecoder().decode(Resp.self, from: raw)
             auth.updateAvatarURL(resp.avatar_url)
+        } catch APIError.badStatus(let code) {
+            avatarErrorMessage = lang.isZh
+                ? "服务器拒绝了上传（HTTP \(code)）。稍后再试。"
+                : "Server rejected the upload (HTTP \(code)). Please try again later."
         } catch {
-            print("[Profile] avatar upload failed: \(error)")
+            let ns = error as NSError
+            if ns.domain == NSURLErrorDomain && ns.code == NSURLErrorTimedOut {
+                avatarErrorMessage = lang.isZh
+                    ? "上传超时。请检查网络后重试。"
+                    : "Upload timed out. Check your connection and try again."
+            } else {
+                avatarErrorMessage = lang.isZh
+                    ? "上传失败：\(ns.localizedDescription)"
+                    : "Upload failed: \(ns.localizedDescription)"
+            }
         }
     }
 

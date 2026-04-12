@@ -2,14 +2,11 @@ import SwiftUI
 
 /// Section of the Profile sheet showing Duo Plan state.
 ///
-/// Three states:
-/// 1. Active (current user has isDuo=true) — shows section header "DUO PLAN · Active"
-///    plus a friend row that pushes into FamilySettingsView. Friend row subtitle is
-///    "Member" (if I am payer) or "Paid by" (if I am member).
-/// 2. Pending invite (payer has sent invite, not yet accepted) — shows section header
-///    and a muted "Invite pending..." row that also opens FamilySettingsView.
-/// 3. Inactive — section header "DUO PLAN · Inactive" plus an "Upgrade to Duo Plan"
-///    row that opens the Duo paywall.
+/// State machine — derived from `/family/status` plus `subscriptionStore.isDuo`:
+/// 1. Active: has partner → friend row (subtitle "Member" if payer, "Paid by" if member)
+/// 2. Pending: payer sent invite, not yet accepted → "Invite pending" row
+/// 3. NoPartnerYet: isDuo=true but no partner and no pending → "Invite a partner" row
+/// 4. Upgrade: no Duo subscription → "Upgrade to Duo Plan" row opening paywall
 struct DuoPlanSection: View {
     @EnvironmentObject var subscriptionStore: SubscriptionStore
     @ObservedObject private var lang = Lang.shared
@@ -23,7 +20,8 @@ struct DuoPlanSection: View {
         case loading
         case active(partnerName: String, partnerEmail: String, iAmPayer: Bool)
         case pending(email: String)
-        case none
+        case noPartnerYet
+        case upgrade
     }
 
     var body: some View {
@@ -92,7 +90,29 @@ struct DuoPlanSection: View {
                 }
                 .listRowBackground(Tokens.surface)
 
-            case .none:
+            case .noPartnerYet:
+                Button { showFamilySettings = true } label: {
+                    HStack(spacing: Tokens.spacing.sm) {
+                        Image(systemName: "person.badge.plus")
+                            .foregroundColor(Tokens.accent)
+                            .frame(width: Tokens.size.avatarSmall)
+                        VStack(alignment: .leading, spacing: Tokens.spacing.xxs) {
+                            Text(lang.isZh ? "邀请伙伴" : "Invite a partner")
+                                .font(Tokens.fontBody)
+                                .foregroundColor(Tokens.text)
+                            Text(lang.isZh ? "把双人计划分享给一个人" : "Share Duo Plan with one person")
+                                .font(Tokens.fontCaption)
+                                .foregroundColor(Tokens.textSecondary)
+                        }
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .font(Tokens.fontCaption)
+                            .foregroundColor(Tokens.textTertiary)
+                    }
+                }
+                .listRowBackground(Tokens.surface)
+
+            case .upgrade:
                 Button { showDuoPaywall = true } label: {
                     HStack(spacing: Tokens.spacing.sm) {
                         Image(systemName: "person.2.fill")
@@ -124,6 +144,7 @@ struct DuoPlanSection: View {
         switch familyState {
         case .active: return "\(base) · \(lang.isZh ? "已激活" : "ACTIVE")"
         case .pending: return "\(base) · \(lang.isZh ? "邀请中" : "PENDING")"
+        case .noPartnerYet: return "\(base) · \(lang.isZh ? "已激活" : "ACTIVE")"
         default: return "\(base) · \(lang.isZh ? "未开通" : "INACTIVE")"
         }
     }
@@ -146,11 +167,13 @@ struct DuoPlanSection: View {
                 )
             } else if resp.invite_pending {
                 familyState = .pending(email: resp.pending_invite_email ?? "")
+            } else if subscriptionStore.isDuo {
+                familyState = .noPartnerYet
             } else {
-                familyState = .none
+                familyState = .upgrade
             }
         } catch {
-            familyState = .none
+            familyState = subscriptionStore.isDuo ? .noPartnerYet : .upgrade
         }
     }
 }

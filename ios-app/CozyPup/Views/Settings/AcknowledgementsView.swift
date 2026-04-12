@@ -12,7 +12,7 @@ struct AcknowledgementsView: View {
 
     private let dependencies: [Dependency] = [
         Dependency(name: "GoogleSignIn-iOS", license: "Apache 2.0", url: "https://github.com/google/GoogleSignIn-iOS"),
-        // Add more as dependencies are introduced.
+        Dependency(name: "learn-claude-code", license: "Learning resource", url: "https://github.com/shareAI-lab/learn-claude-code"),
     ]
 
     var body: some View {
