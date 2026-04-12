@@ -43,7 +43,7 @@ async def _generate_title(messages: list) -> str:
                 f"{settings.model_api_base}/chat/completions",
                 headers={"Authorization": f"Bearer {settings.model_api_key}"},
                 json={
-                    "model": settings.model,
+                    "model": "deepseek-chat",
                     "messages": [{"role": "user", "content": prompt}],
                     "max_tokens": 20,
                 },
