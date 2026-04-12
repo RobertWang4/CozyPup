@@ -9,6 +9,8 @@ struct PetShareSheet: View {
     @State private var expiresAt: Date?
     @State private var isLoading = true
     @State private var cardVisible = false
+    @State private var showShareActivity = false
+    @State private var shareItems: [Any] = []
 
     var body: some View {
         ZStack {
@@ -71,7 +73,7 @@ struct PetShareSheet: View {
                 .padding(.vertical, Tokens.spacing.lg)
 
                 // Footer
-                VStack(spacing: 4) {
+                VStack(spacing: Tokens.spacing.sm) {
                     Text("Let someone scan to co-own")
                         .font(Tokens.fontSubheadline.weight(.medium))
                         .foregroundColor(Tokens.text)
@@ -84,6 +86,26 @@ struct PetShareSheet: View {
                         }
                         .foregroundColor(Tokens.textTertiary)
                     }
+
+                    // Share button — send QR to someone remotely
+                    Button {
+                        prepareShareItems()
+                    } label: {
+                        HStack(spacing: 8) {
+                            Image(systemName: "square.and.arrow.up")
+                                .font(.system(size: 14, weight: .semibold))
+                            Text("Send to a friend")
+                                .font(Tokens.fontSubheadline.weight(.semibold))
+                        }
+                        .foregroundColor(Tokens.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 12)
+                        .background(Tokens.accent)
+                        .cornerRadius(Tokens.radiusSmall)
+                    }
+                    .disabled(token == nil)
+                    .padding(.horizontal, Tokens.spacing.lg)
+                    .padding(.top, Tokens.spacing.xs)
                 }
                 .padding(.bottom, Tokens.spacing.lg)
             }
@@ -101,6 +123,23 @@ struct PetShareSheet: View {
             }
             Task { await generateToken() }
         }
+        .sheet(isPresented: $showShareActivity) {
+            ActivityView(items: shareItems)
+                .presentationDetents([.medium, .large])
+        }
+    }
+
+    private func prepareShareItems() {
+        guard let token else { return }
+        let url = "cozypup://share?token=\(token)"
+        var items: [Any] = [
+            "Co-own \(pet.name) with me on CozyPup 🐾\n\nTap the link to join (or scan the QR):\n\(url)"
+        ]
+        if let image = generateQRCode(from: url) {
+            items.append(image)
+        }
+        shareItems = items
+        showShareActivity = true
     }
 
     private func dismiss() {
@@ -172,4 +211,13 @@ private struct BackgroundClearView: UIViewRepresentable {
         return view
     }
     func updateUIView(_ uiView: UIView, context: Context) {}
+}
+
+/// Wraps UIActivityViewController so we can open iOS's native share sheet from SwiftUI.
+private struct ActivityView: UIViewControllerRepresentable {
+    let items: [Any]
+    func makeUIViewController(context: Context) -> UIActivityViewController {
+        UIActivityViewController(activityItems: items, applicationActivities: nil)
+    }
+    func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
 }
