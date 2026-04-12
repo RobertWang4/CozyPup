@@ -269,20 +269,19 @@ struct PaywallSheet: View {
     // MARK: - Components
 
     private func tabButton(_ label: String, icon: String, isActive: Bool, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            HStack(spacing: Tokens.spacing.xs) {
-                Image(systemName: icon)
-                    .font(Tokens.fontCaption)
-                Text(label)
-                    .font(Tokens.fontSubheadline.weight(.medium))
-            }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 10)
-            .background(isActive ? Tokens.surface : Color.clear)
-            .foregroundColor(isActive ? Tokens.text : Tokens.textTertiary)
-            .cornerRadius(Tokens.radiusSmall - 2)
+        HStack(spacing: Tokens.spacing.xs) {
+            Image(systemName: icon)
+                .font(Tokens.fontCaption)
+            Text(label)
+                .font(Tokens.fontSubheadline.weight(.medium))
         }
-        .buttonStyle(.plain)
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 10)
+        .background(isActive ? Tokens.surface : Color.clear)
+        .foregroundColor(isActive ? Tokens.text : Tokens.textTertiary)
+        .cornerRadius(Tokens.radiusSmall - 2)
+        .contentShape(Rectangle())
+        .onTapGesture { action() }
         .padding(3)
     }
 
