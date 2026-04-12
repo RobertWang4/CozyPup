@@ -132,40 +132,19 @@ struct PaywallSheet: View {
                     .cornerRadius(100)
                     .padding(.bottom, Tokens.spacing.sm)
 
-                    // Duo info banner
-                    if isDuo {
-                        HStack(alignment: .top, spacing: Tokens.spacing.sm) {
-                            Image(systemName: "heart.fill")
-                                .font(.system(size: 14))
-                                .foregroundColor(Tokens.accent)
-                                .padding(.top, 2)
-
-                            VStack(alignment: .leading, spacing: 3) {
-                                Text("Share with someone you love")
-                                    .font(Tokens.fontSubheadline.weight(.semibold))
-                                    .foregroundColor(Tokens.text)
-                                Text("Both of you get full access — perfect for couples or families who raise a pet together. Invite via email in Settings.")
-                                    .font(Tokens.fontCaption)
-                                    .foregroundColor(Tokens.textSecondary)
-                                    .lineSpacing(2)
-                                    .fixedSize(horizontal: false, vertical: true)
-                            }
-
-                            Spacer()
-                        }
-                        .padding(Tokens.spacing.sm)
-                        .background(Tokens.accentSoft)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 14)
-                                .stroke(Tokens.accent.opacity(0.25), lineWidth: 1)
-                        )
-                        .cornerRadius(14)
-                        .padding(.bottom, Tokens.spacing.sm)
-                        .transition(.asymmetric(
-                            insertion: .opacity.combined(with: .move(edge: .top)),
-                            removal: .opacity
-                        ))
+                    // Plan mode hint (single line under toggle)
+                    HStack(spacing: 6) {
+                        Image(systemName: isDuo ? "heart.fill" : "sparkles")
+                            .font(.system(size: 11))
+                            .foregroundColor(Tokens.accent)
+                        Text(isDuo ? "Full access for two — invite your partner by email" : "Everything you need, just for you")
+                            .font(Tokens.fontCaption)
+                            .foregroundColor(Tokens.textSecondary)
                     }
+                    .frame(maxWidth: .infinity)
+                    .padding(.bottom, Tokens.spacing.md)
+                    .transition(.opacity)
+                    .id(isDuo)
 
                     // ───── Price cards ─────
                     VStack(spacing: Tokens.spacing.sm) {
