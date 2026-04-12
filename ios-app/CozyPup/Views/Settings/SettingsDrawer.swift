@@ -315,14 +315,6 @@ struct SettingsDrawer: View {
                     }
                     .listRowBackground(Tokens.surface)
 
-                    Button {
-                        showScanner = true
-                    } label: {
-                        Label("Scan QR to join a shared pet", systemImage: "qrcode.viewfinder")
-                            .font(Tokens.fontSubheadline.weight(.medium))
-                            .foregroundColor(Tokens.textSecondary)
-                    }
-                    .listRowBackground(Tokens.surface)
                 }
 
                 Section(L.language) {
@@ -372,6 +364,19 @@ struct SettingsDrawer: View {
             .navigationTitle(L.settings)
             .navigationBarTitleDisplayMode(.inline)
             .toolbarColorScheme(.light, for: .navigationBar)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        showScanner = true
+                    } label: {
+                        Image(systemName: "qrcode.viewfinder")
+                            .font(Tokens.fontBody.weight(.semibold))
+                            .foregroundColor(Tokens.text)
+                            .frame(width: Tokens.size.buttonMedium, height: Tokens.size.buttonMedium)
+                            .contentShape(Rectangle())
+                    }
+                }
+            }
         }
     }
 
