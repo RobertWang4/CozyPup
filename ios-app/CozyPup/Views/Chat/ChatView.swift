@@ -31,6 +31,9 @@ struct ChatView: View {
     @State private var showDailyTasks = false
     @State private var showTaskManager = false
     @State private var showSlashMenu = false
+    @State private var showSavedChats = false
+    @State private var showSaveConfirm = false
+    @State private var savedTitle: String?
 
     private var drawerWidth: CGFloat { UIScreen.main.bounds.width * 0.90 }
 
@@ -87,14 +90,6 @@ struct ChatView: View {
                                     }
 
                                     Spacer()
-
-                                    // Quick action cards
-                                    QuickActionCards { message in
-                                        inputText = message
-                                        sendMessage()
-                                        chatStore.hasSeenWelcome = true
-                                    }
-                                    .padding(.bottom, Tokens.spacing.lg)
                                 }
                                 .frame(minHeight: 400)
                             }
@@ -162,6 +157,16 @@ struct ChatView: View {
                     .font(Tokens.fontCaption2)
                     .foregroundColor(Tokens.textTertiary)
                     .padding(.vertical, 2)
+
+                // Quick action chips (only when no messages yet)
+                if chatStore.messages.isEmpty {
+                    QuickActionCards { message in
+                        inputText = message
+                        sendMessage()
+                        chatStore.hasSeenWelcome = true
+                    }
+                    .padding(.bottom, Tokens.spacing.xs)
+                }
 
                 // Slash command menu
                 if showSlashMenu {
@@ -374,6 +379,37 @@ struct ChatView: View {
                 .presentationDetents([.medium])
                 .interactiveDismissDisabled(true)
                 .environmentObject(subscriptionStore)
+        }
+        .alert(Lang.shared.isZh ? "保存当前对话？" : "Save current chat?", isPresented: $showSaveConfirm) {
+            Button(Lang.shared.isZh ? "取消" : "Cancel", role: .cancel) {}
+            Button(Lang.shared.isZh ? "保存" : "Save") {
+                Task {
+                    if let title = await chatStore.saveCurrentSession() {
+                        savedTitle = title
+                    }
+                }
+            }
+        }
+        .alert(Lang.shared.isZh ? "已保存" : "Saved", isPresented: .init(
+            get: { savedTitle != nil },
+            set: { if !$0 { savedTitle = nil } }
+        )) {
+            Button(Lang.shared.isZh ? "好的" : "OK") { savedTitle = nil }
+        } message: {
+            Text(savedTitle ?? "")
+        }
+        .sheet(isPresented: $showSavedChats) {
+            SavedChatsSheet(
+                onResume: { sessionId, messages in
+                    showSavedChats = false
+                    Task {
+                        await chatStore.switchToSession(id: sessionId, messages: messages)
+                    }
+                },
+                onDismiss: { showSavedChats = false }
+            )
+            .presentationDetents([.medium, .large])
+            .environmentObject(chatStore)
         }
         .onReceive(NotificationCenter.default.publisher(for: UIApplication.willResignActiveNotification)) { _ in
             // App interrupted (swipe up, notification, phone call) — cancel voice to prevent stuck state
@@ -683,6 +719,10 @@ struct ChatView: View {
                 chatStore.clear()
             }
             Haptics.light()
+        case "savechat":
+            showSaveConfirm = true
+        case "loadchat":
+            showSavedChats = true
         default:
             break
         }
@@ -692,8 +732,9 @@ struct ChatView: View {
         let text = inputText.trimmingCharacters(in: .whitespaces)
 
         // Intercept slash commands
-        if text.lowercased() == "/clear" {
-            handleSlashCommand("clear")
+        let lower = text.lowercased()
+        if lower == "/clear" || lower == "/savechat" || lower == "/loadchat" {
+            handleSlashCommand(String(lower.dropFirst()))
             return
         }
 
@@ -987,6 +1028,16 @@ private struct SlashCommandMenu: View {
 
     private var commands: [SlashCommand] {
         [
+            SlashCommand(
+                name: "savechat",
+                icon: "bookmark.fill",
+                label: Lang.shared.isZh ? "保存对话" : "Save chat"
+            ),
+            SlashCommand(
+                name: "loadchat",
+                icon: "clock.arrow.circlepath",
+                label: Lang.shared.isZh ? "加载对话" : "Load chat"
+            ),
             SlashCommand(
                 name: "clear",
                 icon: "trash",
