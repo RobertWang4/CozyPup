@@ -13,6 +13,7 @@ struct UserProfileSheet: View {
     @FocusState private var nameFocused: Bool
     @State private var showFamilySettings = false
     @State private var showDuoPaywall = false
+    @State private var showManagePaywall = false
     @State private var showDeleteConfirm = false
     @State private var isDeleting = false
 
@@ -54,6 +55,11 @@ struct UserProfileSheet: View {
         }
         .sheet(isPresented: $showDuoPaywall) {
             PaywallSheet(isHard: false, initialDuo: true) { showDuoPaywall = false }
+                .presentationDetents([.large])
+                .environmentObject(subscriptionStore)
+        }
+        .sheet(isPresented: $showManagePaywall) {
+            PaywallSheet(isHard: false) { showManagePaywall = false }
                 .presentationDetents([.large])
                 .environmentObject(subscriptionStore)
         }
@@ -148,16 +154,11 @@ struct UserProfileSheet: View {
 
     @ViewBuilder
     private var avatarImage: some View {
-        if let avatarUrl = auth.user?.avatarUrl,
-           !avatarUrl.isEmpty,
-           let url = URL(string: avatarUrl) {
-            AsyncImage(url: url) { image in
-                image.resizable().scaledToFill()
-            } placeholder: {
-                fallbackAvatar
-            }
-            .frame(width: Tokens.size.avatarLarge, height: Tokens.size.avatarLarge)
-            .clipShape(Circle())
+        if let image = auth.cachedAvatarImage {
+            Image(uiImage: image)
+                .resizable().scaledToFill()
+                .frame(width: Tokens.size.avatarLarge, height: Tokens.size.avatarLarge)
+                .clipShape(Circle())
         } else {
             fallbackAvatar
                 .frame(width: Tokens.size.avatarLarge, height: Tokens.size.avatarLarge)
@@ -201,14 +202,7 @@ struct UserProfileSheet: View {
             }
 
             Button {
-                // Always open the real App Store subscriptions page via URL.
-                // AppStore.showManageSubscriptions(in:) only sees sandbox purchases
-                // in debug builds, so a paid user sees an empty sheet. The URL
-                // deep-link opens the production App Store account page reliably
-                // across debug / TestFlight / production builds.
-                if let url = URL(string: "itms-apps://apps.apple.com/account/subscriptions") {
-                    UIApplication.shared.open(url)
-                }
+                showManagePaywall = true
             } label: {
                 HStack {
                     Label {
@@ -226,21 +220,6 @@ struct UserProfileSheet: View {
                 }
             }
 
-            Button {
-                Task { await subscriptionStore.restorePurchases() }
-            } label: {
-                HStack {
-                    Label {
-                        Text(lang.isZh ? "恢复购买" : "Restore Purchases")
-                            .font(Tokens.fontBody)
-                            .foregroundColor(Tokens.text)
-                    } icon: {
-                        Image(systemName: "arrow.clockwise")
-                            .foregroundColor(Tokens.accent)
-                    }
-                    Spacer()
-                }
-            }
         }
         .listRowBackground(Tokens.surface)
 
