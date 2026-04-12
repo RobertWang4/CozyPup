@@ -41,6 +41,7 @@
 		RELNOT000000000000000002 /* ReleaseNotes.swift in Sources */ = {isa = PBXBuildFile; fileRef = RELNOT000000000000000001 /* ReleaseNotes.swift */; };
 		WHTSNW000000000000000002 /* WhatsNewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = WHTSNW000000000000000001 /* WhatsNewView.swift */; };
 		ACKNOW000000000000000002 /* AcknowledgementsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACKNOW000000000000000001 /* AcknowledgementsView.swift */; };
+		DUOPLN000000000000000002 /* DuoPlanSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = DUOPLN000000000000000001 /* DuoPlanSection.swift */; };
 		885B288C97AAC7FAFAF5980E /* SettingsDrawer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6F1DE010DA6010A14147BF8 /* SettingsDrawer.swift */; };
 		8C479A4CCAAB3EA751F08C51 /* ChatService.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF65632CC6A30CD8137CBF57 /* ChatService.swift */; };
 		8EC0BA8575B497F7C1BAD383 /* SpendingStatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 672B2FDA2C5B4BF54603A7DE /* SpendingStatsView.swift */; };
@@ -163,6 +164,7 @@
 		RELNOT000000000000000001 /* ReleaseNotes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReleaseNotes.swift; sourceTree = "<group>"; };
 		WHTSNW000000000000000001 /* WhatsNewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatsNewView.swift; sourceTree = "<group>"; };
 		ACKNOW000000000000000001 /* AcknowledgementsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AcknowledgementsView.swift; sourceTree = "<group>"; };
+		DUOPLN000000000000000001 /* DuoPlanSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DuoPlanSection.swift; sourceTree = "<group>"; };
 		E49D254E58DB8AEDD31BF3B0 /* CameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
 		E59EDD63ED4B5127A8B5D2DC /* CalendarEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarEvent.swift; sourceTree = "<group>"; };
 		E6D276B8E4BE99D3CA63F74F /* EventRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventRow.swift; sourceTree = "<group>"; };
@@ -344,6 +346,7 @@
 				2BB807C14C655DB7B5A4C94A /* UserProfileSheet.swift */,
 				WHTSNW000000000000000001 /* WhatsNewView.swift */,
 				ACKNOW000000000000000001 /* AcknowledgementsView.swift */,
+				DUOPLN000000000000000001 /* DuoPlanSection.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -536,6 +539,7 @@
 				RELNOT000000000000000002 /* ReleaseNotes.swift in Sources */,
 				WHTSNW000000000000000002 /* WhatsNewView.swift in Sources */,
 				ACKNOW000000000000000002 /* AcknowledgementsView.swift in Sources */,
+				DUOPLN000000000000000002 /* DuoPlanSection.swift in Sources */,
 				C0A91D7D044C8CB2E17B6497 /* CustomScrollIndicator.swift in Sources */,
 				E67C92566B3C14D978EF14FC /* DailyTask.swift in Sources */,
 				71B1FAE04C85E05B030755EB /* DailyTaskIndicator.swift in Sources */,
