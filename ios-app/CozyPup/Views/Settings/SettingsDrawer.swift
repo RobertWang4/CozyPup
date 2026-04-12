@@ -147,9 +147,10 @@ struct SettingsDrawer: View {
             FamilySettingsView()
                 .presentationDetents([.medium, .large])
         }
-        .sheet(item: $showPetShareSheet) { pet in
-            PetShareSheet(pet: pet)
-                .presentationDetents([.large])
+        .fullScreenCover(item: $showPetShareSheet) { pet in
+            PetShareSheet(pet: pet, onDismiss: {
+                showPetShareSheet = nil
+            })
         }
         .sheet(item: $showPetUnshareSheet) { pet in
             PetUnshareSheet(petId: pet.id, petName: pet.name, onDone: {

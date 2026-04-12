@@ -3,105 +3,113 @@ import CoreImage.CIFilterBuiltins
 
 struct PetShareSheet: View {
     let pet: Pet
+    var onDismiss: () -> Void
+
     @State private var token: String?
     @State private var expiresAt: Date?
     @State private var isLoading = true
+    @State private var cardVisible = false
 
     var body: some View {
         ZStack {
-            Tokens.bg.ignoresSafeArea()
+            // Dim backdrop — tap to dismiss
+            Color.black
+                .opacity(cardVisible ? 0.35 : 0)
+                .ignoresSafeArea()
+                .onTapGesture { dismiss() }
 
-            VStack {
-                // Drag handle
-                RoundedRectangle(cornerRadius: 2)
-                    .fill(Tokens.border)
-                    .frame(width: 36, height: 4)
-                    .padding(.top, Tokens.spacing.sm)
+            // Floating card (not attached to any edge)
+            VStack(spacing: 0) {
+                // Pet header
+                HStack(spacing: Tokens.spacing.sm) {
+                    petAvatar
+                        .frame(width: 52, height: 52)
+                        .clipShape(Circle())
 
-                Spacer()
-
-                // The card
-                VStack(spacing: 0) {
-                    // Pet header
-                    HStack(spacing: Tokens.spacing.sm) {
-                        petAvatar
-                            .frame(width: 52, height: 52)
-                            .clipShape(Circle())
-
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(pet.name)
-                                .font(Tokens.fontTitle.weight(.semibold))
-                                .foregroundColor(Tokens.text)
-                            if !pet.breed.isEmpty {
-                                Text(pet.breed)
-                                    .font(Tokens.fontCaption)
-                                    .foregroundColor(Tokens.textSecondary)
-                            }
-                        }
-
-                        Spacer()
-
-                        Image(systemName: "pawprint.fill")
-                            .foregroundColor(Tokens.accent)
-                            .font(.system(size: 22))
-                    }
-                    .padding(.horizontal, Tokens.spacing.lg)
-                    .padding(.top, Tokens.spacing.lg)
-                    .padding(.bottom, Tokens.spacing.md)
-
-                    Rectangle()
-                        .fill(Tokens.border)
-                        .frame(height: 1)
-                        .padding(.horizontal, Tokens.spacing.lg)
-
-                    // QR code
-                    ZStack {
-                        if isLoading {
-                            ProgressView()
-                                .frame(width: 220, height: 220)
-                        } else if let token {
-                            let url = "cozypup://share?token=\(token)"
-                            if let image = generateQRCode(from: url) {
-                                Image(uiImage: image)
-                                    .interpolation(.none)
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 220, height: 220)
-                            }
-                        }
-                    }
-                    .padding(.vertical, Tokens.spacing.lg)
-
-                    // Footer: scan hint
-                    VStack(spacing: 4) {
-                        Text("Let someone scan to co-own")
-                            .font(Tokens.fontSubheadline.weight(.medium))
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(pet.name)
+                            .font(Tokens.fontTitle.weight(.semibold))
                             .foregroundColor(Tokens.text)
-                        if let expiresAt {
-                            HStack(spacing: 4) {
-                                Image(systemName: "clock")
-                                    .font(.system(size: 10))
-                                Text("Expires \(expiresAt, style: .relative)")
-                                    .font(Tokens.fontCaption2)
-                            }
-                            .foregroundColor(Tokens.textTertiary)
+                        if !pet.breed.isEmpty {
+                            Text(pet.breed)
+                                .font(Tokens.fontCaption)
+                                .foregroundColor(Tokens.textSecondary)
                         }
                     }
-                    .padding(.bottom, Tokens.spacing.lg)
-                }
-                .background(Tokens.surface)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 24)
-                        .stroke(Tokens.border, lineWidth: 1)
-                )
-                .cornerRadius(24)
-                .shadow(color: Tokens.text.opacity(0.08), radius: 24, x: 0, y: 12)
-                .padding(.horizontal, Tokens.spacing.lg)
 
-                Spacer()
+                    Spacer()
+
+                    Image(systemName: "pawprint.fill")
+                        .foregroundColor(Tokens.accent)
+                        .font(.system(size: 22))
+                }
+                .padding(.horizontal, Tokens.spacing.lg)
+                .padding(.top, Tokens.spacing.lg)
+                .padding(.bottom, Tokens.spacing.md)
+
+                Rectangle()
+                    .fill(Tokens.border)
+                    .frame(height: 1)
+                    .padding(.horizontal, Tokens.spacing.lg)
+
+                // QR code
+                ZStack {
+                    if isLoading {
+                        ProgressView()
+                            .frame(width: 220, height: 220)
+                    } else if let token {
+                        let url = "cozypup://share?token=\(token)"
+                        if let image = generateQRCode(from: url) {
+                            Image(uiImage: image)
+                                .interpolation(.none)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 220, height: 220)
+                        }
+                    }
+                }
+                .padding(.vertical, Tokens.spacing.lg)
+
+                // Footer
+                VStack(spacing: 4) {
+                    Text("Let someone scan to co-own")
+                        .font(Tokens.fontSubheadline.weight(.medium))
+                        .foregroundColor(Tokens.text)
+                    if let expiresAt {
+                        HStack(spacing: 4) {
+                            Image(systemName: "clock")
+                                .font(.system(size: 10))
+                            Text("Expires \(expiresAt, style: .relative)")
+                                .font(Tokens.fontCaption2)
+                        }
+                        .foregroundColor(Tokens.textTertiary)
+                    }
+                }
+                .padding(.bottom, Tokens.spacing.lg)
             }
+            .background(Tokens.surface)
+            .cornerRadius(28)
+            .shadow(color: Color.black.opacity(0.25), radius: 30, x: 0, y: 16)
+            .padding(.horizontal, Tokens.spacing.xl)
+            .scaleEffect(cardVisible ? 1 : 0.92)
+            .opacity(cardVisible ? 1 : 0)
         }
-        .task { await generateToken() }
+        .background(BackgroundClearView())
+        .onAppear {
+            withAnimation(.spring(response: 0.4, dampingFraction: 0.82)) {
+                cardVisible = true
+            }
+            Task { await generateToken() }
+        }
+    }
+
+    private func dismiss() {
+        withAnimation(.easeInOut(duration: 0.2)) {
+            cardVisible = false
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+            onDismiss()
+        }
     }
 
     @ViewBuilder
@@ -152,4 +160,16 @@ struct PetShareSheet: View {
         guard let cgImage = context.createCGImage(scaled, from: scaled.extent) else { return nil }
         return UIImage(cgImage: cgImage)
     }
+}
+
+/// Makes the underlying UIWindow background transparent so fullScreenCover looks like a floating modal.
+private struct BackgroundClearView: UIViewRepresentable {
+    func makeUIView(context: Context) -> UIView {
+        let view = UIView()
+        DispatchQueue.main.async {
+            view.superview?.superview?.backgroundColor = .clear
+        }
+        return view
+    }
+    func updateUIView(_ uiView: UIView, context: Context) {}
 }
