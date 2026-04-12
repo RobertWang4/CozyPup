@@ -36,6 +36,11 @@
 		7E98B4FE09F40D553F3312A0 /* CalendarEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = E59EDD63ED4B5127A8B5D2DC /* CalendarEvent.swift */; };
 		858DEA8563727562E8ACE8BC /* CozyPupApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D437A3D3656001306737E784 /* CozyPupApp.swift */; };
 		APPCFG00000000000000002 /* AppConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = APPCFG00000000000000001 /* AppConfig.swift */; };
+		SAFARWV00000000000000002 /* SafariWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SAFARWV00000000000000001 /* SafariWebView.swift */; };
+		SHRSHT000000000000000002 /* ShareSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = SHRSHT000000000000000001 /* ShareSheet.swift */; };
+		RELNOT000000000000000002 /* ReleaseNotes.swift in Sources */ = {isa = PBXBuildFile; fileRef = RELNOT000000000000000001 /* ReleaseNotes.swift */; };
+		WHTSNW000000000000000002 /* WhatsNewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = WHTSNW000000000000000001 /* WhatsNewView.swift */; };
+		ACKNOW000000000000000002 /* AcknowledgementsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACKNOW000000000000000001 /* AcknowledgementsView.swift */; };
 		885B288C97AAC7FAFAF5980E /* SettingsDrawer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6F1DE010DA6010A14147BF8 /* SettingsDrawer.swift */; };
 		8C479A4CCAAB3EA751F08C51 /* ChatService.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF65632CC6A30CD8137CBF57 /* ChatService.swift */; };
 		8EC0BA8575B497F7C1BAD383 /* SpendingStatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 672B2FDA2C5B4BF54603A7DE /* SpendingStatsView.swift */; };
@@ -153,6 +158,11 @@
 		D2586D01E7C42221ABD72995 /* LocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
 		D437A3D3656001306737E784 /* CozyPupApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CozyPupApp.swift; sourceTree = "<group>"; };
 		APPCFG00000000000000001 /* AppConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfig.swift; sourceTree = "<group>"; };
+		SAFARWV00000000000000001 /* SafariWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafariWebView.swift; sourceTree = "<group>"; };
+		SHRSHT000000000000000001 /* ShareSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareSheet.swift; sourceTree = "<group>"; };
+		RELNOT000000000000000001 /* ReleaseNotes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReleaseNotes.swift; sourceTree = "<group>"; };
+		WHTSNW000000000000000001 /* WhatsNewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatsNewView.swift; sourceTree = "<group>"; };
+		ACKNOW000000000000000001 /* AcknowledgementsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AcknowledgementsView.swift; sourceTree = "<group>"; };
 		E49D254E58DB8AEDD31BF3B0 /* CameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
 		E59EDD63ED4B5127A8B5D2DC /* CalendarEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarEvent.swift; sourceTree = "<group>"; };
 		E6D276B8E4BE99D3CA63F74F /* EventRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventRow.swift; sourceTree = "<group>"; };
@@ -243,6 +253,7 @@
 				45AA8E3614CA2B9242759444 /* Assets.xcassets */,
 				D437A3D3656001306737E784 /* CozyPupApp.swift */,
 				APPCFG00000000000000001 /* AppConfig.swift */,
+				RELNOT000000000000000001 /* ReleaseNotes.swift */,
 				PUSH0001000000000000000000 /* CozyPup.entitlements */,
 				EBAD5792AB19AA7036912E67 /* Info.plist */,
 				402C658B19F53A70267E6697 /* Models */,
@@ -305,6 +316,8 @@
 				F098F57E511474AEEB173948 /* PhotoCropSheet.swift */,
 				3295CA4BEC61EA4CB1EFA88A /* PinchGestureView.swift */,
 				FF1AC786D70AD0CA016CA68A /* CachedAsyncImage.swift */,
+				SAFARWV00000000000000001 /* SafariWebView.swift */,
+				SHRSHT000000000000000001 /* ShareSheet.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -329,6 +342,8 @@
 				E953D8A8BA28DA30AE609878 /* PetProfileEditor.swift */,
 				B6F1DE010DA6010A14147BF8 /* SettingsDrawer.swift */,
 				2BB807C14C655DB7B5A4C94A /* UserProfileSheet.swift */,
+				WHTSNW000000000000000001 /* WhatsNewView.swift */,
+				ACKNOW000000000000000001 /* AcknowledgementsView.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -516,6 +531,11 @@
 				B26546A329CCAA0E29AF43B5 /* ConfirmActionCard.swift in Sources */,
 				858DEA8563727562E8ACE8BC /* CozyPupApp.swift in Sources */,
 				APPCFG00000000000000002 /* AppConfig.swift in Sources */,
+				SAFARWV00000000000000002 /* SafariWebView.swift in Sources */,
+				SHRSHT000000000000000002 /* ShareSheet.swift in Sources */,
+				RELNOT000000000000000002 /* ReleaseNotes.swift in Sources */,
+				WHTSNW000000000000000002 /* WhatsNewView.swift in Sources */,
+				ACKNOW000000000000000002 /* AcknowledgementsView.swift in Sources */,
 				C0A91D7D044C8CB2E17B6497 /* CustomScrollIndicator.swift in Sources */,
 				E67C92566B3C14D978EF14FC /* DailyTask.swift in Sources */,
 				71B1FAE04C85E05B030755EB /* DailyTaskIndicator.swift in Sources */,
