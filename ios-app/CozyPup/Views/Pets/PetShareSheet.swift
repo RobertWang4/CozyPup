@@ -11,27 +11,21 @@ struct PetShareSheet: View {
         ZStack {
             Tokens.bg.ignoresSafeArea()
 
-            VStack(spacing: Tokens.spacing.lg) {
+            VStack {
                 // Drag handle
                 RoundedRectangle(cornerRadius: 2)
                     .fill(Tokens.border)
                     .frame(width: 36, height: 4)
                     .padding(.top, Tokens.spacing.sm)
 
-                Text("Share this pet")
-                    .font(Tokens.fontTitle.weight(.medium))
-                    .foregroundColor(Tokens.text)
+                Spacer()
 
-                Text("Let someone scan to co-own")
-                    .font(Tokens.fontSubheadline)
-                    .foregroundColor(Tokens.textSecondary)
-
-                // Card with pet info + QR
-                VStack(spacing: Tokens.spacing.md) {
+                // The card
+                VStack(spacing: 0) {
                     // Pet header
                     HStack(spacing: Tokens.spacing.sm) {
                         petAvatar
-                            .frame(width: 48, height: 48)
+                            .frame(width: 52, height: 52)
                             .clipShape(Circle())
 
                         VStack(alignment: .leading, spacing: 2) {
@@ -49,14 +43,16 @@ struct PetShareSheet: View {
 
                         Image(systemName: "pawprint.fill")
                             .foregroundColor(Tokens.accent)
-                            .font(.system(size: 20))
+                            .font(.system(size: 22))
                     }
-                    .padding(.horizontal, Tokens.spacing.md)
-                    .padding(.top, Tokens.spacing.md)
+                    .padding(.horizontal, Tokens.spacing.lg)
+                    .padding(.top, Tokens.spacing.lg)
+                    .padding(.bottom, Tokens.spacing.md)
 
-                    Divider()
-                        .background(Tokens.border)
-                        .padding(.horizontal, Tokens.spacing.md)
+                    Rectangle()
+                        .fill(Tokens.border)
+                        .frame(height: 1)
+                        .padding(.horizontal, Tokens.spacing.lg)
 
                     // QR code
                     ZStack {
@@ -71,33 +67,36 @@ struct PetShareSheet: View {
                                     .resizable()
                                     .scaledToFit()
                                     .frame(width: 220, height: 220)
-                                    .padding(Tokens.spacing.sm)
-                                    .background(Color.white)
-                                    .cornerRadius(Tokens.radiusSmall)
                             }
                         }
                     }
+                    .padding(.vertical, Tokens.spacing.lg)
 
-                    // Expires label
-                    if let expiresAt {
-                        HStack(spacing: 4) {
-                            Image(systemName: "clock")
-                                .font(.system(size: 11))
-                            Text("Expires \(expiresAt, style: .relative)")
-                                .font(Tokens.fontCaption2)
+                    // Footer: scan hint
+                    VStack(spacing: 4) {
+                        Text("Let someone scan to co-own")
+                            .font(Tokens.fontSubheadline.weight(.medium))
+                            .foregroundColor(Tokens.text)
+                        if let expiresAt {
+                            HStack(spacing: 4) {
+                                Image(systemName: "clock")
+                                    .font(.system(size: 10))
+                                Text("Expires \(expiresAt, style: .relative)")
+                                    .font(Tokens.fontCaption2)
+                            }
+                            .foregroundColor(Tokens.textTertiary)
                         }
-                        .foregroundColor(Tokens.textTertiary)
-                        .padding(.bottom, Tokens.spacing.md)
                     }
+                    .padding(.bottom, Tokens.spacing.lg)
                 }
-                .frame(maxWidth: .infinity)
                 .background(Tokens.surface)
                 .overlay(
-                    RoundedRectangle(cornerRadius: Tokens.radius)
+                    RoundedRectangle(cornerRadius: 24)
                         .stroke(Tokens.border, lineWidth: 1)
                 )
-                .cornerRadius(Tokens.radius)
-                .padding(.horizontal, Tokens.spacing.md)
+                .cornerRadius(24)
+                .shadow(color: Tokens.text.opacity(0.08), radius: 24, x: 0, y: 12)
+                .padding(.horizontal, Tokens.spacing.lg)
 
                 Spacer()
             }
@@ -117,7 +116,7 @@ struct PetShareSheet: View {
             ZStack {
                 Circle().fill(pet.color.opacity(0.2))
                 Image(systemName: pet.species == .cat ? "cat.fill" : "dog.fill")
-                    .font(.system(size: 22))
+                    .font(.system(size: 24))
                     .foregroundColor(pet.color)
             }
         }
