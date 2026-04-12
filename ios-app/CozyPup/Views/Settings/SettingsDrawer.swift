@@ -148,8 +148,8 @@ struct SettingsDrawer: View {
                 .presentationDetents([.medium, .large])
         }
         .sheet(item: $showPetShareSheet) { pet in
-            PetShareSheet(petId: pet.id, petName: pet.name)
-                .presentationDetents([.medium])
+            PetShareSheet(pet: pet)
+                .presentationDetents([.large])
         }
         .sheet(item: $showPetUnshareSheet) { pet in
             PetUnshareSheet(petId: pet.id, petName: pet.name, onDone: {
