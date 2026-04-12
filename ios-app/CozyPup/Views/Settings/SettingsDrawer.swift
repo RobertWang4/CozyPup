@@ -141,6 +141,10 @@ struct SettingsDrawer: View {
                 .presentationDetents([.medium, .large])
             }
         }
+        .sheet(isPresented: $showFamilySettings) {
+            FamilySettingsView()
+                .presentationDetents([.medium, .large])
+        }
     }
 
     // MARK: - Settings List
@@ -210,6 +214,27 @@ struct SettingsDrawer: View {
                         }
                     }
                     .listRowBackground(Tokens.surface)
+
+                    // Duo plan — only show when user is on a duo subscription
+                    if case .active = subscriptionStore.status {
+                        Button {
+                            showFamilySettings = true
+                        } label: {
+                            HStack {
+                                Image(systemName: "person.2.fill")
+                                    .foregroundColor(Tokens.accent)
+                                    .frame(width: Tokens.size.avatarSmall)
+                                Text("Duo Plan")
+                                    .font(Tokens.fontBody)
+                                    .foregroundColor(Tokens.text)
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                                    .font(Tokens.fontCaption)
+                                    .foregroundColor(Tokens.textTertiary)
+                            }
+                        }
+                        .listRowBackground(Tokens.surface)
+                    }
                 }
 
                 Section(L.myPets) {
