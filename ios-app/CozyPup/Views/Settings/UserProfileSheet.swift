@@ -18,6 +18,8 @@ struct UserProfileSheet: View {
     @State private var isDeleting = false
 
     @State private var avatarItem: PhotosPickerItem?
+    @State private var pendingAvatarImage: UIImage?
+    @State private var showAvatarConfirm = false
     @State private var isUploadingAvatar = false
     @State private var avatarErrorMessage: String?
 
@@ -48,7 +50,13 @@ struct UserProfileSheet: View {
         .onAppear { nameText = auth.user?.name ?? "" }
         .onChange(of: avatarItem) { _, newItem in
             guard let newItem else { return }
-            Task { await uploadAvatar(from: newItem) }
+            Task {
+                if let data = try? await newItem.loadTransferable(type: Data.self),
+                   let image = UIImage(data: data) {
+                    pendingAvatarImage = image
+                    showAvatarConfirm = true
+                }
+            }
         }
         .fullScreenCover(isPresented: $showFamilySettings) {
             FamilySettingsView { showFamilySettings = false }
@@ -78,6 +86,18 @@ struct UserProfileSheet: View {
         .sheet(isPresented: $showAcknowledgements) {
             NavigationStack {
                 AcknowledgementsView()
+            }
+        }
+        .alert(
+            lang.isZh ? "更换头像？" : "Change Avatar?",
+            isPresented: $showAvatarConfirm
+        ) {
+            Button(lang.isZh ? "取消" : "Cancel", role: .cancel) {
+                pendingAvatarImage = nil
+            }
+            Button(lang.isZh ? "确认" : "Confirm") {
+                guard let item = avatarItem else { return }
+                Task { await uploadAvatar(from: item) }
             }
         }
         .alert(
