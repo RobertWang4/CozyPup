@@ -11,6 +11,9 @@ struct SettingsDrawer: View {
     @State private var calendarSync = CalendarSyncService.shared.isSyncEnabled
     @State private var showWhatsNew = false
     @State private var showShareSheet = false
+    @State private var showFAQ = false
+    @State private var pendingExternalMessage: String = ""
+    @State private var pendingExternalAction: (() -> Void)?
     @State private var showCalendarSyncOptions = false
     @ObservedObject private var lang = Lang.shared
     @State private var editingPetId: String?
@@ -189,6 +192,27 @@ struct SettingsDrawer: View {
             .sheet(isPresented: $showWhatsNew) {
                 NavigationStack { WhatsNewView() }
             }
+            .sheet(isPresented: $showFAQ) {
+                NavigationStack { FAQView() }
+            }
+            .alert(
+                lang.isZh ? "离开 CozyPup？" : "Leave CozyPup?",
+                isPresented: Binding(
+                    get: { pendingExternalAction != nil },
+                    set: { if !$0 { pendingExternalAction = nil } }
+                )
+            ) {
+                Button(lang.isZh ? "取消" : "Cancel", role: .cancel) {
+                    pendingExternalAction = nil
+                }
+                Button(lang.isZh ? "继续" : "Continue") {
+                    let action = pendingExternalAction
+                    pendingExternalAction = nil
+                    action?()
+                }
+            } message: {
+                Text(pendingExternalMessage)
+            }
             .sheet(isPresented: $showShareSheet) {
                 if let url = URL(string: AppConfig.appStoreURL) {
                     ShareSheet(items: [url])
@@ -206,14 +230,21 @@ struct SettingsDrawer: View {
                 showUserProfile = true
             } label: {
                 HStack(spacing: 12) {
-                    Circle()
-                        .fill(Tokens.accent)
-                        .frame(width: Tokens.size.avatarMedium, height: Tokens.size.avatarMedium)
-                        .overlay(
-                            Text(String(auth.user?.name.prefix(1) ?? "U"))
-                                .foregroundColor(Tokens.white)
-                                .font(Tokens.fontHeadline.weight(.semibold))
-                        )
+                    if let image = auth.cachedAvatarImage {
+                        Image(uiImage: image)
+                            .resizable().scaledToFill()
+                            .frame(width: Tokens.size.avatarMedium, height: Tokens.size.avatarMedium)
+                            .clipShape(Circle())
+                    } else {
+                        Circle()
+                            .fill(Tokens.accent)
+                            .frame(width: Tokens.size.avatarMedium, height: Tokens.size.avatarMedium)
+                            .overlay(
+                                Text(String(auth.user?.name.prefix(1) ?? "U"))
+                                    .foregroundColor(Tokens.white)
+                                    .font(Tokens.fontHeadline.weight(.semibold))
+                            )
+                    }
                     VStack(alignment: .leading, spacing: Tokens.spacing.xxs) {
                         Text(auth.user?.name ?? "User")
                             .font(Tokens.fontCallout.weight(.medium))
@@ -329,8 +360,14 @@ struct SettingsDrawer: View {
     private var notificationsSection: some View {
         Section(L.notifications) {
             Button {
-                if let url = URL(string: UIApplication.openNotificationSettingsURLString) {
-                    UIApplication.shared.open(url)
+                requestExternal(
+                    message: lang.isZh
+                        ? "将跳转到系统「设置」的 CozyPup 通知页面。"
+                        : "You'll be taken to iOS Settings to manage CozyPup notifications."
+                ) {
+                    if let url = URL(string: UIApplication.openNotificationSettingsURLString) {
+                        UIApplication.shared.open(url)
+                    }
                 }
             } label: {
                 HStack {
@@ -356,15 +393,33 @@ struct SettingsDrawer: View {
     private var supportSection: some View {
         Section(lang.isZh ? "支持" : "Support") {
             Button {
-                openMail(to: AppConfig.supportEmail, subject: "CozyPup Support")
+                showFAQ = true
+            } label: {
+                supportRow(icon: "questionmark.circle", title: lang.isZh ? "常见问题" : "FAQ")
+            }
+
+            Button {
+                requestExternal(
+                    message: lang.isZh
+                        ? "将跳转到「邮件」发送给 \(AppConfig.supportEmail)。"
+                        : "You'll be taken to Mail to contact \(AppConfig.supportEmail)."
+                ) {
+                    openMail(to: AppConfig.supportEmail, subject: "CozyPup Support")
+                }
             } label: {
                 supportRow(icon: "envelope", title: lang.isZh ? "联系我们" : "Contact Support")
             }
 
             Button {
-                let subject = "[Report] CozyPup \(AppConfig.versionString)"
-                let body = "Device: \(UIDevice.current.model)\niOS: \(UIDevice.current.systemVersion)\n\n"
-                openMail(to: AppConfig.supportEmail, subject: subject, body: body)
+                requestExternal(
+                    message: lang.isZh
+                        ? "将跳转到「邮件」发送反馈给 \(AppConfig.supportEmail)，邮件中会包含当前版本和设备信息。"
+                        : "You'll be taken to Mail to send feedback to \(AppConfig.supportEmail). The message will include your app version and device info."
+                ) {
+                    let subject = "[Report] CozyPup \(AppConfig.versionString)"
+                    let body = "Device: \(UIDevice.current.model)\niOS: \(UIDevice.current.systemVersion)\n\n"
+                    openMail(to: AppConfig.supportEmail, subject: subject, body: body)
+                }
             } label: {
                 supportRow(icon: "exclamationmark.bubble", title: lang.isZh ? "反馈问题" : "Report a Problem")
             }
@@ -447,6 +502,11 @@ struct SettingsDrawer: View {
                 .font(Tokens.fontCaption)
                 .foregroundColor(Tokens.textTertiary)
         }
+    }
+
+    private func requestExternal(message: String, action: @escaping () -> Void) {
+        pendingExternalMessage = message
+        pendingExternalAction = action
     }
 
     private func openMail(to: String, subject: String, body: String = "") {
