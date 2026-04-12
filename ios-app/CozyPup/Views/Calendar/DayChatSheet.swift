@@ -3,11 +3,14 @@ import SwiftUI
 /// Shows read-only chat history for a specific date.
 /// Used from the calendar day detail page's history button.
 struct DayChatSheet: View {
+    @EnvironmentObject var chatStore: ChatStore
+    @Environment(\.dismiss) private var dismiss
     let date: String  // YYYY-MM-DD
 
     @State private var messages: [ChatMessage] = []
     @State private var isLoading = true
     @State private var isEmpty = false
+    @State private var sessionId: String?
 
     var body: some View {
         NavigationStack {
@@ -36,6 +39,23 @@ struct DayChatSheet: View {
                         .padding(.horizontal, Tokens.spacing.md)
                         .padding(.vertical, Tokens.spacing.md)
                     }
+
+                    Button {
+                        Haptics.light()
+                        Task {
+                            await chatStore.switchToSession(id: sessionId ?? "", messages: messages)
+                        }
+                        dismiss()
+                    } label: {
+                        Text("回到这天的对话")
+                            .font(Tokens.fontBody.weight(.semibold))
+                            .foregroundColor(Tokens.white)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 14)
+                            .background(Tokens.accent)
+                            .cornerRadius(Tokens.radiusSmall)
+                    }
+                    .padding(Tokens.spacing.md)
                 }
             }
             .background(Tokens.bg)
@@ -61,6 +81,7 @@ struct DayChatSheet: View {
                 isLoading = false
                 return
             }
+            sessionId = session.id
 
             // Load messages for that session
             struct MessageItem: Decodable {
