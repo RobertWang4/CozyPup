@@ -53,9 +53,8 @@ struct ReadOnlyChatView: View {
                 .padding(Tokens.spacing.md)
             }
         }
-        .background(Tokens.bg)
-        .navigationTitle(title)
-        .navigationBarTitleDisplayMode(.inline)
+        .frame(maxWidth: .infinity)
+        .background(Tokens.bg.ignoresSafeArea())
         .task { await loadMessages() }
     }
 
