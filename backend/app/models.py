@@ -76,6 +76,7 @@ class User(Base):
     trial_start_date: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     subscription_expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     subscription_product_id: Mapped[str | None] = mapped_column(String(100))
+    avatar_url: Mapped[str] = mapped_column(String(500), default="")
 
     # Family plan
     family_role: Mapped[str | None] = mapped_column(String(20))  # "payer" | "member" | null
