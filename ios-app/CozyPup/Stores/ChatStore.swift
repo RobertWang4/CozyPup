@@ -49,6 +49,13 @@ class ChatStore: ObservableObject {
             if session.date == today {
                 sessionId = session.id
             } else {
+                // Next day detected — auto temp-save yesterday's session
+                let yesterdayId = session.id
+                if !messages.isEmpty {
+                    Task {
+                        await tempSaveCurrent(sessionId: yesterdayId)
+                    }
+                }
                 clear()
             }
         }
@@ -73,6 +80,55 @@ class ChatStore: ObservableObject {
         sessionId = nil
         UserDefaults.standard.removeObject(forKey: messagesKey)
         UserDefaults.standard.removeObject(forKey: sessionKey)
+    }
+
+    /// Switch to a different session — loads messages from backend, temp-saves current if needed
+    func switchToSession(id: String, messages: [ChatMessage]) async {
+        // Temp-save current session if it has messages
+        if let currentId = sessionId, !self.messages.isEmpty {
+            await tempSaveCurrent(sessionId: currentId)
+        }
+
+        // Load the target session
+        self.messages = messages
+        self.sessionId = id
+        save()
+        if let data = try? JSONEncoder().encode(SessionData(id: id, date: Self.todayStr())) {
+            UserDefaults.standard.set(data, forKey: sessionKey)
+        }
+    }
+
+    /// Temp-save a session on the backend (3-day expiry)
+    func tempSaveCurrent(sessionId: String) async {
+        struct TempSaveResp: Decodable {
+            let expires_at: String
+            let is_saved: Bool
+        }
+        do {
+            let _: TempSaveResp = try await APIClient.shared.request(
+                "POST", "/chat/sessions/\(sessionId)/temp-save"
+            )
+        } catch {
+            print("[ChatStore] temp-save failed: \(error)")
+        }
+    }
+
+    /// Save current session permanently via /savechat
+    func saveCurrentSession() async -> String? {
+        guard let sid = sessionId else { return nil }
+        struct SaveResp: Decodable {
+            let title: String
+            let is_saved: Bool
+        }
+        do {
+            let resp: SaveResp = try await APIClient.shared.request(
+                "POST", "/chat/sessions/\(sid)/save"
+            )
+            return resp.title
+        } catch {
+            print("[ChatStore] save failed: \(error)")
+            return nil
+        }
     }
 
     private static func todayStr() -> String {
