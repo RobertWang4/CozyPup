@@ -13,55 +13,65 @@ struct DayChatSheet: View {
     @State private var sessionId: String?
 
     var body: some View {
-        NavigationStack {
-            Group {
-                if isLoading {
-                    ProgressView()
-                        .tint(Tokens.accent)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                } else if isEmpty {
-                    VStack(spacing: Tokens.spacing.md) {
-                        Image(systemName: "bubble.left.and.bubble.right")
-                            .font(.largeTitle)
-                            .foregroundColor(Tokens.textTertiary)
-                        Text("当天没有对话记录")
-                            .font(Tokens.fontBody)
-                            .foregroundColor(Tokens.textSecondary)
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                } else {
-                    ScrollView {
-                        VStack(spacing: Tokens.spacing.sm) {
-                            ForEach(messages) { msg in
-                                ChatBubble(role: msg.role, content: msg.content)
-                            }
-                        }
-                        .padding(.horizontal, Tokens.spacing.md)
-                        .padding(.vertical, Tokens.spacing.md)
-                    }
+        VStack(spacing: 0) {
+            // Drag handle + title
+            RoundedRectangle(cornerRadius: 2)
+                .fill(Tokens.border)
+                .frame(width: 36, height: 4)
+                .padding(.top, Tokens.spacing.sm)
 
-                    Button {
-                        Haptics.light()
-                        Task {
-                            await chatStore.switchToSession(id: sessionId ?? "", messages: messages)
-                        }
-                        dismiss()
-                    } label: {
-                        Text("回到这天的对话")
-                            .font(Tokens.fontBody.weight(.semibold))
-                            .foregroundColor(Tokens.white)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 14)
-                            .background(Tokens.accent)
-                            .cornerRadius(Tokens.radiusSmall)
-                    }
-                    .padding(Tokens.spacing.md)
+            Text(formatDate(date))
+                .font(Tokens.fontHeadline)
+                .foregroundColor(Tokens.text)
+                .padding(.vertical, Tokens.spacing.md)
+
+            if isLoading {
+                Spacer()
+                ProgressView()
+                    .tint(Tokens.accent)
+                Spacer()
+            } else if isEmpty {
+                Spacer()
+                VStack(spacing: Tokens.spacing.md) {
+                    Image(systemName: "bubble.left.and.bubble.right")
+                        .font(.largeTitle)
+                        .foregroundColor(Tokens.textTertiary)
+                    Text("当天没有对话记录")
+                        .font(Tokens.fontBody)
+                        .foregroundColor(Tokens.textSecondary)
                 }
+                Spacer()
+            } else {
+                ScrollView {
+                    VStack(spacing: Tokens.spacing.sm) {
+                        ForEach(messages) { msg in
+                            ChatBubble(role: msg.role, content: msg.content)
+                        }
+                    }
+                    .padding(.horizontal, Tokens.spacing.md)
+                    .padding(.vertical, Tokens.spacing.md)
+                }
+
+                Button {
+                    Haptics.light()
+                    Task {
+                        await chatStore.switchToSession(id: sessionId ?? "", messages: messages)
+                    }
+                    dismiss()
+                } label: {
+                    Text("回到这天的对话")
+                        .font(Tokens.fontBody.weight(.semibold))
+                        .foregroundColor(Tokens.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 14)
+                        .background(Tokens.accent)
+                        .cornerRadius(Tokens.radiusSmall)
+                }
+                .padding(.horizontal, Tokens.spacing.md)
+                .padding(.bottom, Tokens.spacing.md)
             }
-            .background(Tokens.bg)
-            .navigationTitle(formatDate(date))
-            .navigationBarTitleDisplayMode(.inline)
         }
+        .background(Tokens.bg)
         .task { await loadMessages() }
     }
 
