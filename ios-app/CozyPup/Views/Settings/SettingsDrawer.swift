@@ -23,8 +23,6 @@ struct SettingsDrawer: View {
     @State private var showScanner = false
     @State private var scannedToken: String?
     @State private var showMergeSheet = false
-    @State private var showFamilySettings = false
-    @State private var showDuoPaywall = false
     @State private var showPetShareSheet: Pet?
     @State private var showPetUnshareSheet: Pet?
 
@@ -118,6 +116,7 @@ struct SettingsDrawer: View {
         }
         .sheet(isPresented: $showUserProfile) {
             UserProfileSheet(auth: auth)
+                .environmentObject(subscriptionStore)
         }
         .sheet(isPresented: $showPaywall) {
             PaywallSheet(isHard: false) { showPaywall = false }
@@ -143,15 +142,6 @@ struct SettingsDrawer: View {
                 .environmentObject(petStore)
                 .presentationDetents([.medium, .large])
             }
-        }
-        .sheet(isPresented: $showFamilySettings) {
-            FamilySettingsView()
-                .presentationDetents([.medium, .large])
-        }
-        .sheet(isPresented: $showDuoPaywall) {
-            PaywallSheet(isHard: false, initialDuo: true) { showDuoPaywall = false }
-                .presentationDetents([.large])
-                .environmentObject(subscriptionStore)
         }
         .fullScreenCover(item: $showPetShareSheet) { pet in
             PetShareSheet(pet: pet, onDismiss: {
@@ -238,33 +228,6 @@ struct SettingsDrawer: View {
                     }
                     .listRowBackground(Tokens.surface)
 
-                    // Duo plan row — opens family settings if user has duo, else paywall
-                    Button {
-                        if subscriptionStore.isDuo {
-                            showFamilySettings = true
-                        } else {
-                            showDuoPaywall = true
-                        }
-                    } label: {
-                        HStack {
-                            Image(systemName: "person.2.fill")
-                                .foregroundColor(Tokens.accent)
-                                .frame(width: Tokens.size.avatarSmall)
-                            Text("Duo Plan")
-                                .font(Tokens.fontBody)
-                                .foregroundColor(Tokens.text)
-                            Spacer()
-                            if !subscriptionStore.isDuo {
-                                Text("Upgrade")
-                                    .font(Tokens.fontCaption)
-                                    .foregroundColor(Tokens.accent)
-                            }
-                            Image(systemName: "chevron.right")
-                                .font(Tokens.fontCaption)
-                                .foregroundColor(Tokens.textTertiary)
-                        }
-                    }
-                    .listRowBackground(Tokens.surface)
                 }
 
                 Section(L.myPets) {
