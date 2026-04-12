@@ -12,9 +12,9 @@ struct PetShareSheet: View {
 
     var body: some View {
         ZStack {
-            // Dim backdrop — tap to dismiss
-            Color.black
-                .opacity(cardVisible ? 0.35 : 0)
+            // Transparent backdrop — tap to dismiss
+            Color.clear
+                .contentShape(Rectangle())
                 .ignoresSafeArea()
                 .onTapGesture { dismiss() }
 
