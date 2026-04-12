@@ -37,7 +37,7 @@ def _generate_initial_profile(
     return "\n".join(lines)
 
 
-def _pet_to_response(pet: Pet) -> PetResponse:
+def _pet_to_response(pet: Pet, is_co_owned: bool = False) -> PetResponse:
     gender = (pet.profile or {}).get("gender") if pet.profile else None
     return PetResponse(
         id=str(pet.id),
@@ -51,6 +51,7 @@ def _pet_to_response(pet: Pet) -> PetResponse:
         avatar_url=pet.avatar_url,
         color_hex=pet.color_hex,
         profile_md=pet.profile_md,
+        is_co_owned=is_co_owned,
         created_at=pet.created_at.isoformat(),
     )
 
@@ -94,7 +95,8 @@ async def list_pets(
 ):
     from app.agents.tools.ownership import get_user_pets
     pets = await get_user_pets(db, user_id)
-    return [_pet_to_response(p) for p in pets]
+    # Mark pets that user co-owns (not the original owner)
+    return [_pet_to_response(p, is_co_owned=(p.user_id != user_id)) for p in pets]
 
 
 @router.get("/{pet_id}", response_model=PetResponse)

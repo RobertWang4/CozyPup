@@ -20,6 +20,10 @@ struct SettingsDrawer: View {
     @State private var showDeleteConfirm: Pet?
     @State private var showUserProfile = false
     @State private var showPaywall = false
+    @State private var showScanner = false
+    @State private var scannedToken: String?
+    @State private var showMergeSheet = false
+    @State private var showFamilySettings = false
 
     private let prefsKey = "cozypup_notification_prefs"
 
@@ -116,6 +120,26 @@ struct SettingsDrawer: View {
             PaywallSheet(isHard: false) { showPaywall = false }
                 .presentationDetents([.large])
                 .environmentObject(subscriptionStore)
+        }
+        .fullScreenCover(isPresented: $showScanner) {
+            PetShareScannerSheet { token in
+                scannedToken = token
+                showScanner = false
+                // Present merge sheet after small delay to let scanner dismiss
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+                    showMergeSheet = true
+                }
+            }
+        }
+        .sheet(isPresented: $showMergeSheet) {
+            if let token = scannedToken {
+                PetMergeSheet(shareToken: token) {
+                    showMergeSheet = false
+                    scannedToken = nil
+                }
+                .environmentObject(petStore)
+                .presentationDetents([.medium, .large])
+            }
         }
     }
 
@@ -247,6 +271,15 @@ struct SettingsDrawer: View {
                         Label(L.addPet, systemImage: "plus")
                             .font(Tokens.fontSubheadline.weight(.medium))
                             .foregroundColor(Tokens.accent)
+                    }
+                    .listRowBackground(Tokens.surface)
+
+                    Button {
+                        showScanner = true
+                    } label: {
+                        Label("Scan QR to join a shared pet", systemImage: "qrcode.viewfinder")
+                            .font(Tokens.fontSubheadline.weight(.medium))
+                            .foregroundColor(Tokens.textSecondary)
                     }
                     .listRowBackground(Tokens.surface)
                 }

@@ -33,4 +33,5 @@ class PetResponse(BaseModel):
     avatar_url: str
     color_hex: str
     profile_md: str | None = None
+    is_co_owned: bool = False
     created_at: str

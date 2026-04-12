@@ -54,6 +54,7 @@
 		PS10000200000000MERGE0001 /* PetMergeSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = PS20000200000000MERGE0001 /* PetMergeSheet.swift */; };
 		PS10000300000000UNSHR0001 /* PetUnshareSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = PS20000300000000UNSHR0001 /* PetUnshareSheet.swift */; };
 		PS10000400000000FAMLY0001 /* FamilySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = PS20000400000000FAMLY0001 /* FamilySettingsView.swift */; };
+		PS10000500000000QRSCN0001 /* QRScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = PS20000500000000QRSCN0001 /* QRScannerView.swift */; };
 		B26546A329CCAA0E29AF43B5 /* ConfirmActionCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDD76A395C37067B90C0DFD7 /* ConfirmActionCard.swift */; };
 		B88F419864D7ACC602B34023 /* VoiceInputOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0966E4141F24A98CBF3DA68 /* VoiceInputOverlay.swift */; };
 		C0A91D7D044C8CB2E17B6497 /* CustomScrollIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 341089EEBFBBC68CDDB0439D /* CustomScrollIndicator.swift */; };
@@ -99,6 +100,7 @@
 		PS20000200000000MERGE0001 /* PetMergeSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PetMergeSheet.swift; sourceTree = "<group>"; };
 		PS20000300000000UNSHR0001 /* PetUnshareSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PetUnshareSheet.swift; sourceTree = "<group>"; };
 		PS20000400000000FAMLY0001 /* FamilySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilySettingsView.swift; sourceTree = "<group>"; };
+		PS20000500000000QRSCN0001 /* QRScannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRScannerView.swift; sourceTree = "<group>"; };
 		3295CA4BEC61EA4CB1EFA88A /* PinchGestureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinchGestureView.swift; sourceTree = "<group>"; };
 		33E08B0B44AEEB61CFD807D9 /* HeatStripView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeatStripView.swift; sourceTree = "<group>"; };
 		341089EEBFBBC68CDDB0439D /* CustomScrollIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomScrollIndicator.swift; sourceTree = "<group>"; };
@@ -307,6 +309,7 @@
 				PS20000100000000SHARE0001 /* PetShareSheet.swift */,
 				PS20000200000000MERGE0001 /* PetMergeSheet.swift */,
 				PS20000300000000UNSHR0001 /* PetUnshareSheet.swift */,
+				PS20000500000000QRSCN0001 /* QRScannerView.swift */,
 			);
 			path = Pets;
 			sourceTree = "<group>";
@@ -562,6 +565,7 @@
 				PS10000200000000MERGE0001 /* PetMergeSheet.swift in Sources */,
 				PS10000300000000UNSHR0001 /* PetUnshareSheet.swift in Sources */,
 				PS10000400000000FAMLY0001 /* FamilySettingsView.swift in Sources */,
+				PS10000500000000QRSCN0001 /* QRScannerView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
