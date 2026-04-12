@@ -7,8 +7,12 @@ struct PaywallSheet: View {
     var onDismiss: (() -> Void)? = nil
 
     @State private var selectedProduct: StoreKit.Product?
-    @State private var showPricing = false
     @State private var errorMessage: String?
+
+    /// Individual products only (filter out .duo)
+    private var individualProducts: [Product] {
+        subscriptionStore.products.filter { !$0.id.contains(".duo") }
+    }
 
     var body: some View {
         VStack(spacing: Tokens.spacing.lg) {
@@ -20,8 +24,6 @@ struct PaywallSheet: View {
 
             if isHard {
                 hardPaywallContent
-            } else if showPricing {
-                pricingContent
             } else {
                 softPaywallContent
             }
@@ -31,32 +33,30 @@ struct PaywallSheet: View {
         .padding(.horizontal, Tokens.spacing.md)
         .background(Tokens.bg)
         .task {
+            await subscriptionStore.loadProducts()
             if isHard {
                 await subscriptionStore.loadTrialStats()
-                await subscriptionStore.loadProducts()
             }
         }
     }
 
-    // MARK: - Soft Paywall
+    // MARK: - Soft Paywall (direct pricing)
 
     private var softPaywallContent: some View {
         VStack(spacing: Tokens.spacing.md) {
-            if !isHard {
-                HStack {
-                    Spacer()
-                    Button { onDismiss?() } label: {
-                        Image(systemName: "xmark")
-                            .font(Tokens.fontSubheadline)
-                            .foregroundColor(Tokens.textSecondary)
-                            .frame(width: 28, height: 28)
-                            .background(Tokens.surface)
-                            .clipShape(Circle())
-                    }
+            HStack {
+                Spacer()
+                Button { onDismiss?() } label: {
+                    Image(systemName: "xmark")
+                        .font(Tokens.fontSubheadline)
+                        .foregroundColor(Tokens.textSecondary)
+                        .frame(width: 28, height: 28)
+                        .background(Tokens.surface)
+                        .clipShape(Circle())
                 }
             }
 
-            Text("Enjoying CozyPup?")
+            Text("CozyPup Premium")
                 .font(Tokens.fontTitle)
                 .foregroundColor(Tokens.text)
 
@@ -70,23 +70,11 @@ struct PaywallSheet: View {
                 benefitRow("Unlimited AI chat & health advice")
                 benefitRow("Smart reminders & calendar")
                 benefitRow("Nearby vet clinic search")
+                benefitRow("Emergency first-aid guidance")
             }
-            .padding(.vertical, Tokens.spacing.sm)
+            .padding(.vertical, Tokens.spacing.xs)
 
-            Button {
-                Task {
-                    await subscriptionStore.loadProducts()
-                }
-                withAnimation { showPricing = true }
-            } label: {
-                Text("View Plans")
-                    .font(Tokens.fontBody.weight(.semibold))
-                    .foregroundColor(Tokens.white)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 14)
-                    .background(Tokens.accent)
-                    .cornerRadius(Tokens.radiusSmall)
-            }
+            pricingContent
 
             Button { onDismiss?() } label: {
                 Text("Not now")
@@ -96,7 +84,7 @@ struct PaywallSheet: View {
         }
     }
 
-    // MARK: - Hard Paywall (Data Recap)
+    // MARK: - Hard Paywall (Data Recap + pricing)
 
     private var hardPaywallContent: some View {
         VStack(spacing: Tokens.spacing.md) {
@@ -113,7 +101,7 @@ struct PaywallSheet: View {
                 .padding(.vertical, Tokens.spacing.sm)
             }
 
-            Text("Keep CozyPup caring for your furry friend 🐶")
+            Text("Keep CozyPup caring for your furry friend")
                 .font(Tokens.fontSubheadline)
                 .foregroundColor(Tokens.textSecondary)
 
@@ -135,10 +123,17 @@ struct PaywallSheet: View {
         return nil
     }
 
+    private func periodLabel(for product: StoreKit.Product) -> String {
+        if product.id.contains("weekly") { return "per week" }
+        if product.id.contains("yearly") { return "per year" }
+        return "per month"
+    }
+
     private var pricingContent: some View {
         VStack(spacing: Tokens.spacing.md) {
             HStack(spacing: Tokens.spacing.sm) {
-                ForEach(subscriptionStore.products, id: \.id) { product in
+                ForEach(individualProducts, id: \.id) { product in
+                    let isSelected = selectedProduct?.id == product.id
                     let isRecommended = product.id.contains("monthly")
                     Button {
                         selectedProduct = product
@@ -159,21 +154,18 @@ struct PaywallSheet: View {
                             Text(product.displayPrice)
                                 .font(Tokens.fontTitle)
                                 .foregroundColor(Tokens.text)
+                            Text(periodLabel(for: product))
+                                .font(Tokens.fontCaption2)
+                                .foregroundColor(Tokens.textTertiary)
                         }
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, Tokens.spacing.md)
-                        .background(
-                            selectedProduct?.id == product.id
-                                ? Tokens.accentSoft
-                                : Tokens.surface
-                        )
+                        .background(isSelected ? Tokens.accentSoft : Tokens.surface)
                         .overlay(
                             RoundedRectangle(cornerRadius: Tokens.radiusSmall)
                                 .stroke(
-                                    selectedProduct?.id == product.id
-                                        ? Tokens.accent
-                                        : Tokens.border,
-                                    lineWidth: 1.5
+                                    isSelected ? Tokens.accent : Tokens.border,
+                                    lineWidth: isSelected ? 2 : 1
                                 )
                         )
                         .cornerRadius(Tokens.radiusSmall)
@@ -224,6 +216,11 @@ struct PaywallSheet: View {
                     .font(Tokens.fontCaption)
                     .foregroundColor(Tokens.textTertiary)
             }
+
+            Text("Auto-renewable. Cancel anytime in Settings.")
+                .font(Tokens.fontCaption2)
+                .foregroundColor(Tokens.textTertiary)
+                .multilineTextAlignment(.center)
         }
     }
 
