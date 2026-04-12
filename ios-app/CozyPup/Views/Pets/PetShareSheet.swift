@@ -20,101 +20,30 @@ struct PetShareSheet: View {
                 .ignoresSafeArea()
                 .onTapGesture { dismiss() }
 
-            // Floating card (not attached to any edge)
-            VStack(spacing: 0) {
-                // Pet header
-                HStack(spacing: Tokens.spacing.sm) {
-                    petAvatar
-                        .frame(width: 52, height: 52)
-                        .clipShape(Circle())
-
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(pet.name)
-                            .font(Tokens.fontTitle.weight(.semibold))
-                            .foregroundColor(Tokens.text)
-                        if !pet.breed.isEmpty {
-                            Text(pet.breed)
-                                .font(Tokens.fontCaption)
-                                .foregroundColor(Tokens.textSecondary)
-                        }
-                    }
-
-                    Spacer()
-
-                    Image(systemName: "pawprint.fill")
-                        .foregroundColor(Tokens.accent)
-                        .font(.system(size: 22))
-                }
-                .padding(.horizontal, Tokens.spacing.lg)
-                .padding(.top, Tokens.spacing.lg)
-                .padding(.bottom, Tokens.spacing.md)
-
-                Rectangle()
-                    .fill(Tokens.border)
-                    .frame(height: 1)
-                    .padding(.horizontal, Tokens.spacing.lg)
-
-                // QR code
-                ZStack {
-                    if isLoading {
-                        ProgressView()
-                            .frame(width: 220, height: 220)
-                    } else if let token {
-                        let url = "cozypup://share?token=\(token)"
-                        if let image = generateQRCode(from: url) {
-                            Image(uiImage: image)
-                                .interpolation(.none)
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 220, height: 220)
-                        }
-                    }
-                }
-                .padding(.vertical, Tokens.spacing.lg)
-
-                // Footer
-                VStack(spacing: Tokens.spacing.sm) {
-                    Text("Let someone scan to co-own")
-                        .font(Tokens.fontSubheadline.weight(.medium))
-                        .foregroundColor(Tokens.text)
-                    if let expiresAt {
-                        HStack(spacing: 4) {
-                            Image(systemName: "clock")
-                                .font(.system(size: 10))
-                            Text("Expires \(expiresAt, style: .relative)")
-                                .font(Tokens.fontCaption2)
-                        }
-                        .foregroundColor(Tokens.textTertiary)
-                    }
-
-                    // Share button — send QR to someone remotely
+            // Floating card
+            shareCard
+                .background(Tokens.surface)
+                .cornerRadius(28)
+                .shadow(color: Color.black.opacity(0.25), radius: 30, x: 0, y: 16)
+                .padding(.horizontal, Tokens.spacing.xl)
+                .overlay(alignment: .topTrailing) {
+                    // Save/share icon button (captures whole card)
                     Button {
-                        prepareShareItems()
+                        captureAndShare()
                     } label: {
-                        HStack(spacing: 8) {
-                            Image(systemName: "square.and.arrow.up")
-                                .font(.system(size: 14, weight: .semibold))
-                            Text("Send to a friend")
-                                .font(Tokens.fontSubheadline.weight(.semibold))
-                        }
-                        .foregroundColor(Tokens.white)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 12)
-                        .background(Tokens.accent)
-                        .cornerRadius(Tokens.radiusSmall)
+                        Image(systemName: "square.and.arrow.up")
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundColor(Tokens.textSecondary)
+                            .frame(width: 32, height: 32)
+                            .background(Tokens.surface2)
+                            .clipShape(Circle())
                     }
                     .disabled(token == nil)
-                    .padding(.horizontal, Tokens.spacing.lg)
-                    .padding(.top, Tokens.spacing.xs)
+                    .padding(.top, 14)
+                    .padding(.trailing, Tokens.spacing.xl + 14)
                 }
-                .padding(.bottom, Tokens.spacing.lg)
-            }
-            .background(Tokens.surface)
-            .cornerRadius(28)
-            .shadow(color: Color.black.opacity(0.25), radius: 30, x: 0, y: 16)
-            .padding(.horizontal, Tokens.spacing.xl)
-            .scaleEffect(cardVisible ? 1 : 0.92)
-            .opacity(cardVisible ? 1 : 0)
+                .scaleEffect(cardVisible ? 1 : 0.92)
+                .opacity(cardVisible ? 1 : 0)
         }
         .background(BackgroundClearView())
         .onAppear {
@@ -129,17 +58,106 @@ struct PetShareSheet: View {
         }
     }
 
-    private func prepareShareItems() {
-        guard let token else { return }
-        let url = "cozypup://share?token=\(token)"
-        var items: [Any] = [
-            "Co-own \(pet.name) with me on CozyPup 🐾\n\nTap the link to join (or scan the QR):\n\(url)"
-        ]
-        if let image = generateQRCode(from: url) {
-            items.append(image)
+    // MARK: - Card body (extracted so we can render it to an image)
+
+    private var shareCard: some View {
+        VStack(spacing: 0) {
+            // Pet header
+            HStack(spacing: Tokens.spacing.sm) {
+                petAvatar
+                    .frame(width: 52, height: 52)
+                    .clipShape(Circle())
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(pet.name)
+                        .font(Tokens.fontTitle.weight(.semibold))
+                        .foregroundColor(Tokens.text)
+                    if !pet.breed.isEmpty {
+                        Text(pet.breed)
+                            .font(Tokens.fontCaption)
+                            .foregroundColor(Tokens.textSecondary)
+                    }
+                }
+
+                Spacer()
+
+                Image(systemName: "pawprint.fill")
+                    .foregroundColor(Tokens.accent)
+                    .font(.system(size: 22))
+            }
+            .padding(.horizontal, Tokens.spacing.lg)
+            .padding(.top, Tokens.spacing.lg)
+            .padding(.bottom, Tokens.spacing.md)
+
+            Rectangle()
+                .fill(Tokens.border)
+                .frame(height: 1)
+                .padding(.horizontal, Tokens.spacing.lg)
+
+            // QR code
+            ZStack {
+                if isLoading {
+                    ProgressView()
+                        .frame(width: 220, height: 220)
+                } else if let token {
+                    let url = "cozypup://share?token=\(token)"
+                    if let image = generateQRCode(from: url) {
+                        Image(uiImage: image)
+                            .interpolation(.none)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 220, height: 220)
+                    }
+                }
+            }
+            .padding(.vertical, Tokens.spacing.lg)
+
+            // Footer
+            VStack(spacing: 4) {
+                Text("Scan to co-own \(pet.name)")
+                    .font(Tokens.fontSubheadline.weight(.medium))
+                    .foregroundColor(Tokens.text)
+                Text("on CozyPup")
+                    .font(Tokens.fontCaption2)
+                    .foregroundColor(Tokens.textTertiary)
+            }
+            .padding(.bottom, Tokens.spacing.lg)
         }
-        shareItems = items
-        showShareActivity = true
+    }
+
+    // MARK: - Capture & share
+
+    @MainActor
+    private func captureAndShare() {
+        // Render the card (with surface background) at 3x scale for crisp output
+        let cardWithBg = shareCard
+            .background(Tokens.surface)
+            .cornerRadius(28)
+            .frame(width: 320)
+
+        let renderer = ImageRenderer(content: cardWithBg)
+        renderer.scale = 3
+        renderer.proposedSize = .init(width: 320, height: nil)
+
+        if let uiImage = renderer.uiImage {
+            // Wrap with extra padding canvas so it looks polished when shared
+            let padded = padImage(uiImage, padding: 40, background: UIColor(red: 0.965, green: 0.945, blue: 0.921, alpha: 1))
+            shareItems = [padded]
+            showShareActivity = true
+        }
+    }
+
+    private func padImage(_ image: UIImage, padding: CGFloat, background: UIColor) -> UIImage {
+        let newSize = CGSize(width: image.size.width + padding * 2,
+                             height: image.size.height + padding * 2)
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = image.scale
+        let renderer = UIGraphicsImageRenderer(size: newSize, format: format)
+        return renderer.image { ctx in
+            background.setFill()
+            ctx.fill(CGRect(origin: .zero, size: newSize))
+            image.draw(at: CGPoint(x: padding, y: padding))
+        }
     }
 
     private func dismiss() {
