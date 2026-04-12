@@ -39,9 +39,28 @@ class AuthStore: ObservableObject {
     }
 
     private func validateSession() async {
-        struct UserResp: Decodable { let id: String }
+        struct UserResp: Decodable {
+            let id: String
+            let email: String
+            let name: String?
+            let avatar_url: String?
+            let auth_provider: String
+        }
         do {
-            let _: UserResp = try await APIClient.shared.request("GET", "/auth/me")
+            let me: UserResp = try await APIClient.shared.request("GET", "/auth/me")
+            // Refresh cached user with latest avatar_url from server
+            if let current = self.user {
+                let updated = UserInfo(
+                    name: me.name ?? current.name,
+                    email: me.email,
+                    provider: me.auth_provider,
+                    avatarUrl: me.avatar_url ?? current.avatarUrl
+                )
+                self.user = updated
+                if let data = try? JSONEncoder().encode(updated) {
+                    UserDefaults.standard.set(data, forKey: authKey)
+                }
+            }
         } catch {
             isAuthenticated = false
         }
@@ -172,12 +191,17 @@ class AuthStore: ObservableObject {
     }
 
     private func fetchUserFromMe(fallbackProvider: String) async {
-        struct UserResp: Decodable { let id: String; let email: String; let name: String?; let auth_provider: String }
+        struct UserResp: Decodable {
+            let id: String
+            let email: String
+            let name: String?
+            let avatar_url: String?
+            let auth_provider: String
+        }
         do {
             let me: UserResp = try await APIClient.shared.request("GET", "/auth/me")
-            saveUser(UserInfo(name: me.name ?? "User", email: me.email, provider: me.auth_provider, avatarUrl: nil))
+            saveUser(UserInfo(name: me.name ?? "User", email: me.email, provider: me.auth_provider, avatarUrl: me.avatar_url))
         } catch {
-            // /auth/me failed — still log the user in with minimal info
             print("fetchUserFromMe failed: \(error)")
             saveUser(UserInfo(name: "User", email: "", provider: fallbackProvider, avatarUrl: nil))
         }
@@ -211,5 +235,28 @@ class AuthStore: ObservableObject {
     func acknowledgeDisclaimer() {
         hasAcknowledgedDisclaimer = true
         UserDefaults.standard.set(true, forKey: disclaimerKey)
+    }
+
+    // MARK: - User mutations
+
+    /// Update the in-memory + cached UserInfo with a new name. Caller is
+    /// responsible for the backend PATCH.
+    func updateName(_ name: String) {
+        guard let current = user else { return }
+        let updated = UserInfo(name: name, email: current.email, provider: current.provider, avatarUrl: current.avatarUrl)
+        self.user = updated
+        if let data = try? JSONEncoder().encode(updated) {
+            UserDefaults.standard.set(data, forKey: authKey)
+        }
+    }
+
+    /// Update the in-memory + cached UserInfo with a new avatar URL.
+    func updateAvatarURL(_ url: String) {
+        guard let current = user else { return }
+        let updated = UserInfo(name: current.name, email: current.email, provider: current.provider, avatarUrl: url)
+        self.user = updated
+        if let data = try? JSONEncoder().encode(updated) {
+            UserDefaults.standard.set(data, forKey: authKey)
+        }
     }
 }
