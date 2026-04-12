@@ -32,5 +32,6 @@ class UserResponse(BaseModel):
     id: str
     email: str
     name: str | None
+    avatar_url: str | None = None
     auth_provider: str
     phone_number: str | None

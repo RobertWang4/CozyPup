@@ -121,6 +121,7 @@ async def me(
         id=str(user.id),
         email=user.email,
         name=user.name,
+        avatar_url=user.avatar_url or None,
         auth_provider=user.auth_provider,
         phone_number=user.phone_number,
     )
@@ -144,6 +145,7 @@ async def update_me(
         id=str(user.id),
         email=user.email,
         name=user.name,
+        avatar_url=user.avatar_url or None,
         auth_provider=user.auth_provider,
         phone_number=user.phone_number,
     )
