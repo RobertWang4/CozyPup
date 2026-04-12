@@ -49,6 +49,10 @@
 		B21CAB20F3E00F67BF64675A /* DailyTaskStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E831C8CE60089D202386C70 /* DailyTaskStore.swift */; };
 		C998476087AE4EF9AD4B365C /* SubscriptionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE19542780E14C1D952ADB72 /* SubscriptionStore.swift */; };
 		PAY0001000000000000000001 /* PaywallSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = PAY0002000000000000000002 /* PaywallSheet.swift */; };
+		PS10000100000000SHARE0001 /* PetShareSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = PS20000100000000SHARE0001 /* PetShareSheet.swift */; };
+		PS10000200000000MERGE0001 /* PetMergeSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = PS20000200000000MERGE0001 /* PetMergeSheet.swift */; };
+		PS10000300000000UNSHR0001 /* PetUnshareSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = PS20000300000000UNSHR0001 /* PetUnshareSheet.swift */; };
+		PS10000400000000FAMLY0001 /* FamilySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = PS20000400000000FAMLY0001 /* FamilySettingsView.swift */; };
 		B26546A329CCAA0E29AF43B5 /* ConfirmActionCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDD76A395C37067B90C0DFD7 /* ConfirmActionCard.swift */; };
 		B88F419864D7ACC602B34023 /* VoiceInputOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0966E4141F24A98CBF3DA68 /* VoiceInputOverlay.swift */; };
 		C0A91D7D044C8CB2E17B6497 /* CustomScrollIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 341089EEBFBBC68CDDB0439D /* CustomScrollIndicator.swift */; };
@@ -89,6 +93,10 @@
 		2E831C8CE60089D202386C70 /* DailyTaskStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyTaskStore.swift; sourceTree = "<group>"; };
 		BE19542780E14C1D952ADB72 /* SubscriptionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionStore.swift; sourceTree = "<group>"; };
 		PAY0002000000000000000002 /* PaywallSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallSheet.swift; sourceTree = "<group>"; };
+		PS20000100000000SHARE0001 /* PetShareSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PetShareSheet.swift; sourceTree = "<group>"; };
+		PS20000200000000MERGE0001 /* PetMergeSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PetMergeSheet.swift; sourceTree = "<group>"; };
+		PS20000300000000UNSHR0001 /* PetUnshareSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PetUnshareSheet.swift; sourceTree = "<group>"; };
+		PS20000400000000FAMLY0001 /* FamilySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilySettingsView.swift; sourceTree = "<group>"; };
 		3295CA4BEC61EA4CB1EFA88A /* PinchGestureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinchGestureView.swift; sourceTree = "<group>"; };
 		33E08B0B44AEEB61CFD807D9 /* HeatStripView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeatStripView.swift; sourceTree = "<group>"; };
 		341089EEBFBBC68CDDB0439D /* CustomScrollIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomScrollIndicator.swift; sourceTree = "<group>"; };
@@ -289,9 +297,20 @@
 			path = Shared;
 			sourceTree = "<group>";
 		};
+		PS30000100000000PETS0001 /* Pets */ = {
+			isa = PBXGroup;
+			children = (
+				PS20000100000000SHARE0001 /* PetShareSheet.swift */,
+				PS20000200000000MERGE0001 /* PetMergeSheet.swift */,
+				PS20000300000000UNSHR0001 /* PetUnshareSheet.swift */,
+			);
+			path = Pets;
+			sourceTree = "<group>";
+		};
 		AB05AA687060A2ADDA2BA81E /* Settings */ = {
 			isa = PBXGroup;
 			children = (
+				PS20000400000000FAMLY0001 /* FamilySettingsView.swift */,
 				F9D034942C1B826D36D5E8D4 /* LegalPageView.swift */,
 				080771DF5730E9583B536DC5 /* PetFormView.swift */,
 				E953D8A8BA28DA30AE609878 /* PetProfileEditor.swift */,
@@ -322,6 +341,7 @@
 				AFFF3AF1FD7FC581979843BB /* DailyTasks */,
 				B87F8D61AFFA06F863A975FE /* Extensions */,
 				PAY0003000000000000000003 /* Paywall */,
+				PS30000100000000PETS0001 /* Pets */,
 				AB05AA687060A2ADDA2BA81E /* Settings */,
 				A1AD7054EED742146144B174 /* Shared */,
 			);
@@ -530,6 +550,10 @@
 				F49A9885B071C199C20CF809 /* LocationPickerSheet.swift in Sources */,
 				8EC0BA8575B497F7C1BAD383 /* SpendingStatsView.swift in Sources */,
 				PAY0001000000000000000001 /* PaywallSheet.swift in Sources */,
+				PS10000100000000SHARE0001 /* PetShareSheet.swift in Sources */,
+				PS10000200000000MERGE0001 /* PetMergeSheet.swift in Sources */,
+				PS10000300000000UNSHR0001 /* PetUnshareSheet.swift in Sources */,
+				PS10000400000000FAMLY0001 /* FamilySettingsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

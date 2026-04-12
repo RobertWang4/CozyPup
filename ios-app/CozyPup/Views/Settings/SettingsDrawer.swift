@@ -113,8 +113,8 @@ struct SettingsDrawer: View {
             UserProfileSheet(auth: auth)
         }
         .sheet(isPresented: $showPaywall) {
-            PaywallSheet(isHard: true) { showPaywall = false }
-                .presentationDetents([.medium])
+            PaywallSheet(isHard: false) { showPaywall = false }
+                .presentationDetents([.medium, .large])
                 .environmentObject(subscriptionStore)
         }
     }
@@ -152,39 +152,37 @@ struct SettingsDrawer: View {
                         }
                     }
                     .listRowBackground(Tokens.surface)
-                }
 
-                Section {
-                    HStack {
-                        Image(systemName: "crown.fill")
-                            .foregroundColor(Tokens.accent)
-                            .frame(width: Tokens.size.avatarSmall)
-                        Text("会员状态")
-                            .font(Tokens.fontBody)
-                            .foregroundColor(Tokens.text)
-                        Spacer()
-                        Group {
-                            switch subscriptionStore.status {
-                            case .trial(let days):
-                                Text("试用中 · \(days)天")
-                                    .foregroundColor(Tokens.orange)
-                            case .active:
-                                Text("已订阅")
-                                    .foregroundColor(Tokens.green)
-                            case .expired:
-                                Text("已过期")
-                                    .foregroundColor(Tokens.red)
-                            case .loading:
-                                ProgressView()
+                    Button {
+                        showPaywall = true
+                    } label: {
+                        HStack {
+                            Image(systemName: "crown.fill")
+                                .foregroundColor(Tokens.accent)
+                                .frame(width: Tokens.size.avatarSmall)
+                            Text("Subscription")
+                                .font(Tokens.fontBody)
+                                .foregroundColor(Tokens.text)
+                            Spacer()
+                            Group {
+                                switch subscriptionStore.status {
+                                case .trial(let days):
+                                    Text("Trial · \(days)d")
+                                        .foregroundColor(Tokens.orange)
+                                case .active:
+                                    Text("Active")
+                                        .foregroundColor(Tokens.green)
+                                case .expired:
+                                    Text("Expired")
+                                        .foregroundColor(Tokens.red)
+                                case .loading:
+                                    ProgressView()
+                                }
                             }
-                        }
-                        .font(Tokens.fontSubheadline)
-                    }
-                    .padding(.vertical, Tokens.spacing.sm)
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        if case .expired = subscriptionStore.status {
-                            showPaywall = true
+                            .font(Tokens.fontSubheadline)
+                            Image(systemName: "chevron.right")
+                                .font(Tokens.fontCaption)
+                                .foregroundColor(Tokens.textTertiary)
                         }
                     }
                     .listRowBackground(Tokens.surface)
