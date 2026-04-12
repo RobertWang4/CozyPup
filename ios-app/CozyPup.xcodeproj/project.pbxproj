@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		00792BDF6314E02750687CE4 /* DisclaimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1FDA644076F4501C37D7F50 /* DisclaimerView.swift */; };
 		02D15CD57C05B41B9D6E12A3 /* ChatBubble.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9AAE2E80AD09A59E7BE2756 /* ChatBubble.swift */; };
+		F1E2D3C4B5A697889ABCDEF0 /* ReadOnlyChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0F1D2C3B4A5968778BCDE90 /* ReadOnlyChatView.swift */; };
 		A1B2C3D4E5F60789ABCD1234 /* QuickActionCards.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C3D4E5F6071234ABCD5678 /* QuickActionCards.swift */; };
 		06CC3E51A0D3F3CB0DF919E9 /* CachedAsyncImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF1AC786D70AD0CA016CA68A /* CachedAsyncImage.swift */; };
 		11DE02B8DAA886EB61A80137 /* HapticsHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85BEFBE5AF9B8344BCA4EFD5 /* HapticsHelper.swift */; };
@@ -71,6 +72,7 @@
 		AA10000100000000PLACE0001 /* PlaceCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA20000100000000PLACE0001 /* PlaceCard.swift */; };
 		AA10000200000000PLACE0002 /* PlaceDetailCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA20000200000000PLACE0002 /* PlaceDetailCard.swift */; };
 		AA10000300000000PLACE0003 /* DirectionsCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA20000300000000PLACE0003 /* DirectionsCard.swift */; };
+		1DA8444FD5BA46348F6878B6 /* SavedChatsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C132369C9DD6416FA7EF4D9B /* SavedChatsSheet.swift */; };
 		E4CE679EF88093851EBC91E0 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE52D72C580AA7D599BDCEAC /* ChatView.swift */; };
 		E67C92566B3C14D978EF14FC /* DailyTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D71B2C5B757189B616D2339 /* DailyTask.swift */; };
 		EA6F86AD25C72F589A001B9F /* EmailCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FDC9E1441AC78B6C6632FD0 /* EmailCard.swift */; };
@@ -134,12 +136,14 @@
 		A64F760C22D68D06ECA76404 /* Pet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Pet.swift; sourceTree = "<group>"; };
 		A8DFA987EA363F0C2645FD64 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		AE52D72C580AA7D599BDCEAC /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
+		C132369C9DD6416FA7EF4D9B /* SavedChatsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedChatsSheet.swift; sourceTree = "<group>"; };
 		B3C4D5E6F7A8B9C0D1E2F301 /* DailyTaskManagerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyTaskManagerSheet.swift; sourceTree = "<group>"; };
 		B3E6D92A11C84F5DA0728561 /* DailyTaskCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyTaskCard.swift; sourceTree = "<group>"; };
 		B6F1DE010DA6010A14147BF8 /* SettingsDrawer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsDrawer.swift; sourceTree = "<group>"; };
 		BD6C5858ED844B5C8C619918 /* TypingIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypingIndicator.swift; sourceTree = "<group>"; };
 		C689DAF84CC613060400869F /* CozyPup.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = CozyPup.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9AAE2E80AD09A59E7BE2756 /* ChatBubble.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatBubble.swift; sourceTree = "<group>"; };
+		E0F1D2C3B4A5968778BCDE90 /* ReadOnlyChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadOnlyChatView.swift; sourceTree = "<group>"; };
 		B2C3D4E5F6071234ABCD5678 /* QuickActionCards.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickActionCards.swift; sourceTree = "<group>"; };
 		D2586D01E7C42221ABD72995 /* LocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
 		D437A3D3656001306737E784 /* CozyPupApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CozyPupApp.swift; sourceTree = "<group>"; };
@@ -363,6 +367,8 @@
 				C9AAE2E80AD09A59E7BE2756 /* ChatBubble.swift */,
 				4A2A47F1B802976D3FF06DA5 /* ChatInputBar.swift */,
 				AE52D72C580AA7D599BDCEAC /* ChatView.swift */,
+				C132369C9DD6416FA7EF4D9B /* SavedChatsSheet.swift */,
+				E0F1D2C3B4A5968778BCDE90 /* ReadOnlyChatView.swift */,
 				B2C3D4E5F6071234ABCD5678 /* QuickActionCards.swift */,
 				BD6C5858ED844B5C8C619918 /* TypingIndicator.swift */,
 				A0966E4141F24A98CBF3DA68 /* VoiceInputOverlay.swift */,
@@ -495,6 +501,7 @@
 				D5FA653E9B82083C5D63B0D2 /* ChatMessage.swift in Sources */,
 				8C479A4CCAAB3EA751F08C51 /* ChatService.swift in Sources */,
 				ACC8DEDAA3BCE7642D22C250 /* ChatStore.swift in Sources */,
+				1DA8444FD5BA46348F6878B6 /* SavedChatsSheet.swift in Sources */,
 				E4CE679EF88093851EBC91E0 /* ChatView.swift in Sources */,
 				B26546A329CCAA0E29AF43B5 /* ConfirmActionCard.swift in Sources */,
 				858DEA8563727562E8ACE8BC /* CozyPupApp.swift in Sources */,
