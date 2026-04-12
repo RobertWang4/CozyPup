@@ -71,7 +71,8 @@ struct DayChatSheet: View {
                 .padding(.bottom, Tokens.spacing.md)
             }
         }
-        .background(Tokens.bg)
+        .frame(maxWidth: .infinity)
+        .background(Tokens.bg.ignoresSafeArea())
         .task { await loadMessages() }
     }
 
