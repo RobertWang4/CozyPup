@@ -691,12 +691,31 @@ _BASE_TOOL_DEFINITIONS = [
     {
         "type": "function",
         "function": {
+            "name": "list_daily_tasks",
+            "description": (
+                "列出用户所有活跃的每日待办任务。\n"
+                "【必须调用】当用户问有什么待办/任务/要做的事时，必须调用此工具获取列表，再基于结果回答。\n"
+                "不要用于: 查询提醒 (用 list_reminders)。\n"
+                "不要用于: 删除或修改待办 (用 manage_daily_task)。\n"
+                "无参数，返回所有活跃待办。"
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {},
+                "required": [],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
             "name": "manage_daily_task",
             "description": (
                 "编辑或删除已有的每日待办任务。\n"
                 "当用户想修改待办的标题、频次、日期，或删除/暂停待办时使用。\n"
                 "可以通过 task_id 精确匹配，或通过 title 关键词模糊匹配。\n"
-                "不要用于: 创建新待办 (用 create_daily_task)。"
+                "不要用于: 创建新待办 (用 create_daily_task)。\n"
+                "不要用于: 查询有什么待办 (用 list_daily_tasks)。"
             ),
             "parameters": {
                 "type": "object",

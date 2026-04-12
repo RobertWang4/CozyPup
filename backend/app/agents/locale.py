@@ -127,9 +127,11 @@ Image handling rules:
 - 用户提供【宠物信息】(体重/生日/过敏/品种) → update_pet_profile（注意：性别和物种已锁定时不可修改）
 - 用户要【删除】什么 → 对应 delete_* tool
 - 用户要删除事件中的某张照片 → remove_event_photo（需要 event_id + photo_index）
-- 用户提到【待办/任务/每日任务】→ manage_daily_task（delete_all=删除全部待办, delete=删除单个）
+- 用户【问】有什么待办/任务/要做的事 → 必须调用 list_daily_tasks（绝对不要用 manage_daily_task 来查询！）
+- 用户提到【修改/删除 待办/任务/每日任务】→ manage_daily_task（delete=删除单个, deactivate=暂停, update=改标题/频次）
 - 用户提到【提醒/定时提醒】→ list_reminders / delete_reminder / delete_all_reminders
-- ⚠️ 注意区分："待办"="日常任务"(daily tasks)，"提醒"="定时推送提醒"(reminders)。用户说"删除待办"时用 manage_daily_task(action=delete_all)，说"删除提醒"时用 delete_all_reminders
+- ⚠️ 注意区分："待办"="日常任务"(daily tasks)，"提醒"="定时推送提醒"(reminders)。用户说"删除待办"时用 manage_daily_task，说"删除提醒"时用 delete_all_reminders
+- 🚫 绝对不要在用户只是【查询】待办时调用 manage_daily_task，查询必须用 list_daily_tasks
 - 用户要【找附近/最近的】医院/宠物店/公园 → 必须调用 search_places（不要自己回答"不知道附近有什么"）
 - 用户问某地点的评价/评论/服务/营业时间 → 只调 get_place_details（不要同时调 search_places，用户已经知道是哪个地点了）
 - 用户问"怎么去""多远""多久能到""导航" → 只调 get_directions（不要同时调 search_places）
@@ -176,9 +178,11 @@ Image handling rules:
 - User provides [pet info] (weight/birthday/allergies/breed/gender) → update_pet_profile (note: gender and species are locked once set)
 - User wants to [delete] something → corresponding delete_* tool
 - User wants to remove a specific photo from an event → remove_event_photo (needs event_id + photo_index)
-- User mentions [to-do/task/daily task] → manage_daily_task (delete_all=delete all tasks, delete=delete one)
+- User [asks] what tasks/todos they have → MUST call list_daily_tasks (NEVER use manage_daily_task for querying!)
+- User wants to [modify/delete daily task] → manage_daily_task (delete=delete one, deactivate=pause, update=rename/adjust)
 - User mentions [reminder/scheduled reminder] → list_reminders / delete_reminder / delete_all_reminders
-- ⚠️ Distinguish: "待办/tasks" = daily tasks (manage_daily_task), "提醒/reminders" = scheduled push reminders (delete_all_reminders). When user says "delete tasks/待办" use manage_daily_task(action=delete_all), when "delete reminders/提醒" use delete_all_reminders
+- ⚠️ Distinguish: "待办/tasks" = daily tasks (list_daily_tasks/manage_daily_task), "提醒/reminders" = scheduled push reminders. When user says "delete tasks/待办" use manage_daily_task, when "delete reminders/提醒" use delete_all_reminders
+- 🚫 NEVER call manage_daily_task when user only [queries] tasks — queries must use list_daily_tasks
 - User wants to [find nearby/closest] vet/pet store/dog park → MUST call search_places (don't say "I don't know what's nearby")
 - User asks about a place's reviews/services/opening hours → ONLY call get_place_details (do NOT also call search_places — the user already knows which place)
 - User asks "how to get there", "how far", "how long", "navigate" → ONLY call get_directions (do NOT also call search_places)
@@ -851,12 +855,23 @@ Notes:
             "Do NOT use for: recording past events (use create_calendar_event)."
         ),
     },
+    "tool_desc_list_daily_tasks": {
+        "en": (
+            "List all active daily tasks for the user.\n"
+            "[MUST call] When the user asks what tasks/todos they have, what they need to do, "
+            "or any query about existing daily tasks, call this and answer based on the result.\n"
+            "Do NOT use for: querying reminders (use list_reminders).\n"
+            "Do NOT use for: deleting or modifying tasks (use manage_daily_task).\n"
+            "Takes no arguments, returns all active tasks."
+        ),
+    },
     "tool_desc_manage_daily_task": {
         "en": (
             "Edit or delete an existing daily task.\n"
             "Use when the user wants to change a task's title, frequency, dates, or delete/pause it.\n"
             "Can match by task_id (exact) or title keyword (fuzzy).\n"
-            "Do NOT use for: creating new tasks (use create_daily_task)."
+            "Do NOT use for: creating new tasks (use create_daily_task).\n"
+            "Do NOT use for: querying what tasks exist (use list_daily_tasks)."
         ),
     },
     "tool_desc_search_knowledge": {

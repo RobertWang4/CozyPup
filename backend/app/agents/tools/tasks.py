@@ -73,6 +73,40 @@ async def create_daily_task(
     }
 
 
+@register_tool("list_daily_tasks")
+async def list_daily_tasks(
+    arguments: dict,
+    db: AsyncSession,
+    user_id: uuid.UUID,
+) -> dict:
+    """List the user's active daily tasks."""
+    result = await db.execute(
+        select(DailyTask)
+        .where(
+            DailyTask.user_id == user_id,
+            DailyTask.active == True,  # noqa: E712
+        )
+        .order_by(DailyTask.created_at)
+    )
+    tasks = result.scalars().all()
+
+    return {
+        "tasks": [
+            {
+                "task_id": str(t.id),
+                "pet_id": str(t.pet_id) if t.pet_id else None,
+                "title": t.title,
+                "type": t.type.value,
+                "daily_target": t.daily_target,
+                "start_date": t.start_date.isoformat() if t.start_date else None,
+                "end_date": t.end_date.isoformat() if t.end_date else None,
+            }
+            for t in tasks
+        ],
+        "count": len(tasks),
+    }
+
+
 @register_tool("manage_daily_task")
 async def manage_daily_task(
     arguments: dict,
