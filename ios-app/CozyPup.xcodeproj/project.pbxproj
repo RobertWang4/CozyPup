@@ -502,6 +502,7 @@
 				8C479A4CCAAB3EA751F08C51 /* ChatService.swift in Sources */,
 				ACC8DEDAA3BCE7642D22C250 /* ChatStore.swift in Sources */,
 				1DA8444FD5BA46348F6878B6 /* SavedChatsSheet.swift in Sources */,
+				F1E2D3C4B5A697889ABCDEF0 /* ReadOnlyChatView.swift in Sources */,
 				E4CE679EF88093851EBC91E0 /* ChatView.swift in Sources */,
 				B26546A329CCAA0E29AF43B5 /* ConfirmActionCard.swift in Sources */,
 				858DEA8563727562E8ACE8BC /* CozyPupApp.swift in Sources */,
