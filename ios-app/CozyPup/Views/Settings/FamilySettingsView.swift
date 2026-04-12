@@ -93,21 +93,17 @@ struct FamilySettingsView: View {
                     .font(Tokens.fontCaption.weight(.medium))
                     .foregroundColor(Tokens.textSecondary)
 
-                ZStack(alignment: .leading) {
-                    if inviteEmail.isEmpty {
-                        Text("name@example.com")
-                            .font(Tokens.fontBody)
-                            .foregroundColor(Tokens.textTertiary)
-                    }
-                    TextField("", text: $inviteEmail)
-                        .textContentType(.emailAddress)
-                        .keyboardType(.emailAddress)
-                        .autocapitalization(.none)
-                        .disableAutocorrection(true)
-                        .font(Tokens.fontBody)
-                        .foregroundColor(Tokens.text)
-                        .tint(Tokens.accent)
+                TextField(text: $inviteEmail) {
+                    Text("Enter email address")
+                        .foregroundColor(Tokens.textTertiary)
                 }
+                .textContentType(.emailAddress)
+                .keyboardType(.emailAddress)
+                .autocapitalization(.none)
+                .disableAutocorrection(true)
+                .font(Tokens.fontBody)
+                .foregroundColor(Tokens.text)
+                .tint(Tokens.accent)
                 .padding(Tokens.spacing.sm)
                 .background(Tokens.bg)
                 .overlay(
