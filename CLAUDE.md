@@ -57,6 +57,30 @@ admin errors recent --since 24h
 admin user export <email> --reason "..."        # GDPR-style JSON bundle (audited write)
 admin user impersonate <email> --reason "..." --ttl 10   # short-lived scope=user token for bug repro (audited write)
 
+# --- Phase 2 user + subscription management ---
+admin user search <query>
+admin user ban <email> --days 7 --reason "..."
+admin user unban <email> --reason "..."
+admin user delete <email> --reason "..."           # soft-delete; refuses if active paid sub
+admin user grant-admin <email> --reason "..."      # flip is_admin=true
+admin user revoke-admin <email> --reason "..."
+admin sub show <email>
+admin sub list --status expired --expired-within 7d
+admin sub grant <email> --tier pro --until 2026-12-31 --reason "..."
+admin sub extend <email> --days 30 --reason "..."  # common refund path
+admin sub revoke <email> --reason "..."
+admin sub verify <email>                           # stub until Phase 4
+
+# --- Phase 3 ops, flags, audit ---
+admin ops ratelimit clear --user <key> --reason "..."
+admin ops ratelimit clear --all --reason "..."
+admin ops session revoke <email> --reason "..."    # force logout all devices
+admin ops flags list | get <key> | set <key> <json-value> --reason "..." | unset <key>
+admin ops cache flush --key pets:<user> --reason "..."    # stub
+admin audit list --since 24h --action sub.extend
+admin audit show <audit_id>
+admin audit prune --before 90d --reason "..."
+
 # --- Legacy debug commands (rehomed; identical output to the old `debug` CLI) ---
 admin debug lookup <email>
 admin debug requests --user <user_id> --last 10
