@@ -6,6 +6,7 @@ import sys
 import click
 
 from .auth_cmd import config_group, login_cmd, logout_cmd, ping_cmd, whoami_cmd
+from .obs_cmd import errors_group, trace_cmd, user_group
 
 
 @click.group()
@@ -20,6 +21,9 @@ cli.add_command(logout_cmd)
 cli.add_command(whoami_cmd)
 cli.add_command(ping_cmd)
 cli.add_command(config_group)
+cli.add_command(user_group)
+cli.add_command(trace_cmd)
+cli.add_command(errors_group)
 
 
 @cli.group("debug")
