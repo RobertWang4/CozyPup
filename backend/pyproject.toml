@@ -22,7 +22,8 @@ dependencies = [
 ]
 
 [project.scripts]
-debug = "app.debug.cli:cli"
+debug = "app.admin_cli.main:debug_shim"
+admin = "app.admin_cli.main:cli"
 
 [tool.setuptools.packages.find]
 include = ["app*"]
