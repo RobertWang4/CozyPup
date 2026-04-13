@@ -1,0 +1,24 @@
+"""Root admin router. Mounts subrouters under /api/v1/admin/*."""
+from fastapi import APIRouter, Depends
+from pydantic import BaseModel
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.database import get_db
+
+from .deps import AdminContext, audit_write, require_admin
+
+admin_router = APIRouter(prefix="/api/v1/admin")
+
+
+class _PingBody(BaseModel):
+    reason: str
+
+
+@admin_router.post("/ping")
+@audit_write(action="admin.ping", target_type=None)
+async def admin_ping(
+    body: _PingBody,
+    ctx: AdminContext = Depends(require_admin),
+    db: AsyncSession = Depends(get_db),
+):
+    return {"pong": True, "admin": ctx.user.email}

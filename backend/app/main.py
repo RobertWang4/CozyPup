@@ -18,6 +18,7 @@ from app.routers.tasks import router as tasks_router
 from app.routers.subscription import router as subscription_router
 from app.routers.family import router as family_router
 from app.routers.pet_sharing import router as pet_sharing_router
+from app.routers.admin.router import admin_router
 from app.middleware.rate_limit import ChatRateLimitMiddleware
 from app.debug.middleware import (
     CorrelationMiddleware,
@@ -57,6 +58,7 @@ app.include_router(places_router)
 app.include_router(subscription_router)
 app.include_router(family_router)
 app.include_router(pet_sharing_router)
+app.include_router(admin_router)
 
 # Register middleware (outermost runs first — last add = outermost)
 app.add_middleware(ChatRateLimitMiddleware)
