@@ -90,6 +90,13 @@ async def _fix_avatar_urls():
         logger.warning(f"avatar URL fix skipped: {e}")
 
 
+@app.on_event("startup")
+async def _start_flag_refresher():
+    import asyncio
+    from app.flags import run_refresher
+    asyncio.create_task(run_refresher())
+
+
 @app.get("/health")
 async def health():
     return {"status": "ok"}
