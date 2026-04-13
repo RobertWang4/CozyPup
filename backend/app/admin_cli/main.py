@@ -24,8 +24,12 @@ cli.add_command(config_group)
 
 @cli.group("debug")
 def debug_group():
-    """Wrappers for the legacy debug commands (populated by Task A10)."""
+    """Legacy debug commands (trace, errors, tokens, ...). Rehomed under admin."""
     pass
+
+
+from .debug_cmd import attach_legacy_debug  # noqa: E402
+attach_legacy_debug(debug_group)
 
 
 def debug_shim():
