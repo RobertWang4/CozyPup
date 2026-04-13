@@ -74,3 +74,68 @@ async def require_admin(
         ip=ip,
         correlation_id=get_correlation_id(),
     )
+
+
+def audit_write(*, action: str, target_type: str | None = None):
+    """Decorator that writes an AdminAuditLog row for every successful write.
+
+    Requirements enforced on the wrapped handler:
+      * `ctx: AdminContext` and `db: AsyncSession` keyword args are mandatory.
+      * The request body (detected as the first Pydantic BaseModel kwarg) must
+        expose a non-empty `reason` field, otherwise 422.
+      * The audit row is added to the same session as the business change. If
+        the handler raises, the row is not added and the caller is responsible
+        for rolling back.
+    """
+
+    def _decorator(func: Callable[..., Awaitable[Any]]):
+        @functools.wraps(func)
+        async def wrapper(*args, **kwargs):
+            from pydantic import BaseModel  # local import keeps deps.py import-cheap
+
+            ctx: AdminContext | None = kwargs.get("ctx")
+            db: AsyncSession | None = kwargs.get("db")
+            if ctx is None or db is None:
+                raise RuntimeError("audit_write requires ctx and db keyword arguments")
+
+            # Find the request body (first BaseModel kwarg) and validate reason.
+            body_obj: BaseModel | None = None
+            for v in kwargs.values():
+                if isinstance(v, BaseModel):
+                    body_obj = v
+                    break
+            args_json: dict[str, Any] = {}
+            if body_obj is not None:
+                args_json = body_obj.model_dump(mode="json")
+            reason = (args_json.get("reason") or "").strip()
+            if not reason:
+                raise HTTPException(status_code=422, detail="reason is required for admin writes")
+
+            target_id: str | None = None
+            for k in ("user_id", "target_id", "id"):
+                if k in kwargs and kwargs[k] is not None:
+                    target_id = str(kwargs[k])
+                    break
+
+            import inspect
+            sig = inspect.signature(func)
+            forward_kwargs = {k: v for k, v in kwargs.items() if k in sig.parameters}
+            result = await func(*args, **forward_kwargs)
+
+            row = AdminAuditLog(
+                admin_user_id=ctx.user.id,
+                action=action,
+                target_type=target_type,
+                target_id=target_id,
+                args_json=args_json,
+                result_json=result if isinstance(result, dict) else {"value": str(result)},
+                ip=ctx.ip,
+                correlation_id=ctx.correlation_id,
+            )
+            db.add(row)
+            await db.flush()  # surface FK errors before commit
+            return {"data": result, "audit_id": str(row.id), "env": "server"}
+
+        return wrapper
+
+    return _decorator
