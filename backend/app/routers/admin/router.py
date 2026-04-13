@@ -5,9 +5,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
 
+from .auth import admin_auth_router
 from .deps import AdminContext, audit_write, require_admin
 
 admin_router = APIRouter(prefix="/api/v1/admin")
+admin_router.include_router(admin_auth_router)
 
 
 class _PingBody(BaseModel):
