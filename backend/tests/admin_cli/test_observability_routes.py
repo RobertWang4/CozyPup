@@ -49,3 +49,37 @@ async def test_inspect_returns_envelope_with_profile_and_activity(monkeypatch):
         assert "audit_id" in env
     finally:
         app.dependency_overrides.pop(require_admin, None)
+
+
+@pytest.mark.asyncio
+async def test_trace_reconstructs_pipeline(monkeypatch):
+    from app.routers.admin import observability as obs
+
+    async def _fake(target_cid, *, gcloud_reader, db, show_tools=False, show_system_prompt=False):
+        return {
+            "correlation_id": target_cid,
+            "chat_request": {"message": "hi", "pet_snapshot": [], "session_history_tail": [], "image_urls_full": []},
+            "rounds": [
+                {
+                    "round": 0,
+                    "llm_request": {"model": "grok", "message_count": 3},
+                    "llm_response": {"content": "ok", "tool_calls": [], "prompt_tokens": 10, "completion_tokens": 20},
+                    "tool_calls": [],
+                }
+            ],
+            "chat_response": {"text_length": 2},
+            "error": None,
+        }
+
+    monkeypatch.setattr(obs, "reconstruct_trace", _fake)
+    app.dependency_overrides[require_admin] = lambda: _ctx()
+    try:
+        transport = ASGITransport(app=app)
+        async with AsyncClient(transport=transport, base_url="http://test") as ac:
+            r = await ac.get("/api/v1/admin/traces/abc123", headers={"Authorization": "Bearer x"})
+        assert r.status_code == 200
+        env = r.json()
+        assert env["data"]["correlation_id"] == "abc123"
+        assert env["data"]["rounds"][0]["round"] == 0
+    finally:
+        app.dependency_overrides.pop(require_admin, None)

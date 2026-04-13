@@ -162,3 +162,78 @@ async def users_inspect(
         gcloud_reader=_gcloud_read,
     )
     return {"data": data, "audit_id": None, "env": "server"}
+
+
+async def reconstruct_trace(
+    correlation_id: str,
+    *,
+    gcloud_reader=_gcloud_read,
+    db: AsyncSession,
+    show_tools: bool = False,
+    show_system_prompt: bool = False,
+) -> dict:
+    filter_expr = f'jsonPayload.correlation_id="{correlation_id}"'
+    entries = [p for p in (_parse_trace_entry(e) for e in gcloud_reader(filter_expr, limit=500)) if p]
+    entries.sort(key=lambda e: e.get("round") or 0)
+
+    out: dict[str, Any] = {
+        "correlation_id": correlation_id,
+        "chat_request": None,
+        "rounds": [],
+        "chat_response": None,
+        "error": None,
+    }
+    rounds_by_idx: dict[int, dict] = {}
+
+    for e in entries:
+        lt = e.get("log_type")
+        data = e.get("data") or {}
+        if lt == "chat_request":
+            out["chat_request"] = data
+        elif lt == "llm_request":
+            idx = e.get("round") or 0
+            r = rounds_by_idx.setdefault(idx, {"round": idx, "tool_calls": []})
+            r["llm_request"] = data
+        elif lt == "llm_response":
+            idx = e.get("round") or 0
+            r = rounds_by_idx.setdefault(idx, {"round": idx, "tool_calls": []})
+            r["llm_response"] = data
+        elif lt == "tool_call":
+            idx = e.get("round") or 0
+            r = rounds_by_idx.setdefault(idx, {"round": idx, "tool_calls": []})
+            r["tool_calls"].append({"call": data, "result": None})
+        elif lt == "tool_result":
+            idx = e.get("round") or 0
+            r = rounds_by_idx.setdefault(idx, {"round": idx, "tool_calls": []})
+            for tc in reversed(r["tool_calls"]):
+                if tc["result"] is None and tc["call"].get("tool_name") == data.get("tool_name"):
+                    tc["result"] = data
+                    break
+        elif lt == "chat_response":
+            out["chat_response"] = data
+        elif lt == "error_snapshot":
+            out["error"] = data
+
+    out["rounds"] = [rounds_by_idx[k] for k in sorted(rounds_by_idx)]
+    if not show_tools:
+        for r in out["rounds"]:
+            if "llm_request" in r and isinstance(r["llm_request"], dict):
+                r["llm_request"].pop("tool_schemas", None)
+    if not show_system_prompt and out["chat_request"]:
+        out["chat_request"].pop("system_prompt", None)
+    return out
+
+
+@obs_router.get("/traces/{correlation_id}")
+async def get_trace(
+    correlation_id: str,
+    show_tools: bool = Query(False),
+    show_system_prompt: bool = Query(False),
+    ctx: AdminContext = Depends(require_admin),
+    db: AsyncSession = Depends(get_db),
+):
+    data = await reconstruct_trace(
+        correlation_id, db=db, gcloud_reader=_gcloud_read,
+        show_tools=show_tools, show_system_prompt=show_system_prompt
+    )
+    return {"data": data, "audit_id": None, "env": "server"}
