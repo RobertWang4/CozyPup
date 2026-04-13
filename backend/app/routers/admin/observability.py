@@ -12,13 +12,15 @@ from datetime import datetime, timedelta, timezone
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query
+from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.auth import create_access_token
 from app.database import get_db
-from app.models import Chat, ChatSession, Pet, User
+from app.models import CalendarEvent, Chat, ChatSession, Pet, Reminder, User
 
-from .deps import AdminContext, require_admin
+from .deps import AdminContext, audit_write, require_admin
 
 obs_router = APIRouter(tags=["admin-obs"])
 
@@ -237,3 +239,112 @@ async def get_trace(
         show_tools=show_tools, show_system_prompt=show_system_prompt
     )
     return {"data": data, "audit_id": None, "env": "server"}
+
+
+# ---------------------------------------------------------------------------
+# B6: /errors, /users/{id}/export, /users/{id}/impersonate
+# ---------------------------------------------------------------------------
+
+class _ReasonBody(BaseModel):
+    reason: str
+
+
+class _ImpersonateBody(BaseModel):
+    reason: str
+    ttl_minutes: int = 10
+
+
+async def recent_errors(
+    *,
+    since: str,
+    module: str | None,
+    user_id: str | None,
+    group_by: str,
+    db: AsyncSession,
+    gcloud_reader=_gcloud_read,
+) -> dict:
+    cutoff = datetime.now(timezone.utc) - _since_to_timedelta(since)
+    filter_parts = [
+        f'jsonPayload.log_type="error_snapshot"',
+        f'timestamp>="{cutoff.isoformat()}"',
+    ]
+    if user_id:
+        filter_parts.append(f'jsonPayload.user_id="{user_id}"')
+    if module:
+        filter_parts.append(f'jsonPayload.data.src_module="{module}"')
+    entries = [p for p in (_parse_trace_entry(e) for e in gcloud_reader(" ".join(filter_parts), limit=500)) if p]
+    groups: dict[str, dict] = {}
+    for e in entries:
+        data = e.get("data") or {}
+        if group_by == "user":
+            key = e.get("user_id") or "unknown"
+        else:
+            key = f"{data.get('src_module') or '?'}:{data.get('error_type') or '?'}"
+        g = groups.setdefault(key, {"key": key, "count": 0, "sample_cid": e.get("correlation_id"), "last_seen": None})
+        g["count"] += 1
+        ts = e.get("timestamp")
+        if ts and (g["last_seen"] is None or ts > g["last_seen"]):
+            g["last_seen"] = ts
+    return {"groups": sorted(groups.values(), key=lambda x: -x["count"])}
+
+
+async def build_export_bundle(user: User, db: AsyncSession, gcloud_reader=_gcloud_read) -> dict:
+    pets = (await db.execute(select(Pet).where(Pet.user_id == user.id))).scalars().all()
+    sessions = (await db.execute(select(ChatSession).where(ChatSession.user_id == user.id))).scalars().all()
+    chats = (await db.execute(select(Chat).where(Chat.user_id == user.id))).scalars().all()
+    events = (await db.execute(select(CalendarEvent).where(CalendarEvent.user_id == user.id))).scalars().all()
+    reminders = (await db.execute(select(Reminder).where(Reminder.user_id == user.id))).scalars().all()
+
+    return {
+        "users": [{
+            "id": str(user.id), "email": user.email, "name": user.name,
+            "auth_provider": user.auth_provider, "created_at": user.created_at.isoformat(),
+            "password_hash": None,
+        }],
+        "pets": [{"id": str(p.id), "name": p.name, "species": p.species.value if hasattr(p.species, "value") else str(p.species)} for p in pets],
+        "chat_sessions": [{"id": str(s.id), "session_date": s.session_date.isoformat()} for s in sessions],
+        "chats": [{"id": str(c.id), "role": c.role.value if hasattr(c.role, "value") else str(c.role), "content": c.content, "correlation_id": c.correlation_id} for c in chats],
+        "calendar_events": [{"id": str(e.id), "title": e.title, "event_date": e.event_date.isoformat()} for e in events],
+        "reminders": [{"id": str(r.id), "title": getattr(r, "title", None)} for r in reminders],
+        "traces": [],
+        "audit": [],
+    }
+
+
+@obs_router.get("/errors")
+async def errors_recent(
+    since: str = Query("24h"),
+    module: str | None = Query(None),
+    user: str | None = Query(None),
+    group_by: str = Query("module", pattern="^(module|user)$"),
+    ctx: AdminContext = Depends(require_admin),
+    db: AsyncSession = Depends(get_db),
+):
+    data = await recent_errors(since=since, module=module, user_id=user, group_by=group_by, db=db, gcloud_reader=_gcloud_read)
+    return {"data": data, "audit_id": None, "env": "server"}
+
+
+@obs_router.post("/users/{target}/export")
+@audit_write(action="user.export", target_type="user")
+async def users_export(
+    target: str,
+    body: _ReasonBody,
+    ctx: AdminContext = Depends(require_admin),
+    db: AsyncSession = Depends(get_db),
+):
+    user = await _resolve_user(db, target)
+    return await build_export_bundle(user, db)
+
+
+@obs_router.post("/users/{target}/impersonate")
+@audit_write(action="user.impersonate", target_type="user")
+async def users_impersonate(
+    target: str,
+    body: _ImpersonateBody,
+    ctx: AdminContext = Depends(require_admin),
+    db: AsyncSession = Depends(get_db),
+):
+    ttl = max(1, min(int(body.ttl_minutes), 15))
+    user = await _resolve_user(db, target)
+    token = create_access_token(str(user.id), scope="user", ttl_minutes=ttl)
+    return {"token": token, "scope": "user", "expires_in": ttl * 60, "user_id": str(user.id)}
