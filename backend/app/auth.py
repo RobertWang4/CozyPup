@@ -5,8 +5,10 @@ import httpx
 import jwt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
+from app.database import get_db
 from app.debug.correlation import set_user_id
 
 security = HTTPBearer()
@@ -174,8 +176,20 @@ async def verify_google_token(id_token: str) -> dict:
 
 async def get_current_user_id(
     credentials: HTTPAuthorizationCredentials = Depends(security),
+    db: AsyncSession = Depends(get_db),
 ) -> uuid.UUID:
+    from sqlalchemy import select
+    from app.models import User
+
     payload = verify_token(credentials.credentials, "access")
     uid = uuid.UUID(payload["sub"])
+    user = (await db.execute(select(User).where(User.id == uid))).scalar_one_or_none()
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found")
+    now = datetime.now(timezone.utc)
+    if user.deleted_at is not None and user.deleted_at <= now:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Account deleted")
+    if user.banned_until is not None and user.banned_until > now:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Account banned")
     set_user_id(str(uid))
     return uid
