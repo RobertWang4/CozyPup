@@ -144,6 +144,7 @@ class Chat(Base):
     content: Mapped[str] = mapped_column(Text, default="")
     cards_json: Mapped[str | None] = mapped_column(Text)  # JSON string of card data, nullable
     image_urls: Mapped[list | None] = mapped_column(JSON)  # saved chat image paths, e.g. ["/api/v1/calendar/photos/xxx.jpg"]
+    correlation_id: Mapped[str | None] = mapped_column(String(64), nullable=True, index=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     session: Mapped["ChatSession"] = relationship(back_populates="messages")
