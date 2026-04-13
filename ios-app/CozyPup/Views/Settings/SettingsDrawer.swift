@@ -380,7 +380,7 @@ struct SettingsDrawer: View {
                             .foregroundColor(Tokens.accent)
                     }
                     Spacer()
-                    Image(systemName: "arrow.up.right.square")
+                    Image(systemName: "chevron.right")
                         .font(Tokens.fontCaption)
                         .foregroundColor(Tokens.textTertiary)
                 }
