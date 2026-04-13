@@ -59,6 +59,8 @@ app.include_router(subscription_router)
 app.include_router(family_router)
 app.include_router(pet_sharing_router)
 app.include_router(admin_router)
+from app.routers.flags import flags_router
+app.include_router(flags_router)
 
 # Register middleware (outermost runs first — last add = outermost)
 app.add_middleware(ChatRateLimitMiddleware)
