@@ -160,3 +160,33 @@ def run_admin(cli_home, backend_server):
             raise AssertionError(f"cmd={cmd!r} rc={r.returncode} out={r.stdout} err={r.stderr}")
         return {"rc": r.returncode, "stdout": r.stdout, "stderr": r.stderr}
     return _run
+
+
+@pytest_asyncio.fixture()
+async def seeded_chat(admin_user):
+    """Seed a ChatSession + two Chat rows with a known correlation_id."""
+    from datetime import date
+    from app.database import async_session
+    from app.models import Chat, ChatSession, MessageRole
+
+    cid = "smoke-cid-0001"
+    try:
+        async with async_session() as db:
+            session = ChatSession(user_id=admin_user.id, session_date=date.today())
+            db.add(session)
+            await db.flush()
+            db.add(Chat(session_id=session.id, user_id=admin_user.id, role=MessageRole.user, content="hello from smoke", correlation_id=cid))
+            db.add(Chat(session_id=session.id, user_id=admin_user.id, role=MessageRole.assistant, content="hi!", correlation_id=cid))
+            await db.commit()
+    except Exception as e:
+        pytest.skip(f"DB not reachable for seeded_chat: {e}")
+
+    yield {"user_id": admin_user.id, "session_id": session.id, "cid": cid}
+
+    try:
+        async with async_session() as db:
+            await db.execute(Chat.__table__.delete().where(Chat.session_id == session.id))
+            await db.execute(ChatSession.__table__.delete().where(ChatSession.id == session.id))
+            await db.commit()
+    except Exception:
+        pass
