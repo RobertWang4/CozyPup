@@ -13,7 +13,7 @@ struct ChatView: View {
     @State private var isStreaming = false
     @State private var emergency: EmergencyData?
     @State private var showSoftPaywall = false
-    @State private var showHardPaywall = false
+    @State private var showUpgradeModal = false
     @State private var showCalendar = false
     @State private var calendarJumpDate: String?
     @State private var showSettings = false
@@ -78,7 +78,9 @@ struct ChatView: View {
                                                 .resizable()
                                                 .frame(width: 28, height: 28)
                                                 .cornerRadius(14)
-                                            Text("你好！我是 CozyPup，你的宠物专属管家 🐾\n\n我可以帮你：记录健康状况、设置疫苗提醒、查找附近宠物医院、解答养宠问题。\n\n先告诉我你家毛孩子叫什么吧～")
+                                            Text(Lang.shared.isZh
+                                                ? "你好！我是 CozyPup，你的宠物专属管家 🐾\n\n我可以帮你：记录健康状况、设置疫苗提醒、查找附近宠物医院、解答养宠问题。\n\n先告诉我你家毛孩子叫什么吧～"
+                                                : "Hi! I'm CozyPup, your pet's personal butler 🐾\n\nI can help you: track health, set vaccine reminders, find nearby vets, and answer pet care questions.\n\nTell me your pet's name to get started!")
                                                 .font(Tokens.fontBody)
                                                 .foregroundColor(Tokens.text)
                                                 .padding(Tokens.spacing.md)
@@ -176,19 +178,10 @@ struct ChatView: View {
                     .transition(.move(edge: .bottom).combined(with: .opacity))
                 }
 
-                if case .expired = subscriptionStore.status {
-                    Text("订阅后继续对话")
-                        .font(Tokens.fontSubheadline)
-                        .foregroundColor(Tokens.textTertiary)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, Tokens.spacing.md)
-                        .background(Tokens.surface)
-                        .onTapGesture { showHardPaywall = true }
-                        .allowsHitTesting(!showSettings && !showCalendar)
-                        .frame(height: (showSettings || showCalendar) ? 0 : nil)
-                        .clipped()
-                } else {
-                    ChatInputBar(
+                // Expired users keep the normal input bar. When they send,
+                // the backend's /chat gate returns an upgrade_prompt stream
+                // which renders as an inline card in the chat history.
+                ChatInputBar(
                         text: $inputText,
                         pendingPhotos: $pendingPhotos,
                         isStreaming: isStreaming,
@@ -210,7 +203,6 @@ struct ChatView: View {
                             showSlashMenu = newValue == "/"
                         }
                     }
-                }
             }
             .background(Tokens.bg.ignoresSafeArea())
 
@@ -359,25 +351,17 @@ struct ChatView: View {
         .task {
             await dailyTaskStore.fetchToday()
         }
-        .task {
-            if case .expired = subscriptionStore.status {
-                showHardPaywall = true
-            }
-        }
-        .onChange(of: subscriptionStore.status) { _, newStatus in
-            if case .expired = newStatus {
-                showHardPaywall = true
-            }
-        }
+        // Expired users are no longer hard-blocked from the app —
+        // they can still browse pets / calendar / reminders. The backend
+        // intercepts POST /chat and returns an upgrade_prompt card inline,
+        // so the paywall is reached from the card tap, not from a cliff.
         .sheet(isPresented: $showSoftPaywall) {
             PaywallSheet(isHard: false) { showSoftPaywall = false }
                 .presentationDetents([.medium])
                 .environmentObject(subscriptionStore)
         }
-        .sheet(isPresented: $showHardPaywall) {
-            PaywallSheet(isHard: true)
-                .presentationDetents([.medium])
-                .interactiveDismissDisabled(true)
+        .fullScreenCover(isPresented: $showUpgradeModal) {
+            UpgradeModal { showUpgradeModal = false }
                 .environmentObject(subscriptionStore)
         }
         .alert(Lang.shared.isZh ? "保存当前对话？" : "Save current chat?", isPresented: $showSaveConfirm) {
@@ -694,6 +678,18 @@ struct ChatView: View {
             ReferencesCard(data: data)
         case .setLanguage:
             EmptyView()
+        case .upgradePrompt:
+            ActionCard(
+                icon: "crown.fill",
+                iconColor: Tokens.accent,
+                label: Lang.shared.isZh ? "升级订阅" : "Upgrade",
+                title: Lang.shared.isZh ? "继续与 CozyPup AI 对话" : "Keep chatting with CozyPup AI",
+                subtitle: Lang.shared.isZh
+                    ? "试用已结束 · 宠物档案、日历和提醒依然免费"
+                    : "Trial ended · Profiles, calendar, reminders still free"
+            ) {
+                showUpgradeModal = true
+            }
         case .genericAction(let data):
             ActionCard(
                 icon: iconForActionType(data.type),

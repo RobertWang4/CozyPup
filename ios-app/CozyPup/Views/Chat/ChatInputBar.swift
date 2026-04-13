@@ -15,11 +15,19 @@ struct ChatInputBar: View {
     var onMicCancel: () -> Void
     @Binding var dragOffsetOut: CGFloat
 
-    private let placeholders = [
-        "试试说：我家狗最近老挠耳朵…",
-        "试试说：帮我记一下今天打了疫苗",
-        "试试说：下周三提醒我去宠物店",
-    ]
+    @ObservedObject private var lang = Lang.shared
+
+    private var placeholders: [String] {
+        lang.isZh ? [
+            "试试说：我家狗最近老挠耳朵…",
+            "试试说：帮我记一下今天打了疫苗",
+            "试试说：下周三提醒我去宠物店",
+        ] : [
+            "Try: My dog keeps scratching its ears…",
+            "Try: Log today's vaccination",
+            "Try: Remind me to visit the pet store next Wed",
+        ]
+    }
     @State private var placeholderIndex = 0
 
     @State private var voiceMode = false
