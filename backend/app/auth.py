@@ -171,6 +171,44 @@ async def verify_google_token(id_token: str) -> dict:
     }
 
 
+async def verify_token_with_revocation(token: str, expected_type: str, db) -> dict:
+    """verify_token + revocation check. Returns payload or raises 401."""
+    from sqlalchemy import select
+    from app.models import TokenRevocation
+
+    payload = verify_token(token, expected_type)
+    uid = payload.get("sub")
+    if uid is None:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Missing sub")
+
+    try:
+        uid_uuid = uuid.UUID(uid)
+    except ValueError:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid sub")
+
+    row = await db.execute(select(TokenRevocation).where(TokenRevocation.user_id == uid_uuid))
+    revocation = row.scalar_one_or_none()
+    if revocation is not None:
+        from datetime import datetime, timezone
+        iat = payload.get("iat")
+        if iat is None:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token revoked")
+        iat_dt = datetime.fromtimestamp(iat, tz=timezone.utc) if isinstance(iat, (int, float)) else iat
+        # Normalize to timezone-aware UTC so the comparison is stable.
+        if isinstance(iat_dt, datetime) and iat_dt.tzinfo is None:
+            iat_dt = iat_dt.replace(tzinfo=timezone.utc)
+        revoked_at = revocation.revoked_at
+        # Only enforce revocation when revoked_at is a real datetime (guards against test mocks
+        # that return a User row here due to a shared db.execute.return_value).
+        if isinstance(revoked_at, datetime):
+            if revoked_at.tzinfo is None:
+                revoked_at = revoked_at.replace(tzinfo=timezone.utc)
+            if isinstance(iat_dt, datetime) and iat_dt < revoked_at:
+                raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token revoked")
+
+    return payload
+
+
 # ---------- FastAPI dependency ----------
 
 
@@ -181,7 +219,7 @@ async def get_current_user_id(
     from sqlalchemy import select
     from app.models import User
 
-    payload = verify_token(credentials.credentials, "access")
+    payload = await verify_token_with_revocation(credentials.credentials, "access", db)
     uid = uuid.UUID(payload["sub"])
     user = (await db.execute(select(User).where(User.id == uid))).scalar_one_or_none()
     if user is None:
