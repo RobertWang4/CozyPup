@@ -22,6 +22,25 @@ Thin HTTPS client for operating CozyPup in prod: inspect users, trace requests, 
 | `admin trace <cid>` | Fetch the full pipeline trace for one correlation ID | `--json` |
 | `admin errors recent` | List the most recent captured error snapshots | `--module app.routers.chat --last 20` |
 | `admin debug <verb>` | Legacy debug subcommands (lookup, requests, tokens, errors, modules, replay, generate-test) | see `admin debug --help` |
+| `admin user search <q>` | Partial-match users by name/email | `--limit`, `--json` |
+| `admin user ban <target> --reason "..."` | Ban user for N days (audited) | `--days`, `--json` |
+| `admin user unban <target> --reason "..."` | Clear ban (audited) | `--json` |
+| `admin user delete <target> --reason "..."` | Soft-delete user; refuses if active paid sub | `--json` |
+| `admin user grant-admin <target> --reason "..."` | Flip is_admin=true | `--json` |
+| `admin user revoke-admin <target> --reason "..."` | Flip is_admin=false | `--json` |
+| `admin sub show <target>` | Show subscription state incl. Duo flag | `--json` |
+| `admin sub list` | List/filter subscriptions | `--status`, `--expired-within`, `--limit`, `--json` |
+| `admin sub grant <target> --tier pro --until YYYY-MM-DD --reason "..."` | Grant subscription (audited). Duo users require `--force-duo` | `--product-id`, `--json` |
+| `admin sub extend <target> --days N --reason "..."` | Add days to expiry (audited) | `--force-duo`, `--json` |
+| `admin sub revoke <target> --reason "..."` | Set status=expired (audited) | `--force-duo`, `--json` |
+| `admin sub verify <target>` | Dry-run StoreKit diff (stub until Phase 4) | `--json` |
+| `admin ops ratelimit clear --user <key>\|--all --reason "..."` | Wipe chat rate-limit buckets | `--json` |
+| `admin ops session revoke <target> --reason "..."` | Force logout on all JWTs for user | `--json` |
+| `admin ops flags list\|get\|set\|unset` | Read/write feature_flags table (auth_dev_enabled, broadcast_banner, ...) | `set <k> <json-value> --reason "..."`, `--json` |
+| `admin ops cache flush --key <k> --reason "..."` | Stub (no Redis yet) | `--json` |
+| `admin audit list` | Query admin_audit_log | `--since`, `--admin`, `--target-user`, `--action`, `--limit`, `--json` |
+| `admin audit show <audit_id>` | Full audit row | `--json` |
+| `admin audit prune --before 90d --reason "..."` | Manual retention (destructive, typed confirm) | `--yes`, `--json` |
 
 ### Common pitfalls
 
@@ -29,6 +48,10 @@ Thin HTTPS client for operating CozyPup in prod: inspect users, trace requests, 
 2. **`admin user inspect` can't find the user** — `<target>` accepts email (partial match OK) or UUID. Partial email matching is case-insensitive but must be unambiguous; if two users match you'll get an error listing both.
 3. **Token expired mid-session** — Admin JWTs have a 2 h TTL. Re-run `admin login` and retry the command.
 4. **`admin debug` subcommands read Cloud Logging** — they require `gcloud auth login` and the right project set. If you see `gcloud: command not found`, install the Google Cloud SDK first.
+- Duo subscribers require `--force-duo` on mutations — usually you should operate on the payer.
+- `admin user delete` refuses if the user has an active paid subscription; revoke first.
+- `admin ops flags set` parses the value as JSON (`true`, `false`, numbers, `{...}`, `[...]`); unquoted strings fall through unchanged.
+- `admin audit prune` is destructive and bypasses dry-run; always use `--yes` explicitly.
 
 <!-- /ai-cheatsheet -->
 
@@ -252,6 +275,73 @@ Run `admin debug --help` or `admin debug <verb> --help` for per-command usage.
 
 ---
 
+### Phase 2 — User & Subscription Management
+
+#### `admin user search <q>`
+Partial-match on `users.name` and `users.email`. Use this to resolve a UUID from a fuzzy name before piping into `inspect` or a write command.
+
+Example:
+```
+$ admin user search 张
+Users matching '张'
+  zhangwei@example.com                   张伟                      id=8f3c...
+  zhangna@example.com                    张娜                      id=42aa...
+```
+
+#### `admin user ban / unban`
+Sets or clears `users.banned_until`. The auth middleware blocks all API requests for a banned user with 403 until the ban expires.
+
+Example:
+```
+$ admin user ban alice@example.com --days 7 --reason "chat spam"
+$ admin user unban alice@example.com --reason "appeal granted"
+```
+
+#### `admin user delete`
+Soft-deletes: sets `deleted_at`, clears PII fields, and from then on the user gets 403 on every request. Refuses when the user has an active paid subscription — revoke the sub first.
+
+#### `admin user grant-admin / revoke-admin`
+Flips the `is_admin` flag on the target. After grant, the new admin must log out and back in with `admin login` to get an admin-scoped JWT.
+
+#### `admin sub show / list`
+Read-only views. `list` supports `--status active|expired|trial` and `--expired-within 7d` for "find customers whose subscription lapsed in the last week".
+
+#### `admin sub grant / extend / revoke`
+All write through `@audit_write`. `extend --days N` is the common refund path. `grant --tier pro --until YYYY-MM-DD` is the beta-tester path. Duo-plan mutations print a warning and require `--force-duo`.
+
+#### `admin sub verify`
+Phase 2 ships this as a stub that returns the current DB state with a `match: true` placeholder. Phase 4 will wire it to the real StoreKit verification endpoint.
+
+### Phase 3 — Ops, Flags, Audit
+
+#### `admin ops ratelimit clear`
+The chat rate limiter holds per-user buckets in memory. Use `--user <key>` to wipe one bucket or `--all` to wipe them all. The `user_key` is the last 16 chars of the user's access token (see the middleware source).
+
+#### `admin ops session revoke <target>`
+Inserts a row into `token_revocation` so `verify_token` rejects any JWT whose `iat` predates the revocation timestamp. Effectively a "force logout" across all devices.
+
+#### `admin ops flags list / get / set / unset`
+Feature flag CRUD. Values are stored as JSONB and parsed as JSON on the way in:
+
+```
+admin ops flags set auth_dev_enabled false --reason "killing dev auth in prod"
+admin ops flags set broadcast_banner '{"text":"maintenance at 10pm","severity":"info"}' --reason "scheduled maint"
+admin ops flags set chat_rate_limit_per_hour 60 --reason "raising to 60/hr"
+```
+
+Initial flag inventory:
+- `auth_dev_enabled` (bool) — gates `POST /api/v1/auth/dev`. Default `true` in dev, should be explicitly set to `false` in prod.
+- `chat_rate_limit_per_hour` (int) — override the default 30/hr in the rate-limit middleware.
+- `broadcast_banner` (object) — iOS app reads this from `GET /api/v1/flags/public` and shows a banner.
+
+#### `admin ops cache flush --key <k>`
+Stub. Logs the request and returns `{"stub": true}`. When Redis is added later the command already has the shape; no CLI change needed.
+
+#### `admin audit list / show / prune`
+`list` supports filters by `--since`, `--admin <email>`, `--target-user <id>`, and `--action`. `show <audit_id>` prints the full row (args + result diff). `prune --before 90d --reason "..."` deletes old rows; use `--yes` to skip confirmation.
+
+---
+
 ## Scenario playbooks
 
 ### 1. "A user reported the app crashed after sending an image"
@@ -313,6 +403,24 @@ admin errors recent --module app.routers.chat --last 20
 # Step 3: for each suspicious correlation ID, inspect the user and full trace
 admin user inspect alice@example.com --chats 5 --errors
 admin trace 3c9e1a2d-…
+```
+
+### 5. Customer support: refund a month
+
+```bash
+admin sub show alice@example.com                        # verify state, check for Duo
+admin sub extend alice@example.com --days 30 --reason "support ticket #4521"
+admin audit list --target-user alice@example.com --since 1d   # confirm the row landed
+```
+
+### 6. Incident response: kill `/auth/dev` in prod immediately
+
+```bash
+admin ops flags set auth_dev_enabled false --reason "incident: suspicious dev-login traffic" --env prod
+# Verify the backend picks it up within ~30s (flag cache TTL):
+curl -X POST https://backend-601329501885.northamerica-northeast1.run.app/api/v1/auth/dev -d '{"email":"x@y.com"}'
+# → expect 404
+admin audit list --action ops.flags.set --since 1h
 ```
 
 ---
