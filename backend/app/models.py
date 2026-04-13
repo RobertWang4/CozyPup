@@ -81,6 +81,7 @@ class User(Base):
     # Family plan
     family_role: Mapped[str | None] = mapped_column(String(20))  # "payer" | "member" | null
     family_payer_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id"), nullable=True)
+    is_admin: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default=sa.text("false"))
 
     pets: Mapped[list["Pet"]] = relationship(back_populates="owner", cascade="all, delete-orphan", foreign_keys="Pet.user_id")
     sessions: Mapped[list["ChatSession"]] = relationship(back_populates="user", cascade="all, delete-orphan")
@@ -330,3 +331,18 @@ class DailySummary(Base):
     __table_args__ = (
         sa.UniqueConstraint("user_id", "session_date", name="uq_daily_summaries_user_date"),
     )
+
+
+class AdminAuditLog(Base):
+    __tablename__ = "admin_audit_log"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    admin_user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id"), nullable=False)
+    action: Mapped[str] = mapped_column(String(64), nullable=False)
+    target_type: Mapped[str | None] = mapped_column(String(32))
+    target_id: Mapped[str | None] = mapped_column(String(128))
+    args_json: Mapped[dict] = mapped_column(JSONB, nullable=False)
+    result_json: Mapped[dict] = mapped_column(JSONB, nullable=False)
+    ip: Mapped[str | None] = mapped_column(String(64))
+    correlation_id: Mapped[str | None] = mapped_column(String(64))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
