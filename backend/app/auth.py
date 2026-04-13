@@ -189,22 +189,18 @@ async def verify_token_with_revocation(token: str, expected_type: str, db) -> di
     row = await db.execute(select(TokenRevocation).where(TokenRevocation.user_id == uid_uuid))
     revocation = row.scalar_one_or_none()
     if revocation is not None:
-        from datetime import datetime, timezone
         iat = payload.get("iat")
         if iat is None:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token revoked")
+        from datetime import datetime, timezone
         iat_dt = datetime.fromtimestamp(iat, tz=timezone.utc) if isinstance(iat, (int, float)) else iat
-        # Normalize to timezone-aware UTC so the comparison is stable.
-        if isinstance(iat_dt, datetime) and iat_dt.tzinfo is None:
+        if iat_dt.tzinfo is None:
             iat_dt = iat_dt.replace(tzinfo=timezone.utc)
         revoked_at = revocation.revoked_at
-        # Only enforce revocation when revoked_at is a real datetime (guards against test mocks
-        # that return a User row here due to a shared db.execute.return_value).
-        if isinstance(revoked_at, datetime):
-            if revoked_at.tzinfo is None:
-                revoked_at = revoked_at.replace(tzinfo=timezone.utc)
-            if isinstance(iat_dt, datetime) and iat_dt < revoked_at:
-                raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token revoked")
+        if revoked_at.tzinfo is None:
+            revoked_at = revoked_at.replace(tzinfo=timezone.utc)
+        if iat_dt < revoked_at:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token revoked")
 
     return payload
 

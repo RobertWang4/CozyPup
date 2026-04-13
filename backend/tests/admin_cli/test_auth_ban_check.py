@@ -14,11 +14,24 @@ def _cred(tok: str) -> HTTPAuthorizationCredentials:
     return HTTPAuthorizationCredentials(scheme="Bearer", credentials=tok)
 
 
-def _db_for(user) -> AsyncMock:
+def _db_for(user, revocation=None) -> AsyncMock:
+    """Return a mock db where:
+       - the first execute() (TokenRevocation query) returns `revocation` (None by default)
+       - the second execute() (User query) returns `user`
+    """
     db = AsyncMock()
-    res = MagicMock()
-    res.scalar_one_or_none.return_value = user
-    db.execute.return_value = res
+
+    revocation_res = MagicMock()
+    revocation_res.scalar_one_or_none.return_value = revocation
+    user_res = MagicMock()
+    user_res.scalar_one_or_none.return_value = user
+
+    results = iter([revocation_res, user_res])
+
+    async def _execute(*args, **kwargs):
+        return next(results)
+
+    db.execute.side_effect = _execute
     return db
 
 
