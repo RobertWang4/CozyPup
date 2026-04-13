@@ -10,11 +10,15 @@ struct QuickActionCards: View {
             ("💊", "健康咨询", "我家宠物最近有点不舒服"),
             ("📅", "设个提醒", "帮我设一个提醒"),
             ("📍", "附近医院", "帮我找附近的宠物医院"),
+            ("✅", "今日待办", "今天有什么待办事项"),
+            ("🍖", "喂养记录", "记录一下今天的喂食情况"),
         ] : [
             ("🐶", "Add Pet", "I want to add a pet"),
             ("💊", "Health", "My pet hasn't been feeling well"),
             ("📅", "Reminder", "Set a reminder for me"),
             ("📍", "Vet Near Me", "Find a nearby vet clinic"),
+            ("✅", "Tasks", "What tasks do I have today"),
+            ("🍖", "Feeding", "Log today's feeding"),
         ]
     }
 
