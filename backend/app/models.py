@@ -82,6 +82,8 @@ class User(Base):
     family_role: Mapped[str | None] = mapped_column(String(20))  # "payer" | "member" | null
     family_payer_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id"), nullable=True)
     is_admin: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default=sa.text("false"))
+    banned_until: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True, index=True)
+    deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True, index=True)
 
     pets: Mapped[list["Pet"]] = relationship(back_populates="owner", cascade="all, delete-orphan", foreign_keys="Pet.user_id")
     sessions: Mapped[list["ChatSession"]] = relationship(back_populates="user", cascade="all, delete-orphan")
