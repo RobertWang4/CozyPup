@@ -9,8 +9,10 @@ from datetime import date, datetime, timedelta, timezone
 import pytest
 import pytest_asyncio
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+from sqlalchemy.pool import NullPool
 
-from app.database import async_session
+from app.config import settings
 from app.models import AdminAuditLog, User
 
 
@@ -18,19 +20,23 @@ from app.models import AdminAuditLog, User
 async def victim_user():
     email = f"victim-{uuid.uuid4().hex[:8]}@cozypup.local"
     try:
-        async with async_session() as db:
+        eng = create_async_engine(settings.database_url, poolclass=NullPool)
+        async with AsyncSession(eng) as db:
             u = User(id=uuid.uuid4(), email=email, name="Victim", auth_provider="dev", is_admin=False)
             db.add(u)
             await db.commit()
+        await eng.dispose()
     except Exception as e:
         pytest.skip(f"DB not reachable: {e}")
 
     yield {"email": email}
 
     try:
-        async with async_session() as db:
+        eng = create_async_engine(settings.database_url, poolclass=NullPool)
+        async with AsyncSession(eng) as db:
             await db.execute(User.__table__.delete().where(User.email == email))
             await db.commit()
+        await eng.dispose()
     except Exception:
         pass
 
@@ -42,7 +48,7 @@ def _env(stdout: str) -> dict:
 
 
 @pytest.mark.asyncio
-async def test_phase2_user_writes(run_admin, admin_user, admin_user_email, victim_user):
+async def test_phase2_user_writes(run_admin, admin_user, admin_user_email, victim_user, query_db):
     run_admin("login", "--dev", "--email", admin_user_email, "--env", "dev", "--json")
 
     # search
@@ -71,14 +77,13 @@ async def test_phase2_user_writes(run_admin, admin_user, admin_user_email, victi
     assert env["data"]["is_admin"] is False
 
     # Audit rows exist for every write
-    async with async_session() as db:
-        rows = (await db.execute(select(AdminAuditLog).where(AdminAuditLog.action.in_(["user.ban", "user.unban", "user.grant_admin", "user.revoke_admin"])))).scalars().all()
-        actions = {r.action for r in rows}
+    rows = await query_db(select(AdminAuditLog).where(AdminAuditLog.action.in_(["user.ban", "user.unban", "user.grant_admin", "user.revoke_admin"])))
+    actions = {r.action for r in rows}
     assert {"user.ban", "user.unban", "user.grant_admin", "user.revoke_admin"} <= actions
 
 
 @pytest.mark.asyncio
-async def test_phase2_sub_writes(run_admin, admin_user_email, victim_user):
+async def test_phase2_sub_writes(run_admin, admin_user_email, victim_user, query_db):
     run_admin("login", "--dev", "--email", admin_user_email, "--env", "dev", "--json")
 
     # extend: new user starts on trial; extend adds days and flips status to active
@@ -93,6 +98,5 @@ async def test_phase2_sub_writes(run_admin, admin_user_email, victim_user):
     assert env["data"]["status"] == "expired"
 
     # Both audit rows
-    async with async_session() as db:
-        rows = (await db.execute(select(AdminAuditLog).where(AdminAuditLog.action.in_(["sub.extend", "sub.revoke"])))).scalars().all()
-        assert {r.action for r in rows} >= {"sub.extend", "sub.revoke"}
+    rows = await query_db(select(AdminAuditLog).where(AdminAuditLog.action.in_(["sub.extend", "sub.revoke"])))
+    assert {r.action for r in rows} >= {"sub.extend", "sub.revoke"}
