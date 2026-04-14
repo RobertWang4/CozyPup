@@ -32,6 +32,10 @@ class Settings(BaseSettings):
 
     gcs_bucket: str = ""  # GCS bucket for file uploads (e.g. "cozypup-avatars")
 
+    # Deployment environment — "dev" enables unsafe endpoints (e.g. /admin/auth/dev-login).
+    # Set via ENVIRONMENT env var in Cloud Run. Defaults to "dev" locally.
+    environment: str = "dev"
+
     class Config:
         env_file = ".env"
         extra = "ignore"

@@ -14,11 +14,18 @@ security = HTTPBearer()
 # ---------- JWT ----------
 
 
-def create_access_token(user_id: str) -> str:
+def create_access_token(
+    user_id: str,
+    *,
+    scope: str = "user",
+    ttl_minutes: int | None = None,
+) -> str:
+    ttl = ttl_minutes if ttl_minutes is not None else settings.jwt_access_expire_minutes
     payload = {
         "sub": user_id,
         "type": "access",
-        "exp": datetime.now(timezone.utc) + timedelta(minutes=settings.jwt_access_expire_minutes),
+        "scope": scope,
+        "exp": datetime.now(timezone.utc) + timedelta(minutes=ttl),
         "iat": datetime.now(timezone.utc),
     }
     return jwt.encode(payload, settings.jwt_secret, algorithm="HS256")
@@ -45,6 +52,7 @@ def verify_token(token: str, expected_type: str) -> dict:
     if payload.get("type") != expected_type:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Wrong token type")
 
+    payload.setdefault("scope", "user")
     return payload
 
 

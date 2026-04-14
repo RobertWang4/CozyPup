@@ -22,7 +22,11 @@ dependencies = [
 ]
 
 [project.scripts]
-debug = "app.debug.cli:cli"
+debug = "app.admin_cli.main:debug_shim"
+admin = "app.admin_cli.main:cli"
+
+[project.optional-dependencies]
+dev = ["respx>=0.21.0", "pytest-asyncio>=0.23.0"]
 
 [tool.setuptools.packages.find]
 include = ["app*"]
