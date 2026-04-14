@@ -185,3 +185,126 @@ def errors_recent_cmd(since, module, user_filter, group_by, env, as_json):
         click.secho("Recent errors", bold=True)
         for g in envelope.data.get("groups", []):
             click.echo(f"  {g['count']:4d}  {g['key']}  last={g.get('last_seen')}  sample={g.get('sample_cid')}")
+
+
+# ----- Phase 2 user writes -----
+
+@user_group.command("ban")
+@click.argument("target")
+@click.option("--days", default=7, type=int)
+@click.option("--reason", required=True)
+@click.option("--env", type=click.Choice(["prod", "dev"]), default=None)
+@click.option("--json", "as_json", is_flag=True)
+def user_ban(target, days, reason, env, as_json):
+    c = _client(env)
+    try:
+        envelope = c.post(
+            f"/admin/users/{urllib.parse.quote(target, safe='@')}/ban",
+            {"reason": reason, "days": days},
+        )
+    except AdminClientError as e:
+        die(str(e))
+    if as_json:
+        emit_json(envelope.data, audit_id=envelope.audit_id, env=envelope.env)
+    else:
+        emit_table("Banned", [("email", envelope.data.get("email")), ("until", envelope.data.get("banned_until")), ("audit_id", envelope.audit_id)])
+
+
+@user_group.command("unban")
+@click.argument("target")
+@click.option("--reason", required=True)
+@click.option("--env", type=click.Choice(["prod", "dev"]), default=None)
+@click.option("--json", "as_json", is_flag=True)
+def user_unban(target, reason, env, as_json):
+    c = _client(env)
+    try:
+        envelope = c.post(
+            f"/admin/users/{urllib.parse.quote(target, safe='@')}/unban",
+            {"reason": reason},
+        )
+    except AdminClientError as e:
+        die(str(e))
+    if as_json:
+        emit_json(envelope.data, audit_id=envelope.audit_id, env=envelope.env)
+    else:
+        emit_table("Unbanned", [("email", envelope.data.get("email")), ("audit_id", envelope.audit_id)])
+
+
+@user_group.command("delete")
+@click.argument("target")
+@click.option("--reason", required=True)
+@click.option("--env", type=click.Choice(["prod", "dev"]), default=None)
+@click.option("--json", "as_json", is_flag=True)
+def user_delete(target, reason, env, as_json):
+    c = _client(env)
+    try:
+        envelope = c.post(
+            f"/admin/users/{urllib.parse.quote(target, safe='@')}/delete",
+            {"reason": reason},
+        )
+    except AdminClientError as e:
+        die(str(e))
+    if as_json:
+        emit_json(envelope.data, audit_id=envelope.audit_id, env=envelope.env)
+    else:
+        emit_table("Soft-deleted", [("user_id", envelope.data.get("user_id")), ("deleted_at", envelope.data.get("soft_deleted_at")), ("audit_id", envelope.audit_id)])
+
+
+@user_group.command("grant-admin")
+@click.argument("target")
+@click.option("--reason", required=True)
+@click.option("--env", type=click.Choice(["prod", "dev"]), default=None)
+@click.option("--json", "as_json", is_flag=True)
+def user_grant_admin(target, reason, env, as_json):
+    c = _client(env)
+    try:
+        envelope = c.post(
+            f"/admin/users/{urllib.parse.quote(target, safe='@')}/grant-admin",
+            {"reason": reason},
+        )
+    except AdminClientError as e:
+        die(str(e))
+    if as_json:
+        emit_json(envelope.data, audit_id=envelope.audit_id, env=envelope.env)
+    else:
+        emit_table("Granted admin", [("email", envelope.data.get("email")), ("is_admin", envelope.data.get("is_admin")), ("audit_id", envelope.audit_id)])
+
+
+@user_group.command("revoke-admin")
+@click.argument("target")
+@click.option("--reason", required=True)
+@click.option("--env", type=click.Choice(["prod", "dev"]), default=None)
+@click.option("--json", "as_json", is_flag=True)
+def user_revoke_admin(target, reason, env, as_json):
+    c = _client(env)
+    try:
+        envelope = c.post(
+            f"/admin/users/{urllib.parse.quote(target, safe='@')}/revoke-admin",
+            {"reason": reason},
+        )
+    except AdminClientError as e:
+        die(str(e))
+    if as_json:
+        emit_json(envelope.data, audit_id=envelope.audit_id, env=envelope.env)
+    else:
+        emit_table("Revoked admin", [("email", envelope.data.get("email")), ("is_admin", envelope.data.get("is_admin")), ("audit_id", envelope.audit_id)])
+
+
+@user_group.command("search")
+@click.argument("query")
+@click.option("--limit", default=20, type=int)
+@click.option("--env", type=click.Choice(["prod", "dev"]), default=None)
+@click.option("--json", "as_json", is_flag=True)
+def user_search(query, limit, env, as_json):
+    c = _client(env)
+    try:
+        envelope = c.get("/admin/users/search", params={"q": query, "limit": limit})
+    except AdminClientError as e:
+        die(str(e))
+    if as_json:
+        emit_json(envelope.data, env=envelope.env)
+    else:
+        click.secho(f"Users matching '{query}'", bold=True)
+        for u in envelope.data:
+            flag = " [ADMIN]" if u.get("is_admin") else ""
+            click.echo(f"  {u['email']:40s}  {u.get('name') or '-':20s}  id={u['id']}{flag}")

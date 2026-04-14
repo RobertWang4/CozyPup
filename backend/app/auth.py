@@ -5,8 +5,10 @@ import httpx
 import jwt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
+from app.database import get_db
 from app.debug.correlation import set_user_id
 
 security = HTTPBearer()
@@ -169,13 +171,59 @@ async def verify_google_token(id_token: str) -> dict:
     }
 
 
+async def verify_token_with_revocation(token: str, expected_type: str, db) -> dict:
+    """verify_token + revocation check. Returns payload or raises 401."""
+    from sqlalchemy import select
+    from app.models import TokenRevocation
+
+    payload = verify_token(token, expected_type)
+    uid = payload.get("sub")
+    if uid is None:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Missing sub")
+
+    try:
+        uid_uuid = uuid.UUID(uid)
+    except ValueError:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid sub")
+
+    row = await db.execute(select(TokenRevocation).where(TokenRevocation.user_id == uid_uuid))
+    revocation = row.scalar_one_or_none()
+    if revocation is not None:
+        iat = payload.get("iat")
+        if iat is None:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token revoked")
+        from datetime import datetime, timezone
+        iat_dt = datetime.fromtimestamp(iat, tz=timezone.utc) if isinstance(iat, (int, float)) else iat
+        if iat_dt.tzinfo is None:
+            iat_dt = iat_dt.replace(tzinfo=timezone.utc)
+        revoked_at = revocation.revoked_at
+        if revoked_at.tzinfo is None:
+            revoked_at = revoked_at.replace(tzinfo=timezone.utc)
+        if iat_dt < revoked_at:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token revoked")
+
+    return payload
+
+
 # ---------- FastAPI dependency ----------
 
 
 async def get_current_user_id(
     credentials: HTTPAuthorizationCredentials = Depends(security),
+    db: AsyncSession = Depends(get_db),
 ) -> uuid.UUID:
-    payload = verify_token(credentials.credentials, "access")
+    from sqlalchemy import select
+    from app.models import User
+
+    payload = await verify_token_with_revocation(credentials.credentials, "access", db)
     uid = uuid.UUID(payload["sub"])
+    user = (await db.execute(select(User).where(User.id == uid))).scalar_one_or_none()
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found")
+    now = datetime.now(timezone.utc)
+    if user.deleted_at is not None and user.deleted_at <= now:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Account deleted")
+    if user.banned_until is not None and user.banned_until > now:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Account banned")
     set_user_id(str(uid))
     return uid
