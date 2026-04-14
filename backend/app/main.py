@@ -18,6 +18,7 @@ from app.routers.tasks import router as tasks_router
 from app.routers.subscription import router as subscription_router
 from app.routers.family import router as family_router
 from app.routers.pet_sharing import router as pet_sharing_router
+from app.routers.admin.router import admin_router
 from app.middleware.rate_limit import ChatRateLimitMiddleware
 from app.debug.middleware import (
     CorrelationMiddleware,
@@ -57,6 +58,9 @@ app.include_router(places_router)
 app.include_router(subscription_router)
 app.include_router(family_router)
 app.include_router(pet_sharing_router)
+app.include_router(admin_router)
+from app.routers.flags import flags_router
+app.include_router(flags_router)
 
 # Register middleware (outermost runs first — last add = outermost)
 app.add_middleware(ChatRateLimitMiddleware)
@@ -86,6 +90,13 @@ async def _fix_avatar_urls():
                     logger.info(f"Fixed {r.rowcount} avatar URLs from GCS absolute to relative")
     except (Exception, asyncio.TimeoutError) as e:
         logger.warning(f"avatar URL fix skipped: {e}")
+
+
+@app.on_event("startup")
+async def _start_flag_refresher():
+    import asyncio
+    from app.flags import run_refresher
+    asyncio.create_task(run_refresher())
 
 
 @app.get("/health")

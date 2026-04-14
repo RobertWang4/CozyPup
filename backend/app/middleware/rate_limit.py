@@ -21,7 +21,7 @@ class _UserBucket:
         now = time.monotonic()
         # Prune expired entries
         self.timestamps = [t for t in self.timestamps if now - t < WINDOW_SECONDS]
-        if len(self.timestamps) >= MAX_MESSAGES_PER_HOUR:
+        if len(self.timestamps) >= current_limit_per_hour():
             return False
         self.timestamps.append(now)
         return True
@@ -34,6 +34,27 @@ class _UserBucket:
 
 
 _buckets: dict[str, _UserBucket] = defaultdict(_UserBucket)
+
+
+def clear(user_key: str | None) -> int:
+    """Admin helper: wipe rate-limit state. Returns number of buckets cleared."""
+    if user_key is None:
+        n = len(_buckets)
+        _buckets.clear()
+        return n
+    if user_key in _buckets:
+        del _buckets[user_key]
+        return 1
+    return 0
+
+
+def current_limit_per_hour() -> int:
+    """Read the chat_rate_limit_per_hour flag, falling back to the constant."""
+    try:
+        from app.flags import get_int_flag
+        return get_int_flag("chat_rate_limit_per_hour", default=MAX_MESSAGES_PER_HOUR)
+    except Exception:
+        return MAX_MESSAGES_PER_HOUR
 
 
 class ChatRateLimitMiddleware(BaseHTTPMiddleware):

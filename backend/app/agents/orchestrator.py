@@ -621,12 +621,14 @@ async def run_orchestrator(
             "model": use_model,
             "text_length": len(round_text),
             "text_preview": round_text[:300] if round_text else "",
+            "content": round_text or "",     # NEW — full content for admin trace
             "tool_calls": [
                 {"name": tc["function"]["name"], "arguments": tc["function"]["arguments"]}
                 for tc in tool_calls
             ] if tool_calls else [],
             "prompt_tokens": usage.get("prompt_tokens"),
             "completion_tokens": usage.get("completion_tokens"),
+            "total_tokens": (usage.get("prompt_tokens") or 0) + (usage.get("completion_tokens") or 0),
         })
 
         # --- 没有 tool_calls：检查 plan nag / nudge 或退出 ---
@@ -715,11 +717,18 @@ async def run_orchestrator(
 
             tool_results_map[tc_name] = tool_result
 
+            _serialized_result = {k: v for k, v in tool_result.items() if not k.startswith("_")}
+            # Size guard per spec §5.3: cap each trace entry at 64 KB.
+            _payload = json.dumps(_serialized_result, ensure_ascii=False, default=str)
+            if len(_payload) > 64_000:
+                _serialized_result = {"_truncated": True, "_size": len(_payload), "keys": list(_serialized_result.keys())}
+
             trace_log("tool_result", round=round_num, data={
                 "tool_name": tc_name,
                 "success": tool_result.get("success"),
                 "error": tool_result.get("error"),
                 "result_keys": list(tool_result.keys()),
+                "result": _serialized_result,     # NEW — full value with card
             })
 
             trace.record("tool_dispatch", {

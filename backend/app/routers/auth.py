@@ -84,6 +84,10 @@ def _make_tokens(user: User) -> AuthResponse:
 @router.post("/dev", response_model=AuthResponse)
 async def login_dev(req: DevAuthRequest, db: AsyncSession = Depends(get_db)):
     """Dev-only login — no OAuth verification, just creates/finds user and returns tokens."""
+    from app.flags import get_bool_flag
+    from fastapi import status
+    if not get_bool_flag("auth_dev_enabled", default=True):
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Not Found")
     user = await _find_or_create_user(db, req.email, req.name, "dev")
     return _make_tokens(user)
 

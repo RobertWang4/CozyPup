@@ -81,6 +81,9 @@ class User(Base):
     # Family plan
     family_role: Mapped[str | None] = mapped_column(String(20))  # "payer" | "member" | null
     family_payer_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id"), nullable=True)
+    is_admin: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default=sa.text("false"))
+    banned_until: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True, index=True)
+    deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True, index=True)
 
     pets: Mapped[list["Pet"]] = relationship(back_populates="owner", cascade="all, delete-orphan", foreign_keys="Pet.user_id")
     sessions: Mapped[list["ChatSession"]] = relationship(back_populates="user", cascade="all, delete-orphan")
@@ -143,6 +146,7 @@ class Chat(Base):
     content: Mapped[str] = mapped_column(Text, default="")
     cards_json: Mapped[str | None] = mapped_column(Text)  # JSON string of card data, nullable
     image_urls: Mapped[list | None] = mapped_column(JSON)  # saved chat image paths, e.g. ["/api/v1/calendar/photos/xxx.jpg"]
+    correlation_id: Mapped[str | None] = mapped_column(String(64), nullable=True, index=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     session: Mapped["ChatSession"] = relationship(back_populates="messages")
@@ -330,3 +334,36 @@ class DailySummary(Base):
     __table_args__ = (
         sa.UniqueConstraint("user_id", "session_date", name="uq_daily_summaries_user_date"),
     )
+
+
+class AdminAuditLog(Base):
+    __tablename__ = "admin_audit_log"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    admin_user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id"), nullable=False)
+    action: Mapped[str] = mapped_column(String(64), nullable=False)
+    target_type: Mapped[str | None] = mapped_column(String(32))
+    target_id: Mapped[str | None] = mapped_column(String(128))
+    args_json: Mapped[dict] = mapped_column(JSONB, nullable=False)
+    result_json: Mapped[dict] = mapped_column(JSONB, nullable=False)
+    ip: Mapped[str | None] = mapped_column(String(64))
+    correlation_id: Mapped[str | None] = mapped_column(String(64))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class FeatureFlag(Base):
+    __tablename__ = "feature_flags"
+
+    key: Mapped[str] = mapped_column(String(64), primary_key=True)
+    value: Mapped[dict] = mapped_column(JSONB, nullable=False)
+    description: Mapped[str | None] = mapped_column(Text)
+    updated_by: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id"), nullable=True)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+
+class TokenRevocation(Base):
+    __tablename__ = "token_revocation"
+
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)
+    revoked_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False, index=True)
+    reason: Mapped[str | None] = mapped_column(String(256))
