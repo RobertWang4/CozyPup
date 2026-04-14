@@ -26,6 +26,8 @@ struct SettingsDrawer: View {
     @State private var showScanner = false
     @State private var scannedToken: String?
     @State private var showMergeSheet = false
+    @State private var scanAlertTitle: String?
+    @State private var scanAlertMessage: String?
     @State private var showPetShareSheet: Pet?
     @State private var showPetUnshareSheet: Pet?
 
@@ -121,14 +123,38 @@ struct SettingsDrawer: View {
                 .environmentObject(subscriptionStore)
         }
         .fullScreenCover(isPresented: $showScanner) {
-            PetShareScannerSheet { token in
-                scannedToken = token
+            PetShareScannerSheet { payload in
                 showScanner = false
-                // Present merge sheet after small delay to let scanner dismiss
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
-                    showMergeSheet = true
+                // Dispatch based on what we just scanned.
+                if let token = parsePetShareToken(payload) {
+                    scannedToken = token
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+                        showMergeSheet = true
+                    }
+                } else if let inviteId = parseFamilyInviteId(payload) {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+                        Task { await acceptFamilyInvite(inviteId: inviteId) }
+                    }
+                } else {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+                        scanAlertTitle = Lang.shared.isZh ? "无法识别的二维码" : "Unrecognized QR"
+                        scanAlertMessage = Lang.shared.isZh
+                            ? "这个二维码不是 CozyPup 的邀请码。"
+                            : "This QR code isn't a CozyPup invite."
+                    }
                 }
             }
+        }
+        .alert(
+            scanAlertTitle ?? "",
+            isPresented: Binding(
+                get: { scanAlertTitle != nil },
+                set: { if !$0 { scanAlertTitle = nil; scanAlertMessage = nil } }
+            )
+        ) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(scanAlertMessage ?? "")
         }
         .sheet(isPresented: $showMergeSheet) {
             if let token = scannedToken {
@@ -154,6 +180,52 @@ struct SettingsDrawer: View {
                 }
             })
             .presentationDetents([.medium])
+        }
+    }
+
+    // MARK: - QR payload parsing
+
+    /// Extract the pet-share token from the legacy `cozypup://share?token=...` QR.
+    private func parsePetShareToken(_ payload: String) -> String? {
+        guard let url = URL(string: payload),
+              url.scheme == "cozypup",
+              url.host == "share",
+              let token = URLComponents(url: url, resolvingAgainstBaseURL: false)?
+                  .queryItems?.first(where: { $0.name == "token" })?.value
+        else { return nil }
+        return token
+    }
+
+    /// Extract the invite id from a family invite landing URL, e.g.
+    /// `https://backend-.../invite/{uuid}`.
+    private func parseFamilyInviteId(_ payload: String) -> String? {
+        guard let url = URL(string: payload) else { return nil }
+        let comps = url.pathComponents  // ["/", "invite", "{id}"]
+        guard comps.count >= 3, comps[comps.count - 2] == "invite" else { return nil }
+        let last = comps[comps.count - 1]
+        // Validate it's a UUID (rough check)
+        guard UUID(uuidString: last) != nil else { return nil }
+        return last
+    }
+
+    @MainActor
+    private func acceptFamilyInvite(inviteId: String) async {
+        struct Body: Encodable { let invite_id: String }
+        struct Resp: Decodable { let status: String }
+        do {
+            let _: Resp = try await APIClient.shared.request(
+                "POST", "/family/accept", body: Body(invite_id: inviteId)
+            )
+            scanAlertTitle = Lang.shared.isZh ? "已加入！" : "Joined!"
+            scanAlertMessage = Lang.shared.isZh
+                ? "你已接受邀请,现在可以和对方共享宠物档案了。"
+                : "You've joined the Duo plan. You can now share pet care with your partner."
+            await subscriptionStore.loadStatus()
+        } catch {
+            scanAlertTitle = Lang.shared.isZh ? "接受失败" : "Couldn't accept"
+            scanAlertMessage = Lang.shared.isZh
+                ? "邀请可能已过期或已被使用,请让对方重新生成一个。"
+                : "The invite may be expired or already used. Ask your partner to generate a new one."
         }
     }
 
