@@ -8,7 +8,6 @@ from pathlib import Path
 import pytest
 from sqlalchemy import select
 
-from app.database import async_session
 from app.models import AdminAuditLog
 
 
@@ -19,7 +18,7 @@ def _env(stdout: str) -> dict:
 
 
 @pytest.mark.asyncio
-async def test_phase1_smoke(run_admin, admin_user, admin_user_email, seeded_chat, tmp_path):
+async def test_phase1_smoke(run_admin, admin_user, admin_user_email, seeded_chat, tmp_path, query_db):
     # Pre-req: login
     run_admin("login", "--dev", "--email", admin_user_email, "--env", "dev", "--json")
 
@@ -60,9 +59,8 @@ async def test_phase1_smoke(run_admin, admin_user, admin_user_email, seeded_chat
     assert audit_id_imp
 
     # Verify both audit rows exist with correct actions
-    async with async_session() as db:
-        rows = (await db.execute(select(AdminAuditLog).where(AdminAuditLog.action.in_(["user.export", "user.impersonate"])))).scalars().all()
-        found_actions = {(r.action, str(r.id)) for r in rows}
+    rows = await query_db(select(AdminAuditLog).where(AdminAuditLog.action.in_(["user.export", "user.impersonate"])))
+    found_actions = {(r.action, str(r.id)) for r in rows}
     assert ("user.export", audit_id_export) in found_actions
     assert ("user.impersonate", audit_id_imp) in found_actions
 

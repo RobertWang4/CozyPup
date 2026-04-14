@@ -6,7 +6,6 @@ import json
 import pytest
 from sqlalchemy import select
 
-from app.database import async_session
 from app.models import AdminAuditLog
 
 
@@ -17,7 +16,7 @@ def _parse_envelope(stdout: str) -> dict:
 
 
 @pytest.mark.asyncio
-async def test_phase0_smoke(run_admin, admin_user, admin_user_email):
+async def test_phase0_smoke(run_admin, admin_user, admin_user_email, query_db):
     # admin login --dev
     r = run_admin("login", "--dev", "--email", admin_user_email, "--env", "dev", "--json")
     env = _parse_envelope(r["stdout"])
@@ -36,9 +35,8 @@ async def test_phase0_smoke(run_admin, admin_user, admin_user_email):
     assert env["data"]["pong"] is True
     assert env["audit_id"], "ping should emit audit_id"
 
-    async with async_session() as db:
-        rows = await db.execute(select(AdminAuditLog).where(AdminAuditLog.action == "admin.ping"))
-        found = [str(r.id) for r in rows.scalars()]
+    rows = await query_db(select(AdminAuditLog).where(AdminAuditLog.action == "admin.ping"))
+    found = [str(r.id) for r in rows]
     assert env["audit_id"] in found, "ping audit row missing"
 
     # admin config show (no --json path — just rc=0)

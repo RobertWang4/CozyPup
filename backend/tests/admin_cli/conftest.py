@@ -162,31 +162,59 @@ def run_admin(cli_home, backend_server):
     return _run
 
 
+@pytest.fixture()
+def query_db():
+    """Returns an async callable that queries the DB with a fresh NullPool engine.
+
+    Avoids cross-event-loop issues with the shared async_session pool in smoke
+    tests. Each call creates a new engine scoped to the current test's event loop.
+    """
+    async def _q(stmt):
+        from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+        from sqlalchemy.pool import NullPool
+        eng = create_async_engine(settings.database_url, poolclass=NullPool)
+        try:
+            async with AsyncSession(eng) as db:
+                result = await db.execute(stmt)
+                rows = result.scalars().all()
+            return rows
+        finally:
+            await eng.dispose()
+    return _q
+
+
 @pytest_asyncio.fixture()
 async def seeded_chat(admin_user):
     """Seed a ChatSession + two Chat rows with a known correlation_id."""
     from datetime import date
-    from app.database import async_session
+    from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+    from sqlalchemy.pool import NullPool
     from app.models import Chat, ChatSession, MessageRole
 
     cid = "smoke-cid-0001"
+    session_id = None
     try:
-        async with async_session() as db:
-            session = ChatSession(user_id=admin_user.id, session_date=date.today())
-            db.add(session)
+        eng = create_async_engine(settings.database_url, poolclass=NullPool)
+        async with AsyncSession(eng) as db:
+            chat_session = ChatSession(user_id=admin_user.id, session_date=date.today())
+            db.add(chat_session)
             await db.flush()
-            db.add(Chat(session_id=session.id, user_id=admin_user.id, role=MessageRole.user, content="hello from smoke", correlation_id=cid))
-            db.add(Chat(session_id=session.id, user_id=admin_user.id, role=MessageRole.assistant, content="hi!", correlation_id=cid))
+            session_id = chat_session.id  # capture id before session closes
+            db.add(Chat(session_id=session_id, user_id=admin_user.id, role=MessageRole.user, content="hello from smoke", correlation_id=cid))
+            db.add(Chat(session_id=session_id, user_id=admin_user.id, role=MessageRole.assistant, content="hi!", correlation_id=cid))
             await db.commit()
+        await eng.dispose()
     except Exception as e:
         pytest.skip(f"DB not reachable for seeded_chat: {e}")
 
-    yield {"user_id": admin_user.id, "session_id": session.id, "cid": cid}
+    yield {"user_id": admin_user.id, "session_id": session_id, "cid": cid}
 
     try:
-        async with async_session() as db:
-            await db.execute(Chat.__table__.delete().where(Chat.session_id == session.id))
-            await db.execute(ChatSession.__table__.delete().where(ChatSession.id == session.id))
+        eng = create_async_engine(settings.database_url, poolclass=NullPool)
+        async with AsyncSession(eng) as db:
+            await db.execute(Chat.__table__.delete().where(Chat.session_id == session_id))
+            await db.execute(ChatSession.__table__.delete().where(ChatSession.id == session_id))
             await db.commit()
+        await eng.dispose()
     except Exception:
         pass
