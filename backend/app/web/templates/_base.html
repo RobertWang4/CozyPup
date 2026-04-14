@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#F7F2EA" />
+  <title>{% block title %}CozyPup{% endblock %}</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🐶%3C/text%3E%3C/svg%3E" />
+  <style>
+    :root {
+      --bg: #F7F2EA;
+      --surface: #FFFFFF;
+      --surface-2: #F0E8D8;
+      --text: #2D2416;
+      --text-secondary: #6B5D44;
+      --text-tertiary: #A69780;
+      --accent: #E8835C;
+      --accent-soft: #FCE7DD;
+      --green: #7BAE7F;
+      --red: #D95E4A;
+      --border: #E8DCC4;
+      --radius: 20px;
+      --radius-sm: 12px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      width: 420px;
+      height: 420px;
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--accent-soft) 0%, transparent 70%);
+      top: -120px;
+      right: -120px;
+      pointer-events: none;
+    }
+
+    .card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 36px 28px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 8px 28px rgba(45, 36, 22, 0.08);
+      position: relative;
+      z-index: 1;
+    }
+
+    .logo {
+      font-size: 56px;
+      text-align: center;
+      margin-bottom: 16px;
+      line-height: 1;
+    }
+
+    h1 {
+      font-family: "New York", "Times New Roman", serif;
+      font-weight: 500;
+      font-size: 28px;
+      line-height: 1.25;
+      margin: 0 0 12px;
+      text-align: center;
+    }
+
+    h1 em {
+      color: var(--accent);
+      font-style: italic;
+    }
+
+    .subtitle {
+      font-size: 15px;
+      color: var(--text-secondary);
+      text-align: center;
+      line-height: 1.5;
+      margin: 0 0 24px;
+    }
+
+    .inviter {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--surface-2);
+      padding: 14px 16px;
+      border-radius: var(--radius-sm);
+      margin-bottom: 20px;
+    }
+
+    .inviter-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .inviter-text {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .inviter-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      margin: 0 0 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .inviter-sub {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin: 0;
+    }
+
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      padding: 14px 18px;
+      border-radius: var(--radius-sm);
+      font-size: 15px;
+      font-weight: 600;
+      text-decoration: none;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: transform 0.1s ease;
+    }
+
+    .btn:active { transform: scale(0.98); }
+
+    .btn-google {
+      background: #fff;
+      color: #3c4043;
+      border-color: #dadce0;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .btn svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .error {
+      background: #FBE9E6;
+      color: var(--red);
+      padding: 14px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      margin-bottom: 20px;
+      line-height: 1.4;
+    }
+
+    .success-icon {
+      width: 72px;
+      height: 72px;
+      margin: 0 auto 20px;
+      background: var(--green);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 40px;
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 24px;
+      font-size: 12px;
+      color: var(--text-tertiary);
+    }
+
+    .footer a {
+      color: var(--text-tertiary);
+      text-decoration: underline;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #1C1810;
+        --surface: #2D2618;
+        --surface-2: #3A3122;
+        --text: #F0E8D8;
+        --text-secondary: #B8A683;
+        --text-tertiary: #8A7A58;
+        --border: #3A3122;
+      }
+      .btn-google {
+        background: #2D2618;
+        color: #F0E8D8;
+        border-color: #4A4030;
+      }
+      .error {
+        background: rgba(217, 94, 74, 0.12);
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="hero">
+    <div class="card">
+      {% block content %}{% endblock %}
+    </div>
+    <p class="footer">CozyPup · <a href="/legal/privacy.html">Privacy</a> · <a href="/legal/terms.html">Terms</a></p>
+  </main>
+</body>
+</html>

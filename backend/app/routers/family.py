@@ -1,11 +1,12 @@
 import logging
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.auth import get_current_user_id
+from app.config import settings
 from app.database import get_db
 from app.models import User, FamilyInvite
 from app.schemas.family import (
@@ -18,9 +19,28 @@ from app.schemas.family import (
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1/family", tags=["family"])
 
+# How long a pending invite stays valid. 1 hour is enough to share the link
+# via QR / iMessage / email / WhatsApp and have the invitee accept it, but
+# short enough that abandoned invites don't pile up.
+INVITE_TTL = timedelta(hours=1)
+
 
 def _is_duo_product(product_id: str | None) -> bool:
     return bool(product_id and ".duo" in product_id)
+
+
+def _invite_url(invite_id: str) -> str:
+    """Build the public landing URL for an invite."""
+    base = settings.server_public_url.rstrip("/")
+    return f"{base}/invite/{invite_id}"
+
+
+def _invite_is_live(invite: FamilyInvite) -> bool:
+    if invite.status != "pending":
+        return False
+    if invite.expires_at is None:
+        return True
+    return datetime.now(timezone.utc) < invite.expires_at
 
 
 @router.get("/status", response_model=FamilyStatusResponse)
@@ -43,15 +63,21 @@ async def get_family_status(
             resp.partner_name = member.name
 
         pending_q = await db.execute(
-            select(FamilyInvite).where(
+            select(FamilyInvite)
+            .where(
                 FamilyInvite.inviter_id == user.id,
                 FamilyInvite.status == "pending",
             )
+            .order_by(FamilyInvite.created_at.desc())
         )
-        pending = pending_q.scalar_one_or_none()
-        if pending:
+        pending = pending_q.scalars().first()
+        if pending and _invite_is_live(pending):
             resp.invite_pending = True
             resp.pending_invite_email = pending.invitee_email
+            resp.pending_invite_id = str(pending.id)
+            resp.pending_invite_url = _invite_url(str(pending.id))
+            if pending.expires_at:
+                resp.pending_invite_expires_at = pending.expires_at.isoformat()
 
     elif user.family_role == "member" and user.family_payer_id:
         payer_q = await db.execute(
@@ -71,6 +97,13 @@ async def invite_partner(
     user_id=Depends(get_current_user_id),
     db: AsyncSession = Depends(get_db),
 ):
+    """Create a pending family invite and return a shareable link.
+
+    The invitee accepts either by:
+    - opening the landing page in any browser (web OAuth flow), or
+    - scanning the QR via another CozyPup user's in-app scanner,
+      which hits POST /family/accept directly.
+    """
     result = await db.execute(select(User).where(User.id == user_id))
     user = result.scalar_one()
 
@@ -84,10 +117,7 @@ async def invite_partner(
         if existing.scalar_one_or_none():
             raise HTTPException(400, detail="You already have a partner")
 
-    if req.email.lower() == user.email.lower():
-        raise HTTPException(400, detail="Cannot invite yourself")
-
-    # Revoke any existing pending invites
+    # Revoke any existing pending invites — only one active invite at a time.
     old_invites = await db.execute(
         select(FamilyInvite).where(
             FamilyInvite.inviter_id == user.id,
@@ -97,27 +127,29 @@ async def invite_partner(
     for old in old_invites.scalars():
         old.status = "revoked"
 
+    expires_at = datetime.now(timezone.utc) + INVITE_TTL
     invite = FamilyInvite(
         inviter_id=user.id,
-        invitee_email=req.email.lower(),
+        invitee_email=(req.email.lower() if req.email else None),
+        expires_at=expires_at,
     )
     db.add(invite)
     user.family_role = "payer"
     await db.commit()
     await db.refresh(invite)
 
-    _send_invite_email(user.name or user.email, req.email, str(invite.id))
-
-    logger.info("family_invite_sent", extra={
+    logger.info("family_invite_created", extra={
         "inviter_id": str(user.id),
-        "invitee_email": req.email,
         "invite_id": str(invite.id),
+        "has_email": req.email is not None,
     })
 
     return FamilyInviteResponse(
         invite_id=str(invite.id),
         status="pending",
-        invitee_email=req.email,
+        invitee_email=invite.invitee_email,
+        invite_url=_invite_url(str(invite.id)),
+        expires_at=expires_at.isoformat(),
     )
 
 
@@ -127,20 +159,35 @@ async def accept_invite(
     user_id=Depends(get_current_user_id),
     db: AsyncSession = Depends(get_db),
 ):
+    """Accept a family invite by id.
+
+    Called from the iOS app after scanning a QR code. The web landing page
+    has its own internal accept path (see routers/web_invite.py) that runs
+    in the OAuth callback, without requiring a pre-existing JWT.
+    """
     invite_q = await db.execute(
         select(FamilyInvite).where(FamilyInvite.id == req.invite_id)
     )
     invite = invite_q.scalar_one_or_none()
-    if not invite or invite.status != "pending":
-        raise HTTPException(404, detail="Invite not found or already used")
+    if not invite:
+        raise HTTPException(404, detail="Invite not found")
+    if not _invite_is_live(invite):
+        # Mark expired for cleanup visibility
+        if invite.status == "pending" and invite.expires_at and datetime.now(timezone.utc) >= invite.expires_at:
+            invite.status = "expired"
+            await db.commit()
+        raise HTTPException(410, detail="Invite expired or already used")
 
     user_q = await db.execute(select(User).where(User.id == user_id))
     user = user_q.scalar_one()
-    if user.email.lower() != invite.invitee_email.lower():
-        raise HTTPException(403, detail="This invite is for a different email")
 
-    if user.family_role == "member":
+    if user.id == invite.inviter_id:
+        raise HTTPException(400, detail="Cannot accept your own invite")
+
+    if user.family_role == "member" and user.family_payer_id != invite.inviter_id:
         raise HTTPException(400, detail="Already a member of another family")
+    if user.family_role == "payer":
+        raise HTTPException(400, detail="You are already a payer in a family plan")
 
     invite.status = "accepted"
     invite.invitee_id = user.id
@@ -155,6 +202,7 @@ async def accept_invite(
     logger.info("family_invite_accepted", extra={
         "inviter_id": str(invite.inviter_id),
         "invitee_id": str(user.id),
+        "invite_id": str(invite.id),
     })
 
     return {"status": "accepted"}
@@ -198,12 +246,3 @@ async def revoke_partner(
     await db.commit()
 
     return {"status": "revoked"}
-
-
-def _send_invite_email(inviter_name: str, invitee_email: str, invite_id: str):
-    """Send invite email. Placeholder — implement with SendGrid or SMTP."""
-    logger.info("family_invite_email", extra={
-        "to": invitee_email,
-        "inviter": inviter_name,
-        "invite_id": invite_id,
-    })
