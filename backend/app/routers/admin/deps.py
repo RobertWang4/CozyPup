@@ -133,7 +133,8 @@ def audit_write(*, action: str, target_type: str | None = None):
                 correlation_id=ctx.correlation_id,
             )
             db.add(row)
-            await db.flush()  # surface FK errors before commit
+            await db.flush()  # surface FK errors
+            await db.commit()  # persist handler mutations + audit row atomically
             return {"data": result, "audit_id": str(row.id), "env": "server"}
 
         return wrapper
