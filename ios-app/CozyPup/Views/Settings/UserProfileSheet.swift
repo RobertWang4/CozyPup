@@ -48,6 +48,12 @@ struct UserProfileSheet: View {
         .presentationDragIndicator(.visible)
         .presentationBackground(Tokens.bg)
         .onAppear { nameText = auth.user?.name ?? "" }
+        .task {
+            // Always refresh subscription status when the sheet appears so the
+            // "Current plan" row doesn't sit in an infinite ProgressView after
+            // the first app launch.
+            await subscriptionStore.loadStatus()
+        }
         .onChange(of: avatarItem) { _, newItem in
             guard let newItem else { return }
             Task {

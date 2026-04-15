@@ -204,6 +204,11 @@ struct LocationPickerCardData: Codable, Equatable {
     let options: [LocationOption]
 }
 
+struct UpgradePromptCardData: Codable, Equatable {
+    let type: String  // "upgrade_prompt"
+    let reason: String?
+}
+
 enum CardData: Codable, Equatable {
     case record(RecordCardData)
     case placeCard(PlaceCardData)
@@ -220,6 +225,7 @@ enum CardData: Codable, Equatable {
     case locationPicker(LocationPickerCardData)
     case references(ReferencesCardData)
     case dailyTask(DailyTaskCardData)
+    case upgradePrompt(UpgradePromptCardData)
 
     init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
@@ -252,6 +258,8 @@ enum CardData: Codable, Equatable {
             self = .dailyTask(d)
         } else if let d = try? container.decode(ReferencesCardData.self), d.type == "references" {
             self = .references(d)
+        } else if let d = try? container.decode(UpgradePromptCardData.self), d.type == "upgrade_prompt" {
+            self = .upgradePrompt(d)
         } else if let d = try? container.decode(GenericActionCardData.self) {
             // Catch-all for pet_deleted, event_deleted, reminder_deleted, profile_summarized, etc.
             self = .genericAction(d)
@@ -279,6 +287,7 @@ enum CardData: Codable, Equatable {
         case .locationPicker(let d): try container.encode(d)
         case .references(let d): try container.encode(d)
         case .dailyTask(let d): try container.encode(d)
+        case .upgradePrompt(let d): try container.encode(d)
         }
     }
 }

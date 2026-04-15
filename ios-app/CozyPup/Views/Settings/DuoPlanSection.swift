@@ -14,7 +14,11 @@ struct DuoPlanSection: View {
     @Binding var showFamilySettings: Bool
     @Binding var showDuoPaywall: Bool
 
-    @State private var familyState: FamilyState = .loading
+    // Start with `.upgrade` rather than `.loading` so the section is always
+    // interactive even if `/family/status` never resolves (task cancelled,
+    // token expired, network stalled). The task below upgrades to a more
+    // specific state on success.
+    @State private var familyState: FamilyState = .upgrade
 
     private enum FamilyState {
         case loading

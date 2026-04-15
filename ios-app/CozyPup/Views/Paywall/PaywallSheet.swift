@@ -3,6 +3,7 @@ import StoreKit
 
 struct PaywallSheet: View {
     @EnvironmentObject var subscriptionStore: SubscriptionStore
+    @ObservedObject private var lang = Lang.shared
     let isHard: Bool
     var initialDuo: Bool = false
     var onDismiss: (() -> Void)? = nil
@@ -10,6 +11,7 @@ struct PaywallSheet: View {
     @State private var selectedTier: PlanTier = .monthly
     @State private var isDuo = false
     @State private var errorMessage: String?
+    @State private var showManageConfirm = false
 
     enum PlanTier: String, CaseIterable {
         case weekly, monthly, yearly
@@ -28,16 +30,24 @@ struct PaywallSheet: View {
     private var fallbackPlans: [FallbackPlan] {
         if isDuo {
             return [
-                FallbackPlan(tier: .weekly, price: "$2.99", period: "/wk", periodLong: "per week", tagline: "Start small, try it out", badge: nil, productId: "com.cozypup.app.weekly.duo"),
-                FallbackPlan(tier: .monthly, price: "$9.99", period: "/mo", periodLong: "per month", tagline: "Our most chosen plan", badge: "SAVE 19%", productId: "com.cozypup.app.monthly.duo"),
-                FallbackPlan(tier: .yearly, price: "$89.99", period: "/yr", periodLong: "per year", tagline: "Best long-term value", badge: "SAVE 29%", productId: "com.cozypup.app.yearly.duo"),
+                FallbackPlan(tier: .weekly, price: "$2.99", period: "/wk", periodLong: L.paywallPerWeek, tagline: L.paywallTaglineWeekly, badge: nil, productId: "com.cozypup.app.weekly.duo"),
+                FallbackPlan(tier: .monthly, price: "$9.99", period: "/mo", periodLong: L.paywallPerMonth, tagline: L.paywallTaglineMonthly, badge: L.paywallSave19, productId: "com.cozypup.app.monthly.duo"),
+                FallbackPlan(tier: .yearly, price: "$89.99", period: "/yr", periodLong: L.paywallPerYear, tagline: L.paywallTaglineYearly, badge: L.paywallSave29, productId: "com.cozypup.app.yearly.duo"),
             ]
         }
         return [
-            FallbackPlan(tier: .weekly, price: "$1.99", period: "/wk", periodLong: "per week", tagline: "Start small, try it out", badge: nil, productId: "com.cozypup.app.weekly"),
-            FallbackPlan(tier: .monthly, price: "$6.99", period: "/mo", periodLong: "per month", tagline: "Our most chosen plan", badge: "SAVE 19%", productId: "com.cozypup.app.monthly"),
-            FallbackPlan(tier: .yearly, price: "$59.99", period: "/yr", periodLong: "per year", tagline: "Best long-term value", badge: "SAVE 29%", productId: "com.cozypup.app.yearly"),
+            FallbackPlan(tier: .weekly, price: "$1.99", period: "/wk", periodLong: L.paywallPerWeek, tagline: L.paywallTaglineWeekly, badge: nil, productId: "com.cozypup.app.weekly"),
+            FallbackPlan(tier: .monthly, price: "$6.99", period: "/mo", periodLong: L.paywallPerMonth, tagline: L.paywallTaglineMonthly, badge: L.paywallSave19, productId: "com.cozypup.app.monthly"),
+            FallbackPlan(tier: .yearly, price: "$59.99", period: "/yr", periodLong: L.paywallPerYear, tagline: L.paywallTaglineYearly, badge: L.paywallSave29, productId: "com.cozypup.app.yearly"),
         ]
+    }
+
+    private func planTitle(_ tier: PlanTier) -> String {
+        switch tier {
+        case .weekly: return L.paywallPlanWeekly
+        case .monthly: return L.paywallPlanMonthly
+        case .yearly: return L.paywallPlanYearly
+        }
     }
 
     private func storeProduct(for plan: FallbackPlan) -> Product? {
@@ -80,13 +90,13 @@ struct PaywallSheet: View {
                             .padding(.bottom, Tokens.spacing.xs)
 
                         (
-                            Text("For the love of\n").foregroundColor(Tokens.text) +
-                            Text("your best friend.").foregroundColor(Tokens.accent).italic()
+                            Text(L.paywallHeadline1).foregroundColor(Tokens.text) +
+                            Text(L.paywallHeadline2).foregroundColor(Tokens.accent).italic()
                         )
                         .font(Tokens.fontTitle.weight(.medium))
                         .lineSpacing(2)
 
-                        Text("Every meal, every vet visit, every worry — handled by a pet-care companion that actually listens.")
+                        Text(L.paywallSubtitle)
                             .font(Tokens.fontSubheadline)
                             .foregroundColor(Tokens.textSecondary)
                             .lineSpacing(2)
@@ -98,9 +108,9 @@ struct PaywallSheet: View {
                     // Hard paywall stats
                     if isHard, let stats = subscriptionStore.trialStats {
                         HStack(spacing: Tokens.spacing.xl) {
-                            statBubble(value: stats.chat_count, label: "chats", color: Tokens.accent)
-                            statBubble(value: stats.reminder_count, label: "reminders", color: Tokens.blue)
-                            statBubble(value: stats.event_count, label: "records", color: Tokens.green)
+                            statBubble(value: stats.chat_count, label: L.paywallStatChats, color: Tokens.accent)
+                            statBubble(value: stats.reminder_count, label: L.paywallStatReminders, color: Tokens.blue)
+                            statBubble(value: stats.event_count, label: L.paywallStatRecords, color: Tokens.green)
                         }
                         .frame(maxWidth: .infinity)
                         .padding(.bottom, Tokens.spacing.lg)
@@ -109,22 +119,22 @@ struct PaywallSheet: View {
                     // ───── Benefits (2x2 grid) ─────
                     VStack(spacing: Tokens.spacing.sm) {
                         HStack(spacing: Tokens.spacing.md) {
-                            benefit("Unlimited AI")
-                            benefit("Smart reminders")
+                            benefit(L.paywallBenefitUnlimited)
+                            benefit(L.paywallBenefitReminders)
                         }
                         HStack(spacing: Tokens.spacing.md) {
-                            benefit("Vet search")
-                            benefit("First-aid help")
+                            benefit(L.paywallBenefitVetSearch)
+                            benefit(L.paywallBenefitFirstAid)
                         }
                     }
                     .padding(.bottom, Tokens.spacing.lg)
 
                     // ───── Individual/Duo segmented toggle ─────
                     HStack(spacing: 0) {
-                        tabButton("Individual", icon: "person.fill", isActive: !isDuo) {
+                        tabButton(L.paywallTabIndividual, icon: "person.fill", isActive: !isDuo) {
                             withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) { isDuo = false }
                         }
-                        tabButton("Duo", icon: "person.2.fill", isActive: isDuo) {
+                        tabButton(L.paywallTabDuo, icon: "person.2.fill", isActive: isDuo) {
                             withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) { isDuo = true }
                         }
                     }
@@ -138,7 +148,7 @@ struct PaywallSheet: View {
                         Image(systemName: isDuo ? "heart.fill" : "sparkles")
                             .font(.system(size: 11))
                             .foregroundColor(Tokens.accent)
-                        Text(isDuo ? "Full access for two — invite your partner by email" : "Everything you need, just for you")
+                        Text(isDuo ? L.paywallDuoHint : L.paywallIndividualHint)
                             .font(Tokens.fontCaption)
                             .foregroundColor(Tokens.textSecondary)
                     }
@@ -176,9 +186,10 @@ struct PaywallSheet: View {
 
                     // ───── Subscribe button ─────
                     Button {
-                        let targetId = fallbackPlans.first { $0.tier == selectedTier }?.productId ?? ""
+                        guard buttonEnabled else { return }
+                        let targetId = selectedProductId
                         guard let product = subscriptionStore.products.first(where: { $0.id == targetId }) else {
-                            errorMessage = "Product not available yet. Please try again."
+                            errorMessage = L.paywallProductUnavailable
                             return
                         }
                         Task {
@@ -192,13 +203,16 @@ struct PaywallSheet: View {
                     } label: {
                         ZStack {
                             RoundedRectangle(cornerRadius: 18)
-                                .fill(Tokens.accent)
-                                .shadow(color: Tokens.accent.opacity(0.35), radius: 16, x: 0, y: 8)
+                                .fill(buttonEnabled ? Tokens.accent : Tokens.textTertiary.opacity(0.35))
+                                .shadow(
+                                    color: buttonEnabled ? Tokens.accent.opacity(0.35) : .clear,
+                                    radius: 16, x: 0, y: 8
+                                )
 
                             if subscriptionStore.isPurchasing {
                                 ProgressView().tint(Tokens.white)
                             } else {
-                                Text("Start Subscription")
+                                Text(buttonLabel)
                                     .font(Tokens.fontBody.weight(.semibold))
                                     .foregroundColor(Tokens.white)
                             }
@@ -206,7 +220,7 @@ struct PaywallSheet: View {
                         .frame(height: 54)
                     }
                     .buttonStyle(.plain)
-                    .disabled(subscriptionStore.isPurchasing)
+                    .disabled(subscriptionStore.isPurchasing || !buttonEnabled)
                     .padding(.bottom, Tokens.spacing.sm)
 
                     // ───── Footer links ─────
@@ -214,20 +228,32 @@ struct PaywallSheet: View {
                         Button {
                             Task { await subscriptionStore.restorePurchases() }
                         } label: {
-                            Text("Restore Purchase")
+                            Text(L.paywallRestore)
+                                .font(Tokens.fontCaption)
+                                .foregroundColor(Tokens.textTertiary)
+                        }
+
+                        Text("·")
+                            .font(Tokens.fontCaption)
+                            .foregroundColor(Tokens.textTertiary)
+
+                        Button {
+                            showManageConfirm = true
+                        } label: {
+                            Text(lang.isZh ? "在 App Store 管理" : "Manage on App Store")
                                 .font(Tokens.fontCaption)
                                 .foregroundColor(Tokens.textTertiary)
                         }
                     }
 
-                    Text("Auto-renewable · Cancel anytime in Settings")
+                    Text(L.paywallAutoRenew)
                         .font(Tokens.fontCaption2)
                         .foregroundColor(Tokens.textTertiary)
                         .padding(.top, Tokens.spacing.xs)
 
                     if !isHard {
                         Button { onDismiss?() } label: {
-                            Text("Not now")
+                            Text(L.paywallNotNow)
                                 .font(Tokens.fontCaption)
                                 .foregroundColor(Tokens.textTertiary)
                         }
@@ -259,18 +285,97 @@ struct PaywallSheet: View {
             if isHard {
                 await subscriptionStore.loadTrialStats()
             }
+            // If the user already has a subscription, pre-select its tab+tier
+            // so the first render shows "Current Plan" on the right row.
+            if let currentId = subscriptionStore.currentProductId, !currentId.isEmpty {
+                isDuo = currentId.hasSuffix(".duo")
+                if currentId.contains("weekly") { selectedTier = .weekly }
+                else if currentId.contains("yearly") { selectedTier = .yearly }
+                else { selectedTier = .monthly }
+            }
+        }
+        .alert(
+            lang.isZh ? "离开 CozyPup？" : "Leave CozyPup?",
+            isPresented: $showManageConfirm
+        ) {
+            Button(lang.isZh ? "取消" : "Cancel", role: .cancel) {}
+            Button(lang.isZh ? "继续" : "Continue") {
+                if let url = URL(string: "itms-apps://apps.apple.com/account/subscriptions") {
+                    UIApplication.shared.open(url)
+                }
+            }
+        } message: {
+            Text(lang.isZh
+                ? "将跳转到 App Store 的订阅管理页面。"
+                : "You'll be taken to the App Store subscription management page.")
+        }
+    }
+
+    // MARK: - Button state
+
+    private enum SubscribeButtonState {
+        case subscribe   // no current sub → normal "Start Subscription"
+        case current     // selected plan == current → disabled "Current Plan"
+        case upgrade     // selected plan > current → enabled "Upgrade"
+        case downgrade   // selected plan < current → disabled "Switch to lower"
+    }
+
+    private var selectedProductId: String {
+        fallbackPlans.first { $0.tier == selectedTier }?.productId ?? ""
+    }
+
+    /// Rank all products by value. Higher rank = "bigger" subscription.
+    /// Individual tier < Duo tier; within tier: weekly < monthly < yearly.
+    private func planRank(_ productId: String) -> Int {
+        switch productId {
+        case "com.cozypup.app.weekly":      return 1
+        case "com.cozypup.app.monthly":     return 2
+        case "com.cozypup.app.yearly":      return 3
+        case "com.cozypup.app.weekly.duo":  return 4
+        case "com.cozypup.app.monthly.duo": return 5
+        case "com.cozypup.app.yearly.duo":  return 6
+        default: return 0
+        }
+    }
+
+    private var buttonState: SubscribeButtonState {
+        guard let currentId = subscriptionStore.currentProductId, !currentId.isEmpty else {
+            return .subscribe
+        }
+        let selected = planRank(selectedProductId)
+        let current = planRank(currentId)
+        if selected == 0 || current == 0 { return .subscribe }
+        if selected == current { return .current }
+        if selected > current { return .upgrade }
+        return .downgrade
+    }
+
+    private var buttonLabel: String {
+        switch buttonState {
+        case .subscribe: return L.paywallStartSubscription
+        case .current:   return lang.isZh ? "当前订阅" : "Current Plan"
+        case .upgrade:   return lang.isZh ? "升级" : "Upgrade"
+        case .downgrade: return lang.isZh ? "降级" : "Downgrade"
+        }
+    }
+
+    private var buttonEnabled: Bool {
+        switch buttonState {
+        case .subscribe, .upgrade: return true
+        case .current, .downgrade: return false
         }
     }
 
     // MARK: - Plan Card
 
     private func planCard(plan: FallbackPlan, isSelected: Bool, isRecommended: Bool, displayPrice: String) -> some View {
-        ZStack(alignment: .topLeading) {
+        let isCurrent = subscriptionStore.currentProductId == plan.productId
+        return ZStack(alignment: .topLeading) {
             // Card body
             HStack(spacing: Tokens.spacing.md) {
                 VStack(alignment: .leading, spacing: 3) {
                     HStack(spacing: Tokens.spacing.xs) {
-                        Text(plan.tier.rawValue.capitalized)
+                        Text(planTitle(plan.tier))
                             .font(Tokens.fontTitle.weight(.semibold))
                             .foregroundColor(Tokens.text)
                         if let badge = plan.badge {
@@ -314,9 +419,9 @@ struct PaywallSheet: View {
                 radius: 16, x: 0, y: 8
             )
 
-            // "MOST POPULAR" ribbon
-            if isRecommended {
-                Text("MOST POPULAR")
+            // "MOST POPULAR" ribbon (left)
+            if isRecommended && !isCurrent {
+                Text(L.paywallMostPopular)
                     .font(Tokens.fontCaption2.weight(.bold))
                     .foregroundColor(Tokens.white)
                     .tracking(0.8)
@@ -325,6 +430,24 @@ struct PaywallSheet: View {
                     .background(Tokens.text)
                     .cornerRadius(10)
                     .offset(x: 16, y: -8)
+            }
+
+            // "当前订阅" badge (top-right)
+            if isCurrent {
+                HStack(spacing: 3) {
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.system(size: 10, weight: .bold))
+                    Text(L.paywallCurrent)
+                        .font(Tokens.fontCaption2.weight(.bold))
+                        .tracking(0.3)
+                }
+                .foregroundColor(Tokens.white)
+                .padding(.horizontal, 9)
+                .padding(.vertical, 4)
+                .background(Tokens.green)
+                .cornerRadius(10)
+                .frame(maxWidth: .infinity, alignment: .trailing)
+                .offset(x: -16, y: -8)
             }
         }
     }
