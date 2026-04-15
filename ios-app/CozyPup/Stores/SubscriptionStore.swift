@@ -92,7 +92,8 @@ class SubscriptionStore: ObservableObject {
         switch result {
         case .success(let verification):
             let transaction = try checkVerified(verification)
-            await verifyWithBackend(transactionID: String(transaction.id), productID: product.id)
+            let jws = jwsRepresentation(from: verification)
+            await verifyWithBackend(signedTransaction: jws)
             await transaction.finish()
             status = .active
         case .userCancelled:
@@ -115,15 +116,17 @@ class SubscriptionStore: ObservableObject {
         Task.detached {
             for await result in Transaction.updates {
                 if let transaction = try? self.checkVerified(result) {
-                    await self.verifyWithBackend(
-                        transactionID: String(transaction.id),
-                        productID: transaction.productID
-                    )
+                    let jws = self.jwsRepresentation(from: result)
+                    await self.verifyWithBackend(signedTransaction: jws)
                     await transaction.finish()
                     await MainActor.run { self.status = .active }
                 }
             }
         }
+    }
+
+    nonisolated private func jwsRepresentation(from result: VerificationResult<StoreKit.Transaction>) -> String {
+        result.jwsRepresentation
     }
 
     private func checkStoreKitEntitlements() async {
@@ -144,19 +147,24 @@ class SubscriptionStore: ObservableObject {
         }
     }
 
-    private func verifyWithBackend(transactionID: String, productID: String) async {
+    private func verifyWithBackend(signedTransaction: String) async {
         struct VerifyBody: Encodable {
-            let transaction_id: String
-            let product_id: String
+            let signed_transaction: String
+            let sandbox: Bool
         }
         struct VerifyResp: Decodable {
             let status: String
             let expires_at: String?
         }
+        #if DEBUG
+        let isSandbox = true
+        #else
+        let isSandbox = false
+        #endif
         do {
             let _: VerifyResp = try await APIClient.shared.request(
                 "POST", "/subscription/verify",
-                body: VerifyBody(transaction_id: transactionID, product_id: productID)
+                body: VerifyBody(signed_transaction: signedTransaction, sandbox: isSandbox)
             )
         } catch {
             print("[Subscription] Backend verify failed: \(error)")

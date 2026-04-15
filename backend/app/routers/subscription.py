@@ -1,11 +1,13 @@
 import logging
 from datetime import datetime, timedelta, timezone
 
-from fastapi import APIRouter, Depends
+from appstoreserverlibrary.signed_data_verifier import VerificationException
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.auth import get_current_user_id
+from app.config import settings
 from app.database import get_db
 from app.models import User, Chat, CalendarEvent, Reminder
 from app.schemas.subscription import (
@@ -14,6 +16,7 @@ from app.schemas.subscription import (
     VerifyRequest,
     VerifyResponse,
 )
+from app.storekit import verify_signed_transaction
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1/subscription", tags=["subscription"])
@@ -102,21 +105,45 @@ async def verify_purchase(
     user_id=Depends(get_current_user_id),
     db: AsyncSession = Depends(get_db),
 ):
-    """Verify a StoreKit 2 transaction and activate subscription."""
+    """Verify a StoreKit 2 signedTransaction JWS and activate subscription.
+
+    The client sends the raw JWS from StoreKit 2 VerificationResult. We verify
+    the chain against Apple's root CAs and trust ONLY the decoded payload.
+    """
+    try:
+        payload = verify_signed_transaction(req.signed_transaction, sandbox=req.sandbox)
+    except VerificationException as exc:
+        logger.warning("storekit_verify_failed", extra={
+            "user_id": str(user_id),
+            "reason": str(exc),
+        })
+        raise HTTPException(status_code=400, detail="invalid_signed_transaction") from exc
+
+    if payload.bundleId != settings.apple_bundle_id:
+        logger.warning("storekit_bundle_mismatch", extra={
+            "expected": settings.apple_bundle_id,
+            "got": payload.bundleId,
+        })
+        raise HTTPException(status_code=400, detail="bundle_mismatch")
+
+    if payload.revocationDate is not None:
+        raise HTTPException(status_code=400, detail="transaction_revoked")
+
+    product_id = payload.productId
+    expires_at = None
+    if payload.expiresDate is not None:
+        # expiresDate is ms since epoch per Apple spec
+        expires_at = datetime.fromtimestamp(payload.expiresDate / 1000, tz=timezone.utc)
+
     result = await db.execute(select(User).where(User.id == user_id))
     user = result.scalar_one()
 
     user.subscription_status = "active"
-    user.subscription_product_id = req.product_id
-    if "weekly" in req.product_id:
-        user.subscription_expires_at = datetime.now(timezone.utc) + timedelta(days=7)
-    elif "yearly" in req.product_id:
-        user.subscription_expires_at = datetime.now(timezone.utc) + timedelta(days=365)
-    else:
-        user.subscription_expires_at = datetime.now(timezone.utc) + timedelta(days=30)
+    user.subscription_product_id = product_id
+    user.subscription_expires_at = expires_at
 
     # If downgrading from duo to individual, revoke partner
-    if ".duo" not in req.product_id and user.family_role == "payer":
+    if ".duo" not in product_id and user.family_role == "payer":
         member_q = await db.execute(
             select(User).where(User.family_payer_id == user.id)
         )
@@ -134,7 +161,9 @@ async def verify_purchase(
     await db.commit()
     logger.info("subscription_activated", extra={
         "user_id": str(user_id),
-        "product_id": req.product_id,
+        "product_id": product_id,
+        "transaction_id": str(payload.transactionId),
+        "environment": payload.environment.value if payload.environment else None,
     })
 
     return VerifyResponse(

@@ -285,7 +285,7 @@ Backend env vars are managed via Cloud Run (secrets in Secret Manager, plain var
 ## Implementation Status
 
 - **Done**: All REST APIs, database models, iOS SwiftUI frontend, frontend-backend integration, Constrained Agent architecture, plan tool (multi-step planning), E2E audit infrastructure
-- **Not done**: Phase 4 push notifications, RAG knowledge base, Phase 5 宠物共享（多主人共享 + 会员体系）
+- **Not done**: Phase 4 push notifications, RAG knowledge base content (pipeline done, needs knowledge articles), Phase 5 宠物共享（多主人共享 + 会员体系）
 - **Spec**: `docs/superpowers/specs/2026-03-17-petcare-agent-design.md` has the full architecture (incl. design system, agent evolution roadmap, iOS standards)
 
 ## TODO: Production Readiness
@@ -298,6 +298,56 @@ Backend env vars are managed via Cloud Run (secrets in Secret Manager, plain var
 - **Neon 数据库连接数** — 免费版有连接数限制，用户增长后最先碰到瓶颈，考虑连接池或升级
 - **LLM API 限流** — 取决于中转站的 rate limit，需要确认并加 fallback
 - **LLM Observability 升级路径** — 用户量上来后考虑 OpenTelemetry + Cloud Trace，或 Langfuse（开源 LLM 追踪）
+
+## RAG 宠物健康问答
+
+RAG pipeline 已搭建完成，用于提升健康问答准确性。LLM 通过 `search_knowledge` 工具检索外部知识库 + 用户历史记录。
+
+### 架构
+
+```
+用户问健康问题 → LLM 调用 search_knowledge(query, pet_id, species)
+  → embed_text(query) 生成向量
+  → 并行查询: 知识库 (全局) + 用户历史 (per user/pet)
+  → 返回 knowledge + history + references card
+  → LLM 结合宠物档案生成回答 + 按需问诊引导
+  → iOS 显示 References 按钮 → 点击弹出 drawer
+```
+
+### 文件结构
+
+```
+backend/app/rag/
+├── __init__.py
+├── embeddings.py       # embed_text() — OpenAI text-embedding-3-small via LiteLLM
+├── retrieval.py        # retrieve_knowledge() — pgvector 向量检索
+├── writer.py           # write_chat_embedding() — 异步写入 chat embedding
+└── ingest.py           # CLI 批量导入知识库
+
+backend/knowledge/      # 外部知识库 markdown 文件（待填充）
+```
+
+### 知识库管理
+
+```bash
+cd backend
+python -m app.rag.ingest --file knowledge/dog_vomiting.md --species dog --category 消化系统
+python -m app.rag.ingest --dir knowledge/ --species dog
+python -m app.rag.ingest --stats
+```
+
+知识库文件格式：markdown，可选 YAML frontmatter（title, url）。按段落切分为 ~400 字 chunks，每个 chunk 生成 embedding 存入 pgvector。
+
+### 数据模型
+
+- **KnowledgeArticle** — 外部知识原始文章（title, content, category, species, url）
+- **Embedding** — pgvector 向量存储，`source_type` 枚举：`knowledge_base`（全局）/ `calendar_event` / `daily_summary`（per user）
+- Embedding 模型：OpenAI text-embedding-3-small（1536 维），配置项 `embedding_model`
+
+### 待完成
+
+- 填充知识库内容（狗/猫常见疾病、症状、用药、疫苗等 markdown 文件）
+- iOS References drawer 中历史记录跳转到日历事件详情
 
 ## How to Add a New Tool (Checklist)
 

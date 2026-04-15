@@ -16,6 +16,7 @@ class AuthStore: ObservableObject {
     @Published var hasAcknowledgedDisclaimer = false
     @Published var isLoading = false
     @Published var errorMessage: String?
+    @Published var cachedAvatarImage: UIImage?
 
     private struct FullAuthResp: Decodable {
         let access_token: String; let refresh_token: String; let user_id: String
@@ -33,15 +34,39 @@ class AuthStore: ObservableObject {
            let saved = try? JSONDecoder().decode(UserInfo.self, from: data) {
             user = saved
             isAuthenticated = true
-            Task { await validateSession() }
+            // Load cached avatar from disk immediately
+            Task {
+                await cacheAvatar(from: saved.avatarUrl)
+                await validateSession()
+            }
         }
         hasAcknowledgedDisclaimer = UserDefaults.standard.bool(forKey: disclaimerKey)
     }
 
     private func validateSession() async {
-        struct UserResp: Decodable { let id: String }
+        struct UserResp: Decodable {
+            let id: String
+            let email: String
+            let name: String?
+            let avatar_url: String?
+            let auth_provider: String
+        }
         do {
-            let _: UserResp = try await APIClient.shared.request("GET", "/auth/me")
+            let me: UserResp = try await APIClient.shared.request("GET", "/auth/me")
+            // Refresh cached user with latest avatar_url from server
+            if let current = self.user {
+                let updated = UserInfo(
+                    name: me.name ?? current.name,
+                    email: me.email,
+                    provider: me.auth_provider,
+                    avatarUrl: me.avatar_url ?? current.avatarUrl
+                )
+                self.user = updated
+                if let data = try? JSONEncoder().encode(updated) {
+                    UserDefaults.standard.set(data, forKey: authKey)
+                }
+                await cacheAvatar(from: updated.avatarUrl)
+            }
         } catch {
             isAuthenticated = false
         }
@@ -172,12 +197,17 @@ class AuthStore: ObservableObject {
     }
 
     private func fetchUserFromMe(fallbackProvider: String) async {
-        struct UserResp: Decodable { let id: String; let email: String; let name: String?; let auth_provider: String }
+        struct UserResp: Decodable {
+            let id: String
+            let email: String
+            let name: String?
+            let avatar_url: String?
+            let auth_provider: String
+        }
         do {
             let me: UserResp = try await APIClient.shared.request("GET", "/auth/me")
-            saveUser(UserInfo(name: me.name ?? "User", email: me.email, provider: me.auth_provider, avatarUrl: nil))
+            saveUser(UserInfo(name: me.name ?? "User", email: me.email, provider: me.auth_provider, avatarUrl: me.avatar_url))
         } catch {
-            // /auth/me failed — still log the user in with minimal info
             print("fetchUserFromMe failed: \(error)")
             saveUser(UserInfo(name: "User", email: "", provider: fallbackProvider, avatarUrl: nil))
         }
@@ -205,11 +235,80 @@ class AuthStore: ObservableObject {
         UserDefaults.standard.removeObject(forKey: "cozypup_calendar")
         UserDefaults.standard.removeObject(forKey: "cozypup_chat_messages")
         UserDefaults.standard.removeObject(forKey: "cozypup_chat_session")
+        clearAvatarCache()
         Task { await APIClient.shared.clearTokens() }
     }
 
     func acknowledgeDisclaimer() {
         hasAcknowledgedDisclaimer = true
         UserDefaults.standard.set(true, forKey: disclaimerKey)
+    }
+
+    // MARK: - User mutations
+
+    /// Update the in-memory + cached UserInfo with a new name. Caller is
+    /// responsible for the backend PATCH.
+    func updateName(_ name: String) {
+        guard let current = user else { return }
+        let updated = UserInfo(name: name, email: current.email, provider: current.provider, avatarUrl: current.avatarUrl)
+        self.user = updated
+        if let data = try? JSONEncoder().encode(updated) {
+            UserDefaults.standard.set(data, forKey: authKey)
+        }
+    }
+
+    /// Update the in-memory + cached UserInfo with a new avatar URL.
+    func updateAvatarURL(_ url: String) {
+        guard let current = user else { return }
+        let updated = UserInfo(name: current.name, email: current.email, provider: current.provider, avatarUrl: url)
+        self.user = updated
+        if let data = try? JSONEncoder().encode(updated) {
+            UserDefaults.standard.set(data, forKey: authKey)
+        }
+        // Re-cache locally
+        Task { await cacheAvatar(from: url) }
+    }
+
+    // MARK: - Avatar cache
+
+    private static var avatarCachePath: URL {
+        FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
+            .appendingPathComponent("user_avatar.jpg")
+    }
+
+    /// Download avatar from URL and cache to disk
+    func cacheAvatar(from urlString: String?) async {
+        guard let urlString, !urlString.isEmpty, let url = URL(string: urlString) else {
+            cachedAvatarImage = nil
+            return
+        }
+        // Check disk cache first
+        if let data = try? Data(contentsOf: Self.avatarCachePath),
+           let image = UIImage(data: data) {
+            cachedAvatarImage = image
+        }
+        // Download fresh copy in background
+        do {
+            let (data, _) = try await URLSession.shared.data(from: url)
+            if let image = UIImage(data: data) {
+                try? data.write(to: Self.avatarCachePath)
+                cachedAvatarImage = image
+            }
+        } catch {
+            print("[AuthStore] avatar cache failed: \(error)")
+        }
+    }
+
+    /// Set avatar from local UIImage (after PhotosPicker upload)
+    func setCachedAvatar(_ image: UIImage) {
+        cachedAvatarImage = image
+        if let data = image.jpegData(compressionQuality: 0.8) {
+            try? data.write(to: Self.avatarCachePath)
+        }
+    }
+
+    private func clearAvatarCache() {
+        cachedAvatarImage = nil
+        try? FileManager.default.removeItem(at: Self.avatarCachePath)
     }
 }

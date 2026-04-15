@@ -1,0 +1,13 @@
+{% extends "_base.html" %}
+{% block title %}You're in — CozyPup{% endblock %}
+{% block content %}
+  <div class="success-icon">✓</div>
+  <h1>You're in!</h1>
+  <p class="subtitle">You now share <em>{{ inviter_name }}</em>'s CozyPup Duo plan. Open the app to start caring for your pets together.</p>
+
+  <a href="https://apps.apple.com/app/id{{ app_apple_id }}" class="btn btn-primary">
+    Download CozyPup
+  </a>
+
+  <p class="footer" style="margin-top:16px;">Already have the app? Just sign in with the same Google account and you'll see everything.</p>
+{% endblock %}

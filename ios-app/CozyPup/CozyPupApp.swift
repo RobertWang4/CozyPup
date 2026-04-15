@@ -122,6 +122,8 @@ struct CozyPupApp: App {
                 if auth.isAuthenticated {
                     await subscriptionStore.loadStatus()
                     await subscriptionStore.loadProducts()
+                    // Prefetch trial stats so the upgrade modal opens instantly
+                    await subscriptionStore.loadTrialStats()
                 }
             }
         }

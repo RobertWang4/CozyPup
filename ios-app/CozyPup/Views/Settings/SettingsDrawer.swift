@@ -1,4 +1,5 @@
 import SwiftUI
+import StoreKit
 
 struct SettingsDrawer: View {
     @EnvironmentObject var auth: AuthStore
@@ -7,10 +8,12 @@ struct SettingsDrawer: View {
     @EnvironmentObject var subscriptionStore: SubscriptionStore
     @Binding var isPresented: Bool
 
-    @State private var notifications = true
-    @State private var medReminders = true
-    @State private var weeklyInsights = false
     @State private var calendarSync = CalendarSyncService.shared.isSyncEnabled
+    @State private var showWhatsNew = false
+    @State private var showShareSheet = false
+    @State private var showFAQ = false
+    @State private var pendingExternalMessage: String = ""
+    @State private var pendingExternalAction: (() -> Void)?
     @State private var showCalendarSyncOptions = false
     @ObservedObject private var lang = Lang.shared
     @State private var editingPetId: String?
@@ -23,10 +26,10 @@ struct SettingsDrawer: View {
     @State private var showScanner = false
     @State private var scannedToken: String?
     @State private var showMergeSheet = false
+    @State private var scanAlertTitle: String?
+    @State private var scanAlertMessage: String?
     @State private var showPetShareSheet: Pet?
     @State private var showPetUnshareSheet: Pet?
-
-    private let prefsKey = "cozypup_notification_prefs"
 
     private enum Page { case list, editPet, addPet }
     private var currentPage: Page {
@@ -54,7 +57,6 @@ struct SettingsDrawer: View {
             }
         }
         .animation(.easeInOut(duration: 0.25), value: currentPage == .list)
-        .onAppear { loadPrefs() }
         .onChange(of: deepLinkPetId) { _, value in
             if let value {
                 // Try matching by id first, then by name
@@ -67,9 +69,6 @@ struct SettingsDrawer: View {
             }
         }
         .task { await petStore.fetchFromAPI() }
-        .onChange(of: notifications) { savePrefs() }
-        .onChange(of: medReminders) { savePrefs() }
-        .onChange(of: weeklyInsights) { savePrefs() }
         .alert(L.deletePet, isPresented: Binding(
             get: { showDeleteConfirm != nil },
             set: { if !$0 { showDeleteConfirm = nil } }
@@ -124,14 +123,38 @@ struct SettingsDrawer: View {
                 .environmentObject(subscriptionStore)
         }
         .fullScreenCover(isPresented: $showScanner) {
-            PetShareScannerSheet { token in
-                scannedToken = token
+            PetShareScannerSheet { payload in
                 showScanner = false
-                // Present merge sheet after small delay to let scanner dismiss
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
-                    showMergeSheet = true
+                // Dispatch based on what we just scanned.
+                if let token = parsePetShareToken(payload) {
+                    scannedToken = token
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+                        showMergeSheet = true
+                    }
+                } else if let inviteId = parseFamilyInviteId(payload) {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+                        Task { await acceptFamilyInvite(inviteId: inviteId) }
+                    }
+                } else {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+                        scanAlertTitle = Lang.shared.isZh ? "无法识别的二维码" : "Unrecognized QR"
+                        scanAlertMessage = Lang.shared.isZh
+                            ? "这个二维码不是 CozyPup 的邀请码。"
+                            : "This QR code isn't a CozyPup invite."
+                    }
                 }
             }
+        }
+        .alert(
+            scanAlertTitle ?? "",
+            isPresented: Binding(
+                get: { scanAlertTitle != nil },
+                set: { if !$0 { scanAlertTitle = nil; scanAlertMessage = nil } }
+            )
+        ) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(scanAlertMessage ?? "")
         }
         .sheet(isPresented: $showMergeSheet) {
             if let token = scannedToken {
@@ -160,180 +183,64 @@ struct SettingsDrawer: View {
         }
     }
 
+    // MARK: - QR payload parsing
+
+    /// Extract the pet-share token from the legacy `cozypup://share?token=...` QR.
+    private func parsePetShareToken(_ payload: String) -> String? {
+        guard let url = URL(string: payload),
+              url.scheme == "cozypup",
+              url.host == "share",
+              let token = URLComponents(url: url, resolvingAgainstBaseURL: false)?
+                  .queryItems?.first(where: { $0.name == "token" })?.value
+        else { return nil }
+        return token
+    }
+
+    /// Extract the invite id from a family invite landing URL, e.g.
+    /// `https://backend-.../invite/{uuid}`.
+    private func parseFamilyInviteId(_ payload: String) -> String? {
+        guard let url = URL(string: payload) else { return nil }
+        let comps = url.pathComponents  // ["/", "invite", "{id}"]
+        guard comps.count >= 3, comps[comps.count - 2] == "invite" else { return nil }
+        let last = comps[comps.count - 1]
+        // Validate it's a UUID (rough check)
+        guard UUID(uuidString: last) != nil else { return nil }
+        return last
+    }
+
+    @MainActor
+    private func acceptFamilyInvite(inviteId: String) async {
+        struct Body: Encodable { let invite_id: String }
+        struct Resp: Decodable { let status: String }
+        do {
+            let _: Resp = try await APIClient.shared.request(
+                "POST", "/family/accept", body: Body(invite_id: inviteId)
+            )
+            scanAlertTitle = Lang.shared.isZh ? "已加入！" : "Joined!"
+            scanAlertMessage = Lang.shared.isZh
+                ? "你已接受邀请,现在可以和对方共享宠物档案了。"
+                : "You've joined the Duo plan. You can now share pet care with your partner."
+            await subscriptionStore.loadStatus()
+        } catch {
+            scanAlertTitle = Lang.shared.isZh ? "接受失败" : "Couldn't accept"
+            scanAlertMessage = Lang.shared.isZh
+                ? "邀请可能已过期或已被使用,请让对方重新生成一个。"
+                : "The invite may be expired or already used. Ask your partner to generate a new one."
+        }
+    }
+
     // MARK: - Settings List
 
     private var settingsListView: some View {
         NavigationStack {
             List {
-                Section {
-                    Button {
-                        showUserProfile = true
-                    } label: {
-                        HStack(spacing: 12) {
-                            Circle()
-                                .fill(Tokens.accent)
-                                .frame(width: Tokens.size.avatarMedium, height: Tokens.size.avatarMedium)
-                                .overlay(
-                                    Text(String(auth.user?.name.prefix(1) ?? "U"))
-                                        .foregroundColor(Tokens.white)
-                                        .font(Tokens.fontHeadline.weight(.semibold))
-                                )
-                            VStack(alignment: .leading, spacing: Tokens.spacing.xxs) {
-                                Text(auth.user?.name ?? "User")
-                                    .font(Tokens.fontCallout.weight(.medium))
-                                    .foregroundColor(Tokens.text)
-                                Text(auth.user?.email ?? "")
-                                    .font(Tokens.fontSubheadline)
-                                    .foregroundColor(Tokens.textSecondary)
-                            }
-                            Spacer()
-                            Image(systemName: "chevron.right")
-                                .font(Tokens.fontCaption)
-                                .foregroundColor(Tokens.textTertiary)
-                        }
-                    }
-                    .listRowBackground(Tokens.surface)
-
-                    Button {
-                        showPaywall = true
-                    } label: {
-                        HStack {
-                            Image(systemName: "crown.fill")
-                                .foregroundColor(Tokens.accent)
-                                .frame(width: Tokens.size.avatarSmall)
-                            Text("Subscription")
-                                .font(Tokens.fontBody)
-                                .foregroundColor(Tokens.text)
-                            Spacer()
-                            Group {
-                                switch subscriptionStore.status {
-                                case .trial(let days):
-                                    Text("Trial · \(days)d")
-                                        .foregroundColor(Tokens.orange)
-                                case .active:
-                                    Text("Active")
-                                        .foregroundColor(Tokens.green)
-                                case .expired:
-                                    Text("Expired")
-                                        .foregroundColor(Tokens.red)
-                                case .loading:
-                                    ProgressView()
-                                }
-                            }
-                            .font(Tokens.fontSubheadline)
-                            Image(systemName: "chevron.right")
-                                .font(Tokens.fontCaption)
-                                .foregroundColor(Tokens.textTertiary)
-                        }
-                    }
-                    .listRowBackground(Tokens.surface)
-
-                }
-
-                Section(L.myPets) {
-                    ForEach(petStore.pets) { pet in
-                        HStack(spacing: 12) {
-                            if !pet.avatarUrl.isEmpty,
-                               let baseURL = APIClient.shared.avatarURL(pet.avatarUrl),
-                               let url = URL(string: "\(baseURL.absoluteString)?v=\(petStore.avatarRevision)") {
-                                CachedAsyncImage(url: url) { image in
-                                    image.resizable().scaledToFill()
-                                } placeholder: {
-                                    Image(systemName: pet.species == .cat ? "cat" : "dog")
-                                        .font(Tokens.fontTitle)
-                                        .foregroundColor(pet.color)
-                                }
-                                .frame(width: Tokens.size.avatarSmall, height: Tokens.size.avatarSmall)
-                                .clipShape(Circle())
-                            } else {
-                                Image(systemName: pet.species == .cat ? "cat" : "dog")
-                                    .font(Tokens.fontTitle)
-                                    .foregroundColor(pet.color)
-                                    .frame(width: Tokens.size.avatarSmall)
-                            }
-                            VStack(alignment: .leading, spacing: 3) {
-                                HStack(spacing: 6) {
-                                    Text(pet.name).font(Tokens.fontBody.weight(.medium))
-                                    if !pet.breed.isEmpty {
-                                        Text(pet.breed)
-                                            .font(Tokens.fontCaption)
-                                            .foregroundColor(Tokens.textSecondary)
-                                    }
-                                }
-                            }
-                            Spacer()
-                            Button {
-                                withAnimation { editingPetId = pet.id }
-                            } label: {
-                                Image(systemName: "pencil")
-                                    .font(Tokens.fontSubheadline)
-                                    .foregroundColor(Tokens.textSecondary)
-                                    .frame(width: Tokens.size.avatarSmall, height: Tokens.size.avatarSmall)
-                            }
-                            .buttonStyle(.borderless)
-                            Button {
-                                showDeleteConfirm = pet
-                            } label: {
-                                Image(systemName: "trash")
-                                    .font(Tokens.fontSubheadline)
-                                    .foregroundColor(Tokens.red)
-                                    .frame(width: Tokens.size.avatarSmall, height: Tokens.size.avatarSmall)
-                            }
-                            .buttonStyle(.borderless)
-                        }
-                        .listRowBackground(Tokens.surface)
-                    }
-                    Button {
-                        withAnimation { showAddPet = true }
-                    } label: {
-                        Label(L.addPet, systemImage: "plus")
-                            .font(Tokens.fontSubheadline.weight(.medium))
-                            .foregroundColor(Tokens.accent)
-                    }
-                    .listRowBackground(Tokens.surface)
-
-                }
-
-                Section(L.language) {
-                    Picker(L.responseLang, selection: $lang.code) {
-                        Text("中文").tag("zh")
-                        Text("English").tag("en")
-                    }
-                    .tint(Tokens.textSecondary)
-                }
-                .listRowBackground(Tokens.surface)
-
-                Section(L.calendar) {
-                    Toggle(L.syncToAppleCalendar, isOn: $calendarSync)
-                        .onChange(of: calendarSync) { _, newValue in
-                            if newValue {
-                                showCalendarSyncOptions = true
-                            } else {
-                                CalendarSyncService.shared.setSyncEnabled(false)
-                            }
-                        }
-                }
-                .tint(Tokens.green)
-                .listRowBackground(Tokens.surface)
-
-                Section(L.notifications) {
-                    Toggle(L.pushNotifications, isOn: $notifications)
-                    Toggle(L.medReminders, isOn: $medReminders)
-                    Toggle(L.weeklyInsights, isOn: $weeklyInsights)
-                }
-                .tint(Tokens.green)
-                .listRowBackground(Tokens.surface)
-
-                Section {
-                    Button(role: .destructive) {
-                        Haptics.medium()
-                        auth.logout()
-                        withAnimation(.easeInOut(duration: 0.3)) { isPresented = false }
-                    } label: {
-                        Label(L.logOut, systemImage: "rectangle.portrait.and.arrow.right")
-                    }
-                    .listRowBackground(Tokens.surface)
-                }
+                profileCardSection
+                myPetsSection
+                preferencesSection
+                notificationsSection
+                supportSection
+                aboutSection
+                logOutSection
             }
             .scrollContentBackground(.hidden)
             .background(Tokens.bg)
@@ -354,6 +261,335 @@ struct SettingsDrawer: View {
                     }
                 }
             }
+            .sheet(isPresented: $showWhatsNew) {
+                NavigationStack { WhatsNewView() }
+            }
+            .sheet(isPresented: $showFAQ) {
+                NavigationStack { FAQView() }
+            }
+            .alert(
+                lang.isZh ? "离开 CozyPup？" : "Leave CozyPup?",
+                isPresented: Binding(
+                    get: { pendingExternalAction != nil },
+                    set: { if !$0 { pendingExternalAction = nil } }
+                )
+            ) {
+                Button(lang.isZh ? "取消" : "Cancel", role: .cancel) {
+                    pendingExternalAction = nil
+                }
+                Button(lang.isZh ? "继续" : "Continue") {
+                    let action = pendingExternalAction
+                    pendingExternalAction = nil
+                    action?()
+                }
+            } message: {
+                Text(pendingExternalMessage)
+            }
+            .sheet(isPresented: $showShareSheet) {
+                if let url = URL(string: AppConfig.appStoreURL) {
+                    ShareSheet(items: [url])
+                }
+            }
+        }
+    }
+
+    // MARK: - Sections
+
+    @ViewBuilder
+    private var profileCardSection: some View {
+        Section {
+            Button {
+                showUserProfile = true
+            } label: {
+                HStack(spacing: 12) {
+                    if let image = auth.cachedAvatarImage {
+                        Image(uiImage: image)
+                            .resizable().scaledToFill()
+                            .frame(width: Tokens.size.avatarMedium, height: Tokens.size.avatarMedium)
+                            .clipShape(Circle())
+                    } else {
+                        Circle()
+                            .fill(Tokens.accent)
+                            .frame(width: Tokens.size.avatarMedium, height: Tokens.size.avatarMedium)
+                            .overlay(
+                                Text(String(auth.user?.name.prefix(1) ?? "U"))
+                                    .foregroundColor(Tokens.white)
+                                    .font(Tokens.fontHeadline.weight(.semibold))
+                            )
+                    }
+                    VStack(alignment: .leading, spacing: Tokens.spacing.xxs) {
+                        Text(auth.user?.name ?? "User")
+                            .font(Tokens.fontCallout.weight(.medium))
+                            .foregroundColor(Tokens.text)
+                        Text(auth.user?.email ?? "")
+                            .font(Tokens.fontSubheadline)
+                            .foregroundColor(Tokens.textSecondary)
+                    }
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .font(Tokens.fontCaption)
+                        .foregroundColor(Tokens.textTertiary)
+                }
+            }
+            .listRowBackground(Tokens.surface)
+        }
+    }
+
+    @ViewBuilder
+    private var myPetsSection: some View {
+        Section(L.myPets) {
+            ForEach(petStore.pets) { pet in
+                petRow(pet)
+            }
+            Button {
+                withAnimation { showAddPet = true }
+            } label: {
+                Label(L.addPet, systemImage: "plus")
+                    .font(Tokens.fontSubheadline.weight(.medium))
+                    .foregroundColor(Tokens.accent)
+            }
+            .listRowBackground(Tokens.surface)
+        }
+    }
+
+    @ViewBuilder
+    private func petRow(_ pet: Pet) -> some View {
+        HStack(spacing: 12) {
+            if !pet.avatarUrl.isEmpty,
+               let baseURL = APIClient.shared.avatarURL(pet.avatarUrl),
+               let url = URL(string: "\(baseURL.absoluteString)?v=\(petStore.avatarRevision)") {
+                CachedAsyncImage(url: url) { image in
+                    image.resizable().scaledToFill()
+                } placeholder: {
+                    Image(systemName: pet.species == .cat ? "cat" : "dog")
+                        .font(Tokens.fontTitle)
+                        .foregroundColor(pet.color)
+                }
+                .frame(width: Tokens.size.avatarSmall, height: Tokens.size.avatarSmall)
+                .clipShape(Circle())
+            } else {
+                Image(systemName: pet.species == .cat ? "cat" : "dog")
+                    .font(Tokens.fontTitle)
+                    .foregroundColor(pet.color)
+                    .frame(width: Tokens.size.avatarSmall)
+            }
+            VStack(alignment: .leading, spacing: 3) {
+                HStack(spacing: 6) {
+                    Text(pet.name).font(Tokens.fontBody.weight(.medium))
+                    if !pet.breed.isEmpty {
+                        Text(pet.breed)
+                            .font(Tokens.fontCaption)
+                            .foregroundColor(Tokens.textSecondary)
+                    }
+                }
+            }
+            Spacer()
+            Button {
+                withAnimation { editingPetId = pet.id }
+            } label: {
+                Image(systemName: "pencil")
+                    .font(Tokens.fontSubheadline)
+                    .foregroundColor(Tokens.textSecondary)
+                    .frame(width: Tokens.size.avatarSmall, height: Tokens.size.avatarSmall)
+            }
+            .buttonStyle(.borderless)
+            Button {
+                showDeleteConfirm = pet
+            } label: {
+                Image(systemName: "trash")
+                    .font(Tokens.fontSubheadline)
+                    .foregroundColor(Tokens.red)
+                    .frame(width: Tokens.size.avatarSmall, height: Tokens.size.avatarSmall)
+            }
+            .buttonStyle(.borderless)
+        }
+        .listRowBackground(Tokens.surface)
+    }
+
+    @ViewBuilder
+    private var preferencesSection: some View {
+        Section(lang.isZh ? "偏好" : "Preferences") {
+            Picker(L.responseLang, selection: $lang.code) {
+                Text("中文").tag("zh")
+                Text("English").tag("en")
+            }
+            .tint(Tokens.textSecondary)
+
+            Toggle(L.syncToAppleCalendar, isOn: $calendarSync)
+                .onChange(of: calendarSync) { _, newValue in
+                    if newValue {
+                        showCalendarSyncOptions = true
+                    } else {
+                        CalendarSyncService.shared.setSyncEnabled(false)
+                    }
+                }
+        }
+        .tint(Tokens.green)
+        .listRowBackground(Tokens.surface)
+    }
+
+    @ViewBuilder
+    private var notificationsSection: some View {
+        Section(L.notifications) {
+            Button {
+                requestExternal(
+                    message: lang.isZh
+                        ? "将跳转到系统「设置」的 CozyPup 通知页面。"
+                        : "You'll be taken to iOS Settings to manage CozyPup notifications."
+                ) {
+                    if let url = URL(string: UIApplication.openNotificationSettingsURLString) {
+                        UIApplication.shared.open(url)
+                    }
+                }
+            } label: {
+                HStack {
+                    Label {
+                        Text(L.pushNotifications)
+                            .font(Tokens.fontBody)
+                            .foregroundColor(Tokens.text)
+                    } icon: {
+                        Image(systemName: "bell")
+                            .foregroundColor(Tokens.accent)
+                    }
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .font(Tokens.fontCaption)
+                        .foregroundColor(Tokens.textTertiary)
+                }
+            }
+        }
+        .listRowBackground(Tokens.surface)
+    }
+
+    @ViewBuilder
+    private var supportSection: some View {
+        Section(lang.isZh ? "支持" : "Support") {
+            Button {
+                showFAQ = true
+            } label: {
+                supportRow(icon: "questionmark.circle", title: lang.isZh ? "常见问题" : "FAQ")
+            }
+
+            Button {
+                requestExternal(
+                    message: lang.isZh
+                        ? "将跳转到「邮件」发送给 \(AppConfig.supportEmail)。"
+                        : "You'll be taken to Mail to contact \(AppConfig.supportEmail)."
+                ) {
+                    openMail(to: AppConfig.supportEmail, subject: "CozyPup Support")
+                }
+            } label: {
+                supportRow(icon: "envelope", title: lang.isZh ? "联系我们" : "Contact Support")
+            }
+
+            Button {
+                requestExternal(
+                    message: lang.isZh
+                        ? "将跳转到「邮件」发送反馈给 \(AppConfig.supportEmail)，邮件中会包含当前版本和设备信息。"
+                        : "You'll be taken to Mail to send feedback to \(AppConfig.supportEmail). The message will include your app version and device info."
+                ) {
+                    let subject = "[Report] CozyPup \(AppConfig.versionString)"
+                    let body = "Device: \(UIDevice.current.model)\niOS: \(UIDevice.current.systemVersion)\n\n"
+                    openMail(to: AppConfig.supportEmail, subject: subject, body: body)
+                }
+            } label: {
+                supportRow(icon: "exclamationmark.bubble", title: lang.isZh ? "反馈问题" : "Report a Problem")
+            }
+
+            Button {
+                if let scene = UIApplication.shared.connectedScenes
+                    .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene {
+                    SKStoreReviewController.requestReview(in: scene)
+                }
+            } label: {
+                supportRow(icon: "star", title: lang.isZh ? "给 CozyPup 评分" : "Rate CozyPup")
+            }
+
+            if AppConfig.isShareEnabled {
+                Button {
+                    showShareSheet = true
+                } label: {
+                    supportRow(icon: "square.and.arrow.up", title: lang.isZh ? "分享 CozyPup" : "Share CozyPup")
+                }
+            }
+        }
+        .listRowBackground(Tokens.surface)
+    }
+
+    @ViewBuilder
+    private var aboutSection: some View {
+        Section(lang.isZh ? "关于" : "About") {
+            Button {
+                showWhatsNew = true
+            } label: {
+                supportRow(icon: "sparkles", title: lang.isZh ? "更新说明" : "What's New")
+            }
+
+            HStack {
+                Label {
+                    Text(lang.isZh ? "版本" : "Version")
+                        .font(Tokens.fontBody)
+                        .foregroundColor(Tokens.text)
+                } icon: {
+                    Image(systemName: "info.circle")
+                        .foregroundColor(Tokens.accent)
+                }
+                Spacer()
+                Text(AppConfig.versionString)
+                    .font(Tokens.fontCaption)
+                    .foregroundColor(Tokens.textSecondary)
+            }
+        }
+        .listRowBackground(Tokens.surface)
+    }
+
+    @ViewBuilder
+    private var logOutSection: some View {
+        Section {
+            Button(role: .destructive) {
+                Haptics.medium()
+                auth.logout()
+                withAnimation(.easeInOut(duration: 0.3)) { isPresented = false }
+            } label: {
+                Label(L.logOut, systemImage: "rectangle.portrait.and.arrow.right")
+            }
+            .listRowBackground(Tokens.surface)
+        }
+    }
+
+    // MARK: - Helpers
+
+    private func supportRow(icon: String, title: String) -> some View {
+        HStack {
+            Label {
+                Text(title)
+                    .font(Tokens.fontBody)
+                    .foregroundColor(Tokens.text)
+            } icon: {
+                Image(systemName: icon)
+                    .foregroundColor(Tokens.accent)
+            }
+            Spacer()
+            Image(systemName: "chevron.right")
+                .font(Tokens.fontCaption)
+                .foregroundColor(Tokens.textTertiary)
+        }
+    }
+
+    private func requestExternal(message: String, action: @escaping () -> Void) {
+        pendingExternalMessage = message
+        pendingExternalAction = action
+    }
+
+    private func openMail(to: String, subject: String, body: String = "") {
+        var components = URLComponents()
+        components.scheme = "mailto"
+        components.path = to
+        var items: [URLQueryItem] = [URLQueryItem(name: "subject", value: subject)]
+        if !body.isEmpty { items.append(URLQueryItem(name: "body", value: body)) }
+        components.queryItems = items
+        if let url = components.url {
+            UIApplication.shared.open(url)
         }
     }
 
@@ -432,37 +668,6 @@ struct SettingsDrawer: View {
                 }
             }
         }
-    }
-
-    // MARK: - Helpers
-
-    private func loadPrefs() {
-        if let data = UserDefaults.standard.data(forKey: prefsKey),
-           let prefs = try? JSONDecoder().decode([String: Bool].self, from: data) {
-            notifications = prefs["notifications"] ?? true
-            medReminders = prefs["medReminders"] ?? true
-            weeklyInsights = prefs["weeklyInsights"] ?? false
-        }
-    }
-
-    private func savePrefs() {
-        let prefs = ["notifications": notifications, "medReminders": medReminders, "weeklyInsights": weeklyInsights]
-        if let data = try? JSONEncoder().encode(prefs) {
-            UserDefaults.standard.set(data, forKey: prefsKey)
-        }
-    }
-
-    private func petAge(_ birthday: String) -> String {
-        let f = DateFormatter()
-        f.dateFormat = "yyyy-MM-dd"
-        guard let born = f.date(from: birthday) else { return birthday }
-        let months = Calendar.current.dateComponents([.month], from: born, to: Date()).month ?? 0
-        if months < 12 {
-            return "\(months)mo"
-        }
-        let years = months / 12
-        let rem = months % 12
-        return rem > 0 ? "\(years)y\(rem)mo" : "\(years)y"
     }
 
 }

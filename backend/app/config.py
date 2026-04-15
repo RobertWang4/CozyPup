@@ -24,8 +24,42 @@ class Settings(BaseSettings):
     apns_team_id: str = ""         # Apple Developer Team ID
     apple_bundle_id: str = "com.cozypup.app"  # Also used for Apple Sign-In audience verification
     google_client_id: str = "496617144117-73j9krtarupr8as09cka2tg06sn4cke8.apps.googleusercontent.com"
+
+    # Google OAuth — Web application client (used for the /invite landing page only).
+    # Separate from google_client_id, which is the iOS native client used by
+    # iOS Sign in with Google. Populated from Secret Manager in production.
+    google_web_client_id: str = ""
+    google_web_client_secret: str = ""
+
+    # Sign in with Apple (web) — for the /invite landing page.
+    # Different from iOS Sign in with Apple: the web flow uses a separate
+    # Services ID (not the app Bundle ID), and the client_secret is a
+    # short-lived JWT we sign ourselves with a private key (.p8).
+    #
+    # apple_web_service_id: the Services ID registered in Apple Developer
+    #   (e.g. "com.cozypup.app.web")
+    # apple_web_key_id: 10-char Key ID from Apple Developer → Keys
+    # apple_web_private_key: PEM contents of the .p8 file (starts with
+    #   "-----BEGIN PRIVATE KEY-----"). Stored in Secret Manager, injected
+    #   as an env var. Newlines in env vars are preserved verbatim.
+    # apple_web_team_id: Apple Developer Team ID. Falls back to apns_team_id
+    #   if not explicitly set — they are the same Team.
+    # apple_web_domain_association: contents of the Apple domain association
+    #   file served at /.well-known/apple-developer-domain-association.
+    #   Apple downloads this to verify we own the domain.
+    apple_web_service_id: str = ""
+    apple_web_key_id: str = ""
+    apple_web_private_key: str = ""
+    apple_web_team_id: str = ""
+    apple_web_domain_association: str = ""
     apns_bundle_id: str = "com.cozypup.app"
     apns_use_sandbox: bool = True  # True for dev, False for production
+
+    # Apple In-App Purchase / StoreKit 2
+    # app_apple_id is the numeric Apple ID from App Store Connect (Apple ID under your app listing)
+    app_apple_id: int = 6761727110
+    # True for sandbox/TestFlight, False for App Store production. Clients may override via X-Apple-Env header.
+    iap_sandbox: bool = True
 
     # Server public URL (for constructing image URLs for LLM vision)
     server_public_url: str = "http://168.138.75.153:8000"

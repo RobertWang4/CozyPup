@@ -35,6 +35,15 @@
 		7731ABF813BF951F3E213A76 /* MonthGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBECB417FFCC3D48F84654B5 /* MonthGrid.swift */; };
 		7E98B4FE09F40D553F3312A0 /* CalendarEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = E59EDD63ED4B5127A8B5D2DC /* CalendarEvent.swift */; };
 		858DEA8563727562E8ACE8BC /* CozyPupApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D437A3D3656001306737E784 /* CozyPupApp.swift */; };
+		APPCFG00000000000000002 /* AppConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = APPCFG00000000000000001 /* AppConfig.swift */; };
+		SAFARWV00000000000000002 /* SafariWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SAFARWV00000000000000001 /* SafariWebView.swift */; };
+		SHRSHT000000000000000002 /* ShareSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = SHRSHT000000000000000001 /* ShareSheet.swift */; };
+		RELNOT000000000000000002 /* ReleaseNotes.swift in Sources */ = {isa = PBXBuildFile; fileRef = RELNOT000000000000000001 /* ReleaseNotes.swift */; };
+		WHTSNW000000000000000002 /* WhatsNewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = WHTSNW000000000000000001 /* WhatsNewView.swift */; };
+		ACKNOW000000000000000002 /* AcknowledgementsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACKNOW000000000000000001 /* AcknowledgementsView.swift */; };
+		DUOPLN000000000000000002 /* DuoPlanSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = DUOPLN000000000000000001 /* DuoPlanSection.swift */; };
+		FAQDAT000000000000000002 /* FAQ.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAQDAT000000000000000001 /* FAQ.swift */; };
+		FAQVIE000000000000000002 /* FAQView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAQVIE000000000000000001 /* FAQView.swift */; };
 		885B288C97AAC7FAFAF5980E /* SettingsDrawer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6F1DE010DA6010A14147BF8 /* SettingsDrawer.swift */; };
 		8C479A4CCAAB3EA751F08C51 /* ChatService.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF65632CC6A30CD8137CBF57 /* ChatService.swift */; };
 		8EC0BA8575B497F7C1BAD383 /* SpendingStatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 672B2FDA2C5B4BF54603A7DE /* SpendingStatsView.swift */; };
@@ -51,6 +60,7 @@
 		B21CAB20F3E00F67BF64675A /* DailyTaskStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E831C8CE60089D202386C70 /* DailyTaskStore.swift */; };
 		C998476087AE4EF9AD4B365C /* SubscriptionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE19542780E14C1D952ADB72 /* SubscriptionStore.swift */; };
 		PAY0001000000000000000001 /* PaywallSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = PAY0002000000000000000002 /* PaywallSheet.swift */; };
+		UPGMOD000000000000000002 /* UpgradeModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = UPGMOD000000000000000001 /* UpgradeModal.swift */; };
 		PS10000100000000SHARE0001 /* PetShareSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = PS20000100000000SHARE0001 /* PetShareSheet.swift */; };
 		PS10000200000000MERGE0001 /* PetMergeSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = PS20000200000000MERGE0001 /* PetMergeSheet.swift */; };
 		PS10000300000000UNSHR0001 /* PetUnshareSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = PS20000300000000UNSHR0001 /* PetUnshareSheet.swift */; };
@@ -97,6 +107,7 @@
 		2E831C8CE60089D202386C70 /* DailyTaskStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyTaskStore.swift; sourceTree = "<group>"; };
 		BE19542780E14C1D952ADB72 /* SubscriptionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionStore.swift; sourceTree = "<group>"; };
 		PAY0002000000000000000002 /* PaywallSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallSheet.swift; sourceTree = "<group>"; };
+		UPGMOD000000000000000001 /* UpgradeModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpgradeModal.swift; sourceTree = "<group>"; };
 		PS20000100000000SHARE0001 /* PetShareSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PetShareSheet.swift; sourceTree = "<group>"; };
 		PS20000200000000MERGE0001 /* PetMergeSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PetMergeSheet.swift; sourceTree = "<group>"; };
 		PS20000300000000UNSHR0001 /* PetUnshareSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PetUnshareSheet.swift; sourceTree = "<group>"; };
@@ -151,6 +162,15 @@
 		B2C3D4E5F6071234ABCD5678 /* QuickActionCards.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickActionCards.swift; sourceTree = "<group>"; };
 		D2586D01E7C42221ABD72995 /* LocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
 		D437A3D3656001306737E784 /* CozyPupApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CozyPupApp.swift; sourceTree = "<group>"; };
+		APPCFG00000000000000001 /* AppConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfig.swift; sourceTree = "<group>"; };
+		SAFARWV00000000000000001 /* SafariWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafariWebView.swift; sourceTree = "<group>"; };
+		SHRSHT000000000000000001 /* ShareSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareSheet.swift; sourceTree = "<group>"; };
+		RELNOT000000000000000001 /* ReleaseNotes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReleaseNotes.swift; sourceTree = "<group>"; };
+		WHTSNW000000000000000001 /* WhatsNewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatsNewView.swift; sourceTree = "<group>"; };
+		ACKNOW000000000000000001 /* AcknowledgementsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AcknowledgementsView.swift; sourceTree = "<group>"; };
+		DUOPLN000000000000000001 /* DuoPlanSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DuoPlanSection.swift; sourceTree = "<group>"; };
+		FAQDAT000000000000000001 /* FAQ.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FAQ.swift; sourceTree = "<group>"; };
+		FAQVIE000000000000000001 /* FAQView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FAQView.swift; sourceTree = "<group>"; };
 		E49D254E58DB8AEDD31BF3B0 /* CameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
 		E59EDD63ED4B5127A8B5D2DC /* CalendarEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarEvent.swift; sourceTree = "<group>"; };
 		E6D276B8E4BE99D3CA63F74F /* EventRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventRow.swift; sourceTree = "<group>"; };
@@ -240,6 +260,9 @@
 			children = (
 				45AA8E3614CA2B9242759444 /* Assets.xcassets */,
 				D437A3D3656001306737E784 /* CozyPupApp.swift */,
+				APPCFG00000000000000001 /* AppConfig.swift */,
+				RELNOT000000000000000001 /* ReleaseNotes.swift */,
+				FAQDAT000000000000000001 /* FAQ.swift */,
 				PUSH0001000000000000000000 /* CozyPup.entitlements */,
 				EBAD5792AB19AA7036912E67 /* Info.plist */,
 				402C658B19F53A70267E6697 /* Models */,
@@ -302,6 +325,8 @@
 				F098F57E511474AEEB173948 /* PhotoCropSheet.swift */,
 				3295CA4BEC61EA4CB1EFA88A /* PinchGestureView.swift */,
 				FF1AC786D70AD0CA016CA68A /* CachedAsyncImage.swift */,
+				SAFARWV00000000000000001 /* SafariWebView.swift */,
+				SHRSHT000000000000000001 /* ShareSheet.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -326,6 +351,10 @@
 				E953D8A8BA28DA30AE609878 /* PetProfileEditor.swift */,
 				B6F1DE010DA6010A14147BF8 /* SettingsDrawer.swift */,
 				2BB807C14C655DB7B5A4C94A /* UserProfileSheet.swift */,
+				WHTSNW000000000000000001 /* WhatsNewView.swift */,
+				ACKNOW000000000000000001 /* AcknowledgementsView.swift */,
+				DUOPLN000000000000000001 /* DuoPlanSection.swift */,
+				FAQVIE000000000000000001 /* FAQView.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -362,6 +391,7 @@
 			isa = PBXGroup;
 			children = (
 				PAY0002000000000000000002 /* PaywallSheet.swift */,
+				UPGMOD000000000000000001 /* UpgradeModal.swift */,
 			);
 			path = Paywall;
 			sourceTree = "<group>";
@@ -512,6 +542,15 @@
 				E4CE679EF88093851EBC91E0 /* ChatView.swift in Sources */,
 				B26546A329CCAA0E29AF43B5 /* ConfirmActionCard.swift in Sources */,
 				858DEA8563727562E8ACE8BC /* CozyPupApp.swift in Sources */,
+				APPCFG00000000000000002 /* AppConfig.swift in Sources */,
+				SAFARWV00000000000000002 /* SafariWebView.swift in Sources */,
+				SHRSHT000000000000000002 /* ShareSheet.swift in Sources */,
+				RELNOT000000000000000002 /* ReleaseNotes.swift in Sources */,
+				WHTSNW000000000000000002 /* WhatsNewView.swift in Sources */,
+				ACKNOW000000000000000002 /* AcknowledgementsView.swift in Sources */,
+				DUOPLN000000000000000002 /* DuoPlanSection.swift in Sources */,
+				FAQDAT000000000000000002 /* FAQ.swift in Sources */,
+				FAQVIE000000000000000002 /* FAQView.swift in Sources */,
 				C0A91D7D044C8CB2E17B6497 /* CustomScrollIndicator.swift in Sources */,
 				E67C92566B3C14D978EF14FC /* DailyTask.swift in Sources */,
 				71B1FAE04C85E05B030755EB /* DailyTaskIndicator.swift in Sources */,
@@ -565,6 +604,7 @@
 				F49A9885B071C199C20CF809 /* LocationPickerSheet.swift in Sources */,
 				8EC0BA8575B497F7C1BAD383 /* SpendingStatsView.swift in Sources */,
 				PAY0001000000000000000001 /* PaywallSheet.swift in Sources */,
+				UPGMOD000000000000000002 /* UpgradeModal.swift in Sources */,
 				PS10000100000000SHARE0001 /* PetShareSheet.swift in Sources */,
 				PS10000200000000MERGE0001 /* PetMergeSheet.swift in Sources */,
 				PS10000300000000UNSHR0001 /* PetUnshareSheet.swift in Sources */,

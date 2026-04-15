@@ -156,13 +156,15 @@ actor APIClient {
         _ path: String,
         fileData: Data,
         fileName: String,
-        mimeType: String
+        mimeType: String,
+        timeout: TimeInterval = 20
     ) async throws -> Data {
         guard let token = accessToken else { throw APIError.notAuthenticated }
 
         let url = URL(string: "\(baseURL)\(path)")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
+        request.timeoutInterval = timeout
         let boundary = UUID().uuidString
         request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
@@ -180,7 +182,7 @@ actor APIClient {
 
         if status == 401 {
             if try await attemptRefresh() {
-                return try await uploadMultipart(path, fileData: fileData, fileName: fileName, mimeType: mimeType)
+                return try await uploadMultipart(path, fileData: fileData, fileName: fileName, mimeType: mimeType, timeout: timeout)
             }
             throw APIError.notAuthenticated
         }

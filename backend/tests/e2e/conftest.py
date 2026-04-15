@@ -6,8 +6,10 @@ card fields, and API side effects. SSE parsing replicates iOS ChatService.swift.
 
 from __future__ import annotations
 
+import base64
 import json
 import os
+import struct
 import time
 from dataclasses import dataclass, field
 from datetime import date, timedelta
@@ -184,6 +186,7 @@ class E2EClient:
         self.api = f"{self.base_url}/api/v1"
         self.token: str | None = None
         self.user_id: str | None = None
+        self.email: str | None = None
         self.last_session_id: str | None = None
         self.debug = debug  # Send X-Debug: true header
         self._client = httpx.AsyncClient(timeout=TIMEOUT)
@@ -209,6 +212,7 @@ class E2EClient:
         data = resp.json()
         self.token = data["access_token"]
         self.user_id = data.get("user_id")
+        self.email = email
 
     # -- Chat (SSE) --
 
@@ -321,6 +325,114 @@ class E2EClient:
         resp.raise_for_status()
         return resp.json()
 
+    # -- Sharing helpers --
+
+    async def create_share_token(self, pet_id: str) -> dict:
+        """POST /pets/{pet_id}/share-token — create a share token for a pet."""
+        resp = await self._client.post(
+            f"{self.api}/pets/{pet_id}/share-token",
+            headers=self.headers,
+        )
+        resp.raise_for_status()
+        return resp.json()
+
+    async def accept_share(self, token: str, merge_pet_id: str | None = None) -> dict:
+        """POST /pets/accept-share — accept a pet share. Returns status_code + body."""
+        body: dict = {"token": token}
+        if merge_pet_id:
+            body["merge_pet_id"] = merge_pet_id
+        resp = await self._client.post(
+            f"{self.api}/pets/accept-share",
+            json=body,
+            headers=self.headers,
+        )
+        return {"status_code": resp.status_code, **resp.json()}
+
+    async def unshare_pet(self, pet_id: str, keep_copy: bool = False) -> dict:
+        """POST /pets/{pet_id}/unshare — unshare a pet."""
+        resp = await self._client.post(
+            f"{self.api}/pets/{pet_id}/unshare",
+            json={"keep_copy": keep_copy},
+            headers=self.headers,
+        )
+        resp.raise_for_status()
+        return resp.json()
+
+    # -- Subscription helpers --
+
+    async def set_subscription(self, status: str = "active", product_id: str | None = None) -> dict:
+        """DEV ONLY — set subscription status and product_id for testing."""
+        body: dict = {"status": status}
+        if product_id is not None:
+            body["product_id"] = product_id
+        resp = await self._client.post(
+            f"{self.api}/auth/dev/set-subscription",
+            json=body,
+            headers=self.headers,
+        )
+        resp.raise_for_status()
+        return resp.json()
+
+    # -- Family helpers --
+
+    async def get_family_status(self) -> dict:
+        """GET /family/status — get family/duo plan status."""
+        resp = await self._client.get(
+            f"{self.api}/family/status",
+            headers=self.headers,
+        )
+        resp.raise_for_status()
+        return resp.json()
+
+    async def invite_family(self, email: str) -> dict:
+        """POST /family/invite — invite a family member. Returns status_code + body."""
+        resp = await self._client.post(
+            f"{self.api}/family/invite",
+            json={"email": email},
+            headers=self.headers,
+        )
+        return {"status_code": resp.status_code, **resp.json()}
+
+    async def accept_family(self, invite_id: str | None = None) -> dict:
+        """POST /family/accept — accept a family invite. Returns status_code + body."""
+        body: dict = {}
+        if invite_id:
+            body["invite_id"] = invite_id
+        resp = await self._client.post(
+            f"{self.api}/family/accept",
+            json=body,
+            headers=self.headers,
+        )
+        return {"status_code": resp.status_code, **resp.json()}
+
+    async def revoke_family(self) -> dict:
+        """POST /family/revoke — revoke family membership. Returns status_code + body."""
+        resp = await self._client.post(
+            f"{self.api}/family/revoke",
+            headers=self.headers,
+        )
+        return {"status_code": resp.status_code, **resp.json()}
+
+    # -- Tasks & Reminders helpers --
+
+    async def get_tasks_today(self) -> list[dict]:
+        """GET /tasks/today — get today's task list."""
+        resp = await self._client.get(
+            f"{self.api}/tasks/today",
+            headers=self.headers,
+        )
+        resp.raise_for_status()
+        return resp.json()
+
+    async def get_reminders(self) -> list[dict]:
+        """GET /reminders — get all reminders."""
+        resp = await self._client.get(
+            f"{self.api}/reminders",
+            headers=self.headers,
+        )
+        resp.raise_for_status()
+        return resp.json()
+
     # -- Failure logging --
 
     def dump_failure(
@@ -376,6 +488,83 @@ def yesterday_str() -> str:
     return (date.today() - timedelta(days=1)).isoformat()
 
 
+def load_test_image(path: str | None = None) -> str:
+    """Return a base64-encoded JPEG string.
+
+    If *path* is given it is resolved relative to the project root
+    (backend/).  Otherwise a minimal valid 1x1 red JPEG is generated
+    in-memory so tests have no external file dependency.
+    """
+    if path is not None:
+        project_root = Path(__file__).resolve().parents[2]  # backend/
+        img_path = project_root / path
+        return base64.b64encode(img_path.read_bytes()).decode()
+
+    # Minimal valid JFIF JPEG — 1x1 pixel, red (#FF0000)
+    # Built by hand: SOI, APP0 (JFIF), DQT, SOF0, DHT(DC), DHT(AC), SOS, data, EOI
+    _MINI_JPEG = bytes([
+        0xFF, 0xD8,                                     # SOI
+        0xFF, 0xE0, 0x00, 0x10, 0x4A, 0x46, 0x49, 0x46, # APP0 JFIF header
+        0x00, 0x01, 0x01, 0x00, 0x00, 0x01, 0x00, 0x01,
+        0x00, 0x00,
+        0xFF, 0xDB, 0x00, 0x43, 0x00,                   # DQT marker
+        *([0x01] * 64),                                  # 8x8 quant table (all 1s)
+        0xFF, 0xC0, 0x00, 0x0B, 0x08,                   # SOF0
+        0x00, 0x01, 0x00, 0x01, 0x01, 0x01, 0x11, 0x00, # 1x1, 1 component
+        0xFF, 0xC4, 0x00, 0x1F, 0x00,                   # DHT DC table
+        0x00, 0x01, 0x05, 0x01, 0x01, 0x01, 0x01, 0x01,
+        0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
+        0x08, 0x09, 0x0A, 0x0B,
+        0xFF, 0xC4, 0x00, 0xB5, 0x10,                   # DHT AC table
+        0x00, 0x02, 0x01, 0x03, 0x03, 0x02, 0x04, 0x03,
+        0x05, 0x05, 0x04, 0x04, 0x00, 0x00, 0x01, 0x7D,
+        0x01, 0x02, 0x03, 0x00, 0x04, 0x11, 0x05, 0x12,
+        0x21, 0x31, 0x41, 0x06, 0x13, 0x51, 0x61, 0x07,
+        0x22, 0x71, 0x14, 0x32, 0x81, 0x91, 0xA1, 0x08,
+        0x23, 0x42, 0xB1, 0xC1, 0x15, 0x52, 0xD1, 0xF0,
+        0x24, 0x33, 0x62, 0x72, 0x82, 0x09, 0x0A, 0x16,
+        0x17, 0x18, 0x19, 0x1A, 0x25, 0x26, 0x27, 0x28,
+        0x29, 0x2A, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39,
+        0x3A, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49,
+        0x4A, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58, 0x59,
+        0x5A, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69,
+        0x6A, 0x73, 0x74, 0x75, 0x76, 0x77, 0x78, 0x79,
+        0x7A, 0x83, 0x84, 0x85, 0x86, 0x87, 0x88, 0x89,
+        0x8A, 0x92, 0x93, 0x94, 0x95, 0x96, 0x97, 0x98,
+        0x99, 0x9A, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6, 0xA7,
+        0xA8, 0xA9, 0xAA, 0xB2, 0xB3, 0xB4, 0xB5, 0xB6,
+        0xB7, 0xB8, 0xB9, 0xBA, 0xC2, 0xC3, 0xC4, 0xC5,
+        0xC6, 0xC7, 0xC8, 0xC9, 0xCA, 0xD2, 0xD3, 0xD4,
+        0xD5, 0xD6, 0xD7, 0xD8, 0xD9, 0xDA, 0xE1, 0xE2,
+        0xE3, 0xE4, 0xE5, 0xE6, 0xE7, 0xE8, 0xE9, 0xEA,
+        0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6, 0xF7, 0xF8,
+        0xF9, 0xFA,
+        0xFF, 0xDA, 0x00, 0x08, 0x01, 0x01, 0x00, 0x00, # SOS
+        0x3F, 0x00, 0x7B, 0x40,                          # scan data (red pixel)
+        0xFF, 0xD9,                                       # EOI
+    ])
+    return base64.b64encode(_MINI_JPEG).decode()
+
+
+def get_tools_called(result: ChatResult) -> list[str]:
+    """Extract the list of tool names called from a ChatResult's debug trace.
+
+    The trace (available when ``debug=True``) contains a ``steps`` array.
+    One of those steps carries a ``data`` dict with a ``tools_called`` list.
+    Returns an empty list if trace is missing or no tools were called.
+    """
+    if not result.trace:
+        return []
+    steps = result.trace.get("steps", [])
+    for step in steps:
+        data = step if isinstance(step, dict) else {}
+        tc = data.get("data", data).get("tools_called")
+        if tc is not None:
+            return tc
+    return []
+
+
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
@@ -404,3 +593,59 @@ async def e2e_with_two_pets(e2e):
     pet2 = await e2e.create_pet("花花", "cat")
     e2e._pets = [pet1, pet2]
     return e2e
+
+
+# ---------------------------------------------------------------------------
+# Debug-enabled fixtures (X-Debug: true → trace data available)
+# ---------------------------------------------------------------------------
+
+@pytest_asyncio.fixture
+async def e2e_debug(base_url):
+    """E2E client with debug=True for trace inspection."""
+    client = E2EClient(base_url, debug=True)
+    await client.auth_dev()
+    yield client
+    await client.close()
+
+
+@pytest_asyncio.fixture
+async def e2e_debug_with_pet(e2e_debug):
+    """Debug E2E client with one pre-created pet named '小维' (dog)."""
+    pet = await e2e_debug.create_pet("小维", "dog")
+    e2e_debug._default_pet = pet
+    return e2e_debug
+
+
+@pytest_asyncio.fixture
+async def e2e_debug_with_two_pets(e2e_debug):
+    """Debug E2E client with two pets: 小维 (dog) + 花花 (cat)."""
+    pet1 = await e2e_debug.create_pet("小维", "dog")
+    pet2 = await e2e_debug.create_pet("花花", "cat")
+    e2e_debug._pets = [pet1, pet2]
+    return e2e_debug
+
+
+@pytest_asyncio.fixture
+async def e2e_debug_with_three_pets(e2e_debug):
+    """Debug E2E client with three pets: 小维 (dog), 花花 (cat), 豆豆 (dog)."""
+    pet1 = await e2e_debug.create_pet("小维", "dog")
+    pet2 = await e2e_debug.create_pet("花花", "cat")
+    pet3 = await e2e_debug.create_pet("豆豆", "dog")
+    e2e_debug._pets = [pet1, pet2, pet3]
+    return e2e_debug
+
+
+# ---------------------------------------------------------------------------
+# Pair fixture (two isolated users for sharing / family tests)
+# ---------------------------------------------------------------------------
+
+@pytest_asyncio.fixture
+async def e2e_pair(base_url):
+    """Two isolated debug-enabled E2E clients (A and B) for sharing/family tests."""
+    a = E2EClient(base_url, debug=True)
+    b = E2EClient(base_url, debug=True)
+    await a.auth_dev()
+    await b.auth_dev()
+    yield a, b
+    await a.close()
+    await b.close()

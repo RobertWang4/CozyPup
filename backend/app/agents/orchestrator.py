@@ -117,6 +117,35 @@ def _describe_tool_call(fn_name: str, fn_args: dict, pets: list | None = None, l
 
 
 # ---------------------------------------------------------------------------
+# _load_images_from_urls — 从磁盘读取历史图片为 base64
+# ---------------------------------------------------------------------------
+
+def _load_images_from_urls(urls: list[str]) -> list[str]:
+    """从图片 URL 路径中读取文件并转为 base64。
+
+    URLs 格式为 /api/v1/calendar/photos/{uuid}.jpg，
+    对应磁盘路径 PHOTO_DIR/{uuid}.jpg。
+    """
+    import base64
+    from pathlib import Path
+
+    photo_dir = (
+        Path("/app/uploads/photos") if Path("/app/uploads").exists()
+        else Path(__file__).resolve().parent.parent / "uploads" / "photos"
+    )
+    result = []
+    for url in urls:
+        filename = url.rsplit("/", 1)[-1]
+        filepath = photo_dir / filename
+        try:
+            if filepath.exists() and filepath.stat().st_size <= 5 * 1024 * 1024:
+                result.append(base64.b64encode(filepath.read_bytes()).decode())
+        except Exception:
+            continue
+    return result
+
+
+# ---------------------------------------------------------------------------
 # dispatch_tool — 统一的工具分发：validate → confirm → execute → card
 # ---------------------------------------------------------------------------
 
@@ -131,6 +160,7 @@ async def dispatch_tool(
     pets: list | None = None,
     images: list[str] | None = None,
     image_urls: list[str] | None = None,
+    recent_image_urls: list[str] | None = None,
     **kwargs,
 ) -> dict:
     """统一的工具执行入口。
@@ -248,13 +278,23 @@ async def dispatch_tool(
 
     # --- request_images：返回特殊标记，主循环会注入图片 ---
     if fn_name == "request_images":
-        if not images:
-            return {"error": "用户没有附带图片" if lang == "zh" else "No images attached"}
-        return {
-            "status": "images_loaded",
-            "message": "图片已加载" if lang == "zh" else "Images loaded",
-            "_inject_images": images,
-        }
+        if images:
+            return {
+                "status": "images_loaded",
+                "message": "图片已加载" if lang == "zh" else "Images loaded",
+                "_inject_images": images,
+            }
+        # 当前 turn 没有图片，尝试从历史消息的图片文件读取 base64
+        if recent_image_urls:
+            history_images = _load_images_from_urls(recent_image_urls)
+            if history_images:
+                return {
+                    "status": "images_loaded",
+                    "message": ("已加载历史消息中的图片" if lang == "zh"
+                                else "Loaded images from previous messages"),
+                    "_inject_images": history_images,
+                }
+        return {"error": "用户没有附带图片" if lang == "zh" else "No images attached"}
 
     # --- Confirm gate：破坏性工具需要用户确认 ---
     if needs_confirm(fn_name, fn_args) and session_id:
@@ -276,12 +316,14 @@ async def dispatch_tool(
 
     # --- Execute ---
     try:
-        # 透传 image_urls 和 location 给所有工具，工具侧自行决定是否使用
-        exec_kwargs = {}
+        # 透传 image_urls、location、lang 给所有工具，工具侧自行决定是否使用
+        exec_kwargs = {"lang": lang}
         if "location" in kwargs:
             exec_kwargs["location"] = kwargs["location"]
-        if image_urls:
-            exec_kwargs["image_urls"] = image_urls
+        # 当前 turn 有图片用当前的，没有则回退到历史消息中的图片 URL
+        effective_image_urls = image_urls or recent_image_urls
+        if effective_image_urls:
+            exec_kwargs["image_urls"] = effective_image_urls
 
         tool_result = await execute_tool(fn_name, fn_args, db, user_id, **exec_kwargs)
         await db.commit()
@@ -588,6 +630,7 @@ async def run_orchestrator(
     # 从 kwargs 提取 dispatch_tool 需要的参数
     images = kwargs.pop("images", None)
     image_urls = kwargs.pop("image_urls", None)
+    recent_image_urls = kwargs.pop("recent_image_urls", None)  # 历史消息中的图片 URL
     location = kwargs.pop("location", None)
     pets = kwargs.pop("pets", None)
 
@@ -712,6 +755,7 @@ async def run_orchestrator(
             tool_result = await dispatch_tool(
                 tc, db, user_id, session_id, result, on_card, lang,
                 pets=pets, images=images, image_urls=image_urls,
+                recent_image_urls=recent_image_urls,
                 location=location, _messages=messages,
             )
 
