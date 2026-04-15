@@ -30,6 +30,28 @@ class Settings(BaseSettings):
     # iOS Sign in with Google. Populated from Secret Manager in production.
     google_web_client_id: str = ""
     google_web_client_secret: str = ""
+
+    # Sign in with Apple (web) — for the /invite landing page.
+    # Different from iOS Sign in with Apple: the web flow uses a separate
+    # Services ID (not the app Bundle ID), and the client_secret is a
+    # short-lived JWT we sign ourselves with a private key (.p8).
+    #
+    # apple_web_service_id: the Services ID registered in Apple Developer
+    #   (e.g. "com.cozypup.app.web")
+    # apple_web_key_id: 10-char Key ID from Apple Developer → Keys
+    # apple_web_private_key: PEM contents of the .p8 file (starts with
+    #   "-----BEGIN PRIVATE KEY-----"). Stored in Secret Manager, injected
+    #   as an env var. Newlines in env vars are preserved verbatim.
+    # apple_web_team_id: Apple Developer Team ID. Falls back to apns_team_id
+    #   if not explicitly set — they are the same Team.
+    # apple_web_domain_association: contents of the Apple domain association
+    #   file served at /.well-known/apple-developer-domain-association.
+    #   Apple downloads this to verify we own the domain.
+    apple_web_service_id: str = ""
+    apple_web_key_id: str = ""
+    apple_web_private_key: str = ""
+    apple_web_team_id: str = ""
+    apple_web_domain_association: str = ""
     apns_bundle_id: str = "com.cozypup.app"
     apns_use_sandbox: bool = True  # True for dev, False for production
 
