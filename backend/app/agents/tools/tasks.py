@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import DailyTask, Pet, TaskType
 from app.agents.tools.registry import register_tool
+from app.agents.locale import t
 
 
 @register_tool("create_daily_task")
@@ -107,13 +108,15 @@ async def list_daily_tasks(
     }
 
 
-@register_tool("manage_daily_task")
+@register_tool("manage_daily_task", accepts_kwargs=True)
 async def manage_daily_task(
     arguments: dict,
     db: AsyncSession,
     user_id: uuid.UUID,
+    **kwargs,
 ) -> dict:
     """Update, delete, or deactivate a daily task."""
+    lang = kwargs.get("lang", "zh")
     action = arguments["action"]
 
     # Handle "delete_all" — bulk delete all active tasks for this user
@@ -126,20 +129,23 @@ async def manage_daily_task(
         )
         tasks = result.scalars().all()
         if not tasks:
+            no_tasks_msg = "没有待办需要删除" if lang == "zh" else "No tasks to delete"
             return {"success": True, "action": "delete_all", "deleted_count": 0, "message": "No active tasks to delete",
-                    "card": {"type": "daily_task_deleted", "title": "没有待办需要删除"}}
+                    "card": {"type": "daily_task_deleted", "title": no_tasks_msg}}
         deleted_titles = [t.title for t in tasks]
         for t in tasks:
             await db.delete(t)
         await db.flush()
+        n = len(deleted_titles)
+        bulk_title = f"已删除 {n} 个待办" if lang == "zh" else f"Deleted {n} task(s)"
         return {
             "success": True,
             "action": "delete_all",
-            "deleted_count": len(deleted_titles),
+            "deleted_count": n,
             "deleted_titles": deleted_titles,
             "card": {
                 "type": "daily_task_deleted",
-                "title": f"已删除 {len(deleted_titles)} 个待办",
+                "title": bulk_title,
             },
         }
 
@@ -157,20 +163,23 @@ async def manage_daily_task(
         )
         tasks = result.scalars().all()
         if not tasks:
+            no_tasks_msg = "没有待办需要删除" if lang == "zh" else "No tasks to delete"
             return {"success": True, "action": "delete_all", "deleted_count": 0, "message": "No active tasks to delete",
-                    "card": {"type": "daily_task_deleted", "title": "没有待办需要删除"}}
+                    "card": {"type": "daily_task_deleted", "title": no_tasks_msg}}
         deleted_titles = [t.title for t in tasks]
         for t in tasks:
             await db.delete(t)
         await db.flush()
+        n = len(deleted_titles)
+        bulk_title = f"已删除 {n} 个待办" if lang == "zh" else f"Deleted {n} task(s)"
         return {
             "success": True,
             "action": "delete_all",
-            "deleted_count": len(deleted_titles),
+            "deleted_count": n,
             "deleted_titles": deleted_titles,
             "card": {
                 "type": "daily_task_deleted",
-                "title": f"已删除 {len(deleted_titles)} 个待办",
+                "title": bulk_title,
             },
         }
 

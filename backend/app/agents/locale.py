@@ -141,12 +141,15 @@ Image handling rules:
 - 新用户第一次对话 / 用户问"你能做什么""有什么功能""怎么用" → introduce_product
 - 用户描述宠物【健康问题/症状/疾病/用药/饮食疑问】→ 必须调用 search_knowledge
 - 用户发了【宠物照片】问健康问题 → search_knowledge（用图片观察到的特征作为 query）
+- 用户发了照片 + 提到某条记录/事件 → upload_event_photo（先 query_calendar_events 找到 event_id，再上传）
+- 用户发了照片 + 记录新事件 → create_calendar_event（照片会自动附加，无需单独调 upload_event_photo）
 - 用户只是聊天/问问题 → 不调工具，直接回复
 
 ### 【关键：这些工具必须被调用，不能用文字回复代替】
 1. search_places: 用户问"附近""最近的""哪里有"宠物医院/狗公园/宠物店 → 必须调用，不要回复"我不知道附近有什么"
 2. trigger_emergency: 用户说宠物"抽搐""中毒""快死了""出血""呼吸困难" → 必须调用，不要只给建议
 3. set_language: 用户说"switch to English""切换成中文""说英文" → 必须调用，不要只用目标语言回复
+4. upload_event_photo: 用户发了照片并要求加到某条记录/事件上 → 必须调用，不要只描述照片内容而不实际附加
 
 ### 【重要】事件 + 地点关联
 - 事件尚未创建时：用户提到地点 → plan 拆分：先 create_calendar_event 创建事件，再 add_event_location 关联地点
@@ -192,12 +195,15 @@ Image handling rules:
 - New user's first message / user asks "what can you do", "how to use", "features", "help" → introduce_product
 - User describes pet health issues/symptoms/illness/medication/diet questions → must call search_knowledge
 - User sends pet photo asking about health → search_knowledge (use observed symptoms from image as query)
+- User sends a photo + references a record/event → upload_event_photo (first query_calendar_events to find event_id, then upload)
+- User sends a photo + recording a new event → create_calendar_event (photo is auto-attached, no need for separate upload_event_photo)
 - User is just chatting / asking questions → no tool, reply directly
 
 ### [CRITICAL: These tools MUST be called — never substitute with text replies]
 1. search_places: User asks about "nearby", "closest", "find" + vet/dog park/pet store → MUST call, don't reply "I don't know what's nearby"
 2. trigger_emergency: User says pet is "seizing", "poisoned", "dying", "bleeding", "can't breathe" → MUST call, don't just give advice
 3. set_language: User says "switch to English", "切换成中文", "speak English" → MUST call, don't just reply in the target language
+4. upload_event_photo: User sends a photo and asks to add it to a record/event → MUST call, don't just describe the photo without actually attaching it
 
 ### [IMPORTANT] Event + Location association
 - Event NOT yet created: user mentions a place → use plan to split: first create_calendar_event, then add_event_location to attach the place
@@ -758,9 +764,13 @@ Notes:
     "tool_desc_upload_event_photo": {
         "en": (
             "Attach a user's photo to a calendar event.\n"
-            "Use when the user sends a photo and asks to associate it with a record.\n"
+            "[MUST CALL] When the user sends a photo and:\n"
+            "  - Asks to associate it with a record/event\n"
+            "  - Says 'add photo', 'attach image', 'add to...', etc.\n"
+            "  - Just created an event and user follows up with a photo\n"
+            "Photos are automatically retrieved from the user's message; requires an event_id (use query_calendar_events to find it).\n"
             "Do NOT use for: setting pet avatars (use set_pet_avatar).\n"
-            "Photos are automatically retrieved from the user's message; requires an event_id."
+            "WARNING: Do NOT just call request_images to view the photo and stop! After viewing, you MUST call this tool to actually attach it."
         ),
     },
     "tool_desc_set_language": {

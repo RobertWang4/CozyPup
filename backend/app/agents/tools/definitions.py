@@ -534,9 +534,13 @@ _BASE_TOOL_DEFINITIONS = [
             "name": "upload_event_photo",
             "description": (
                 "将用户的照片附加到日历事件。\n"
-                "当用户发了照片并要求关联到某条记录时使用。\n"
+                "【必须调用】当用户发了照片并且：\n"
+                "  - 要求关联到某条记录/事件\n"
+                "  - 说'加照片''添加图片''附加到...'\n"
+                "  - 对话上下文中刚刚创建了事件且用户补发了照片\n"
+                "照片自动从用户消息中获取，需要先有 event_id（可通过 query_calendar_events 查找）。\n"
                 "不要用于: 设置宠物头像 (用 set_pet_avatar)。\n"
-                "照片自动从用户消息中获取，需要先有 event_id。"
+                "⚠️ 不要只调 request_images 看图就结束！看完图后必须调此工具实际附加照片。"
             ),
             "parameters": {
                 "type": "object",
