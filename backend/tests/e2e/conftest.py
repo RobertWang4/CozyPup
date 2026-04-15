@@ -557,11 +557,15 @@ def get_tools_called(result: ChatResult) -> list[str]:
     if not result.trace:
         return []
     steps = result.trace.get("steps", [])
-    for step in steps:
-        data = step if isinstance(step, dict) else {}
-        tc = data.get("data", data).get("tools_called")
+    for step in reversed(steps):
+        if not isinstance(step, dict):
+            continue
+        inner = step.get("data", {})
+        if not isinstance(inner, dict):
+            continue
+        tc = inner.get("tools_called")
         if tc is not None:
-            return tc
+            return list(tc)
     return []
 
 
