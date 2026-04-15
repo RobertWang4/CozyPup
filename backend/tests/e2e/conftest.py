@@ -186,6 +186,7 @@ class E2EClient:
         self.api = f"{self.base_url}/api/v1"
         self.token: str | None = None
         self.user_id: str | None = None
+        self.email: str | None = None
         self.last_session_id: str | None = None
         self.debug = debug  # Send X-Debug: true header
         self._client = httpx.AsyncClient(timeout=TIMEOUT)
@@ -211,6 +212,7 @@ class E2EClient:
         data = resp.json()
         self.token = data["access_token"]
         self.user_id = data.get("user_id")
+        self.email = email
 
     # -- Chat (SSE) --
 
@@ -351,6 +353,21 @@ class E2EClient:
         resp = await self._client.post(
             f"{self.api}/pets/{pet_id}/unshare",
             json={"keep_copy": keep_copy},
+            headers=self.headers,
+        )
+        resp.raise_for_status()
+        return resp.json()
+
+    # -- Subscription helpers --
+
+    async def set_subscription(self, status: str = "active", product_id: str | None = None) -> dict:
+        """DEV ONLY — set subscription status and product_id for testing."""
+        body: dict = {"status": status}
+        if product_id is not None:
+            body["product_id"] = product_id
+        resp = await self._client.post(
+            f"{self.api}/auth/dev/set-subscription",
+            json=body,
             headers=self.headers,
         )
         resp.raise_for_status()

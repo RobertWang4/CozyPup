@@ -92,6 +92,80 @@ async def login_dev(req: DevAuthRequest, db: AsyncSession = Depends(get_db)):
     return _make_tokens(user)
 
 
+@router.post("/dev/expire-me")
+async def dev_expire_me(
+    user_id: uuid.UUID = Depends(get_current_user_id),
+    db: AsyncSession = Depends(get_db),
+):
+    """DEV ONLY — force current user's subscription to expired so the free-user
+    chat gate can be tested. Do not expose once the app is public.
+    """
+    from datetime import datetime, timezone, timedelta
+    result = await db.execute(select(User).where(User.id == user_id))
+    user = result.scalar_one_or_none()
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    user.subscription_status = "expired"
+    user.trial_start_date = datetime.now(timezone.utc) - timedelta(days=30)
+    user.subscription_expires_at = datetime.now(timezone.utc) - timedelta(days=1)
+    user.subscription_product_id = None
+    await db.commit()
+    logger.info("dev_expire_me", extra={"user_id": str(user_id)})
+    return {"status": "expired"}
+
+
+@router.post("/dev/restore-me")
+async def dev_restore_me(
+    user_id: uuid.UUID = Depends(get_current_user_id),
+    db: AsyncSession = Depends(get_db),
+):
+    """DEV ONLY — reverse of /dev/expire-me. Puts the current user back into a
+    fresh 7-day trial.
+    """
+    from datetime import datetime, timezone
+    result = await db.execute(select(User).where(User.id == user_id))
+    user = result.scalar_one_or_none()
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    user.subscription_status = "trial"
+    user.trial_start_date = datetime.now(timezone.utc)
+    user.subscription_expires_at = None
+    await db.commit()
+    logger.info("dev_restore_me", extra={"user_id": str(user_id)})
+    return {"status": "trial"}
+
+
+@router.post("/dev/set-subscription")
+async def dev_set_subscription(
+    req: dict,
+    user_id: uuid.UUID = Depends(get_current_user_id),
+    db: AsyncSession = Depends(get_db),
+):
+    """DEV ONLY — set subscription status and product_id for testing.
+
+    Body: {"status": "active", "product_id": "com.cozypup.duo.monthly"}
+    """
+    from app.flags import get_bool_flag
+    from fastapi import status as http_status
+    if not get_bool_flag("auth_dev_enabled", default=True):
+        raise HTTPException(status_code=http_status.HTTP_404_NOT_FOUND, detail="Not Found")
+    result = await db.execute(select(User).where(User.id == user_id))
+    user = result.scalar_one_or_none()
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    if "status" in req:
+        user.subscription_status = req["status"]
+    if "product_id" in req:
+        user.subscription_product_id = req["product_id"]
+    await db.commit()
+    logger.info("dev_set_subscription", extra={
+        "user_id": str(user_id),
+        "status": req.get("status"),
+        "product_id": req.get("product_id"),
+    })
+    return {"status": user.subscription_status, "product_id": user.subscription_product_id}
+
+
 @router.post("/apple", response_model=AuthResponse)
 async def login_apple(req: AuthRequest, db: AsyncSession = Depends(get_db)):
     info = await verify_apple_token(req.id_token)
