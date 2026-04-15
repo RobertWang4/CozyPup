@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="color-scheme" content="light">
+  <title>__TITLE__ — CozyPup</title>
+  <style>
+    :root {
+      --bg: #F5EBE0;
+      --surface: #FBF6F1;
+      --text: #3D2C1E;
+      --text-secondary: #8B7355;
+      --text-tertiary: #B8A48E;
+      --accent: #E8835C;
+      --border: #E6D5C5;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+      font-size: 16px;
+      line-height: 1.65;
+    }
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 24px 20px 64px 20px;
+    }
+    header {
+      text-align: center;
+      padding-top: 16px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 32px;
+    }
+    h1 {
+      font-family: "New York", "Times New Roman", Georgia, serif;
+      font-size: 30px;
+      font-weight: 600;
+      margin: 0 0 6px 0;
+    }
+    .subtitle {
+      color: var(--text-secondary);
+      font-size: 13px;
+      margin: 0;
+    }
+    .lang-toggle {
+      display: inline-flex;
+      gap: 2px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 3px;
+      margin-top: 16px;
+    }
+    .lang-toggle a {
+      display: inline-block;
+      padding: 6px 14px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      border-radius: 100px;
+      transition: background 0.2s;
+    }
+    .lang-toggle a.active {
+      background: var(--accent);
+      color: #fff;
+    }
+    h2 {
+      font-family: "New York", "Times New Roman", Georgia, serif;
+      font-size: 20px;
+      font-weight: 600;
+      margin: 36px 0 12px 0;
+    }
+    h3 {
+      font-size: 16px;
+      font-weight: 600;
+      margin: 24px 0 8px 0;
+    }
+    p, li {
+      color: var(--text);
+    }
+    p {
+      margin: 0 0 14px 0;
+    }
+    ul, ol {
+      padding-left: 22px;
+      margin: 0 0 16px 0;
+    }
+    li {
+      margin-bottom: 6px;
+    }
+    strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+    .meta {
+      color: var(--text-tertiary);
+      font-size: 13px;
+      margin-top: 8px;
+    }
+    .disclaimer-box {
+      background: var(--surface);
+      border-left: 3px solid var(--accent);
+      padding: 14px 16px;
+      margin: 20px 0;
+      border-radius: 8px;
+    }
+    .disclaimer-box p {
+      margin: 0;
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+    footer {
+      margin-top: 48px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      color: var(--text-tertiary);
+      font-size: 12px;
+    }
+    footer a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>__TITLE__</h1>
+      <p class="subtitle">__EFFECTIVE__</p>
+      <div class="lang-toggle">
+        <a href="__PATH__?lang=zh" class="__ZH_ACTIVE__">中文</a>
+        <a href="__PATH__?lang=en" class="__EN_ACTIVE__">English</a>
+      </div>
+    </header>
+    __BODY__
+    <footer>
+      CozyPup &middot; <a href="mailto:cozypup2026@gmail.com">cozypup2026@gmail.com</a>
+    </footer>
+  </div>
+</body>
+</html>
