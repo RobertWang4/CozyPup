@@ -1,4 +1,4 @@
-"""E2E tests for context compression (TEST_PLAN 15.1)."""
+"""E2E tests for context compression (TEST_PLAN 17.1)."""
 
 import pytest
 
@@ -10,7 +10,7 @@ from .test_messages import MESSAGES
 @pytest.mark.parametrize("lang", ["zh", "en"])
 async def test_15_1_compression(e2e_with_pet: E2EClient, lang: str):
     """15.1 Send 7 messages in sequence — last response should reference earlier context."""
-    results = await e2e_with_pet.chat_sequence(MESSAGES["15.1_seq"][lang])
+    results = await e2e_with_pet.chat_sequence(MESSAGES["17.1_seq"][lang])
     assert len(results) == 7, f"Expected 7 results, got {len(results)}"
 
     # All messages should succeed

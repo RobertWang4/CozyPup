@@ -1,4 +1,4 @@
-"""E2E tests for map/search tools (TEST_PLAN 9.1-9.2)."""
+"""E2E tests for map/search tools (TEST_PLAN 10.1-10.2)."""
 
 import pytest
 
@@ -11,7 +11,7 @@ from .test_messages import MESSAGES
 async def test_9_1_nearby_pet_hospital(e2e_with_pet: E2EClient, lang: str):
     """9.1 Search for nearby pet hospitals — should return a map card."""
     result = await e2e_with_pet.chat(
-        MESSAGES["9.1"][lang],
+        MESSAGES["10.1"][lang],
         location={"lat": 39.9042, "lng": 116.4074},
     )
     assert result.error is None, f"Chat error: {result.error}\n{result.dump()}"
@@ -25,7 +25,7 @@ async def test_9_1_nearby_pet_hospital(e2e_with_pet: E2EClient, lang: str):
 async def test_9_2_nearby_dog_park(e2e_with_pet: E2EClient, lang: str):
     """9.2 Search for nearest dog park — should return a place card."""
     result = await e2e_with_pet.chat(
-        MESSAGES["9.2"][lang],
+        MESSAGES["10.2"][lang],
         location={"lat": 39.9042, "lng": 116.4074},
     )
     assert result.error is None, f"Chat error: {result.error}\n{result.dump()}"

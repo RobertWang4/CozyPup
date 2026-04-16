@@ -27,7 +27,7 @@ VALID_ACTIONS = {"find_er", "call_vet", "first_aid"}
 @pytest.mark.parametrize("lang", ["zh", "en"])
 async def test_emergency_sse_event_format(e2e_with_pet: E2EClient, lang: str):
     """紧急消息应返回 event: emergency，且 JSON 格式匹配 iOS 解析。"""
-    result = await e2e_with_pet.chat(MESSAGES["11.1"][lang])
+    result = await e2e_with_pet.chat(MESSAGES["12.1"][lang])
     assert result.error is None, f"Chat error: {result.error}"
 
     # 1. 必须有 emergency 事件
@@ -71,7 +71,7 @@ async def test_emergency_sse_event_format(e2e_with_pet: E2EClient, lang: str):
 @pytest.mark.parametrize("lang", ["zh", "en"])
 async def test_history_query_no_emergency_event(e2e_with_pet: E2EClient, lang: str):
     """历史查询不应返回 emergency 事件。"""
-    result = await e2e_with_pet.chat(MESSAGES["11.3"][lang])
+    result = await e2e_with_pet.chat(MESSAGES["12.5"][lang])
     assert result.error is None
 
     # 不应有 emergency 事件
@@ -85,7 +85,7 @@ async def test_history_query_no_emergency_event(e2e_with_pet: E2EClient, lang: s
 @pytest.mark.asyncio
 async def test_emergency_data_ios_decodable(e2e_with_pet: E2EClient):
     """模拟 iOS JSONDecoder().decode([String: String].self, from: data) 的行为。"""
-    result = await e2e_with_pet.chat(MESSAGES["11.2"]["zh"])
+    result = await e2e_with_pet.chat(MESSAGES["12.2"]["zh"])
     assert result.error is None
 
     # 找到 raw emergency 事件

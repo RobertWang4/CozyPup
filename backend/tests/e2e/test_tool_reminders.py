@@ -1,4 +1,4 @@
-"""E2E tests for reminder tools (TEST_PLAN 8.1-8.4)."""
+"""E2E tests for reminder tools (TEST_PLAN 9.1-9.6)."""
 
 import pytest
 
@@ -10,7 +10,7 @@ from .test_messages import MESSAGES
 @pytest.mark.parametrize("lang", ["zh", "en"])
 async def test_8_1_create_reminder_medicine(e2e_with_pet: E2EClient, lang: str):
     """8.1 Create a medicine reminder — should return a reminder card."""
-    result = await e2e_with_pet.chat(MESSAGES["8.1"][lang])
+    result = await e2e_with_pet.chat(MESSAGES["9.1"][lang])
     assert result.error is None, f"Chat error: {result.error}\n{result.dump()}"
     assert result.has_card("reminder"), (
         f"Expected reminder card.\n{result.dump()}"
@@ -25,7 +25,7 @@ async def test_8_1_create_reminder_medicine(e2e_with_pet: E2EClient, lang: str):
 @pytest.mark.parametrize("lang", ["zh", "en"])
 async def test_8_2_create_reminder_vaccination(e2e_with_pet: E2EClient, lang: str):
     """8.2 Create a vaccination reminder — should return a reminder card."""
-    result = await e2e_with_pet.chat(MESSAGES["8.2"][lang])
+    result = await e2e_with_pet.chat(MESSAGES["9.2"][lang])
     assert result.error is None, f"Chat error: {result.error}\n{result.dump()}"
     assert result.has_card("reminder"), (
         f"Expected reminder card.\n{result.dump()}"
@@ -37,11 +37,11 @@ async def test_8_2_create_reminder_vaccination(e2e_with_pet: E2EClient, lang: st
 async def test_8_3_list_reminders(e2e_with_pet: E2EClient, lang: str):
     """8.3 Create reminders first, then ask what reminders exist."""
     # Setup: create a couple of reminders
-    await e2e_with_pet.chat(MESSAGES["8.1"][lang])
-    await e2e_with_pet.chat(MESSAGES["8.2"][lang])
+    await e2e_with_pet.chat(MESSAGES["9.1"][lang])
+    await e2e_with_pet.chat(MESSAGES["9.2"][lang])
 
     # Query reminders
-    result = await e2e_with_pet.chat(MESSAGES["8.3"][lang])
+    result = await e2e_with_pet.chat(MESSAGES["9.3"][lang])
     assert result.error is None, f"Chat error: {result.error}\n{result.dump()}"
     assert result.text.strip(), f"Expected non-empty response.\n{result.dump()}"
 
@@ -51,10 +51,10 @@ async def test_8_3_list_reminders(e2e_with_pet: E2EClient, lang: str):
 async def test_8_4_cancel_reminder(e2e_with_pet: E2EClient, lang: str):
     """8.4 Create a reminder, then cancel it — should get confirm_action card."""
     # Setup: create the medicine reminder first
-    await e2e_with_pet.chat(MESSAGES["8.1"][lang])
+    await e2e_with_pet.chat(MESSAGES["9.1"][lang])
 
     # Cancel it
-    result = await e2e_with_pet.chat(MESSAGES["8.4"][lang])
+    result = await e2e_with_pet.chat(MESSAGES["9.5"][lang])
     assert result.error is None, f"Chat error: {result.error}\n{result.dump()}"
     assert result.has_card("confirm_action"), (
         f"Expected confirm_action card for deletion.\n{result.dump()}"

@@ -1,4 +1,4 @@
-"""E2E tests for language switching (TEST_PLAN 12.1-12.2)."""
+"""E2E tests for language switching (TEST_PLAN 13.1-13.2)."""
 
 import pytest
 
@@ -10,7 +10,7 @@ from .test_messages import MESSAGES
 @pytest.mark.parametrize("lang", ["zh", "en"])
 async def test_12_1_switch_to_english(e2e: E2EClient, lang: str):
     """12.1 Switch to English — should return set_language card with 'en'."""
-    result = await e2e.chat(MESSAGES["12.1"][lang])
+    result = await e2e.chat(MESSAGES["13.1"][lang])
     assert result.error is None, f"Chat error: {result.error}\n{result.dump()}"
     assert result.has_card("set_language"), (
         f"Expected set_language card.\n{result.dump()}"
@@ -25,7 +25,7 @@ async def test_12_1_switch_to_english(e2e: E2EClient, lang: str):
 @pytest.mark.parametrize("lang", ["zh", "en"])
 async def test_12_2_switch_to_chinese(e2e: E2EClient, lang: str):
     """12.2 Switch to Chinese — should return set_language card with 'zh'."""
-    result = await e2e.chat(MESSAGES["12.2"][lang])
+    result = await e2e.chat(MESSAGES["13.2"][lang])
     assert result.error is None, f"Chat error: {result.error}\n{result.dump()}"
     assert result.has_card("set_language"), (
         f"Expected set_language card.\n{result.dump()}"
