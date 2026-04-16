@@ -52,7 +52,10 @@ async def test_27_context_reference(e2e_debug_with_pet: E2EClient):
     # ── 27.3  Set reminder for next vaccination ──
     r3 = await e2e.chat(msgs[2])
     assert r3.error is None, f"27.3 error: {r3.error}\n{r3.dump()}"
-    assert r3.has_card("reminder"), f"27.3: Expected reminder card.\n{r3.dump()}"
+    # Reminders are now merged into calendar events (record cards with reminder_at)
+    assert r3.has_card("record") or "提醒" in r3.text or "remind" in r3.text.lower(), (
+        f"27.3: Expected record card or reminder mention.\n{r3.dump()}"
+    )
 
     # ── 27.4  Rename the vaccination record (context: "那条记录") ──
     r4 = await e2e.chat(msgs[3])

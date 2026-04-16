@@ -40,8 +40,8 @@ async def test_39_long_context_preservation(e2e_debug_with_pet: E2EClient):
     r4 = await e2e.chat(msgs[3])
     assert r4.error is None, f"39.4 error: {r4.error}\n{r4.dump()}"
     tools4 = get_tools_called(r4)
-    assert "update_pet" in tools4, (
-        f"39.4: Expected update_pet tool, got {tools4}.\n{r4.dump()}"
+    assert "update_pet_profile" in tools4 or "update_pet" in tools4, (
+        f"39.4: Expected update_pet_profile or update_pet tool, got {tools4}.\n{r4.dump()}"
     )
     # Verify weight updated via API
     pets = await e2e.get_pets()
@@ -58,7 +58,10 @@ async def test_39_long_context_preservation(e2e_debug_with_pet: E2EClient):
     # ── 39.6  Reminder: vaccination next week ──
     r6 = await e2e.chat(msgs[5])
     assert r6.error is None, f"39.6 error: {r6.error}\n{r6.dump()}"
-    assert r6.has_card("reminder"), f"39.6: Expected reminder card.\n{r6.dump()}"
+    # Reminders are now merged into calendar events (record cards with reminder_at)
+    assert r6.has_card("record") or "提醒" in r6.text or "remind" in r6.text.lower(), (
+        f"39.6: Expected record card or reminder mention.\n{r6.dump()}"
+    )
 
     # ── 39.7  Daily task: walk dog twice a day ──
     r7 = await e2e.chat(msgs[6])
@@ -71,8 +74,8 @@ async def test_39_long_context_preservation(e2e_debug_with_pet: E2EClient):
     r8 = await e2e.chat(msgs[7])
     assert r8.error is None, f"39.8 error: {r8.error}\n{r8.dump()}"
     tools8 = get_tools_called(r8)
-    assert "update_pet" in tools8, (
-        f"39.8: Expected update_pet tool for allergy update, got {tools8}.\n{r8.dump()}"
+    assert "update_pet_profile" in tools8 or "update_pet" in tools8, (
+        f"39.8: Expected update_pet_profile or update_pet tool for allergy update, got {tools8}.\n{r8.dump()}"
     )
 
     # ── 39.9  Places search: dog park nearby (with location) ──

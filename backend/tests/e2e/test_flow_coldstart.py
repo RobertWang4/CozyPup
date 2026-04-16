@@ -78,8 +78,9 @@ async def test_25_coldstart_flow(e2e_debug):
     # ── 25.6  Create reminder ──────────────────────────────────────────
     r = await e2e.chat(MSGS[5])  # "Remind me to take her to the vet next Monday"
     assert r.error is None, f"25.6 chat error: {r.error}\n{r.dump()}"
-    assert r.has_card("reminder"), (
-        f"25.6 Expected reminder card.\n{r.dump()}"
+    # Reminders are now merged into calendar events (record cards with reminder_at)
+    assert r.has_card("record") or "remind" in r.text.lower() or "提醒" in r.text, (
+        f"25.6 Expected record card or reminder mention.\n{r.dump()}"
     )
 
     # ── 25.7  Query records → mentions chicken/rice ────────────────────

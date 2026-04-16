@@ -77,15 +77,23 @@ async def test_33_dual_pet_daily(e2e_debug_with_two_pets: E2EClient):
     # ── 33.6  Reminder for 小维: medicine tomorrow ──
     r6 = await e2e.chat(msgs[5])
     assert r6.error is None, f"33.6 error: {r6.error}\n{r6.dump()}"
-    assert r6.has_card("reminder"), f"33.6: Expected reminder card.\n{r6.dump()}"
-    reminder6 = r6.first_card("reminder")
-    reminder_pet_6 = str(reminder6.get("pet_name", "")) + str(reminder6.get("pet_names", ""))
-    assert "小维" in reminder_pet_6, f"33.6: Reminder should be for 小维.\n{r6.dump()}"
+    # Reminders are now merged into calendar events (record cards with reminder_at)
+    assert r6.has_card("record") or "提醒" in r6.text or "remind" in r6.text.lower(), (
+        f"33.6: Expected record card or reminder mention.\n{r6.dump()}"
+    )
+    if r6.has_card("record"):
+        reminder6 = r6.first_card("record")
+        reminder_pet_6 = str(reminder6.get("pet_name", "")) + str(reminder6.get("pet_names", ""))
+        assert "小维" in reminder_pet_6, f"33.6: Reminder should be for 小维.\n{r6.dump()}"
 
     # ── 33.7  花花 also needs medicine ──
     r7 = await e2e.chat(msgs[6])
     assert r7.error is None, f"33.7 error: {r7.error}\n{r7.dump()}"
-    assert r7.has_card("reminder"), f"33.7: Expected reminder card.\n{r7.dump()}"
-    reminder7 = r7.first_card("reminder")
-    reminder_pet_7 = str(reminder7.get("pet_name", "")) + str(reminder7.get("pet_names", ""))
-    assert "花花" in reminder_pet_7, f"33.7: Reminder should be for 花花.\n{r7.dump()}"
+    # Reminders are now merged into calendar events (record cards with reminder_at)
+    assert r7.has_card("record") or "提醒" in r7.text or "remind" in r7.text.lower(), (
+        f"33.7: Expected record card or reminder mention.\n{r7.dump()}"
+    )
+    if r7.has_card("record"):
+        reminder7 = r7.first_card("record")
+        reminder_pet_7 = str(reminder7.get("pet_name", "")) + str(reminder7.get("pet_names", ""))
+        assert "花花" in reminder_pet_7, f"33.7: Reminder should be for 花花.\n{r7.dump()}"

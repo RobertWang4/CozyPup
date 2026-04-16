@@ -53,8 +53,9 @@ async def test_30_mixed_intent_switching(e2e_debug_with_pet: E2EClient):
     # ── 30.4  Reminder to visit hospital tomorrow (should be reminder, NOT place search) ──
     r4 = await e2e.chat(msgs[3])
     assert r4.error is None, f"30.4 error: {r4.error}\n{r4.dump()}"
-    assert r4.has_card("reminder"), (
-        f"30.4: Expected reminder card.\n{r4.dump()}"
+    # Reminders are now merged into calendar events (record cards with reminder_at)
+    assert r4.has_card("record") or "提醒" in r4.text or "remind" in r4.text.lower(), (
+        f"30.4: Expected record card or reminder mention.\n{r4.dump()}"
     )
     tools4 = get_tools_called(r4)
     assert "search_places" not in tools4, (

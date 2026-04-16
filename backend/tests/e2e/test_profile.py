@@ -12,7 +12,10 @@ async def test_14_1_profile_extraction(e2e_with_pet: E2EClient, lang: str):
     """14.1 Mention personality traits — should process without error."""
     result = await e2e_with_pet.chat(MESSAGES["15.1"][lang])
     assert result.error is None, f"Chat error: {result.error}\n{result.dump()}"
-    assert result.text.strip(), f"Expected non-empty response.\n{result.dump()}"
+    # LLM may return text response or just a pet_updated card with no text
+    assert result.text.strip() or result.cards, (
+        f"Expected non-empty response or card.\n{result.dump()}"
+    )
 
 
 @pytest.mark.asyncio
