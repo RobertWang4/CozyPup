@@ -56,8 +56,21 @@ class OrchestratorResult:
 # _describe_tool_call — 生成工具调用的人类可读描述（用于 confirm card）
 # ---------------------------------------------------------------------------
 
-def _describe_tool_call(fn_name: str, fn_args: dict, pets: list | None = None, lang: str = "zh") -> str:
-    """Generate human-readable description from LLM's tool call arguments."""
+def _describe_tool_call(
+    fn_name: str,
+    fn_args: dict,
+    pets: list | None = None,
+    lang: str = "zh",
+    event_info: dict | None = None,
+    image_urls: list[str] | None = None,
+) -> str:
+    """Generate human-readable description from LLM's tool call arguments.
+
+    event_info (optional) is looked up from DB for delete/update_calendar_event
+    so the confirm card can show which event is being modified.
+    image_urls (optional) is used to show "(1 张图片)" on create_calendar_event
+    confirm cards.
+    """
     def _pet_name(pid: str) -> str:
         if not pets:
             return ""
@@ -66,9 +79,14 @@ def _describe_tool_call(fn_name: str, fn_args: dict, pets: list | None = None, l
                 return p.name if hasattr(p, "name") else p.get("name", "")
         return ""
 
+    def _label(name_str: str) -> str:
+        if not name_str:
+            return ""
+        return f"「{name_str}」" if lang == "zh" else f"{name_str}'s"
+
     pid = fn_args.get("pet_id", "")
     name = _pet_name(pid)
-    label = f"「{name}」" if name else ""
+    label = _label(name)
 
     if fn_name == "update_pet_profile":
         info = fn_args.get("info", {})
@@ -83,11 +101,50 @@ def _describe_tool_call(fn_name: str, fn_args: dict, pets: list | None = None, l
     if fn_name == "create_calendar_event":
         title = fn_args.get("title", "")
         d = fn_args.get("event_date", "")
-        return t("desc_create_event", lang).format(title=title, date=d)
-    if fn_name == "update_calendar_event":
-        return t("desc_update_event", lang)
-    if fn_name == "delete_calendar_event":
-        return t("desc_delete_event", lang)
+        # multi-pet: label uses first pet_ids entry if pet_id absent
+        if not label:
+            pet_ids = fn_args.get("pet_ids") or []
+            if pet_ids:
+                label = _label(_pet_name(str(pet_ids[0])))
+        meta_parts = []
+        cost = fn_args.get("cost")
+        if cost:
+            meta_parts.append(f"${cost:g}" if isinstance(cost, (int, float)) else f"${cost}")
+        ev_time = fn_args.get("event_time")
+        if ev_time:
+            meta_parts.append(str(ev_time))
+        if image_urls:
+            if lang == "zh":
+                meta_parts.append(f"📷 {len(image_urls)} 张")
+            else:
+                meta_parts.append(f"📷 {len(image_urls)}")
+        if fn_args.get("reminder_at"):
+            meta_parts.append("🔔")
+        base = " ".join(
+            t("desc_create_event", lang).format(label=label, title=title, date=d).split()
+        )
+        if meta_parts:
+            sep = " · "
+            base += (" （" + sep.join(meta_parts) + "）") if lang == "zh" else (" (" + sep.join(meta_parts) + ")")
+        return base
+    if fn_name in ("update_calendar_event", "delete_calendar_event"):
+        if event_info and event_info.get("title"):
+            ev_pet = event_info.get("pet_name") or ""
+            if lang == "zh":
+                ev_label = f"「{ev_pet}」" if ev_pet else ""
+            else:
+                ev_label = f"{ev_pet}'s" if ev_pet else ""
+            key = "desc_update_event" if fn_name == "update_calendar_event" else "desc_delete_event"
+            return " ".join(t(key, lang).format(
+                label=ev_label,
+                title=event_info["title"],
+                date=event_info.get("date", ""),
+            ).split())
+        key_generic = (
+            "desc_update_event_generic" if fn_name == "update_calendar_event"
+            else "desc_delete_event_generic"
+        )
+        return t(key_generic, lang)
     if fn_name == "create_reminder":
         return t("desc_create_reminder", lang).format(title=fn_args.get('title', ''))
     if fn_name == "update_reminder":
@@ -114,6 +171,50 @@ def _describe_tool_call(fn_name: str, fn_args: dict, pets: list | None = None, l
     if fn_name == "upload_event_photo":
         return t("desc_upload_photo", lang)
     return fn_name
+
+
+# ---------------------------------------------------------------------------
+# _lookup_event_info — 查找日历事件的展示信息（用于 confirm card）
+# ---------------------------------------------------------------------------
+
+async def _lookup_event_info(db, user_id, event_id_raw, pets: list | None = None) -> dict | None:
+    """Return {title, date, pet_name} for a calendar event, or None if not found."""
+    import uuid as _uuid
+    from sqlalchemy import select
+    from app.models import CalendarEvent
+
+    try:
+        event_id = _uuid.UUID(str(event_id_raw))
+    except (ValueError, TypeError):
+        return None
+
+    try:
+        result = await db.execute(
+            select(CalendarEvent).where(
+                CalendarEvent.id == event_id,
+                CalendarEvent.user_id == user_id,
+            )
+        )
+        event = result.scalar_one_or_none()
+    except Exception:
+        return None
+
+    if not event:
+        return None
+
+    pet_name = ""
+    if pets and event.pet_id:
+        pid_str = str(event.pet_id)
+        for p in pets:
+            if str(p.id if hasattr(p, "id") else p.get("id", "")) == pid_str:
+                pet_name = p.name if hasattr(p, "name") else p.get("name", "")
+                break
+
+    return {
+        "title": event.title,
+        "date": event.event_date.isoformat() if event.event_date else "",
+        "pet_name": pet_name,
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -298,10 +399,22 @@ async def dispatch_tool(
 
     # --- Confirm gate：破坏性工具需要用户确认 ---
     if needs_confirm(fn_name, fn_args) and session_id:
-        desc = _describe_tool_call(fn_name, fn_args, pets=pets, lang=lang)
+        event_info = None
+        if fn_name in {"delete_calendar_event", "update_calendar_event"} and fn_args.get("event_id"):
+            event_info = await _lookup_event_info(db, user_id, fn_args["event_id"], pets=pets)
+        effective_urls = image_urls or recent_image_urls
+        desc = _describe_tool_call(
+            fn_name, fn_args, pets=pets, lang=lang,
+            event_info=event_info, image_urls=effective_urls,
+        )
+        # Persist image urls alongside arguments so confirm-action can re-run
+        # the tool with the original photos attached.
+        stored_args = dict(fn_args)
+        if effective_urls and fn_name == "create_calendar_event":
+            stored_args["_image_urls"] = list(effective_urls)
         action_id = await store_action(
             db=db, user_id=str(user_id), session_id=str(session_id),
-            tool_name=fn_name, arguments=fn_args, description=desc,
+            tool_name=fn_name, arguments=stored_args, description=desc,
         )
         card = {"type": "confirm_action", "action_id": action_id, "message": desc}
         result.confirm_cards.append(card)

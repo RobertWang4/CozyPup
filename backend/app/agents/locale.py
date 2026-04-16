@@ -164,7 +164,14 @@ Image handling rules:
 
 ### 【重要】纠正记录
 - 用户说某条记录有误/需要修改（日期、标题等）→ 先 query_calendar_events 找到记录，再调 update_calendar_event 修改
-- "日期不对""应该是3月25号""改成…" → update_calendar_event（不要新建 create_calendar_event）""",
+- "日期不对""应该是3月25号""改成…" → update_calendar_event（不要新建 create_calendar_event）
+
+### 【重要】何时设置 confirm=true（选择性用户确认）
+适用于: create_calendar_event / update_calendar_event / create_reminder / update_reminder / update_pet_profile
+- 用户明确说了操作动词（"记录一下""帮我记""保存""添加""创建""修改""改成"）→ 省略 confirm 或设 false，直接执行
+- 用户只是陈述事实、没要求记录（"维尼今天打了疫苗""他今天散步了"）→ 设 confirm=true，系统会先弹确认卡给用户拍板
+- 用户意图含糊（用了反问/猜测语气："是不是该打疫苗了？""要不要记一下？"）→ 设 confirm=true
+- 删除类工具不用标 confirm，系统已经强制弹确认卡""",
 
         "en": """## Tool Selection Guide
 
@@ -218,7 +225,14 @@ Image handling rules:
 
 ### [IMPORTANT] Correcting records
 - When the user says a record is wrong / needs to be changed (date, title, etc.) → first query_calendar_events to find the record, then call update_calendar_event to fix it
-- "The date is wrong", "should be March 25th", "change it to..." → update_calendar_event (NOT a new create_calendar_event)""",
+- "The date is wrong", "should be March 25th", "change it to..." → update_calendar_event (NOT a new create_calendar_event)
+
+### [IMPORTANT] When to set confirm=true (selective user confirmation)
+Applies to: create_calendar_event / update_calendar_event / create_reminder / update_reminder / update_pet_profile
+- User explicitly asks to record/save/modify ("record this", "save it", "add", "change") → omit confirm or set false; execute directly
+- User merely states a fact without asking to record ("Winnie got vaccinated today", "he walked today") → set confirm=true; system shows a confirm card first
+- User sounds uncertain/questioning ("should I record a vaccine?", "want me to note it?") → set confirm=true
+- Delete tools don't need confirm flag — system already forces confirmation""",
     },
 
     "no_pets": {
@@ -506,14 +520,22 @@ Notes:
         "en": "Delete pet {label}",
     },
     "desc_create_event": {
-        "zh": "记录「{title}」({date})",
-        "en": "Record \"{title}\" ({date})",
+        "zh": "记录{label} {title}（{date}）",
+        "en": "Record {label} \"{title}\" ({date})",
     },
     "desc_update_event": {
+        "zh": "修改{label} {title}（{date}）",
+        "en": "Edit {label} \"{title}\" ({date})",
+    },
+    "desc_update_event_generic": {
         "zh": "修改日历事件",
         "en": "Edit calendar event",
     },
     "desc_delete_event": {
+        "zh": "删除{label} {title}（{date}）",
+        "en": "Delete {label} \"{title}\" ({date})",
+    },
+    "desc_delete_event_generic": {
         "zh": "删除日历事件",
         "en": "Delete calendar event",
     },

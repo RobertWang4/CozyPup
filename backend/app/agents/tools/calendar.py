@@ -61,6 +61,29 @@ async def create_calendar_event(
         except ValueError:
             pass
 
+    # Idempotency: abnormal events with same (pet, title, date) are treated as
+    # duplicates. Defensive re-creation by LLM is a known failure mode —
+    # return success with already_exists=True and emit no card.
+    if category == EventCategory.abnormal and first_pet_id:
+        dup_q = select(CalendarEvent).where(
+            CalendarEvent.user_id == user_id,
+            CalendarEvent.pet_id == first_pet_id,
+            CalendarEvent.title == title,
+            CalendarEvent.event_date == event_date,
+            CalendarEvent.category == EventCategory.abnormal,
+        )
+        existing = (await db.execute(dup_q)).scalar_one_or_none()
+        if existing:
+            return {
+                "success": True,
+                "already_exists": True,
+                "event_id": str(existing.id),
+                "title": existing.title,
+                "category": existing.category.value,
+                "event_date": existing.event_date.isoformat(),
+                "message": f"'{title}' 已记录过，未重复创建",
+            }
+
     event = CalendarEvent(
         user_id=user_id,
         pet_id=first_pet_id,  # backward compat
@@ -78,8 +101,14 @@ async def create_calendar_event(
     )
 
     # Attach photos: chat.py 已经在后台把图片存到磁盘了，
-    # image_urls 通过 kwargs 透传进来
-    image_urls = kwargs.get("image_urls") or []
+    # image_urls 通过 kwargs 透传进来。
+    # Fallback to _image_urls in arguments — populated when the call was
+    # deferred through a confirm card (see orchestrator.dispatch_tool).
+    image_urls = (
+        kwargs.get("image_urls")
+        or arguments.get("_image_urls")
+        or []
+    )
     if image_urls:
         event.photos = image_urls
 
@@ -94,6 +123,9 @@ async def create_calendar_event(
         "title": title,
         "cost": float(cost) if cost is not None else None,
         "reminder_at": reminder_at_str,
+        "photos_count": len(image_urls) if image_urls else 0,
+        "event_time": event_time_str,
+        "raw_text": raw_text or None,
     }
 
     return {

@@ -984,6 +984,42 @@ _BASE_TOOL_DEFINITIONS = [
     },
 ]
 
+# Mutating tools that support LLM-driven selective confirm. LLM sets
+# confirm=true when user intent is implicit (stated a fact without explicitly
+# asking to record/modify); system then surfaces a confirm card.
+_CONFIRM_OPT_IN_TOOLS = {
+    "create_calendar_event",
+    "update_calendar_event",
+    "create_reminder",
+    "update_reminder",
+    "update_pet_profile",
+}
+
+
+def _inject_confirm_param(tool: dict, lang: str) -> None:
+    """Add optional confirm:boolean param to a mutating tool definition."""
+    fn = tool.get("function", {})
+    if fn.get("name") not in _CONFIRM_OPT_IN_TOOLS:
+        return
+    params = fn.setdefault("parameters", {})
+    props = params.setdefault("properties", {})
+    if "confirm" in props:
+        return
+    if lang == "zh":
+        desc = (
+            "当用户只是陈述事实、未明确要求'记录/保存/添加/创建/修改'时设为 true，"
+            "系统会先让用户确认再执行。用户明确要求操作（说了'记一下''帮我记''保存'等动词）"
+            "时省略或设为 false。"
+        )
+    else:
+        desc = (
+            "Set to true when the user merely states a fact without explicitly "
+            "asking to record/save/modify. The system will show a confirm card "
+            "before executing. Omit or set false when the user explicitly asked."
+        )
+    props["confirm"] = {"type": "boolean", "description": desc}
+
+
 # Backward compatibility alias
 TOOL_DEFINITIONS = _BASE_TOOL_DEFINITIONS
 
@@ -997,15 +1033,15 @@ def get_tool_definitions(lang: str = "zh") -> list[dict]:
 
     from app.agents.locale import t
 
-    if lang == "zh":
-        _tool_defs_cache[lang] = _BASE_TOOL_DEFINITIONS
-        return _BASE_TOOL_DEFINITIONS
     tools = copy.deepcopy(_BASE_TOOL_DEFINITIONS)
+    if lang != "zh":
+        for tool in tools:
+            fn = tool["function"]
+            key = f"tool_desc_{fn['name']}"
+            desc = t(key, lang)
+            if desc != key:
+                fn["description"] = desc
     for tool in tools:
-        fn = tool["function"]
-        key = f"tool_desc_{fn['name']}"
-        desc = t(key, lang)
-        if desc != key:
-            fn["description"] = desc
+        _inject_confirm_param(tool, lang)
     _tool_defs_cache[lang] = tools
     return tools

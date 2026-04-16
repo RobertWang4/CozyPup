@@ -13,6 +13,9 @@ struct RecordCardData: Codable, Equatable {
     let cost: Double?
     let reminder_at: String?
     let old_date: String?  // present when event was moved to a different date
+    let photos_count: Int?
+    let event_time: String?
+    let raw_text: String?
 }
 
 struct PlaceItem: Codable, Equatable {

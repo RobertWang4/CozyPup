@@ -618,12 +618,23 @@ struct ChatView: View {
     private func cardView(_ card: CardData) -> some View {
         switch card {
         case .record(let data):
-            RecordCard(petName: data.pet_name, date: data.date, category: data.category, title: data.title, cost: data.cost, hasReminder: data.reminder_at != nil, onTap: {
-                calendarJumpDate = data.date
-                withAnimation(.easeInOut(duration: 0.35)) {
-                    showCalendar = true
+            RecordCard(
+                petName: data.pet_name,
+                date: data.date,
+                category: data.category,
+                title: data.title,
+                cost: data.cost,
+                hasReminder: data.reminder_at != nil,
+                photosCount: data.photos_count ?? 0,
+                eventTime: data.event_time,
+                rawText: data.raw_text,
+                onTap: {
+                    calendarJumpDate = data.date
+                    withAnimation(.easeInOut(duration: 0.35)) {
+                        showCalendar = true
+                    }
                 }
-            })
+            )
         case .placeCard(let data):
             PlaceCard(data: data)
         case .placeDetail(let data):

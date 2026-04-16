@@ -24,6 +24,10 @@ def needs_confirm(fn_name: str, fn_args: dict) -> bool:
     actions = CONDITIONAL_CONFIRM_ACTIONS.get(fn_name)
     if actions and fn_args.get("action") in actions:
         return True
+    # LLM-driven opt-in: for mutating tools, LLM can pass confirm=true when
+    # user's intent is implicit (stated a fact, didn't explicitly ask to record).
+    if fn_args.get("confirm") is True:
+        return True
     return False
 
 # Tools that the LLM frequently forgets to call — nudge and post-processor
