@@ -580,64 +580,81 @@ async def _stream_completion(
             _capture_non_streaming(messages, model, lang, round_num, trace)
         )
 
-    try:
-        response = await litellm.acompletion(
-            model=model,
-            messages=messages,
-            tools=get_tool_definitions(lang),
-            tool_choice="auto",
-            temperature=0.3,
-            stream=True,
-            stream_options={"include_usage": True},
-            drop_params=True,
-            **llm_extra_kwargs(),
-        )
+    max_retries = 2
+    for attempt in range(max_retries):
+        try:
+            response = await litellm.acompletion(
+                model=model,
+                messages=messages,
+                tools=get_tool_definitions(lang),
+                tool_choice="auto",
+                temperature=0.3,
+                stream=True,
+                stream_options={"include_usage": True},
+                drop_params=True,
+                **llm_extra_kwargs(),
+            )
 
-        async for chunk in response:
-            delta = chunk.choices[0].delta
+            async for chunk in response:
+                delta = chunk.choices[0].delta
 
-            if delta.content:
-                # Filter out LLM XML tag leaks (e.g. Grok outputs <parameter>, <xai:function_call>)
-                chunk_text = delta.content
-                if "<" in chunk_text and ("parameter" in chunk_text or "xai:" in chunk_text or "function_call" in chunk_text):
-                    chunk_text = re.sub(r"</?(?:parameter|xai:?\w*|function_call)[^>]*>", "", chunk_text)
-                if chunk_text.strip():
-                    text_parts.append(chunk_text)
-                    if on_token:
-                        await maybe_await(on_token, chunk_text)
-                else:
-                    text_parts.append(delta.content)  # keep original for tool parsing
+                if delta.content:
+                    # Filter out LLM XML tag leaks (e.g. Grok outputs <parameter>, <xai:function_call>)
+                    chunk_text = delta.content
+                    if "<" in chunk_text and ("parameter" in chunk_text or "xai:" in chunk_text or "function_call" in chunk_text):
+                        chunk_text = re.sub(r"</?(?:parameter|xai:?\w*|function_call)[^>]*>", "", chunk_text)
+                    if chunk_text.strip():
+                        text_parts.append(chunk_text)
+                        if on_token:
+                            await maybe_await(on_token, chunk_text)
+                    else:
+                        text_parts.append(delta.content)  # keep original for tool parsing
 
-            if delta.tool_calls:
-                for tc_delta in delta.tool_calls:
-                    idx = tc_delta.index
-                    if idx not in tool_calls_map:
-                        tool_calls_map[idx] = {
-                            "id": tc_delta.id or "",
-                            "type": "function",
-                            "function": {"name": "", "arguments": ""},
-                        }
-                    tc = tool_calls_map[idx]
-                    if tc_delta.id:
-                        tc["id"] = tc_delta.id
-                    if tc_delta.function and tc_delta.function.name:
-                        tc["function"]["name"] += tc_delta.function.name
-                    if tc_delta.function and tc_delta.function.arguments:
-                        tc["function"]["arguments"] += tc_delta.function.arguments
+                if delta.tool_calls:
+                    for tc_delta in delta.tool_calls:
+                        idx = tc_delta.index
+                        if idx not in tool_calls_map:
+                            tool_calls_map[idx] = {
+                                "id": tc_delta.id or "",
+                                "type": "function",
+                                "function": {"name": "", "arguments": ""},
+                            }
+                        tc = tool_calls_map[idx]
+                        if tc_delta.id:
+                            tc["id"] = tc_delta.id
+                        if tc_delta.function and tc_delta.function.name:
+                            tc["function"]["name"] += tc_delta.function.name
+                        if tc_delta.function and tc_delta.function.arguments:
+                            tc["function"]["arguments"] += tc_delta.function.arguments
 
-            # Capture usage from final chunk (provider-dependent)
-            if hasattr(chunk, "usage") and chunk.usage:
-                u = chunk.usage
-                usage = {
-                    "prompt_tokens": getattr(u, "prompt_tokens", 0) or 0,
-                    "completion_tokens": getattr(u, "completion_tokens", 0) or 0,
-                }
+                # Capture usage from final chunk (provider-dependent)
+                if hasattr(chunk, "usage") and chunk.usage:
+                    u = chunk.usage
+                    usage = {
+                        "prompt_tokens": getattr(u, "prompt_tokens", 0) or 0,
+                        "completion_tokens": getattr(u, "completion_tokens", 0) or 0,
+                    }
 
-    except Exception as exc:
-        logger.error("stream_completion_error", extra={"error": str(exc)[:300]})
-        if capture_task:
-            capture_task.cancel()
-        return "".join(text_parts), [], {}
+            break  # success, exit retry loop
+
+        except Exception as exc:
+            logger.error("stream_completion_error", extra={
+                "error": str(exc)[:300],
+                "attempt": attempt + 1,
+                "max_retries": max_retries,
+            })
+            if attempt < max_retries - 1:
+                # Reset state for retry — clear any partial text/tools from failed attempt
+                text_parts.clear()
+                tool_calls_map.clear()
+                import asyncio as _asyncio
+                await _asyncio.sleep(1)  # brief pause before retry
+                logger.info("stream_completion_retry", extra={"attempt": attempt + 2})
+                continue
+            # Final attempt failed — give up
+            if capture_task:
+                capture_task.cancel()
+            return "".join(text_parts), [], {}
 
     # Wait for capture task to finish (don't block too long)
     if capture_task:
