@@ -43,8 +43,21 @@ xcuserdata/
 backend/server.log
 backend/server_stderr.log
 
-# Playwright/MCP logs
-.playwright-mcp/*.log
+# Playwright/MCP (all generated files)
+.playwright-mcp/
+backend/.playwright-cli/
+docs/.playwright-cli/
+
+# Photos (screenshots, not code)
+Photos/
+
+# Design previews
+design-preview-full.png
+docs/design-preview.html
+docs/paywall-designs.html
+
+# Old files
+logo_old.png
 
 # Claude Code working files
 .superpowers/
