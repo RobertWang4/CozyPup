@@ -73,6 +73,7 @@ def _event_to_response(event: CalendarEvent, pets_by_id: dict | None = None) -> 
         place_id=event.place_id,
         cost=event.cost,
         reminder_at=event.reminder_at.isoformat() if event.reminder_at else None,
+        notes=event.notes,
         created_at=event.created_at.isoformat(),
     )
 
@@ -101,6 +102,7 @@ async def create_event(
         category=req.category,
         raw_text=req.raw_text,
         source=req.source,
+        notes=req.notes,
     )
     db.add(event)
     await db.commit()
@@ -199,6 +201,10 @@ async def update_event(
         event.event_time = time.fromisoformat(req.event_time)
     if req.cost is not None:
         event.cost = req.cost
+    if req.notes is not None:
+        event.notes = req.notes if req.notes != "" else None
+    if req.type is not None:
+        event.type = req.type
 
     event.edited = True
     await db.commit()

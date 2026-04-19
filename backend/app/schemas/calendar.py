@@ -12,6 +12,7 @@ class CalendarEventCreate(BaseModel):
     category: EventCategory = EventCategory.daily
     raw_text: str = ""
     source: EventSource = EventSource.manual
+    notes: str | None = None
 
 
 class LocationUpdate(BaseModel):
@@ -28,6 +29,8 @@ class CalendarEventUpdate(BaseModel):
     event_date: str | None = None
     event_time: str | None = None
     cost: float | None = None
+    notes: str | None = None
+    type: EventType | None = None
 
 
 class PetTag(BaseModel):
@@ -58,4 +61,5 @@ class CalendarEventResponse(BaseModel):
     place_id: str | None = None
     cost: float | None = None
     reminder_at: str | None = None
+    notes: str | None = None
     created_at: str

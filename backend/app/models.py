@@ -176,6 +176,7 @@ class CalendarEvent(Base):
     cost: Mapped[float | None] = mapped_column(Float, nullable=True)  # spending amount
     reminder_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)  # push notification time
     reminder_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("reminders.id", ondelete="SET NULL"))
+    notes: Mapped[str | None] = mapped_column(Text, nullable=True)  # free-form caption for shareable preview
     created_by: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id"), nullable=True)  # who recorded this event (for shared pets)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
