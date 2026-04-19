@@ -5,9 +5,30 @@
   <h1>You're in!</h1>
   <p class="subtitle">You now share <em>{{ inviter_name }}</em>'s CozyPup Duo plan. Open the app to start caring for your pets together.</p>
 
-  <a href="https://apps.apple.com/app/id{{ app_apple_id }}" class="btn btn-primary">
+  <!-- Mobile: jump to App Store -->
+  <a id="btn-download" href="https://apps.apple.com/app/id{{ app_apple_id }}" class="btn btn-primary" style="display:none;">
     Download CozyPup
   </a>
 
-  <p class="footer" style="margin-top:16px;">Already have the app? Just sign in with the same Google account and you'll see everything.</p>
+  <!-- Desktop: show hint instead -->
+  <div id="desktop-hint" class="inviter" style="display:none; text-align:center; justify-content:center;">
+    <div style="line-height:1.5;">
+      <span style="font-size:28px;">📱</span>
+      <p style="margin:8px 0 0; font-size:14px; color:var(--text-secondary);">Open this link on your iPhone to download CozyPup.</p>
+    </div>
+  </div>
+
+  <p class="footer" style="margin-top:16px;">Already have the app? Just sign in with the same account and you'll see everything.</p>
+
+  <script>
+    (function() {
+      var ua = navigator.userAgent || '';
+      var isMobile = /iPhone|iPad|iPod|Android/i.test(ua);
+      if (isMobile) {
+        document.getElementById('btn-download').style.display = 'flex';
+      } else {
+        document.getElementById('desktop-hint').style.display = 'flex';
+      }
+    })();
+  </script>
 {% endblock %}
