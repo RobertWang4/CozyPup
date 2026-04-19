@@ -77,6 +77,7 @@ class ChatRequest(BaseModel):
     location: dict | None = None           # 用户位置 {"lat": float, "lng": float}，用于附近搜索
     language: str | None = None            # 语言偏好 "zh"/"en"，None 时自动检测
     images: list[str] | None = None        # base64 编码的 JPEG 图片列表
+    new_session: bool = False              # True 时强制开新会话（iOS /clear 后置位一次）
 
 
 class ConfirmActionRequest(BaseModel):
@@ -85,29 +86,34 @@ class ConfirmActionRequest(BaseModel):
 
 
 async def _get_or_create_session(
-    db: AsyncSession, user_id: uuid.UUID
+    db: AsyncSession, user_id: uuid.UUID, force_new: bool = False,
 ) -> ChatSession:
     """获取或创建当日会话。
 
-    设计决策：每个用户每天只有一个会话（daily session），
-    这样可以在一天结束时对整天的对话做摘要压缩，节省 token。
+    默认：每个用户每天一个会话，取今天最新的一条（按 created_at DESC）。
+    force_new=True：强制新建一条今天的会话（iOS 用户 /clear 后的第一条消息会传这个），
+      这样 _load_recent_messages 和 context_summary 都是空的，上下文从零开始。
     """
     today = date.today()
-    result = await db.execute(
-        select(ChatSession).where(
-            ChatSession.user_id == user_id,
-            ChatSession.session_date == today,
+    if not force_new:
+        result = await db.execute(
+            select(ChatSession)
+            .where(
+                ChatSession.user_id == user_id,
+                ChatSession.session_date == today,
+            )
+            .order_by(ChatSession.created_at.desc())
+            .limit(1)
         )
+        session = result.scalar_one_or_none()
+        if session is not None:
+            return session
+    session = ChatSession(
+        id=uuid.uuid4(), user_id=user_id, session_date=today
     )
-    session = result.scalar_one_or_none()
-    if session is None:
-        # 今天还没有会话，创建一个新的
-        session = ChatSession(
-            id=uuid.uuid4(), user_id=user_id, session_date=today
-        )
-        db.add(session)
-        await db.commit()
-        await db.refresh(session)
+    db.add(session)
+    await db.commit()
+    await db.refresh(session)
     return session
 
 
@@ -271,7 +277,9 @@ async def _event_generator(
     # ========== Phase 0: 会话初始化 ==========
 
     # 1. 获取或创建当日会话
-    session = await _get_or_create_session(db, user_id)
+    session = await _get_or_create_session(
+        db, user_id, force_new=bool(request.new_session),
+    )
     session_id = str(session.id)
 
     # 2. 启动图片保存（在线程池中并行运行，不阻塞主流程）

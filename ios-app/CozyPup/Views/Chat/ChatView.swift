@@ -863,9 +863,14 @@ struct ChatView: View {
         Task {
             let coord = location.lastLocation
             let loc = coord.map { (lat: $0.latitude, lng: $0.longitude) }
+            // Consume the one-shot new-session flag so the backend starts a
+            // fresh session row for the first message after /clear.
+            let newSession = chatStore.pendingNewSession
+            chatStore.pendingNewSession = false
             let stream = ChatService.streamChat(
                 message: text, sessionId: chatStore.sessionId, location: loc,
-                images: photos, detectedLanguage: voiceDetectedLanguage
+                images: photos, detectedLanguage: voiceDetectedLanguage,
+                newSession: newSession
             )
             voiceDetectedLanguage = nil
 

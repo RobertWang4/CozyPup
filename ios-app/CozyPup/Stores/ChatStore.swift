@@ -4,6 +4,10 @@ import Foundation
 class ChatStore: ObservableObject {
     @Published var messages: [ChatMessage] = []
     @Published var sessionId: String?
+    /// One-shot flag: set by clear(), consumed by ChatView on the next /chat send.
+    /// Tells the backend to start a brand-new session row so prior messages +
+    /// context_summary don't leak into the LLM prompt.
+    var pendingNewSession: Bool = false
 
     private let messagesKey = "cozypup_chat_messages"
     private let sessionKey = "cozypup_chat_session"
@@ -78,6 +82,7 @@ class ChatStore: ObservableObject {
     func clear() {
         messages = []
         sessionId = nil
+        pendingNewSession = true
         UserDefaults.standard.removeObject(forKey: messagesKey)
         UserDefaults.standard.removeObject(forKey: sessionKey)
     }
