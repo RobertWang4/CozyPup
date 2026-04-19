@@ -1,13 +1,28 @@
-"""
-Unified Agent Loop — 统一的 orchestrator，替代旧的 4 路径架构。
+"""Unified Agent Loop — single orchestrator that replaced the old 4-path design.
 
-核心设计：一个 while 循环处理所有场景（纯聊天、单工具、多工具、图片）。
-加入 nudge 机制：当 LLM 没调用预期的工具时，催促它重试一轮。
+One `while` loop handles every scenario (pure chat, single tool call, multi
+tool call, image analysis). A `nudge` mechanism catches the case where the
+LLM failed to call a high-confidence suggested tool and retries once.
 
-流程：
-  1. 流式调 LLM
-  2. 如果有 tool_calls → 逐个 dispatch → 把结果喂回 → 继续循环
-  3. 如果没有 tool_calls → 检查 nudge → 退出或重试
+Flow per round:
+  1. Stream LLM completion (parallel non-streaming capture when trace is on)
+  2. If tool_calls returned → dispatch each (validate → confirm gate →
+     execute → emit card) → feed results back → loop
+  3. If no tool_calls → check plan nag, then nudge, then exit
+
+Key collaborators:
+  - dispatch_tool: validates, gates, and executes a single tool call
+  - constants.needs_confirm: central confirm-gate policy
+  - micro_compact: compresses old tool results between rounds
+  - trace_collector: optional per-request trace for X-Debug header
+  - pre_processing.SuggestedAction: input to the nudge mechanism
+
+Invariants:
+  - MAX_ROUNDS caps the loop to prevent runaway tool chains
+  - `needs_confirm` never consults the LLM — confirm decisions are
+    deterministic so behavior is predictable
+  - Tools in SKIP_ROUND2_TOOLS let us reuse Round 1 streaming text as the
+    final response without another LLM call (saves ~8k prompt tokens)
 """
 
 import json
@@ -31,8 +46,8 @@ from app.config import settings
 
 logger = logging.getLogger(__name__)
 
-MAX_ROUNDS = 5            # 最多循环轮次（含 nudge 重试）
-NUDGE_CONFIDENCE = 0.8    # nudge 触发的最低置信度
+MAX_ROUNDS = 5            # Max loop iterations, including nudge/plan-nag retries
+NUDGE_CONFIDENCE = 0.8    # Minimum pre-processor confidence to trigger a nudge
 
 
 # ---------------------------------------------------------------------------
@@ -41,7 +56,12 @@ NUDGE_CONFIDENCE = 0.8    # nudge 触发的最低置信度
 
 @dataclass
 class OrchestratorResult:
-    """orchestrator 执行结果。"""
+    """Aggregate result of one `run_orchestrator` call.
+
+    Streams are emitted live via on_token/on_card callbacks; this struct
+    exists so the caller can also inspect final state (e.g. to persist the
+    assistant message, emit debug trace, or bill tokens).
+    """
     response_text: str = ""
     cards: list[dict] = field(default_factory=list)
     confirm_cards: list[dict] = field(default_factory=list)
@@ -53,7 +73,7 @@ class OrchestratorResult:
 
 
 # ---------------------------------------------------------------------------
-# _describe_tool_call — 生成工具调用的人类可读描述（用于 confirm card）
+# _describe_tool_call — human-readable summary shown on confirm cards
 # ---------------------------------------------------------------------------
 
 def _describe_tool_call(
@@ -92,6 +112,12 @@ def _describe_tool_call(
         info = fn_args.get("info", {})
         if "name" in info:
             return t("desc_rename", lang).format(label=label, name=info['name'])
+        from app.agents.tools.pets import _format_saved_fields
+        fields = _format_saved_fields(info, lang)
+        if fields:
+            sep = "、" if lang == "zh" else ", "
+            pairs = sep.join(f"{f['label']}: {f['value']}" for f in fields)
+            return t("desc_update_pet", lang).format(label=label, keys=pairs)
         keys = ", ".join(info.keys())
         return t("desc_update_pet", lang).format(label=label, keys=keys)
     if fn_name == "create_pet":
@@ -170,11 +196,27 @@ def _describe_tool_call(
         return t("desc_set_avatar", lang).format(label=label)
     if fn_name == "upload_event_photo":
         return t("desc_upload_photo", lang)
+    if fn_name == "remove_event_photo":
+        return "删除事件照片" if lang == "zh" else "Remove event photo"
+    if fn_name == "create_daily_task":
+        title = fn_args.get("title", "")
+        return (f"添加日常任务「{title}」" if lang == "zh"
+                else f"Add daily task \"{title}\"")
+    if fn_name == "set_language":
+        target = fn_args.get("language", "")
+        target_label = {"zh": "中文", "en": "English"}.get(target, target)
+        return (f"切换语言为 {target_label}" if lang == "zh"
+                else f"Switch language to {target_label}")
+    if fn_name == "manage_daily_task":
+        title = fn_args.get("title", "") or (fn_args.get("updates") or {}).get("title", "")
+        action = fn_args.get("action", "")
+        return (f"更新日常任务「{title}」({action})" if lang == "zh"
+                else f"Update daily task \"{title}\" ({action})")
     return fn_name
 
 
 # ---------------------------------------------------------------------------
-# _lookup_event_info — 查找日历事件的展示信息（用于 confirm card）
+# _lookup_event_info — fetch event display fields for confirm cards
 # ---------------------------------------------------------------------------
 
 async def _lookup_event_info(db, user_id, event_id_raw, pets: list | None = None) -> dict | None:
@@ -218,14 +260,17 @@ async def _lookup_event_info(db, user_id, event_id_raw, pets: list | None = None
 
 
 # ---------------------------------------------------------------------------
-# _load_images_from_urls — 从磁盘读取历史图片为 base64
+# _load_images_from_urls — read historical photos from disk as base64
 # ---------------------------------------------------------------------------
 
 def _load_images_from_urls(urls: list[str]) -> list[str]:
-    """从图片 URL 路径中读取文件并转为 base64。
+    """Load photos referenced by earlier messages and encode as base64.
 
-    URLs 格式为 /api/v1/calendar/photos/{uuid}.jpg，
-    对应磁盘路径 PHOTO_DIR/{uuid}.jpg。
+    Used by request_images when the current turn has no new attachments
+    but the user is asking about a picture from a prior message.
+
+    URLs are of the form /api/v1/calendar/photos/{uuid}.jpg mapped to
+    PHOTO_DIR on disk. Files larger than 5 MB are skipped (LLM image cap).
     """
     import base64
     from pathlib import Path
@@ -247,7 +292,7 @@ def _load_images_from_urls(urls: list[str]) -> list[str]:
 
 
 # ---------------------------------------------------------------------------
-# dispatch_tool — 统一的工具分发：validate → confirm → execute → card
+# dispatch_tool — unified tool pipeline: validate → confirm → execute → card
 # ---------------------------------------------------------------------------
 
 async def dispatch_tool(
@@ -264,12 +309,20 @@ async def dispatch_tool(
     recent_image_urls: list[str] | None = None,
     **kwargs,
 ) -> dict:
-    """统一的工具执行入口。
+    """Unified tool execution entry point.
 
-    始终返回一个 dict（不会返回 None 或抛异常到调用方）。
-    - 验证失败 → {"error": "..."}（LLM 下一轮会看到错误并自动修正）
-    - confirm 门控 → {"status": "waiting_confirm", "message": "..."}
-    - 正常执行 → 工具返回的结果 dict
+    Always returns a dict (never None, never raises to the caller).
+    - Validation failure → {"error": "..."} — LLM sees the error next round
+      and self-corrects without any extra prompt engineering.
+    - Confirm gate hit → {"status": "waiting_confirm", "message": "..."}
+      — a confirm card is emitted and the tool is stored in pending_actions.
+    - Normal execution → the handler's result dict (may contain `card`).
+
+    Side effects:
+      - May emit a card via on_card callback.
+      - Commits the DB transaction on success (tools flush to DB then this
+        fn commits so the router sees persisted state).
+      - Appends to result.cards / result.confirm_cards / result.tools_called.
     """
     fn_name = tool_call["function"]["name"]
 
@@ -280,7 +333,9 @@ async def dispatch_tool(
 
     result.tools_called.add(fn_name)
 
-    # --- create_calendar_event: 拦截未提到的宠物 ---
+    # Guard: LLM sometimes invents events for pets the user did not mention
+    # (e.g. user says "Vinnie ate" but LLM creates one for Huahua too).
+    # Block the call server-side — cheaper + more reliable than prompting harder.
     if fn_name == "create_calendar_event" and fn_args.get("pet_id") and pets:
         user_msgs = [m.get("content", "") for m in kwargs.get("_messages", []) if m.get("role") == "user" and isinstance(m.get("content"), str)]
         last_user = user_msgs[-1] if user_msgs else ""
@@ -305,7 +360,29 @@ async def dispatch_tool(
             })
             return {"success": False, "error": f"用户只提到了特定的宠物，没有提到{blocked_name}。请只为用户提到的宠物创建事件。"}
 
-    # --- create_calendar_event: 自动补全 cost ---
+    # Guard: refuse to create a second pet with the same name as an existing
+    # one (case-insensitive). Duplicate creation is a classic LLM failure
+    # mode; the error message steers the LLM to update_pet_profile instead.
+    if fn_name == "create_pet" and fn_args.get("name") and pets:
+        new_name = str(fn_args["name"]).strip().lower()
+        for p in pets:
+            existing_name = (p.name if hasattr(p, "name") else p.get("name", "")) or ""
+            existing_id = str(p.id if hasattr(p, "id") else p.get("id", ""))
+            if existing_name.strip().lower() == new_name:
+                logger.info("duplicate_pet_blocked", extra={
+                    "name": new_name,
+                    "existing_id": existing_id,
+                })
+                return {
+                    "success": False,
+                    "error": (
+                        f"宠物「{existing_name}」已经存在 (id={existing_id})。"
+                        f"不要重复创建 — 如需补充信息，请改用 update_pet_profile 并传 pet_id。"
+                    ),
+                }
+
+    # Best-effort cost backfill: LLM frequently forgets to extract the
+    # amount the user mentioned. Regex-extract so the calendar event has it.
     if fn_name == "create_calendar_event" and fn_args.get("cost") is None:
         import re
         user_msgs = [m.get("content", "") for m in kwargs.get("_messages", []) if m.get("role") == "user" and isinstance(m.get("content"), str)]
@@ -318,7 +395,9 @@ async def dispatch_tool(
             tool_call["function"]["arguments"] = json.dumps(fn_args, ensure_ascii=False)
             logger.info("cost_auto_fixed", extra={"extracted": amount, "user_text": last_user[:60]})
 
-    # --- create_daily_task: 自动补全 end_date ---
+    # Best-effort end_date backfill: LLM often omits end_date when the user
+    # said "for the next 7 days" or "until April 10", silently turning a
+    # bounded task into a permanent one. Regex-extract common phrasings.
     if fn_name == "create_daily_task" and not fn_args.get("end_date"):
         import re
         from datetime import date as _date, timedelta as _td
@@ -366,7 +445,9 @@ async def dispatch_tool(
                 "user_text": last_user[:60],
             })
 
-    # --- plan：多步骤规划，不走 DB ---
+    # plan tool is purely control-flow (LLM declares the decomposition) — it
+    # does not touch the DB. We just record the steps so the plan-nag check
+    # in the main loop knows what to wait for.
     if fn_name == "plan":
         steps = fn_args.get("steps", [])
         result.plan_steps = steps
@@ -377,7 +458,9 @@ async def dispatch_tool(
             "steps": steps,
         }
 
-    # --- request_images：返回特殊标记，主循环会注入图片 ---
+    # request_images returns a sentinel (_inject_images) that the main loop
+    # reads and turns into a proper multimodal user message before the next
+    # round, so the LLM actually sees the pixels.
     if fn_name == "request_images":
         if images:
             return {
@@ -385,7 +468,7 @@ async def dispatch_tool(
                 "message": "图片已加载" if lang == "zh" else "Images loaded",
                 "_inject_images": images,
             }
-        # 当前 turn 没有图片，尝试从历史消息的图片文件读取 base64
+        # No new images this turn — fall back to photos from recent messages
         if recent_image_urls:
             history_images = _load_images_from_urls(recent_image_urls)
             if history_images:
@@ -397,8 +480,13 @@ async def dispatch_tool(
                 }
         return {"error": "用户没有附带图片" if lang == "zh" else "No images attached"}
 
-    # --- Confirm gate：破坏性工具需要用户确认 ---
-    if needs_confirm(fn_name, fn_args) and session_id:
+    # Confirm gate: always-confirm tools + mutating tools without an explicit
+    # action verb in the user's message get a confirm card instead of
+    # executing. The tool call is persisted in pending_actions so a later
+    # /confirm endpoint can replay it once the user taps confirm.
+    user_msgs = [m.get("content", "") for m in kwargs.get("_messages", []) if m.get("role") == "user" and isinstance(m.get("content"), str)]
+    last_user_text = user_msgs[-1] if user_msgs else ""
+    if needs_confirm(fn_name, fn_args, last_user_text) and session_id:
         event_info = None
         if fn_name in {"delete_calendar_event", "update_calendar_event"} and fn_args.get("event_id"):
             event_info = await _lookup_event_info(db, user_id, fn_args["event_id"], pets=pets)
@@ -407,8 +495,9 @@ async def dispatch_tool(
             fn_name, fn_args, pets=pets, lang=lang,
             event_info=event_info, image_urls=effective_urls,
         )
-        # Persist image urls alongside arguments so confirm-action can re-run
-        # the tool with the original photos attached.
+        # Persist image_urls inside the stored args so the confirm endpoint
+        # can re-run the tool with the original photos attached — otherwise
+        # the photos would be gone by the time the user taps confirm.
         stored_args = dict(fn_args)
         if effective_urls and fn_name == "create_calendar_event":
             stored_args["_image_urls"] = list(effective_urls)
@@ -429,11 +518,13 @@ async def dispatch_tool(
 
     # --- Execute ---
     try:
-        # 透传 image_urls、location、lang 给所有工具，工具侧自行决定是否使用
+        # Pass image_urls/location/lang to every handler; handlers that don't
+        # need them simply accept **kwargs and ignore the extras.
         exec_kwargs = {"lang": lang}
         if "location" in kwargs:
             exec_kwargs["location"] = kwargs["location"]
-        # 当前 turn 有图片用当前的，没有则回退到历史消息中的图片 URL
+        # Prefer current-turn photos; fall back to photos from recent messages
+        # so follow-up messages ("attach THIS one too") still work.
         effective_image_urls = image_urls or recent_image_urls
         if effective_image_urls:
             exec_kwargs["image_urls"] = effective_image_urls
@@ -446,7 +537,9 @@ async def dispatch_tool(
         })
         return {"error": str(exc)[:200]}
 
-    # --- Handle needs_confirm（部分工具执行后仍需确认） ---
+    # Some handlers (e.g. gender/species first-time set) run a partial update
+    # and then return needs_confirm=True for the lockable portion. Surface
+    # a confirm card for that leftover piece.
     if tool_result.get("needs_confirm") and session_id:
         confirm_tool = tool_result.get("confirm_tool", fn_name)
         confirm_args = tool_result.get("confirm_arguments", fn_args)
@@ -472,17 +565,18 @@ async def dispatch_tool(
 
 
 # ---------------------------------------------------------------------------
-# Nudge helpers — 催促 LLM 调用它遗漏的工具
+# Nudge helpers — retry once when LLM skipped a high-confidence tool
 # ---------------------------------------------------------------------------
 
 def _find_missed_tools(
     suggested_actions: list[SuggestedAction],
     tools_called: set[str],
 ) -> list[SuggestedAction]:
-    """找出高置信度的预测工具中，LLM 没有调用的。
+    """Return high-confidence suggestions the LLM didn't call.
 
-    只对 NUDGE_TOOLS 中的关键工具进行催促（search_places, trigger_emergency,
-    set_language）。其他工具的预处理建议仅供参考，不强制。
+    Only tools in NUDGE_TOOLS are ever forced (search_places,
+    trigger_emergency, set_language — the ones the LLM reliably forgets).
+    All other pre-processor suggestions are advisory; don't nudge on them.
     """
     from app.agents.constants import NUDGE_TOOLS
     return [
@@ -499,8 +593,9 @@ def _inject_nudge(
     missed: list[SuggestedAction],
     lang: str,
 ) -> None:
-    """注入催促消息，让 LLM 在下一轮调用遗漏的工具。"""
-    # 把 LLM 上一轮的文本回复作为 assistant 消息加入
+    """Inject a nudge message so the LLM calls the missed tool next round."""
+    # Preserve last round's text as an assistant turn so the conversation
+    # reads coherently to the LLM (otherwise it sees a stray user message).
     if last_text:
         messages.append({"role": "assistant", "content": last_text})
 
@@ -525,7 +620,7 @@ def _inject_nudge(
 
 
 # ---------------------------------------------------------------------------
-# _stream_completion — 流式 LLM 调用
+# _stream_completion — streaming LLM call (with optional trace capture)
 # ---------------------------------------------------------------------------
 
 async def _capture_non_streaming(
@@ -566,7 +661,12 @@ async def _stream_completion(
     trace: TraceCollector = INACTIVE_TRACE,
     round_num: int = 0,
 ) -> tuple[str, list[dict], dict]:
-    """流式调用 LLM，返回 (文本, tool_calls 列表, usage_dict)。"""
+    """Stream the LLM response and return (text, tool_calls, usage).
+
+    When trace is active a parallel non-streaming call also runs so the
+    admin trace view gets the full raw JSON (streaming deltas are lossy).
+    Retries up to 2 times on transport errors.
+    """
     import asyncio
 
     text_parts = []
@@ -667,7 +767,7 @@ async def _stream_completion(
 
 
 # ---------------------------------------------------------------------------
-# Skip Round 2 — 简单 CRUD 工具成功后跳过第二轮 LLM 调用
+# Skip Round 2 — reuse Round 1 text as the final reply for simple CRUD tools
 # ---------------------------------------------------------------------------
 
 def _can_skip_round2(
@@ -716,7 +816,7 @@ def _can_skip_round2(
 
 
 # ---------------------------------------------------------------------------
-# run_orchestrator — 统一 Agent Loop 主入口
+# run_orchestrator — unified Agent Loop entry point
 # ---------------------------------------------------------------------------
 
 async def run_orchestrator(
@@ -734,13 +834,21 @@ async def run_orchestrator(
     trace: TraceCollector = INACTIVE_TRACE,
     **kwargs,
 ) -> OrchestratorResult:
-    """统一的 orchestrator 入口。
+    """Run the unified agent loop until exhaustion or MAX_ROUNDS.
 
-    一个 while 循环处理所有场景：
-    - 纯聊天（LLM 不调工具 → 直接返回文本）
-    - 单/多工具（LLM 返回 tool_calls → dispatch → 喂回结果 → 循环）
-    - 图片分析（request_images 作为普通工具处理）
-    - Nudge（LLM 遗漏预期工具时催促重试一次）
+    Handles every chat scenario in one loop:
+      - Pure chat: LLM emits text without tool_calls → exit immediately.
+      - Single/multi tool: LLM emits tool_calls → dispatch each → feed
+        results back → loop until LLM stops calling tools.
+      - Image analysis: request_images injects base64 images via a special
+        user message in the next round.
+      - Nudge: if LLM skipped a NUDGE_TOOLS call that pre-processing was
+        confident about, retry once with an explicit instruction.
+      - Plan nag: if plan() was called but some planned tools never fired,
+        nag the LLM to finish them.
+
+    Streams tokens via on_token and cards via on_card. The returned
+    OrchestratorResult also contains the aggregate state.
     """
     from app.debug.trace_logger import trace_log
 
@@ -749,7 +857,7 @@ async def run_orchestrator(
     use_model = model or settings.model
     result.model_used = use_model
 
-    # 构建初始消息列表
+    # Seed the message list with system prompt + recent history
     messages = [{"role": "system", "content": system_prompt}]
     messages.extend(context_messages)
 
@@ -757,19 +865,20 @@ async def run_orchestrator(
     nudge_used = False
     plan_nag_used = False
 
-    # 从 kwargs 提取 dispatch_tool 需要的参数
+    # Extract dispatch_tool kwargs up front so they're not forwarded to the LLM
     images = kwargs.pop("images", None)
     image_urls = kwargs.pop("image_urls", None)
-    recent_image_urls = kwargs.pop("recent_image_urls", None)  # 历史消息中的图片 URL
+    recent_image_urls = kwargs.pop("recent_image_urls", None)  # photos from prior messages
     location = kwargs.pop("location", None)
     pets = kwargs.pop("pets", None)
 
     for round_num in range(MAX_ROUNDS):
-        # --- micro_compact：压缩旧的 tool_result ---
+        # Compress older tool_result payloads to save prompt tokens — keep
+        # only the most recent round's full results.
         if round_num > 0:
             micro_compact(messages)
 
-        # --- 流式调 LLM ---
+        # Stream the LLM response
         round_text, tool_calls, usage = await _stream_completion(
             messages, use_model, on_token, lang=lang,
             trace=trace, round_num=round_num,
@@ -804,14 +913,15 @@ async def run_orchestrator(
             "total_tokens": (usage.get("prompt_tokens") or 0) + (usage.get("completion_tokens") or 0),
         })
 
-        # --- 没有 tool_calls：检查 plan nag / nudge 或退出 ---
+        # No tool_calls this round — decide: plan nag → nudge → exit
         if not tool_calls:
             text_parts.append(round_text)
 
-            # Plan nag：如果有 plan 但未完成所有步骤，催促 LLM 继续
+            # Plan nag: if plan() declared steps but the LLM stopped before
+            # executing all of them, inject a nag message and retry once.
             if not plan_nag_used and result.plan_steps:
                 planned_tools = {s["tool"] for s in result.plan_steps}
-                # tools_called 里去掉 plan 本身
+                # Exclude plan itself when checking what still needs to run
                 executed_tools = result.tools_called - {"plan"}
                 missing_tools = planned_tools - executed_tools
                 if missing_tools:
@@ -826,7 +936,8 @@ async def run_orchestrator(
                         "round": round_num,
                         "missing_tools": list(missing_tools),
                     })
-                    # 注入 nag 消息
+                    # Preserve last round's text so the nag message reads
+                    # naturally in the conversation history the LLM sees.
                     if round_text:
                         messages.append({"role": "assistant", "content": round_text})
                     step_list = "\n".join(f"- [{s['id']}] {s['action']} → {s['tool']}" for s in missing_steps)
@@ -837,8 +948,9 @@ async def run_orchestrator(
                     messages.append({"role": "user", "content": nag})
                     continue
 
-            # Nudge：如果有高置信度预测但 LLM 从未调用任何工具，催促一次
-            # 注意：如果 LLM 已经调过工具（哪怕不是预测的那个），说明它在正常工作，不 nudge
+            # Nudge: only fire when the LLM called zero tools. If it called
+            # *some* tool (even a different one than suggested) it's clearly
+            # working — don't second-guess it.
             if not nudge_used and not result.tools_called and suggested_actions:
                 missed = _find_missed_tools(suggested_actions, result.tools_called)
                 if missed:
@@ -854,9 +966,9 @@ async def run_orchestrator(
                     _inject_nudge(messages, round_text, missed, lang)
                     continue
 
-            break  # 正常退出循环
+            break  # Normal exit — no tools, no pending plan, no nudge
 
-        # --- 有 tool_calls：构建 assistant 消息并逐个执行 ---
+        # Tool calls present: append assistant turn and dispatch each tool
         text_parts.append(round_text)
 
         assistant_msg = {
@@ -914,7 +1026,8 @@ async def run_orchestrator(
                 "error": tool_result.get("error"),
             })
 
-            # 序列化 tool_result（去掉内部标记字段）
+            # Strip internal markers (keys starting with _) before serialising
+            # back to the LLM — those are private to the orchestrator.
             serializable = {k: v for k, v in tool_result.items() if not k.startswith("_")}
             messages.append({
                 "role": "tool",
@@ -922,7 +1035,9 @@ async def run_orchestrator(
                 "content": json.dumps(serializable, ensure_ascii=False, default=str),
             })
 
-            # 如果 request_images 返回了图片，注入到消息中
+            # request_images sentinel — wrap base64 payloads in an OpenAI-
+            # style multimodal user message so the LLM actually sees them
+            # on the next round.
             if "_inject_images" in tool_result:
                 image_content = [
                     {"type": "text", "text": "这是用户附带的图片，请仔细查看后回答：" if lang == "zh" else "Here are the user's images:"}
@@ -948,7 +1063,9 @@ async def run_orchestrator(
             })
             break
 
-    # 确保 response_text 不为空（除非有 confirm card 待处理）
+    # Ensure response_text is non-empty unless the only output is a confirm
+    # card (in which case the card itself is the "reply"). This guarantees
+    # the user never sees a blank bubble.
     import re as _re
     raw_text = "".join(text_parts)
     # Strip leaked XML/HTML tags from LLM output (grok sometimes outputs <parameter> or <xai:function_call>)

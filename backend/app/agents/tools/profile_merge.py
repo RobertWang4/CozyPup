@@ -1,4 +1,10 @@
-"""Merge two pet profile_md documents using LLM."""
+"""Merge two pet profile_md documents using an LLM.
+
+Used when pet sharing transfers a pet between owners — both owners may
+have independently edited the pet's narrative profile, and we need a
+single reconciled document. Falls back to concatenation if the LLM
+call fails so we never lose data.
+"""
 
 import logging
 

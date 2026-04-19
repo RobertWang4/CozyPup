@@ -1,13 +1,18 @@
-"""
-V2 Prompt Builder — cache-friendly ordering for prefix caching.
+"""V2 Prompt Builder — cache-friendly ordering for LLM prefix caching.
 
-Prompt structure (static -> dynamic for maximum cache hit):
-  1. Tool definitions + decision tree  (100% cache hit -- never changes)
-  2. Pet profiles (profile_md/JSON)    (high cache hit -- rarely changes)
+Providers (DeepSeek/OpenAI-compatible) cache the longest common prefix
+across requests. Ordering the system prompt static-first dramatically
+increases cache hit rate and cuts prompt token costs.
+
+Prompt structure (static → dynamic):
+  1. Tool definitions + decision tree  (100% cache hit — never changes)
+  2. Pet profiles (profile_md/JSON)    (high cache hit — rarely changes)
   3. Session summary                   (changes occasionally)
   4. Recent raw messages (3-5)         (changes every request)
   5. Emergency hint                    (dynamic, optional)
   6. Pre-processor hints               (dynamic, optional)
+
+Called by the chat router before every orchestrator invocation.
 """
 
 import json

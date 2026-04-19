@@ -1,6 +1,14 @@
-"""Tool registration decorator and registry.
+"""Tool registration decorator + registry.
 
-Usage in domain files:
+Domain files (calendar.py, pets.py, etc.) register handlers at import
+time via the `@register_tool` decorator. `tools/__init__.py` then
+imports every domain module to trigger the decorators, and the
+orchestrator dispatches through `get_registered_tools()`.
+
+`accepts_kwargs=True` means the handler takes extra context (image_urls,
+location, lang) beyond the standard `(arguments, db, user_id)` signature.
+
+Usage:
     from app.agents.tools.registry import register_tool
 
     @register_tool("create_calendar_event", accepts_kwargs=True)

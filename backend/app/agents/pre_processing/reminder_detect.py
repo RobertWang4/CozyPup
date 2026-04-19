@@ -1,4 +1,9 @@
-"""Reminder intent detection for pre-processing."""
+"""Reminder intent detection.
+
+Triggers on "remind me", "别忘了", "记得" patterns. Not blocked by the
+question-override heuristic because reminders are inherently future-
+looking even when phrased as questions ("should you remind me to...").
+"""
 
 import re
 from datetime import date, datetime

@@ -1,4 +1,10 @@
-"""Pet name resolution and value extraction utilities for pre-processing."""
+"""Pet name resolution + value extraction for pre-processing detectors.
+
+`resolve_pets` matches pet names mentioned in the message against the
+user's pet list. `VALUE_EXTRACTORS` maps profile keys (name/birthday/
+weight/gender) to concrete extractors — used by pet_detect to pre-fill
+update_pet_profile arguments without waiting for the LLM.
+"""
 
 import re
 from datetime import date

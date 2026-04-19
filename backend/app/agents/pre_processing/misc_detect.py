@@ -1,5 +1,10 @@
-"""Miscellaneous intent detection: search_places, draft_email, summarize_profile,
-set_avatar, language switch.
+"""Miscellaneous intent detection.
+
+Covers tools that don't fit the calendar/pet/reminder/task buckets:
+search_places, draft_email, summarize_pet_profile, set_pet_avatar,
+introduce_product, set_language. search_places and set_language are
+deliberately not gated by `is_question` — asking "where's the nearest
+vet?" still needs a real search, not a text guess.
 """
 
 import re

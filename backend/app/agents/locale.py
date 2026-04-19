@@ -1,5 +1,13 @@
 """Prompt i18n — all user-facing and LLM-facing strings in one place.
 
+Every localisable string (system prompt, tool-decision guide, confirm-card
+descriptions, tool descriptions shown to the LLM, error messages) lives in
+`_STRINGS`. Callers use `t(key, lang)` and `detect_language(text)`.
+
+Why centralise: the zh/en prompts must stay in lockstep (identical rules,
+identical tool-selection hints) or the agent behaves differently by locale.
+Keeping them adjacent in one file makes drift obvious in code review.
+
 Usage:
     from app.agents.locale import t, detect_language
     text = t("base_system_prompt", lang="en")

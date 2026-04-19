@@ -1,4 +1,10 @@
-"""search_knowledge tool — RAG retrieval for pet health Q&A."""
+"""search_knowledge tool — RAG retrieval for pet health Q&A.
+
+Delegates to `app.rag.retrieval.retrieve_knowledge`, which queries both
+the global KnowledgeArticle embeddings and the user's per-pet history.
+Builds a `references` card when any results have titles/urls so the iOS
+client can surface a "Sources" drawer.
+"""
 
 import logging
 import uuid

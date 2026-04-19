@@ -1,4 +1,10 @@
-"""Daily task intent detection for pre-processing."""
+"""Daily task intent detection.
+
+Detects create_daily_task requests ("add a daily task to walk the dog",
+"remind me to give probiotics for the next 7 days"). Extracts frequency
+(N times/day) and duration (N days / until date) to pre-fill arguments,
+distinguishing permanent routines from bounded "special" tasks.
+"""
 
 import re
 from datetime import date, timedelta

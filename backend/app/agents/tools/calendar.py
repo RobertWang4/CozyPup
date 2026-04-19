@@ -1,4 +1,11 @@
-"""Calendar event tool handlers."""
+"""Calendar event tool handlers — create/query/update/delete + photos + location.
+
+CalendarEvent replaces the old pet_logs table; category/raw_text/edited/
+source fields encode whether the record came from chat, manual entry, or
+an edit. `create_calendar_event` is the workhorse — it handles multi-pet
+events via `pet_ids` and auto-dedups abnormal events on (pet, title, date)
+to absorb the LLM's occasional duplicate-call failure mode.
+"""
 
 import uuid
 from datetime import date, time
@@ -52,6 +59,7 @@ async def create_calendar_event(
         return {"success": False, "error": "No valid pets found for the given pet_id(s)"}
 
     cost = arguments.get("cost")
+    notes = arguments.get("notes")
     reminder_at_str = arguments.get("reminder_at")
     reminder_at = None
     if reminder_at_str:
@@ -98,11 +106,12 @@ async def create_calendar_event(
         edited=False,
         cost=float(cost) if cost is not None else None,
         reminder_at=reminder_at,
+        notes=notes if notes else None,
     )
 
-    # Attach photos: chat.py 已经在后台把图片存到磁盘了，
-    # image_urls 通过 kwargs 透传进来。
-    # Fallback to _image_urls in arguments — populated when the call was
+    # Photo attachment: chat.py already persisted the files, so we just
+    # get back a list of URL paths via kwargs["image_urls"].
+    # Fallback to arguments["_image_urls"] — populated when the call was
     # deferred through a confirm card (see orchestrator.dispatch_tool).
     image_urls = (
         kwargs.get("image_urls")
@@ -209,6 +218,9 @@ async def update_calendar_event(
         event.category = EventCategory(arguments["category"])
     if "cost" in arguments:
         event.cost = float(arguments["cost"]) if arguments["cost"] is not None else None
+    if "notes" in arguments:
+        n = arguments.get("notes")
+        event.notes = n if n else None
 
     event.edited = True
     await db.flush()
@@ -287,7 +299,7 @@ async def upload_event_photo(
     if not event:
         return {"success": False, "error": "Event not found"}
 
-    # chat.py 已在后台存好图片，image_urls 通过 kwargs 透传
+    # chat.py has already saved the files — just get the URL list via kwargs.
     image_urls = kwargs.get("image_urls") or []
 
     if not image_urls:

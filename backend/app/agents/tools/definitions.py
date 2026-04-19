@@ -1,4 +1,14 @@
-"""Tool definitions (OpenAI function calling format) for the Chat Agent."""
+"""Tool definitions (OpenAI function-calling format) exposed to the LLM.
+
+Each entry is a JSON schema the LLM sees as callable. Descriptions are
+Chinese by default; `get_tool_definitions(lang)` swaps in English
+descriptions from `locale.py` (keys `tool_desc_*`) for English sessions.
+Results are cached per-lang in `_tool_defs_cache` — invalidated by
+restarting the process (no hot-reload).
+
+Ordering the entries carefully matters for LLM cache prefixes — avoid
+reshuffling without reason.
+"""
 
 import copy
 
@@ -73,6 +83,14 @@ _BASE_TOOL_DEFINITIONS = [
                             "用户说'提醒我'/'别忘了'/'下周一八点打疫苗' → 传 reminder_at。\n"
                             "已发生的事不需要提醒，不要传。\n"
                             "未来的事如果用户要求提醒 → event_date 设为事件日期，reminder_at 设为提醒时间。"
+                        ),
+                    },
+                    "notes": {
+                        "type": "string",
+                        "description": (
+                            "可选的补充说明 / 备注（自由格式文本）。\n"
+                            "当用户描述额外细节（感受、观察、上下文）而这些不适合放进简短 title 时使用。\n"
+                            "title 应保持 2-8 字；更长的描述放 notes。"
                         ),
                     },
                 },
@@ -154,6 +172,10 @@ _BASE_TOOL_DEFINITIONS = [
                         "type": "number",
                         "description": "New cost amount.",
                     },
+                    "notes": {
+                        "type": "string",
+                        "description": "New free-form notes / caption (empty string clears).",
+                    },
                 },
                 "required": ["event_id"],
             },
@@ -165,6 +187,8 @@ _BASE_TOOL_DEFINITIONS = [
             "name": "create_pet",
             "description": (
                 "为用户创建新的宠物档案。\n"
+                "【调用前必须检查】上方系统消息里的宠物列表。如果用户提到的名字已经存在 (大小写不敏感)，"
+                "禁止调用 create_pet — 必须改用 update_pet_profile 补充信息。\n"
                 "当用户说有新宠物要添加时使用 (我养了一只猫/我新买了一只狗)。\n"
                 "不要用于: 更新已有宠物信息 (用 update_pet_profile)。\n"
                 "不要用于: 改名 (用 update_pet_profile 传 name)。\n"
@@ -984,40 +1008,26 @@ _BASE_TOOL_DEFINITIONS = [
     },
 ]
 
-# Mutating tools that support LLM-driven selective confirm. LLM sets
-# confirm=true when user intent is implicit (stated a fact without explicitly
-# asking to record/modify); system then surfaces a confirm card.
+# Legacy set — used when LLM-driven selective confirm was part of the tool
+# schema. The policy has since moved server-side (see constants.needs_confirm
+# and MUTATING_TOOLS_WITH_VERB_BYPASS), so this is kept only for reference.
 _CONFIRM_OPT_IN_TOOLS = {
     "create_calendar_event",
     "update_calendar_event",
     "create_reminder",
     "update_reminder",
     "update_pet_profile",
+    "create_pet",
+    "create_daily_task",
+    "manage_daily_task",
 }
 
 
 def _inject_confirm_param(tool: dict, lang: str) -> None:
-    """Add optional confirm:boolean param to a mutating tool definition."""
-    fn = tool.get("function", {})
-    if fn.get("name") not in _CONFIRM_OPT_IN_TOOLS:
-        return
-    params = fn.setdefault("parameters", {})
-    props = params.setdefault("properties", {})
-    if "confirm" in props:
-        return
-    if lang == "zh":
-        desc = (
-            "当用户只是陈述事实、未明确要求'记录/保存/添加/创建/修改'时设为 true，"
-            "系统会先让用户确认再执行。用户明确要求操作（说了'记一下''帮我记''保存'等动词）"
-            "时省略或设为 false。"
-        )
-    else:
-        desc = (
-            "Set to true when the user merely states a fact without explicitly "
-            "asking to record/save/modify. The system will show a confirm card "
-            "before executing. Omit or set false when the user explicitly asked."
-        )
-    props["confirm"] = {"type": "boolean", "description": desc}
+    """No-op. Confirm decision is now made server-side via explicit-verb detection
+    in orchestrator.dispatch_tool — see `_IMPLICIT_CONFIRM_RULES`. Keeping this
+    function for call-site compatibility."""
+    return
 
 
 # Backward compatibility alias

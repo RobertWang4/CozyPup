@@ -1,6 +1,12 @@
-"""
-Context Agent: compresses chat history into structured summaries.
-Triggered lazily (when unsummarized messages >= 5), runs async without blocking.
+"""Context Agent: compresses chat history into structured JSON summaries.
+
+Triggered lazily after a response is sent (see trigger_summary_if_needed).
+Stores topics/key_facts/pending/mood on ChatSession.context_summary so that
+subsequent requests include a condensed history without re-sending every
+raw turn — keeps the prompt short for long daily sessions.
+
+The summary LLM call is intentionally cheap (low temperature, small model);
+quality matters less than consistency across requests.
 """
 import json
 import logging

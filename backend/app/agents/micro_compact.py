@@ -1,30 +1,35 @@
-"""micro_compact — 压缩旧的 tool_result 消息，节省上下文窗口。
+"""micro_compact — compress old tool_result payloads to save prompt tokens.
 
-在多轮工具循环中，每轮 LLM 调用前执行：
-- 保留最近一轮的完整 tool_result（LLM 需要看到最新结果）
-- 更早的 tool_result 压缩为简短摘要
+Called between rounds in `orchestrator.run_orchestrator`. The most recent
+round's results stay intact (the LLM needs them to decide what to do
+next), but earlier rounds' verbose results get replaced with a minimal
+summary (success / error / status / card_type).
+
+For a 5-round session with large query results this can save thousands
+of tokens per request.
 """
 
 import json
 
 
 def micro_compact(messages: list[dict], keep_recent: int = 1) -> None:
-    """就地压缩 messages 中旧的 tool result。
+    """Compress old tool-result messages in place.
 
     Args:
-        messages: LLM 消息列表（会被原地修改）
-        keep_recent: 保留最近 N 组 assistant+tool 的完整内容
+        messages: LLM message list (mutated in place).
+        keep_recent: Keep the last N assistant+tool round groups intact.
     """
-    # 找到所有 assistant 消息（带 tool_calls 的）的索引
+    # Locate the assistant turns that triggered tool calls — those bracket
+    # each "round group" of (assistant tool_calls → tool results).
     assistant_indices = [
         i for i, m in enumerate(messages)
         if m.get("role") == "assistant" and m.get("tool_calls")
     ]
 
     if len(assistant_indices) <= keep_recent:
-        return  # 没有足够的历史轮次需要压缩
+        return  # Not enough history to compress yet
 
-    # 只压缩 keep_recent 之前的轮次
+    # Compress everything before the kept recent round(s)
     cutoff_idx = assistant_indices[-keep_recent]
 
     for i in range(cutoff_idx):
@@ -33,9 +38,9 @@ def micro_compact(messages: list[dict], keep_recent: int = 1) -> None:
             continue
         content = msg.get("content", "")
         if len(content) <= 200:
-            continue  # 已经够短了
+            continue  # Already small enough — don't waste cycles
 
-        # 尝试解析 JSON 并提取关键信息
+        # Try to keep structurally-meaningful bits; fall back to truncation.
         try:
             data = json.loads(content)
             summary = {}

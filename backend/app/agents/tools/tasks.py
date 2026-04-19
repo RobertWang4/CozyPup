@@ -1,4 +1,10 @@
-"""Daily task tool handlers."""
+"""Daily task tool handlers — create/list/manage recurring to-dos.
+
+Task type is auto-inferred: presence of `end_date` means "special"
+(bounded), absence means "routine" (permanent). `manage_daily_task`
+also handles the "delete all" bulk case and forgives missing task_id
+by falling back to title fuzzy match.
+"""
 
 import uuid
 from datetime import date

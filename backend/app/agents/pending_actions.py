@@ -1,4 +1,13 @@
-"""DB-backed store for pending user-confirmable actions."""
+"""DB-backed store for pending user-confirmable tool calls.
+
+When `orchestrator.dispatch_tool` hits the confirm gate it stores the
+original tool call here and emits a confirm card with the resulting
+action_id. The /chat/confirm endpoint then `pop_action`s and re-executes
+the tool with the original arguments.
+
+Rows older than _MAX_AGE are ignored on pop (stale confirmations from
+hours-old messages shouldn't fire).
+"""
 import uuid as _uuid
 from datetime import datetime, timedelta, timezone
 

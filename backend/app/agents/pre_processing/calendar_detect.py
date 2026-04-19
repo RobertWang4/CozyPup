@@ -1,4 +1,11 @@
-"""Calendar event intent detection for pre-processing."""
+"""Calendar event intent detection.
+
+Emits create_calendar_event suggestions for past-tense activity/meal/
+medical/abnormal phrases. Two override regexes suppress the hint:
+  - `_CORRECTION_OVERRIDE` ("not X, it was Y") → LLM should update, not create
+  - `_STATUS_OVERRIDE` ("all 3 shots are done") → describes a state, not an
+    event; belongs in the pet profile rather than the calendar
+"""
 
 import re
 from datetime import date

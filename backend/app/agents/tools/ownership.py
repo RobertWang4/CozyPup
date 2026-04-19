@@ -1,4 +1,10 @@
-"""Unified pet ownership check — supports both owners and co-owners."""
+"""Unified pet ownership check — supports both owners and co-owners.
+
+Every pet-scoped tool must verify access through `can_access_pet` before
+mutating or reading pet data. The co-owner join makes pet sharing work:
+a user granted access via PetCoOwner can access the pet even though
+Pet.user_id points at the primary owner.
+"""
 
 import uuid
 

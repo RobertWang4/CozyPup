@@ -1,4 +1,13 @@
-"""Tool registry: definitions + dispatch."""
+"""Tools package — schema definitions + dispatch entry point.
+
+Importing this package imports every domain module (calendar, pets,
+reminders, misc, tasks, knowledge), which triggers the `@register_tool`
+decorators and populates the registry. `execute_tool` then looks up the
+handler by name.
+
+Re-exports individual handler functions for back-compat with call sites
+that imported them directly before the registry existed.
+"""
 
 import logging
 import uuid
@@ -107,7 +116,13 @@ async def execute_tool(
     user_id: uuid.UUID,
     **kwargs,
 ) -> dict:
-    """Dispatch a tool call to the appropriate handler."""
+    """Look up and call the registered handler for `name`.
+
+    Raises ValueError if the tool isn't registered (including
+    `request_images`, which must be handled by the orchestrator because
+    it needs to mutate the message list, not return a tool result).
+    Re-raises handler exceptions after logging.
+    """
     registry = get_registered_tools()
     entry = registry.get(name)
     if entry is None:

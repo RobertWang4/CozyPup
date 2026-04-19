@@ -1,4 +1,12 @@
-"""Emergency detection — keyword-based check for urgent pet health situations."""
+"""Emergency detection — keyword-based check for urgent pet health situations.
+
+Runs before the main orchestrator call. When any keyword matches, the chat
+router routes the request to the emergency model (Kimi K2.5 — more accurate
+but slower/pricier) and injects an emergency hint into the system prompt so
+the LLM is forced to call `trigger_emergency`.
+
+Zero LLM cost — pure regex against a curated bilingual keyword list.
+"""
 
 import logging
 import re
@@ -73,9 +81,9 @@ EMERGENCY_KEYWORDS: list[str] = [
     "没有意识",
 ]
 
-# Build a single compiled regex for efficient matching.
-# Word boundaries ensure partial matches (e.g. "bleeding" in "disbelieving") still
-# match since the keywords are medically significant on their own.
+# Single compiled alternation for all keywords — much cheaper than iterating.
+# No word boundaries: Chinese has no word breaks and the English keywords are
+# distinctive enough (e.g. "seizure", "choking") that substring matches are fine.
 _PATTERN = re.compile(
     "|".join(re.escape(kw) for kw in EMERGENCY_KEYWORDS),
     re.IGNORECASE,

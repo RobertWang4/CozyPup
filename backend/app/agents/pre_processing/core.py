@@ -1,4 +1,10 @@
-"""Main pre_process() entry point — calls all domain detectors."""
+"""Main `pre_process()` entry point — fans out to every domain detector.
+
+Orchestrator/chat router calls this once per user message. Each detector
+(calendar / pet / reminder / task / misc) returns a list of SuggestedActions
+that get merged into a flat list. Question-like messages suppress most
+"record this" suggestions via `_QUESTION_OVERRIDE`.
+"""
 
 import re
 from datetime import date

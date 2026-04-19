@@ -1,4 +1,15 @@
-"""Pet profile tool handlers."""
+"""Pet profile tool handlers — create, update, list, delete, avatar.
+
+Also owns the `sync_profile_md` helper that regenerates the narrative
+markdown profile from structured JSON fields while preserving LLM-
+authored sections (性格/健康/日常). That sync runs after every
+`update_pet_profile` so the markdown view stays consistent.
+
+Locked fields (gender, species) use a two-step confirm flow:
+  1. First call returns needs_confirm=True for the lockable portion.
+  2. User taps confirm → re-runs with `_force_lock=True` which both
+     writes the value and flips the `*_locked` flag permanently.
+"""
 
 import asyncio
 import base64
@@ -16,7 +27,7 @@ from app.agents.tools.registry import register_tool
 UPLOAD_DIR = Path("/app/uploads/avatars") if Path("/app/uploads").exists() else Path(__file__).resolve().parent.parent.parent / "uploads" / "avatars"
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
-# 聊天上传的图片目录（chat.py 写入，工具读取）
+# Chat-uploaded photos dir (chat router writes files; tools read them back).
 PHOTO_DIR = Path("/app/uploads/photos") if Path("/app/uploads").exists() else Path(__file__).resolve().parent.parent.parent / "uploads" / "photos"
 PHOTO_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -28,6 +39,50 @@ _bg_tasks: set[asyncio.Task] = set()
 PET_COLORS = ["E8835C", "6BA3BE", "7BAE7F", "9B7ED8", "E8A33C"]
 
 _SPECIES_ZH = {"dog": "狗", "cat": "猫", "other": "其他"}
+
+# Human-readable labels for profile fields (shown on pet_updated card)
+_FIELD_LABEL_ZH = {
+    "name": "名字", "breed": "品种", "weight": "体重", "birthday": "生日",
+    "gender": "性别", "species": "物种", "neutered": "绝育", "coat_color": "毛色",
+    "allergies": "过敏", "diet": "饮食", "personality": "性格", "vet": "兽医",
+    "notes": "备注",
+}
+_FIELD_LABEL_EN = {
+    "name": "name", "breed": "breed", "weight": "weight", "birthday": "birthday",
+    "gender": "gender", "species": "species", "neutered": "neutered",
+    "coat_color": "coat color", "allergies": "allergies", "diet": "diet",
+    "personality": "personality", "vet": "vet", "notes": "notes",
+}
+_GENDER_ZH = {"male": "公", "female": "母", "unknown": "未知"}
+
+
+def _format_value(key: str, value) -> str:
+    if value is None or value == "":
+        return ""
+    if key == "gender":
+        return _GENDER_ZH.get(str(value), str(value))
+    if key == "species":
+        return _SPECIES_ZH.get(str(value), str(value))
+    if key == "neutered":
+        return "是" if value else "否"
+    if key == "weight":
+        try:
+            return f"{float(value):g} kg"
+        except (TypeError, ValueError):
+            return str(value)
+    return str(value)
+
+
+def _format_saved_fields(info: dict, lang: str = "zh") -> list[dict]:
+    """Return [{label, value}] pairs for pet_updated card display."""
+    labels = _FIELD_LABEL_ZH if lang == "zh" else _FIELD_LABEL_EN
+    out: list[dict] = []
+    for k, v in info.items():
+        val = _format_value(k, v)
+        if not val:
+            continue
+        out.append({"key": k, "label": labels.get(k, k), "value": val})
+    return out
 
 
 async def verify_pet_ownership(
@@ -262,13 +317,15 @@ async def create_pet(
     }
 
 
-@register_tool("update_pet_profile")
+@register_tool("update_pet_profile", accepts_kwargs=True)
 async def update_pet_profile(
     arguments: dict,
     db: AsyncSession,
     user_id: uuid.UUID,
+    **kwargs,
 ) -> dict:
     """Merge new info into the pet's flexible JSON profile."""
+    lang = kwargs.get("lang", "zh")
     pet_id = uuid.UUID(arguments["pet_id"])
     info = arguments.get("info", {})
     force_lock = arguments.pop("_force_lock", False)
@@ -315,6 +372,7 @@ async def update_pet_profile(
                 "pet_id": str(pet.id),
                 "pet_name": pet.name,
                 "saved_keys": list(info.keys()),
+                "saved_fields": _format_saved_fields(info, lang),
             },
         }
 
@@ -389,8 +447,10 @@ async def update_pet_profile(
 
     card = {
         "type": "pet_updated",
+        "pet_id": str(pet.id),
         "pet_name": pet.name,
         "saved_keys": list(info.keys()),
+        "saved_fields": _format_saved_fields(info),
     }
 
     return {
@@ -543,28 +603,29 @@ async def set_pet_avatar(
     if not pet:
         return {"success": False, "error": "Pet not found"}
 
-    # Priority:
-    # 1) image_urls — 聊天流已存好的图片 URL（最优，不需要重新 decode）
-    # 2) photo_url — LLM 指定之前上传的图片路径
-    # 3) images (raw base64) — 兜底
+    # Image source priority:
+    # 1) image_urls — URLs the chat flow already saved to disk (best —
+    #    no need to re-decode base64)
+    # 2) photo_url — LLM references a specific earlier photo
+    # 3) images (raw base64) — fallback path; shouldn't normally hit this
     image_urls = kwargs.get("image_urls") or []
     photo_url = arguments.get("photo_url")
     image_data: bytes | None = None
 
     if image_urls:
-        # 直接从已保存的文件读取（避免重新 decode base64）
+        # Read the already-saved file — no base64 round trip needed.
         filename = image_urls[0].split("/")[-1]
         filepath = PHOTO_DIR / filename
         if filepath.exists():
             image_data = filepath.read_bytes()
     elif photo_url:
-        # LLM 引用了之前对话中的图片路径
+        # LLM referenced an earlier photo by URL path.
         filename = photo_url.split("/")[-1]
         filepath = PHOTO_DIR / filename
         if filepath.exists():
             image_data = filepath.read_bytes()
     else:
-        # 兜底：raw base64（不应该走到这里，但保持兼容）
+        # Fallback: raw base64 in kwargs (legacy path, rarely hit).
         images = kwargs.get("images")
         if images:
             image_data = base64.b64decode(images[0])
@@ -591,7 +652,8 @@ async def set_pet_avatar(
         filename = f"{pet_id}.jpg"
         filepath = UPLOAD_DIR / filename
         filepath.write_bytes(image_data)
-    # Always use relative URL — iOS avatarURL() builds the full URL from this
+    # Store a relative URL — iOS avatarURL() prepends the API host so the
+    # client can work across dev/prod without config changes.
     avatar_url = f"/api/v1/pets/{pet_id}/avatar"
     logger.info("avatar_file_written", extra={"pet_id": str(pet_id), "gcs": bool(settings.gcs_bucket), "size": len(image_data)})
 

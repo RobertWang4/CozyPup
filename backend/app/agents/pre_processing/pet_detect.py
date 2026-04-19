@@ -1,4 +1,10 @@
-"""Pet creation and profile update intent detection for pre-processing."""
+"""Pet creation + profile-update intent detection.
+
+Emits SuggestedActions for create_pet (new pet phrases) and
+update_pet_profile (attribute mentions like "weighs 5kg", "allergic to
+chicken"). Short-circuits on question-style messages so asking
+"is my dog allergic?" doesn't trigger a profile update.
+"""
 
 import re
 

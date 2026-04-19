@@ -1,4 +1,11 @@
-"""Miscellaneous tool handlers: places, email, language, emergency."""
+"""Miscellaneous tool handlers — places, email, language, emergency, product.
+
+Most of these are thin wrappers that emit a card for the iOS client to
+render (email drafts, emergency banners, language-switch signals). The
+places handlers call out to the Google Places service and enrich the
+top N results with distance/duration so the LLM can answer "how far"
+questions without a follow-up round.
+"""
 
 import asyncio
 import uuid

@@ -1,4 +1,10 @@
-"""Reminder tool handlers."""
+"""Reminder tool handlers (legacy API).
+
+`create_reminder` is deprecated — it now redirects to
+`create_calendar_event` with a `reminder_at` field so all event-like data
+lives on a single table. The other handlers still operate on the legacy
+Reminder model for users/data created before the consolidation.
+"""
 
 import uuid
 from datetime import datetime

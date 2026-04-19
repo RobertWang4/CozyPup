@@ -1,8 +1,15 @@
 """Schema validation for tool call arguments.
 
 Validates LLM-generated arguments before they reach the executor.
-Returns a list of human-readable error strings (empty = valid).
-Errors are fed back to the LLM so it can retry.
+Each validator returns a list of human-readable error strings; empty
+means valid. `orchestrator.dispatch_tool` feeds errors back to the LLM
+as a tool_result so it can self-correct on the next round without
+extra prompt engineering.
+
+Validators are registered via `@_register(tool_name)`. Unregistered
+tools pass through — validation is best-effort, not exhaustive.
+Ownership checks live in the handlers (tools/*.py); this module only
+does shape/type/enum checks.
 """
 
 import re

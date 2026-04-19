@@ -1,4 +1,10 @@
-"""Date parsing utilities for pre-processing."""
+"""Date parsing utilities for pre-processing.
+
+Resolves bilingual relative dates ("tomorrow", "上周三", "last Friday")
+and explicit date literals. Returns None for ambiguous phrases like
+"last week" (no specific day) so the calling detector can tell the LLM
+to ask the user for clarification instead of guessing a date.
+"""
 
 import re
 from datetime import date, timedelta
