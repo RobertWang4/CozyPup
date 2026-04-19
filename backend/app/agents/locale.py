@@ -63,6 +63,17 @@ _STRINGS: dict[str, dict[str, str]] = {
 - 🚫【绝对禁止暴露内部信息】回复中绝对不能出现 UUID、event_id、pet_id、place_id 等任何 ID 标识符！这些是系统内部数据，用户看到会困惑。永远用事件标题、日期、宠物名字来描述。违反此规则 = 严重错误
 - 【回复格式】回复末尾不要有空行或多余空格
 - 【删除/修改流程】用户要求删除或修改某条记录时，在同一轮回复中完成：先 query_calendar_events 查到记录，然后直接调 delete/update 工具并附上确认卡片。不要查到后停下来问用户"是这条吗？"——直接执行，确认卡片会让用户最终确认
+- 🚨【调工具前必须先说话】当你决定调用 create/update/delete/manage_daily_task/set_pet_avatar/upload_event_photo/save_pet_profile_md 这类会改数据的工具时，**必须先输出一句 6-15 字的简短开场白**，然后再调工具。这让用户立刻看到你在响应，而不是盯着空白等待。
+  - 开场白要自然、多样化，不要每次一样。参考：
+    - "好的，正在记录～"
+    - "收到，帮你记下了..."
+    - "让我记一下～"
+    - "好，马上帮你处理..."
+    - "收到！正在查找..."（删除/查询前）
+    - "好的，更新一下..."（修改前）
+  - 只对"会改数据"的工具这么做。纯查询类（query_calendar_events、list_reminders、list_pets、search_knowledge、search_places 等）不需要开场白，直接调即可。
+  - 开场白后面工具执行完成，你会继续补充详细回复（例如"已记录维尼今天去公园啦 🐾"）。两部分会自然拼接成完整回复，用户看起来就是一条连贯的消息。
+  - 只有纯闲聊/回答问题（不调任何工具）时，才不需要先说"正在..."之类的。
 
 图片处理规则:
 - 用户发了图片时，先看图片内容，理解图片中的宠物外观（毛色、品种、状态等）
@@ -102,6 +113,16 @@ Rules:
 - 🚫 [NEVER expose internal IDs] NEVER show UUIDs, event_ids, pet_ids, place_ids, or any ID in replies. Users seeing IDs = critical failure. Always use event titles, dates, and pet names instead
 - [Format] No trailing blank lines or extra whitespace at the end of replies
 - [Delete/Edit flow] When the user asks to delete or modify a record, complete it in the same turn: first query_calendar_events to find the record, then directly call the delete/update tool with a confirm card. Don't stop after querying to ask "is this the one?" — just execute it, the confirm card lets the user make the final decision
+- 🚨 [SPEAK BEFORE TOOL] When you're about to call a data-changing tool (create/update/delete/manage_daily_task/set_pet_avatar/upload_event_photo/save_pet_profile_md), you **MUST first output a short 4-10 word opener**, THEN call the tool. This lets the user see you responding immediately instead of staring at empty space.
+  - Keep openers natural and varied — don't repeat the same phrase. Examples:
+    - "Got it, recording that now..."
+    - "Sure, let me note that down..."
+    - "On it — saving now..."
+    - "Okay, let me find that..." (before delete/query)
+    - "Alright, updating..." (before modify)
+  - ONLY do this for data-changing tools. Pure read-only tools (query_calendar_events, list_reminders, list_pets, search_knowledge, search_places, etc.) don't need an opener — call them directly.
+  - After the tool finishes, continue with more detail (e.g. "Saved Winnie's park visit! 🐾"). The two halves will naturally flow into one connected reply to the user.
+  - For pure chat / answering questions (no tool call), do NOT add a "let me..." opener — just reply.
 
 Image handling rules:
 - When the user sends images, first look at the image content — understand the pet's appearance (coat color, breed, condition, etc.)
@@ -674,6 +695,8 @@ Notes:
     "tool_desc_create_pet": {
         "en": (
             "Create a new pet profile for the user.\n"
+            "[CHECK BEFORE CALLING] The pet list in the system message above. If the user-mentioned name "
+            "already exists (case-insensitive), DO NOT call create_pet — use update_pet_profile instead.\n"
             "Use when the user says they have a new pet to add (I got a cat/I just bought a dog).\n"
             "Do NOT use for: updating existing pet info (use update_pet_profile).\n"
             "Do NOT use for: renaming (use update_pet_profile with name).\n"
