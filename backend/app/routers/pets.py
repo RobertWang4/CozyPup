@@ -1,3 +1,13 @@
+"""Pet CRUD + avatar routes.
+
+Mount: /api/v1/pets. GET endpoints include pets the caller co-owns via
+PetCoOwner (resolved through app.agents.tools.ownership); mutating endpoints
+are restricted to the original owner (pet.user_id == caller). Avatars are
+stored in GCS when settings.gcs_bucket is set, otherwise on local disk for
+dev. The URL written back to pet.avatar_url is always the relative
+`/api/v1/pets/{id}/avatar` path — GET /avatar 302-redirects to the signed GCS
+URL (or serves the local file) so the stored value survives bucket changes.
+"""
 import logging
 import uuid
 from datetime import date
@@ -25,6 +35,12 @@ SPECIES_ZH = {"dog": "狗", "cat": "猫", "other": "其他"}
 def _generate_initial_profile(
     name: str, species: str, breed: str, birthday: date | None, weight: float | None,
 ) -> str:
+    """Seed the LLM-facing profile_md with any facts we already have.
+
+    profile_md is the free-form, LLM-editable pet dossier. We pre-populate it
+    with headers so the agent has clear sections (性格/健康/日常) to append to
+    later rather than rewriting from scratch each time.
+    """
     lines = [f"# {name}", "", "## 基本信息"]
     lines.append(f"- 类型：{SPECIES_ZH.get(species, species)}")
     if breed:
@@ -62,7 +78,8 @@ async def create_pet(
     user_id: uuid.UUID = Depends(get_current_user_id),
     db: AsyncSession = Depends(get_db),
 ):
-    # Auto-assign color based on count of existing pets
+    """Create a pet owned by the caller. Assigns a palette color by index."""
+    # Cycle through PET_COLORS by existing count so siblings look distinct.
     count_result = await db.execute(
         select(func.count()).where(Pet.user_id == user_id)
     )
@@ -93,9 +110,13 @@ async def list_pets(
     user_id: uuid.UUID = Depends(get_current_user_id),
     db: AsyncSession = Depends(get_db),
 ):
+    """List pets the caller owns or co-owns (via PetCoOwner).
+
+    is_co_owned distinguishes the two so the iOS UI can mark shared pets
+    and suppress destructive actions that only the owner can perform.
+    """
     from app.agents.tools.ownership import get_user_pets
     pets = await get_user_pets(db, user_id)
-    # Mark pets that user co-owns (not the original owner)
     return [_pet_to_response(p, is_co_owned=(p.user_id != user_id)) for p in pets]
 
 
@@ -119,6 +140,11 @@ async def update_pet(
     user_id: uuid.UUID = Depends(get_current_user_id),
     db: AsyncSession = Depends(get_db),
 ):
+    """Patch pet fields. Owner-only (co-owners cannot rewrite core profile).
+
+    Species and gender are write-once: once set, they're locked to prevent
+    accidental LLM edits from corrupting a pet's identity.
+    """
     result = await db.execute(
         select(Pet).where(Pet.id == pet_id, Pet.user_id == user_id)
     )
@@ -149,7 +175,8 @@ async def update_pet(
         existing["gender_locked"] = True
         pet.profile = existing
 
-    # Sync all structured fields into profile JSON so AI always sees latest data
+    # Mirror structured columns into the JSON profile so agent tools that only
+    # read pet.profile (e.g. prompt builders) see the latest values.
     profile = pet.profile or {}
     if pet.name:
         profile["name"] = pet.name
@@ -173,6 +200,7 @@ async def delete_pet(
     user_id: uuid.UUID = Depends(get_current_user_id),
     db: AsyncSession = Depends(get_db),
 ):
+    """Hard-delete a pet. Owner-only; cascades via FK to events/reminders."""
     result = await db.execute(
         select(Pet).where(Pet.id == pet_id, Pet.user_id == user_id)
     )
@@ -192,6 +220,7 @@ async def upload_avatar(
     user_id: uuid.UUID = Depends(get_current_user_id),
     db: AsyncSession = Depends(get_db),
 ):
+    """Upload a pet avatar. Owner-only. JPEG/PNG/WebP, max 5 MB."""
     result = await db.execute(
         select(Pet).where(Pet.id == pet_id, Pet.user_id == user_id)
     )

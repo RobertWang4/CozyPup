@@ -1,3 +1,9 @@
+"""Google Places proxy routes.
+
+Mount: /api/v1/places. Thin forwarder over app.services.places, which calls
+Google Places API using GOOGLE_PLACES_API_KEY. Auth-gated (callers must be
+signed in) but the heavy work (and billing) happens in the service layer.
+"""
 import logging
 
 from fastapi import APIRouter, Depends, Query

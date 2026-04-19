@@ -1,3 +1,9 @@
+"""Reminder CRUD routes.
+
+Mount: /api/v1/reminders. All endpoints require a user JWT via get_current_user_id
+and enforce ownership by joining through Pet.user_id. Pet-scoped push notifications
+are dispatched by a separate worker (Phase 4); this router only manages rows.
+"""
 import uuid
 from datetime import datetime
 
@@ -34,6 +40,7 @@ async def create_reminder(
     user_id: uuid.UUID = Depends(get_current_user_id),
     db: AsyncSession = Depends(get_db),
 ):
+    """Create a reminder for one of the caller's pets. 404 if pet is not owned."""
     pet_result = await db.execute(
         select(Pet).where(Pet.id == uuid.UUID(req.pet_id), Pet.user_id == user_id)
     )
@@ -52,6 +59,8 @@ async def create_reminder(
     db.add(reminder)
     await db.commit()
 
+    # Reload with pet eager-loaded so _reminder_to_response can read pet.name
+    # without triggering a lazy-load under AsyncSession.
     result = await db.execute(
         select(Reminder).options(joinedload(Reminder.pet)).where(Reminder.id == reminder.id)
     )
@@ -64,6 +73,7 @@ async def list_reminders(
     user_id: uuid.UUID = Depends(get_current_user_id),
     db: AsyncSession = Depends(get_db),
 ):
+    """List the caller's unsent reminders in trigger-time order."""
     result = await db.execute(
         select(Reminder)
         .options(joinedload(Reminder.pet))

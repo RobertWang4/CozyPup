@@ -1,3 +1,10 @@
+"""Daily task (habit tracker) routes.
+
+Mount: /api/v1/tasks. Two task kinds: `routine` (every day) and `special`
+(windowed by start_date/end_date, e.g. a medication course). Completions are
+counted per (task, date) in DailyTaskCompletion, capped at task.daily_target.
+Tap/untap endpoints drive the per-day progress UI on the home screen.
+"""
 import uuid
 from datetime import date
 
@@ -37,6 +44,12 @@ def _task_to_response(task: DailyTask, completed_count: int, pet: Pet | None) ->
 
 
 async def _get_today_tasks(db: AsyncSession, user_id: uuid.UUID, today: date) -> dict:
+    """Return {tasks, all_completed} for today.
+
+    Combines routine tasks with any special task whose [start_date, end_date]
+    window includes today, and LEFT-JOINs per-task completion counts so tasks
+    without a completion row still show up with count=0.
+    """
     # Subquery: today's completion counts per task
     comp_sub = (
         select(
@@ -194,6 +207,7 @@ async def tap_task(
     user_id: uuid.UUID = Depends(get_current_user_id),
     db: AsyncSession = Depends(get_db),
 ):
+    """Increment today's completion count for a task (capped at daily_target)."""
     result = await db.execute(
         select(DailyTask).where(DailyTask.id == task_id, DailyTask.user_id == user_id)
     )
@@ -222,7 +236,7 @@ async def tap_task(
         db.add(comp)
         await db.flush()
 
-    # Increment only if below target
+    # Cap at daily_target so repeated taps after reaching the goal are no-ops.
     if comp.count < task.daily_target:
         comp.count += 1
 

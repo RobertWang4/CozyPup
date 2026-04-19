@@ -1,3 +1,9 @@
+"""Device token registration for APNs push notifications.
+
+Mount: /api/v1/devices. The iOS client posts its APNs token on launch and after
+renewal. The push sender (Phase 4) joins DeviceToken on user_id to fan out
+notifications for reminders and family/pet-share events.
+"""
 import uuid
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -29,6 +35,12 @@ async def register_device(
     user_id: uuid.UUID = Depends(get_current_user_id),
     db: AsyncSession = Depends(get_db),
 ):
+    """Register (or re-bind) an APNs token to the caller.
+
+    Upsert by token string: a device may change accounts (sign-out / sign-in),
+    so the same token string is reattached to the latest caller rather than
+    erroring on the unique constraint.
+    """
     # Upsert: if token exists, update user_id
     result = await db.execute(
         select(DeviceToken).where(DeviceToken.token == req.token)
@@ -61,6 +73,7 @@ async def unregister_device(
     user_id: uuid.UUID = Depends(get_current_user_id),
     db: AsyncSession = Depends(get_db),
 ):
+    """Unregister a device token. Must belong to the caller."""
     result = await db.execute(
         select(DeviceToken).where(DeviceToken.token == token, DeviceToken.user_id == user_id)
     )
