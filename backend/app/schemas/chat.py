@@ -8,6 +8,7 @@ class ChatMessageResponse(BaseModel):
     role: str
     content: str
     cards: list[dict] | None = None
+    image_urls: list[str] | None = None
     created_at: str
 
 

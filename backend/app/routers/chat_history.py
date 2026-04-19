@@ -90,6 +90,7 @@ async def get_history(
             role=m.role.value,
             content=m.content,
             cards=json.loads(m.cards_json) if m.cards_json else None,
+            image_urls=list(m.image_urls) if m.image_urls else None,
             created_at=m.created_at.isoformat(),
         )
         for m in messages
@@ -263,6 +264,7 @@ async def resume_session(
                 role=m.role.value,
                 content=m.content,
                 cards=json.loads(m.cards_json) if m.cards_json else None,
+                image_urls=list(m.image_urls) if m.image_urls else None,
                 created_at=m.created_at.isoformat(),
             )
             for m in messages
