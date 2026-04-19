@@ -758,8 +758,13 @@ async def confirm_action(
 
     try:
         # 直接执行工具（绕过 LLM，使用预存的参数）
+        # User already tapped confirm — force-lock any lockable fields so
+        # update_pet_profile doesn't loop back into another confirm card.
+        args = dict(action.arguments)
+        if action.tool_name == "update_pet_profile":
+            args.setdefault("_force_lock", True)
         result = await execute_tool(
-            action.tool_name, action.arguments, db, user_id,
+            action.tool_name, args, db, user_id,
         )
         await db.commit()
     except Exception as exc:
@@ -769,6 +774,20 @@ async def confirm_action(
             "error": str(exc)[:200],
         })
         raise HTTPException(status_code=500, detail=str(exc))
+
+    # 防御：确认后工具不应再返回 needs_confirm — 出现就是 bug（例如忘了注入
+    # _force_lock 导致 update_pet_profile 又回到确认分支）。打错误日志而不是
+    # 静默返回"成功"欺骗前端。
+    if result.get("needs_confirm"):
+        logger.error("confirm_action_reentrant_needs_confirm", extra={
+            "action_id": str(action.id),
+            "tool": action.tool_name,
+            "arguments_keys": list(action.arguments.keys()),
+        })
+        raise HTTPException(
+            status_code=500,
+            detail="Tool returned needs_confirm after confirmation — pipeline bug",
+        )
 
     # 将确认执行的结果保存为助手消息（这样用户回看历史时能看到）
     session_id = action.session_id
