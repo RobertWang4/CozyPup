@@ -10,6 +10,7 @@ struct FamilySettingsView: View {
     @State private var familyStatus: FamilyStatus?
     @State private var pendingInvite: PendingInvite?
     @State private var isLoading = false
+    @State private var isLoadingStatus = true
     @State private var errorMessage: String?
     @State private var showCopiedToast = false
 
@@ -53,7 +54,11 @@ struct FamilySettingsView: View {
                     .padding(.horizontal, Tokens.spacing.lg)
 
                 Group {
-                    if let status = familyStatus,
+                    if isLoadingStatus {
+                        ProgressView()
+                            .controlSize(.regular)
+                            .frame(maxWidth: .infinity, minHeight: 120)
+                    } else if let status = familyStatus,
                        let partner = status.partner_name ?? status.partner_email {
                         partnerConnectedView(partner: partner)
                     } else if let invite = pendingInvite {
@@ -317,6 +322,7 @@ struct FamilySettingsView: View {
             print("[Family] load status failed: \(error)")
             familyStatus = FamilyStatus(role: nil, partner_email: nil, partner_name: nil, invite_pending: false, pending_invite_email: nil)
         }
+        isLoadingStatus = false
     }
 
     private func generateInvite() async {

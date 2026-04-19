@@ -64,6 +64,13 @@ from app.routers.flags import flags_router
 app.include_router(flags_router)
 app.include_router(web_invite_router)
 
+# Static files for web pages (OG image, etc)
+from pathlib import Path
+from fastapi.staticfiles import StaticFiles
+_static_dir = Path(__file__).parent / "web" / "static"
+if _static_dir.is_dir():
+    app.mount("/static", StaticFiles(directory=str(_static_dir)), name="static")
+
 # Register middleware (outermost runs first — last add = outermost)
 app.add_middleware(ChatRateLimitMiddleware)
 app.add_middleware(ErrorCaptureMiddleware)
