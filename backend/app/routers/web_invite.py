@@ -378,6 +378,7 @@ async def _verify_google_web_id_token(id_token: str) -> dict:
         algorithms=["RS256"],
         audience=settings.google_web_client_id,
         issuer=["https://accounts.google.com", "accounts.google.com"],
+        options={"verify_at_hash": False},
     )
     return claims
 
