@@ -1,11 +1,19 @@
 import SwiftUI
 
+/// Main app screen. Shown by `CozyPupApp` once the user is authed,
+/// has acknowledged the disclaimer, and has at least one pet.
+///
+/// Hosts SSE chat streaming (via `ChatService`), renders inline SSE cards,
+/// and overlays the left Calendar drawer, right Settings drawer, voice
+/// input overlay, daily-task popover, and paywall sheets. Binds to
+/// ChatStore / CalendarStore / PetStore / DailyTaskStore / SubscriptionStore.
 struct ChatView: View {
     @EnvironmentObject var chatStore: ChatStore
     @EnvironmentObject var calendarStore: CalendarStore
     @EnvironmentObject var petStore: PetStore
     @EnvironmentObject var dailyTaskStore: DailyTaskStore
     @EnvironmentObject var subscriptionStore: SubscriptionStore
+    // Owned by this view (not shared app-wide), so @StateObject — lifetime tied to ChatView.
     @StateObject private var speech = SpeechService()
     @StateObject private var location = LocationService()
 
@@ -34,6 +42,8 @@ struct ChatView: View {
     @State private var showSavedChats = false
     @State private var showSaveConfirm = false
     @State private var savedTitle: String?
+    @State private var previewEvent: CalendarEvent?
+    @Namespace private var previewNS
 
     private var drawerWidth: CGFloat { UIScreen.main.bounds.width * 0.90 }
 
@@ -102,6 +112,12 @@ struct ChatView: View {
                                             HStack {
                                                 if msg.role == .user { Spacer() }
                                                 photoGrid(photos)
+                                                if msg.role != .user { Spacer() }
+                                            }
+                                        } else if let urls = msg.imageUrls, !urls.isEmpty {
+                                            HStack {
+                                                if msg.role == .user { Spacer() }
+                                                photoGridFromUrls(urls)
                                                 if msg.role != .user { Spacer() }
                                             }
                                         }
@@ -276,7 +292,11 @@ struct ChatView: View {
         }
         // Timeline drawer (left)
         .overlay(alignment: .leading) {
-            CalendarDrawer(isPresented: $showCalendar, jumpToDate: calendarJumpDate)
+            CalendarDrawer(isPresented: $showCalendar, jumpToDate: calendarJumpDate, onPreviewEvent: { evt in
+                withAnimation(.spring(response: 0.42, dampingFraction: 0.82)) {
+                    previewEvent = evt
+                }
+            })
                 .frame(width: drawerWidth)
                 .frame(maxHeight: .infinity)
                 .background(Tokens.bg)
@@ -305,6 +325,26 @@ struct ChatView: View {
             if !val {
                 settingsDrag = 0
                 settingsDeepLinkPetId = nil
+            }
+        }
+        // Safety net: SwiftUI occasionally swallows DragGesture.onEnded when another
+        // gesture wins the arbitration, leaving the drawer half-open. If the drag
+        // value stops changing for 0.5s while non-zero, force it back to 0.
+        // Safety net: if drawer drag gets stuck (onEnded not called), snap back
+        .onChange(of: settingsDrag) { _, val in
+            guard val != 0, showSettings else { return }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                if settingsDrag == val { // still the same value after 0.5s — stuck
+                    withAnimation(.spring(response: 0.3)) { settingsDrag = 0 }
+                }
+            }
+        }
+        .onChange(of: calendarDrag) { _, val in
+            guard val != 0, showCalendar else { return }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                if calendarDrag == val {
+                    withAnimation(.spring(response: 0.3)) { calendarDrag = 0 }
+                }
             }
         }
         .fullScreenCover(isPresented: Binding(
@@ -404,6 +444,51 @@ struct ChatView: View {
         .onReceive(NotificationCenter.default.publisher(for: .openSavedChats)) { _ in
             showSavedChats = true
         }
+        .overlay {
+            if let evt = previewEvent {
+                EventPreviewOverlay(
+                    event: evt,
+                    namespace: previewNS,
+                    matchedId: "event-\(evt.id)",
+                    onDismiss: {
+                        withAnimation(.spring(response: 0.38, dampingFraction: 0.85)) {
+                            previewEvent = nil
+                        }
+                    },
+                    onDelete: { calendarStore.remove(evt.id) },
+                    onSave: { draft in
+                        calendarStore.update(
+                            evt.id,
+                            title: draft.title,
+                            category: draft.category,
+                            eventDate: draft.eventDate,
+                            eventTime: draft.eventTime,
+                            cost: draft.cost,
+                            reminderAt: draft.reminderAt,
+                            notes: draft.notes,
+                            type: draft.type
+                        )
+                    },
+                    onPhotoUpload: { data in
+                        await calendarStore.uploadEventPhoto(eventId: evt.id, imageData: data)
+                    },
+                    onPhotoDelete: { url in
+                        Task { await calendarStore.deleteEventPhoto(eventId: evt.id, photoUrl: url) }
+                    },
+                    onLocationUpdate: { name, address, lat, lng, placeId in
+                        Task { await calendarStore.updateLocation(eventId: evt.id, name: name, address: address, lat: lat, lng: lng, placeId: placeId) }
+                    },
+                    onLocationRemove: {
+                        Task { await calendarStore.removeLocation(eventId: evt.id) }
+                    }
+                )
+                .transition(.asymmetric(
+                    insertion: .scale(scale: 0.85).combined(with: .opacity),
+                    removal: .scale(scale: 0.9).combined(with: .opacity)
+                ))
+                .zIndex(999)
+            }
+        }
     }
 
     // MARK: - Drawer Gestures
@@ -479,6 +564,10 @@ struct ChatView: View {
         DragGesture(minimumDistance: 30, coordinateSpace: .local)
             .onChanged { value in
                 guard showSettings, value.translation.width > 0 else { return }
+                // Only allow horizontal drag when it's clearly horizontal (not a vertical scroll)
+                let horizontal = abs(value.translation.width)
+                let vertical = abs(value.translation.height)
+                guard horizontal > vertical * 0.8 else { return }
                 settingsDrag = value.translation.width
             }
             .onEnded { value in
@@ -498,6 +587,9 @@ struct ChatView: View {
         DragGesture(minimumDistance: 30, coordinateSpace: .local)
             .onChanged { value in
                 guard showCalendar, value.translation.width < 0 else { return }
+                let horizontal = abs(value.translation.width)
+                let vertical = abs(value.translation.height)
+                guard horizontal > vertical * 0.8 else { return }
                 calendarDrag = value.translation.width
             }
             .onEnded { value in
@@ -658,11 +750,17 @@ struct ChatView: View {
                 subtitle: data.trigger_at
             )
         case .petUpdated(let data):
+            let subtitle: String = {
+                if let fields = data.saved_fields, !fields.isEmpty {
+                    return fields.map { "\($0.label): \($0.value)" }.joined(separator: Lang.shared.isZh ? "、" : ", ")
+                }
+                return data.saved_keys?.joined(separator: ", ") ?? ""
+            }()
             ActionCard(
                 icon: "checkmark.circle.fill", iconColor: Tokens.green,
                 label: Lang.shared.isZh ? "已更新" : "Updated",
                 title: data.pet_name,
-                subtitle: data.saved_keys?.joined(separator: ", ") ?? ""
+                subtitle: subtitle
             ) { navigateToSettings(petId: data.pet_id ?? data.pet_name) }
         case .confirmAction(let data):
             ConfirmActionCard(
@@ -920,13 +1018,22 @@ struct ChatView: View {
                 // Update the confirm card status
                 updateConfirmCardStatus(actionId: actionId, status: .confirmed)
 
-                // If a result card came back, append it
-                if let card = resp.card, let idx = chatStore.messages.indices.last {
-                    chatStore.messages[idx].cards.append(card)
+                // If a result card came back, add it as a new message
+                if let card = resp.card {
+                    let msg = ChatMessage(
+                        id: UUID().uuidString,
+                        role: .assistant,
+                        content: "",
+                        cards: [card]
+                    )
+                    chatStore.messages.append(msg)
 
                     // Refresh relevant stores
                     if case .record(let r) = card, let comps = parseYearMonth(r.date) {
                         Task { await calendarStore.fetchMonth(year: comps.0, month: comps.1) }
+                    }
+                    if case .petUpdated = card {
+                        Task { await petStore.fetchFromAPI() }
                     }
                 }
 
@@ -992,6 +1099,36 @@ struct ChatView: View {
 
     private func cancelVoice() {
         speech.cancel()
+    }
+
+    private func photoURL(_ path: String) -> URL? {
+        if path.hasPrefix("http") { return URL(string: path) }
+        return APIClient.shared.avatarURL(path)
+    }
+
+    @ViewBuilder
+    private func photoGridFromUrls(_ urls: [String]) -> some View {
+        let cols = urls.count == 1 ? 1 : (urls.count <= 4 ? 2 : 3)
+        let size: CGFloat = urls.count == 1 ? 160 : (urls.count <= 4 ? 90 : 70)
+        LazyVGrid(
+            columns: Array(repeating: GridItem(.fixed(size), spacing: 4), count: cols),
+            alignment: .trailing,
+            spacing: 4
+        ) {
+            ForEach(Array(urls.enumerated()), id: \.offset) { _, urlStr in
+                if let url = photoURL(urlStr) {
+                    CachedAsyncImage(url: url) { image in
+                        image
+                            .resizable()
+                            .scaledToFill()
+                    } placeholder: {
+                        Tokens.placeholderBg
+                    }
+                    .frame(width: size, height: size)
+                    .clipShape(RoundedRectangle(cornerRadius: Tokens.radiusSmall))
+                }
+            }
+        }
     }
 
     @ViewBuilder

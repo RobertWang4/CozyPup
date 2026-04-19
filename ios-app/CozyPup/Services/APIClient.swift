@@ -1,5 +1,15 @@
 import Foundation
 
+/// Shared actor that owns auth state and performs all authenticated HTTP I/O.
+///
+/// Responsibilities:
+/// - Persists access + refresh JWTs in UserDefaults and exposes them to callers.
+/// - Builds `Authorization: Bearer` requests, auto-retries once on 401 after refresh.
+/// - Streams SSE for `/chat` with a token captured synchronously on the actor before
+///   the async stream starts (so the caller doesn't race with `clearTokens()`).
+/// - Handles multipart avatar / photo uploads.
+///
+/// Simulator builds target localhost; device/TestFlight builds target the Cloud Run URL.
 actor APIClient {
     static let shared = APIClient()
 
@@ -22,15 +32,18 @@ actor APIClient {
 
     // MARK: - URL helpers
 
+    /// Build a full avatar URL from a backend-relative path like `/api/v1/pets/{id}/avatar`.
+    /// Nonisolated so SwiftUI views can call it synchronously during layout.
     nonisolated func avatarURL(_ path: String) -> URL? {
         guard !path.isEmpty else { return nil }
-        // path is like "/api/v1/pets/{id}/avatar", baseURL already has "/api/v1"
+        // `path` already includes the `/api/v1` prefix; strip it from `baseURL` to avoid duplication.
         let base = baseURL.replacingOccurrences(of: "/api/v1", with: "")
         return URL(string: "\(base)\(path)")
     }
 
     // MARK: - Token management
 
+    /// Persist a fresh token pair after login. Writes through to UserDefaults.
     func setTokens(access: String, refresh: String) {
         accessToken = access
         refreshToken = refresh
@@ -38,6 +51,7 @@ actor APIClient {
         UserDefaults.standard.set(refresh, forKey: refreshKey)
     }
 
+    /// Wipe tokens from memory and disk. Called on logout.
     func clearTokens() {
         accessToken = nil
         refreshToken = nil
@@ -51,6 +65,8 @@ actor APIClient {
 
     // MARK: - Auth requests (no token needed)
 
+    /// POST to an auth endpoint (`/auth/google`, `/auth/apple`, `/auth/dev`, `/auth/refresh`)
+    /// that does not require an existing token. Decodes the JSON response into `T`.
     func authRequest<T: Decodable>(_ path: String, body: some Encodable) async throws -> T {
         let url = URL(string: "\(baseURL)\(path)")!
         var request = URLRequest(url: url)
@@ -67,6 +83,8 @@ actor APIClient {
 
     // MARK: - Authenticated requests
 
+    /// Generic authenticated request returning a decoded `T`. Auto-refreshes on 401.
+    /// - Throws: `APIError.notAuthenticated`, `.subscriptionExpired`, `.badStatus(code)`.
     func request<T: Decodable>(
         _ method: String, _ path: String,
         body: (any Encodable)? = nil,
@@ -76,6 +94,7 @@ actor APIClient {
         return try JSONDecoder().decode(T.self, from: data)
     }
 
+    /// Authenticated request that discards the response body (e.g. 204 DELETE).
     func requestNoContent(
         _ method: String, _ path: String
     ) async throws {

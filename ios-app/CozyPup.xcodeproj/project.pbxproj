@@ -63,6 +63,12 @@
 		UPGMOD000000000000000002 /* UpgradeModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = UPGMOD000000000000000001 /* UpgradeModal.swift */; };
 		PS10000100000000SHARE0001 /* PetShareSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = PS20000100000000SHARE0001 /* PetShareSheet.swift */; };
 		PS10000200000000MERGE0001 /* PetMergeSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = PS20000200000000MERGE0001 /* PetMergeSheet.swift */; };
+		1AF6849C2F821E2773814B59 /* VerticalSerifText.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4030F950CCD2F2DCF1F7C07 /* VerticalSerifText.swift */; };
+		B247C197357F4191746851E8 /* PetProfileBioCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0023BBFABF516E8DB4CA741A /* PetProfileBioCard.swift */; };
+		E6D2F6821E71E83D1EA05DC5 /* PetIndexCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8CC3EFD2A4380581797A918 /* PetIndexCard.swift */; };
+		A699632176F42487C9005B17 /* PetDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C4E71F5BA306DD7A940C8BE /* PetDetailView.swift */; };
+		18AAEEC8A864CA356620A469 /* PetCoverCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 543D43EF877616B6DEE7695F /* PetCoverCard.swift */; };
+		05EFEFDECDCBFEFADA1A84A4 /* PetAgeCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FAAD39E7F3368C02F668F02 /* PetAgeCalculator.swift */; };
 		PS10000300000000UNSHR0001 /* PetUnshareSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = PS20000300000000UNSHR0001 /* PetUnshareSheet.swift */; };
 		PS10000400000000FAMLY0001 /* FamilySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = PS20000400000000FAMLY0001 /* FamilySettingsView.swift */; };
 		PS10000500000000QRSCN0001 /* QRScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = PS20000500000000QRSCN0001 /* QRScannerView.swift */; };
@@ -95,6 +101,13 @@
 		F4A3272C45AD63DCE10F2E44 /* MultiDayTimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DB61EE7DA9BF7F42F10327F /* MultiDayTimelineView.swift */; };
 		F7A8CAEC1837E84B421182B4 /* CalendarDrawer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F142E2AF757CA909CA959BD8 /* CalendarDrawer.swift */; };
 		FA82C6590ACDC7D49CF14998 /* EventRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6D276B8E4BE99D3CA63F74F /* EventRow.swift */; };
+		2DCE9FBA215B142F8B32C019 /* PeekPhotoCarousel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B30838C61F270BC255DB01DD /* PeekPhotoCarousel.swift */; };
+		00DA0AD2E85C62FA41D6F2DD /* MapSnapshotView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EC6E6CBB9AF13CB21213561 /* MapSnapshotView.swift */; };
+		DCC791D53C86F5FBF53C3F7C /* EventShareRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECC8B7D4835CC4E09C66A653 /* EventShareRenderer.swift */; };
+		1939CAA8E95092DEFC9A2F99 /* EventShareLayoutPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = F335937A2B93926AD350D50D /* EventShareLayoutPicker.swift */; };
+		9E558D96F54CC66F982BB9C9 /* EventPreviewOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2ABCD865CE12F1713611BE08 /* EventPreviewOverlay.swift */; };
+		1F841352D05B5177145023A0 /* EventPreviewCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F6E20B3E91CBE6B2A4B8226 /* EventPreviewCard.swift */; };
+		9B949F58D795A306DD3FF298 /* EventEditCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA298D6ADA794F9C379BC5D4 /* EventEditCard.swift */; };
 		FC5BC1932B70E128C7F1B81B /* EmergencyBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88BD4E3CC91B5ED73B8A2AB6 /* EmergencyBanner.swift */; };
 		FF279B03D7AC13828EE65FF4 /* PetFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 080771DF5730E9583B536DC5 /* PetFormView.swift */; };
 /* End PBXBuildFile section */
@@ -110,6 +123,12 @@
 		UPGMOD000000000000000001 /* UpgradeModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpgradeModal.swift; sourceTree = "<group>"; };
 		PS20000100000000SHARE0001 /* PetShareSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PetShareSheet.swift; sourceTree = "<group>"; };
 		PS20000200000000MERGE0001 /* PetMergeSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PetMergeSheet.swift; sourceTree = "<group>"; };
+		D4030F950CCD2F2DCF1F7C07 /* VerticalSerifText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerticalSerifText.swift; sourceTree = "<group>"; };
+		0023BBFABF516E8DB4CA741A /* PetProfileBioCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PetProfileBioCard.swift; sourceTree = "<group>"; };
+		F8CC3EFD2A4380581797A918 /* PetIndexCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PetIndexCard.swift; sourceTree = "<group>"; };
+		5C4E71F5BA306DD7A940C8BE /* PetDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PetDetailView.swift; sourceTree = "<group>"; };
+		543D43EF877616B6DEE7695F /* PetCoverCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PetCoverCard.swift; sourceTree = "<group>"; };
+		9FAAD39E7F3368C02F668F02 /* PetAgeCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PetAgeCalculator.swift; sourceTree = "<group>"; };
 		PS20000300000000UNSHR0001 /* PetUnshareSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PetUnshareSheet.swift; sourceTree = "<group>"; };
 		PS20000400000000FAMLY0001 /* FamilySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilySettingsView.swift; sourceTree = "<group>"; };
 		PS20000500000000QRSCN0001 /* QRScannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRScannerView.swift; sourceTree = "<group>"; };
@@ -174,6 +193,13 @@
 		E49D254E58DB8AEDD31BF3B0 /* CameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
 		E59EDD63ED4B5127A8B5D2DC /* CalendarEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarEvent.swift; sourceTree = "<group>"; };
 		E6D276B8E4BE99D3CA63F74F /* EventRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventRow.swift; sourceTree = "<group>"; };
+		B30838C61F270BC255DB01DD /* PeekPhotoCarousel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PeekPhotoCarousel.swift; sourceTree = "<group>"; };
+		7EC6E6CBB9AF13CB21213561 /* MapSnapshotView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapSnapshotView.swift; sourceTree = "<group>"; };
+		ECC8B7D4835CC4E09C66A653 /* EventShareRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventShareRenderer.swift; sourceTree = "<group>"; };
+		F335937A2B93926AD350D50D /* EventShareLayoutPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventShareLayoutPicker.swift; sourceTree = "<group>"; };
+		2ABCD865CE12F1713611BE08 /* EventPreviewOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventPreviewOverlay.swift; sourceTree = "<group>"; };
+		4F6E20B3E91CBE6B2A4B8226 /* EventPreviewCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventPreviewCard.swift; sourceTree = "<group>"; };
+		DA298D6ADA794F9C379BC5D4 /* EventEditCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventEditCard.swift; sourceTree = "<group>"; };
 		AA20000100000000PLACE0001 /* PlaceCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceCard.swift; sourceTree = "<group>"; };
 		AA20000200000000PLACE0002 /* PlaceDetailCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceDetailCard.swift; sourceTree = "<group>"; };
 		AA20000300000000PLACE0003 /* DirectionsCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectionsCard.swift; sourceTree = "<group>"; };
@@ -290,6 +316,13 @@
 				F142E2AF757CA909CA959BD8 /* CalendarDrawer.swift */,
 				3AB153B3B040FAF4F372F8B2 /* EventEditSheet.swift */,
 				E6D276B8E4BE99D3CA63F74F /* EventRow.swift */,
+				B30838C61F270BC255DB01DD /* PeekPhotoCarousel.swift */,
+				7EC6E6CBB9AF13CB21213561 /* MapSnapshotView.swift */,
+				ECC8B7D4835CC4E09C66A653 /* EventShareRenderer.swift */,
+				F335937A2B93926AD350D50D /* EventShareLayoutPicker.swift */,
+				2ABCD865CE12F1713611BE08 /* EventPreviewOverlay.swift */,
+				4F6E20B3E91CBE6B2A4B8226 /* EventPreviewCard.swift */,
+				DA298D6ADA794F9C379BC5D4 /* EventEditCard.swift */,
 				33E08B0B44AEEB61CFD807D9 /* HeatStripView.swift */,
 				FBECB417FFCC3D48F84654B5 /* MonthGrid.swift */,
 				5DB61EE7DA9BF7F42F10327F /* MultiDayTimelineView.swift */,
@@ -336,6 +369,12 @@
 			children = (
 				PS20000100000000SHARE0001 /* PetShareSheet.swift */,
 				PS20000200000000MERGE0001 /* PetMergeSheet.swift */,
+				D4030F950CCD2F2DCF1F7C07 /* VerticalSerifText.swift */,
+				0023BBFABF516E8DB4CA741A /* PetProfileBioCard.swift */,
+				F8CC3EFD2A4380581797A918 /* PetIndexCard.swift */,
+				5C4E71F5BA306DD7A940C8BE /* PetDetailView.swift */,
+				543D43EF877616B6DEE7695F /* PetCoverCard.swift */,
+				9FAAD39E7F3368C02F668F02 /* PetAgeCalculator.swift */,
 				PS20000300000000UNSHR0001 /* PetUnshareSheet.swift */,
 				PS20000500000000QRSCN0001 /* QRScannerView.swift */,
 			);
@@ -566,6 +605,13 @@
 				2547DAC516A2F05FB22ACAC6 /* EventEditSheet.swift in Sources */,
 				2A4F8C1E6D3B9E7A5C2F1D0A /* DayChatSheet.swift in Sources */,
 				FA82C6590ACDC7D49CF14998 /* EventRow.swift in Sources */,
+				2DCE9FBA215B142F8B32C019 /* PeekPhotoCarousel.swift in Sources */,
+				00DA0AD2E85C62FA41D6F2DD /* MapSnapshotView.swift in Sources */,
+				DCC791D53C86F5FBF53C3F7C /* EventShareRenderer.swift in Sources */,
+				1939CAA8E95092DEFC9A2F99 /* EventShareLayoutPicker.swift in Sources */,
+				9E558D96F54CC66F982BB9C9 /* EventPreviewOverlay.swift in Sources */,
+				1F841352D05B5177145023A0 /* EventPreviewCard.swift in Sources */,
+				9B949F58D795A306DD3FF298 /* EventEditCard.swift in Sources */,
 				9231B37647F8A2B77D249DCB /* FullScreenImageViewer.swift in Sources */,
 				11DE02B8DAA886EB61A80137 /* HapticsHelper.swift in Sources */,
 				C87F562927F7ACF0DA35D3DC /* HeatStripView.swift in Sources */,
@@ -607,6 +653,12 @@
 				UPGMOD000000000000000002 /* UpgradeModal.swift in Sources */,
 				PS10000100000000SHARE0001 /* PetShareSheet.swift in Sources */,
 				PS10000200000000MERGE0001 /* PetMergeSheet.swift in Sources */,
+				1AF6849C2F821E2773814B59 /* VerticalSerifText.swift in Sources */,
+				B247C197357F4191746851E8 /* PetProfileBioCard.swift in Sources */,
+				E6D2F6821E71E83D1EA05DC5 /* PetIndexCard.swift in Sources */,
+				A699632176F42487C9005B17 /* PetDetailView.swift in Sources */,
+				18AAEEC8A864CA356620A469 /* PetCoverCard.swift in Sources */,
+				05EFEFDECDCBFEFADA1A84A4 /* PetAgeCalculator.swift in Sources */,
 				PS10000300000000UNSHR0001 /* PetUnshareSheet.swift in Sources */,
 				PS10000400000000FAMLY0001 /* FamilySettingsView.swift in Sources */,
 				PS10000500000000QRSCN0001 /* QRScannerView.swift in Sources */,

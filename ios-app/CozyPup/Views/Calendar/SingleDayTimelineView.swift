@@ -7,17 +7,19 @@ struct SingleDayTimelineView: View {
     var filterPetId: String?
     var filterCategory: EventCategory?
     var onBack: () -> Void
+    var onLongPressEvent: ((CalendarEvent) -> Void)? = nil
 
     @State private var currentDate: String
     @State private var newEventDraft: CalendarEvent?
     @State private var showDayChat = false
     @GestureState private var dragOffset: CGFloat = 0
 
-    init(date: String, filterPetId: String?, filterCategory: EventCategory? = nil, onBack: @escaping () -> Void) {
+    init(date: String, filterPetId: String?, filterCategory: EventCategory? = nil, onBack: @escaping () -> Void, onLongPressEvent: ((CalendarEvent) -> Void)? = nil) {
         self.date = date
         self.filterPetId = filterPetId
         self.filterCategory = filterCategory
         self.onBack = onBack
+        self.onLongPressEvent = onLongPressEvent
         _currentDate = State(initialValue: date)
     }
 

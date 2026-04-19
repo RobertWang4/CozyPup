@@ -115,11 +115,18 @@ struct SetLanguageCardData: Codable, Equatable {
     let language: String
 }
 
+struct PetUpdatedField: Codable, Equatable {
+    let key: String
+    let label: String
+    let value: String
+}
+
 struct PetUpdatedCardData: Codable, Equatable {
     let type: String
     let pet_name: String
     let pet_id: String?
     let saved_keys: [String]?
+    let saved_fields: [PetUpdatedField]?
 }
 
 struct ReferenceItem: Codable, Equatable, Identifiable {
@@ -301,18 +308,20 @@ struct ChatMessage: Identifiable, Codable, Equatable {
     var content: String
     var cards: [CardData]
     var imageData: [Data]?  // attached photos (JPEG data, not persisted to UserDefaults)
+    var imageUrls: [String]?  // server-side URLs for cross-turn / cross-session display
 
     enum CodingKeys: String, CodingKey {
-        case id, role, content, cards
+        case id, role, content, cards, imageUrls = "image_urls"
         // imageData intentionally excluded — too large for UserDefaults
     }
 
-    init(role: MessageRole, content: String = "", cards: [CardData] = [], imageData: [Data]? = nil) {
+    init(role: MessageRole, content: String = "", cards: [CardData] = [], imageData: [Data]? = nil, imageUrls: [String]? = nil) {
         self.id = UUID().uuidString
         self.role = role
         self.content = content
         self.cards = cards
         self.imageData = imageData
+        self.imageUrls = imageUrls
     }
 }
 

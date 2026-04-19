@@ -155,7 +155,11 @@ struct ChatInputBar: View {
 
     private var textBar: some View {
         HStack(alignment: .bottom, spacing: 0) {
-            TextField(placeholders[placeholderIndex], text: $text, axis: .vertical)
+            TextField("", text: $text, prompt:
+                Text(placeholders[placeholderIndex])
+                    .foregroundColor(Tokens.textSecondary)
+                , axis: .vertical
+            )
                 .lineLimit(1...5)
                 .font(Tokens.fontCallout)
                 .foregroundColor(Tokens.text)

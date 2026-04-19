@@ -31,7 +31,7 @@ struct SettingsDrawer: View {
     @State private var showPetShareSheet: Pet?
     @State private var showPetUnshareSheet: Pet?
 
-    private enum Page { case list, editPet, addPet }
+    private enum Page: Equatable { case list, editPet, addPet }
     private var currentPage: Page {
         if editingPetId != nil { return .editPet }
         if showAddPet { return .addPet }
@@ -48,15 +48,17 @@ struct SettingsDrawer: View {
                     .transition(.move(edge: .leading))
             case .editPet:
                 if let pet = petStore.pets.first(where: { $0.id == editingPetId }) {
-                    petFormPage(pet: pet, title: L.editPet)
-                        .transition(.move(edge: .trailing))
+                    PetDetailView(petId: pet.id, onClose: {
+                        withAnimation { editingPetId = nil }
+                    })
+                    .transition(.move(edge: .trailing))
                 }
             case .addPet:
                 petFormPage(pet: nil, title: L.addPet)
                     .transition(.move(edge: .trailing))
             }
         }
-        .animation(.easeInOut(duration: 0.25), value: currentPage == .list)
+        .animation(.easeInOut(duration: 0.3), value: currentPage)
         .onChange(of: deepLinkPetId) { _, value in
             if let value {
                 // Try matching by id first, then by name

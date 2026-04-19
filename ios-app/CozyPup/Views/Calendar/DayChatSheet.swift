@@ -45,7 +45,18 @@ struct DayChatSheet: View {
                 ScrollView {
                     VStack(spacing: Tokens.spacing.sm) {
                         ForEach(messages) { msg in
-                            ChatBubble(role: msg.role, content: msg.content)
+                            VStack(spacing: Tokens.spacing.xs) {
+                                if let urls = msg.imageUrls, !urls.isEmpty {
+                                    HStack {
+                                        if msg.role == .user { Spacer() }
+                                        photoGridFromUrls(urls)
+                                        if msg.role != .user { Spacer() }
+                                    }
+                                }
+                                if !msg.content.isEmpty {
+                                    ChatBubble(role: msg.role, content: msg.content)
+                                }
+                            }
                         }
                     }
                     .padding(.horizontal, Tokens.spacing.md)
@@ -100,6 +111,7 @@ struct DayChatSheet: View {
                 let role: MessageRole
                 let content: String
                 let cards: [CardData]?
+                let image_urls: [String]?
                 let created_at: String
             }
             struct ResumeResp: Decodable {
@@ -111,7 +123,7 @@ struct DayChatSheet: View {
                 "POST", "/chat/sessions/\(session.id)/resume"
             )
             messages = resp.messages.map { m in
-                ChatMessage(role: m.role, content: m.content, cards: m.cards ?? [])
+                ChatMessage(role: m.role, content: m.content, cards: m.cards ?? [], imageUrls: m.image_urls)
             }
             isEmpty = messages.isEmpty
         } catch {
@@ -119,6 +131,34 @@ struct DayChatSheet: View {
             isEmpty = true
         }
         isLoading = false
+    }
+
+    private func photoURL(_ path: String) -> URL? {
+        if path.hasPrefix("http") { return URL(string: path) }
+        return APIClient.shared.avatarURL(path)
+    }
+
+    @ViewBuilder
+    private func photoGridFromUrls(_ urls: [String]) -> some View {
+        let cols = urls.count == 1 ? 1 : (urls.count <= 4 ? 2 : 3)
+        let size: CGFloat = urls.count == 1 ? 160 : (urls.count <= 4 ? 90 : 70)
+        LazyVGrid(
+            columns: Array(repeating: GridItem(.fixed(size), spacing: 4), count: cols),
+            alignment: .trailing,
+            spacing: 4
+        ) {
+            ForEach(Array(urls.enumerated()), id: \.offset) { _, urlStr in
+                if let url = photoURL(urlStr) {
+                    CachedAsyncImage(url: url) { image in
+                        image.resizable().scaledToFill()
+                    } placeholder: {
+                        Tokens.placeholderBg
+                    }
+                    .frame(width: size, height: size)
+                    .clipShape(RoundedRectangle(cornerRadius: Tokens.radiusSmall))
+                }
+            }
+        }
     }
 
     private func formatDate(_ dateStr: String) -> String {
