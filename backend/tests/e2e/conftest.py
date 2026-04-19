@@ -578,6 +578,7 @@ async def e2e(base_url):
     """Create an isolated E2E client with a fresh dev user."""
     client = E2EClient(base_url)
     await client.auth_dev()
+    client.last_session_id = None  # force new session
     yield client
     await client.close()
 
@@ -608,6 +609,7 @@ async def e2e_debug(base_url):
     """E2E client with debug=True for trace inspection."""
     client = E2EClient(base_url, debug=True)
     await client.auth_dev()
+    client.last_session_id = None  # force new session
     yield client
     await client.close()
 

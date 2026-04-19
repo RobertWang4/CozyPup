@@ -436,12 +436,21 @@ if name == "my_new_tool":
 
 ### 8. Run E2E audit to verify
 
+**E2E 测试跑云端真实环境**（Cloud Run），不要起本地 uvicorn。云端是用户实际会打的那个后端，本地环境可能有 flag/缓存/数据差异，本地绿不代表线上绿。
+
 ```bash
 cd backend
-uvicorn app.main:app --port 8000 &
+# 指向云端 backend
+export E2E_BASE_URL="https://backend-601329501885.northamerica-northeast1.run.app"
 python tests/e2e/run_audit.py --lang zh --case X.X   # single case
 python tests/e2e/run_audit.py --lang zh               # full audit
+
+# pytest-based E2E：
+E2E_BASE_URL="https://backend-601329501885.northamerica-northeast1.run.app" \
+  pytest tests/e2e/ -v
 ```
+
+前提：代码改动必须先 push 到 main（Cloud Build 会自动部署）后再跑 E2E，否则测的是旧版。
 
 ### Common Pitfalls
 
