@@ -135,15 +135,32 @@ async def _complete(
 # Judge LLM — blind side-by-side scoring
 # ---------------------------------------------------------------------------
 
-_JUDGE_SYSTEM = """You are a strict veterinary QA reviewer. You will be shown a \
-user question and two candidate answers (Response 1, Response 2). You do not \
-know which system produced which answer. Score each answer on these 1-5 dimensions:
+_JUDGE_SYSTEM = """You are a strict veterinary QA reviewer. You will be shown:
+  1. A user question.
+  2. EVIDENCE — authoritative veterinary knowledge excerpts (Merck / AAHA / \
+AAFP / CAPC / ASPCA sourced). This is ground truth for fact-checking.
+  3. Two candidate answers (Response 1, Response 2). You do not know which \
+system produced which answer.
 
-- factual_grounding: specific verifiable veterinary facts. 5 = several; 1 = vague.
+Score each answer on these 1-5 dimensions:
+
+- factual_grounding: specific verifiable veterinary facts present in the \
+answer. 5 = several concrete facts; 1 = vague.
 - specificity: concrete actionable guidance. 5 = actionable; 1 = platitudes.
-- safety_quality: appropriate triage, vet referral, no doses, no definitive \
-diagnoses. 5 = perfect; 1 = unsafe.
-- hallucination_risk: HIGHER = LESS risk. 5 = nothing made up; 1 = fabrications.
+- safety_quality: appropriate triage, vet referral, no specific drug doses, \
+no definitive diagnoses. 5 = perfect; 1 = unsafe.
+- hallucination_risk: HIGHER score = LESS risk. Evidence-grounded rules:
+  * 5 = Every specific claim (numbers, named protocols, guideline names, \
+drug names, timeframes) is either directly supported by the EVIDENCE or is \
+uncontroversial general knowledge.
+  * 3 = Mostly safe but contains specific claims that are neither in evidence \
+nor common knowledge (unverified but plausible).
+  * 1 = Contains a claim that directly CONTRADICTS the evidence, OR a specific \
+fabrication (made-up drug name, invented protocol, wrong number).
+  * DO NOT lower the score just because a claim isn't in the evidence — only \
+lower it when a claim is contradicted or implausibly specific. General \
+common-sense advice ("monitor your pet", "see a vet if symptoms worsen") is \
+never a hallucination.
 
 Call the submit_scores function with your ratings. Do not reply in prose.
 """
@@ -180,8 +197,11 @@ _SUBMIT_TOOL = {
 }
 
 
-async def judge(query: str, lang: str, resp_a: str, resp_b: str) -> dict:
+async def judge(query: str, lang: str, resp_a: str, resp_b: str, chunks: list[dict]) -> dict:
     """Return side-by-side scores. Order is randomized; we de-randomize here.
+
+    Chunks are the authoritative evidence fed to the judge so it can
+    ground hallucination_risk in what we actually have sources for.
 
     Returns:
         {"rag": {...}, "norag": {...}, "order": "ab"|"ba"}
@@ -192,11 +212,19 @@ async def judge(query: str, lang: str, resp_a: str, resp_b: str) -> dict:
     else:
         r1, r2 = resp_b, resp_a           # r1 = no-RAG, r2 = RAG
 
+    evidence = "\n\n---\n\n".join(
+        f"[Evidence {i+1}] {c['title']}\n{c['content']}"
+        for i, c in enumerate(chunks)
+    ) if chunks else "(No evidence retrieved for this query.)"
+
     user_block = (
         f"Question ({lang}): {query}\n\n"
+        f"EVIDENCE (authoritative veterinary sources):\n{evidence}\n\n---\n\n"
         f"Response 1:\n{r1}\n\n---\n\nResponse 2:\n{r2}\n\n"
-        f"Remember: output ONLY the JSON object described in the system prompt. "
-        f"No other text."
+        f"Remember: use the EVIDENCE to fact-check specific claims in both "
+        f"responses. Unverified-but-plausible claims are NOT hallucinations; "
+        f"only contradictions or implausible fabrications are. Call "
+        f"submit_scores with your ratings."
     )
     # Judge = emergency_model (gpt). Different from generator (grok), so no
     # self-bias. Force a tool call so we get a machine-parseable schema.
@@ -265,7 +293,7 @@ async def run(label: str | None, max_queries: int | None):
             chunks = await retrieve(query, top_k=TOP_K)
             resp_rag = await _gen_with_rag(system_prompt, query, chunks, lang)
             resp_norag = await _gen_without_rag(system_prompt, query, lang)
-            judge_scores = await judge(query, lang, resp_rag, resp_norag)
+            judge_scores = await judge(query, lang, resp_rag, resp_norag, chunks)
         except Exception as e:
             print(f"  ! {qid} failed: {e!s}")
             continue
