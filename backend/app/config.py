@@ -15,6 +15,14 @@ class Settings(BaseSettings):
     rag_distance_threshold: float = 0.6
     # In-process LRU cache for query embeddings. Set to 0 to disable.
     rag_embed_cache_size: int = 256
+    # Multi-query expansion via cheap LLM rewrite. Adds N alternate phrasings
+    # (zh↔en, colloquial↔clinical) and unions the retrieval results. Falls back
+    # to the original query on LLM failure.
+    rag_enable_query_expansion: bool = True
+    rag_query_expansion_variants: int = 2
+    # Keyword-based intent detection that boosts the right article bucket for
+    # "pet ate X" queries (toxic food / plant / medication / foreign object).
+    rag_enable_intent_filter: bool = True
     model_api_base: str = ""   # Proxy base URL (e.g. https://api.shubiaobiao.cn/v1)
     model_api_key: str = ""    # Proxy API key
     google_places_api_key: str = ""
