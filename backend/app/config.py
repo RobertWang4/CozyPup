@@ -10,6 +10,11 @@ class Settings(BaseSettings):
     # Typically a more capable/accurate model for safety-critical responses.
     emergency_model: str = "openai/kimi-k2.5"
     embedding_model: str = "openai/text-embedding-3-small"
+    # RAG retrieval — drop results whose cosine distance exceeds this threshold.
+    # Empirically: <0.3 very relevant, 0.3–0.5 loosely related, >0.6 mostly noise.
+    rag_distance_threshold: float = 0.6
+    # In-process LRU cache for query embeddings. Set to 0 to disable.
+    rag_embed_cache_size: int = 256
     model_api_base: str = ""   # Proxy base URL (e.g. https://api.shubiaobiao.cn/v1)
     model_api_key: str = ""    # Proxy API key
     google_places_api_key: str = ""

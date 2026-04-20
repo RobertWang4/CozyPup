@@ -13,6 +13,10 @@ from sqlalchemy.orm.attributes import flag_modified
 from app.auth import get_current_user_id
 from app.database import get_db
 from app.models import CalendarEvent, Pet
+from app.rag.event_sync import (
+    schedule_event_embedding,
+    schedule_event_embedding_delete,
+)
 from app.schemas.calendar import (
     CalendarEventCreate,
     CalendarEventResponse,
@@ -106,6 +110,7 @@ async def create_event(
     )
     db.add(event)
     await db.commit()
+    schedule_event_embedding(event.id)
 
     # Reload with pet relationship
     result = await db.execute(
@@ -209,6 +214,7 @@ async def update_event(
     event.edited = True
     await db.commit()
     await db.refresh(event)
+    schedule_event_embedding(event.id)
     return _event_to_response(event)
 
 
@@ -229,6 +235,7 @@ async def delete_event(
 
     await db.delete(event)
     await db.commit()
+    schedule_event_embedding_delete(event_id)
 
 
 @router.post("/{event_id}/photos", response_model=CalendarEventResponse)

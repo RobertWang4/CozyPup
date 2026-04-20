@@ -537,6 +537,17 @@ async def dispatch_tool(
         })
         return {"error": str(exc)[:200]}
 
+    # Keep RAG embeddings in sync with calendar_event writes.
+    if tool_result.get("success") and tool_result.get("event_id"):
+        from app.rag.event_sync import (
+            schedule_event_embedding,
+            schedule_event_embedding_delete,
+        )
+        if fn_name in ("create_calendar_event", "update_calendar_event"):
+            schedule_event_embedding(tool_result["event_id"])
+        elif fn_name == "delete_calendar_event":
+            schedule_event_embedding_delete(tool_result["event_id"])
+
     # Some handlers (e.g. gender/species first-time set) run a partial update
     # and then return needs_confirm=True for the lockable portion. Surface
     # a confirm card for that leftover piece.
