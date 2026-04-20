@@ -16,6 +16,34 @@ from app.routers.subscription import _compute_status, TRIAL_DAYS
 from app.models import User
 
 
+def _fake_jws_payload(
+    *,
+    product_id: str,
+    expires_in_days: int,
+    bundle_id: str,
+    revoked: bool = False,
+):
+    """Build a MagicMock mimicking JWSTransactionDecodedPayload.
+
+    Fields mirror what app.routers.subscription.verify_purchase reads:
+    productId, bundleId, expiresDate (ms since epoch), revocationDate,
+    transactionId, environment.
+    """
+    payload = MagicMock()
+    payload.productId = product_id
+    payload.bundleId = bundle_id
+    expires_ms = int(
+        (datetime.now(timezone.utc) + timedelta(days=expires_in_days)).timestamp() * 1000
+    )
+    payload.expiresDate = expires_ms
+    payload.revocationDate = 1 if revoked else None
+    payload.transactionId = f"txn_{uuid.uuid4().hex[:8]}"
+    env = MagicMock()
+    env.value = "Sandbox"
+    payload.environment = env
+    return payload
+
+
 def _make_user(
     status="trial",
     trial_start_date=None,
@@ -213,10 +241,12 @@ class TestVerifyEndpoint:
     @pytest.mark.asyncio
     async def test_verify_monthly_purchase_sets_active(self):
         """Verifying a monthly product sets active status with 30-day expiry."""
+        from app.config import settings
         from app.routers.subscription import verify_purchase
         from app.schemas.subscription import VerifyRequest
 
         user = _make_user(status="trial")
+        user.family_role = None
 
         mock_result = MagicMock()
         mock_result.scalar_one.return_value = user
@@ -225,12 +255,15 @@ class TestVerifyEndpoint:
         db.execute.return_value = mock_result
         db.commit = AsyncMock()
 
-        req = VerifyRequest(
-            transaction_id="txn_abc123",
+        payload = _fake_jws_payload(
             product_id="com.cozypup.monthly",
+            expires_in_days=30,
+            bundle_id=settings.apple_bundle_id,
         )
+        req = VerifyRequest(signed_transaction="fake_jws", sandbox=True)
 
-        response = await verify_purchase(req=req, user_id=user.id, db=db)
+        with patch("app.routers.subscription.verify_signed_transaction", return_value=payload):
+            response = await verify_purchase(req=req, user_id=user.id, db=db)
 
         assert response.status == "active"
         assert response.expires_at is not None
@@ -238,17 +271,18 @@ class TestVerifyEndpoint:
         assert user.subscription_product_id == "com.cozypup.monthly"
         db.commit.assert_awaited_once()
 
-        # Expiry should be ~30 days from now
         delta = response.expires_at - datetime.now(timezone.utc)
         assert 29 <= delta.days <= 30
 
     @pytest.mark.asyncio
     async def test_verify_yearly_purchase_sets_365_day_expiry(self):
         """Verifying a yearly product sets 365-day expiry."""
+        from app.config import settings
         from app.routers.subscription import verify_purchase
         from app.schemas.subscription import VerifyRequest
 
         user = _make_user(status="trial")
+        user.family_role = None
 
         mock_result = MagicMock()
         mock_result.scalar_one.return_value = user
@@ -257,12 +291,15 @@ class TestVerifyEndpoint:
         db.execute.return_value = mock_result
         db.commit = AsyncMock()
 
-        req = VerifyRequest(
-            transaction_id="txn_yearly123",
+        payload = _fake_jws_payload(
             product_id="com.cozypup.yearly",
+            expires_in_days=365,
+            bundle_id=settings.apple_bundle_id,
         )
+        req = VerifyRequest(signed_transaction="fake_jws", sandbox=True)
 
-        response = await verify_purchase(req=req, user_id=user.id, db=db)
+        with patch("app.routers.subscription.verify_signed_transaction", return_value=payload):
+            response = await verify_purchase(req=req, user_id=user.id, db=db)
 
         assert response.status == "active"
         delta = response.expires_at - datetime.now(timezone.utc)
@@ -337,12 +374,12 @@ async def _create_user(
 
 class TestExpiredUserBlockedFromChat:
     @pytest.mark.asyncio
-    async def test_expired_user_gets_403_on_post_chat(self, _db):
-        """User with expired subscription → POST /chat returns 403 subscription_expired.
+    async def test_expired_user_gets_upgrade_prompt_on_post_chat(self, _db):
+        """User with expired subscription → POST /chat returns an SSE upgrade prompt.
 
-        The trial→expired promotion (trial_start_date arithmetic) is covered by unit
-        tests in TestComputeStatus. Here we test the HTTP gate with a user whose status
-        is already stored as 'expired' in the DB — the same state after auto-promotion.
+        The chat endpoint short-circuits expired users into a canned SSE stream
+        (no LLM call, no token cost) that emits an `upgrade_prompt` card. The
+        response is 200; clients detect the expired state from the card payload.
         """
         user = await _create_user(_db, status="expired")
         client = _http_client(_db, user.id)
@@ -351,9 +388,8 @@ class TestExpiredUserBlockedFromChat:
                 "/api/v1/chat",
                 json={"message": "hello", "session_id": None},
             )
-            assert response.status_code == 403
-            body = response.json()
-            assert body["detail"]["code"] == "subscription_expired"
+            assert response.status_code == 200
+            assert "upgrade_prompt" in response.text
         finally:
             app.dependency_overrides.clear()
 
@@ -406,17 +442,22 @@ class TestExpiredUserCanRead:
 class TestVerifyActivatesSubscription:
     @pytest.mark.asyncio
     async def test_verify_sets_active_status_and_returns_expires_at(self, _db):
-        """POST /subscription/verify with a valid transaction activates the subscription."""
+        """POST /subscription/verify with a valid JWS activates the subscription."""
+        from app.config import settings
+
         user = await _create_user(_db, status="trial")
         client = _http_client(_db, user.id)
+        payload = _fake_jws_payload(
+            product_id="com.cozypup.monthly",
+            expires_in_days=30,
+            bundle_id=settings.apple_bundle_id,
+        )
         try:
-            response = client.post(
-                "/api/v1/subscription/verify",
-                json={
-                    "transaction_id": "txn_test_001",
-                    "product_id": "com.cozypup.monthly",
-                },
-            )
+            with patch("app.routers.subscription.verify_signed_transaction", return_value=payload):
+                response = client.post(
+                    "/api/v1/subscription/verify",
+                    json={"signed_transaction": "fake_jws", "sandbox": True},
+                )
             assert response.status_code == 200
             body = response.json()
             assert body["status"] == "active"
@@ -426,28 +467,29 @@ class TestVerifyActivatesSubscription:
 
     @pytest.mark.asyncio
     async def test_verify_allows_post_chat_after_activation(self, _db):
-        """After verify, an expired user should no longer be blocked on POST /chat."""
+        """After verify, an expired user should no longer hit the upgrade prompt."""
+        from app.config import settings
+
         user = await _create_user(_db, status="expired")
         client = _http_client(_db, user.id)
+        payload = _fake_jws_payload(
+            product_id="com.cozypup.monthly",
+            expires_in_days=30,
+            bundle_id=settings.apple_bundle_id,
+        )
         try:
-            # Activate subscription
-            verify_resp = client.post(
-                "/api/v1/subscription/verify",
-                json={
-                    "transaction_id": "txn_test_002",
-                    "product_id": "com.cozypup.monthly",
-                },
-            )
+            with patch("app.routers.subscription.verify_signed_transaction", return_value=payload):
+                verify_resp = client.post(
+                    "/api/v1/subscription/verify",
+                    json={"signed_transaction": "fake_jws", "sandbox": True},
+                )
             assert verify_resp.status_code == 200
 
-            # POST /chat should now pass the subscription gate (may fail for other
-            # reasons like missing session, but not 403 subscription_expired)
+            # Post-activation: /chat should not return the upgrade_prompt card.
             chat_resp = client.post(
                 "/api/v1/chat",
                 json={"message": "hello", "session_id": None},
             )
-            assert chat_resp.status_code != 403
-            if chat_resp.status_code == 403:
-                assert chat_resp.json().get("detail", {}).get("code") != "subscription_expired"
+            assert "upgrade_prompt" not in chat_resp.text
         finally:
             app.dependency_overrides.clear()
