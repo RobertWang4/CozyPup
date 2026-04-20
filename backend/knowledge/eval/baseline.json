@@ -1,0 +1,22 @@
+{
+  "generated_at": "2026-04-20",
+  "top_n": 3,
+  "zh": {
+    "positive_total": 60,
+    "positive_top1": 53,
+    "positive_topN": 58,
+    "negative_total": 10,
+    "negative_pass": 10,
+    "emergency_total": 5,
+    "emergency_pass": 5
+  },
+  "en": {
+    "positive_total": 30,
+    "positive_top1": 28,
+    "positive_topN": 30,
+    "negative_total": 3,
+    "negative_pass": 3,
+    "emergency_total": 3,
+    "emergency_pass": 3
+  }
+}

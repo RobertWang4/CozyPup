@@ -1006,6 +1006,69 @@ _BASE_TOOL_DEFINITIONS = [
             },
         },
     },
+    {
+        "type": "function",
+        "function": {
+            "name": "get_vaccine_schedule",
+            "description": (
+                "Get authoritative vaccination schedule (AAHA for dogs, AAFP for cats).\n"
+                "【必须调用】用户问疫苗时间/间隔/什么时候打/该打什么疫苗 → 必须调用这个而不是 search_knowledge。\n"
+                "Returns vaccine name, core vs non-core, age window, interval, and source citation.\n"
+                "返回结果包含 source_url / source_name，回复时必须引用。\n"
+                "【绝对不要用于剂量问题】此工具不返回剂量；剂量问题必须拒绝（请咨询兽医）。\n"
+                "species: 'dog' 或 'cat' only."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "species": {
+                        "type": "string",
+                        "enum": ["dog", "cat"],
+                        "description": "Pet species.",
+                    },
+                    "age_weeks": {
+                        "type": "integer",
+                        "description": (
+                            "Optional pet age in weeks. If provided, results are filtered "
+                            "to entries relevant for that age (puppy/kitten series still "
+                            "in window, plus open-ended adult boosters)."
+                        ),
+                    },
+                },
+                "required": ["species"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "get_deworming_schedule",
+            "description": (
+                "Get authoritative deworming / parasite-prevention schedule (CAPC).\n"
+                "【必须调用】用户问驱虫/心丝虫/跳蚤/蜱虫预防的时间和频率 → 必须调用这个而不是 search_knowledge。\n"
+                "Returns parasite category, life stage, interval, and source citation (source_url / source_name).\n"
+                "回复时必须引用 source。\n"
+                "【绝对不要用于剂量问题】此工具不返回剂量。\n"
+                "species: 'dog' or 'cat'. life_stage: puppy_kitten / adult / pregnant / senior."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "species": {
+                        "type": "string",
+                        "enum": ["dog", "cat"],
+                        "description": "Pet species.",
+                    },
+                    "life_stage": {
+                        "type": "string",
+                        "enum": ["puppy_kitten", "adult", "pregnant", "senior"],
+                        "description": "Optional filter by life stage.",
+                    },
+                },
+                "required": ["species"],
+            },
+        },
+    },
 ]
 
 # Legacy set — used when LLM-driven selective confirm was part of the tool

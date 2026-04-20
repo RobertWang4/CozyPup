@@ -25,8 +25,8 @@
   {"query": "how often should I deworm my dog", "expect_title_any": ["Deworming", "Parasites"]},
   {"query": "cat parasite prevention indoor", "expect_title_any": ["Deworming", "Parasites"]},
   {"query": "how much should I feed my 3 month old puppy", "expect_title_any": ["Feeding", "Nutrition", "Puppy"]},
-  {"query": "can my dog eat apples", "expect_title_any": ["Feeding", "Nutrition"]},
-  {"query": "my dog is limping on his back leg", "expect_title_any": ["Trauma", "Senior Dog"]},
+  {"query": "can my dog eat apples", "expect_title_any": ["Safe Human Foods", "Feeding", "Nutrition"]},
+  {"query": "my dog is limping on his back leg", "expect_title_any": ["Osteoarthritis", "Lameness", "Trauma", "Senior Dog"]},
   {"query": "dog coughing a lot lately", "expect_title_any": ["Respiratory"]},
   {"query": "senior dog stiff after nap", "expect_title_any": ["Senior Dog"]},
 

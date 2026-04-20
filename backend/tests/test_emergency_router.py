@@ -32,6 +32,11 @@ POSITIVE_CASES = [
     ("猫咪突然昏迷不动了", "collapse"),
     ("dog collapsed and won't wake up", "collapse"),
     ("狗吃了老鼠药", "toxin_ingestion"),
+    ("my dog drank antifreeze from the garage", "toxin_ingestion"),
+    ("狗舔了防冻液", "toxin_ingestion"),
+    ("possible ethylene glycol exposure", "toxin_ingestion"),
+    ("公狗尿不出来怎么办", "urinary_obstruction"),
+    ("my male dog can't pee", "urinary_obstruction"),
 ]
 
 

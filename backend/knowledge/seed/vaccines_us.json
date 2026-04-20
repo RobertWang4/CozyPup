@@ -1,0 +1,90 @@
+[
+  {
+    "species": "dog",
+    "vaccine_name": "DHPP",
+    "core": true,
+    "age_weeks_start": 6,
+    "age_weeks_end": 16,
+    "interval_description": "Initial series every 2-4 weeks between 6 and 16 weeks of age; final dose at or after 16 weeks. Booster 1 year later, then every 3 years.",
+    "notes": "Distemper, Adenovirus (hepatitis), Parvovirus, Parainfluenza. Core vaccine for all dogs per AAHA.",
+    "source_url": "https://www.aaha.org/resources/2022-aaha-canine-vaccination-guidelines/",
+    "source_name": "AAHA 2022 Canine Vaccination Guidelines"
+  },
+  {
+    "species": "dog",
+    "vaccine_name": "Rabies",
+    "core": true,
+    "age_weeks_start": 12,
+    "age_weeks_end": 16,
+    "interval_description": "Single dose at 12-16 weeks of age; booster 1 year later; then every 1 or 3 years depending on product label and local law.",
+    "notes": "Core vaccine. Legally required in most US/Canada jurisdictions.",
+    "source_url": "https://www.aaha.org/resources/2022-aaha-canine-vaccination-guidelines/",
+    "source_name": "AAHA 2022 Canine Vaccination Guidelines"
+  },
+  {
+    "species": "dog",
+    "vaccine_name": "Leptospirosis",
+    "core": true,
+    "age_weeks_start": 12,
+    "age_weeks_end": 16,
+    "interval_description": "Initial dose at 12 weeks or older, second dose 2-4 weeks later, then annually.",
+    "notes": "Reclassified as core by AAHA 2022 due to widespread exposure risk in the US/Canada.",
+    "source_url": "https://www.aaha.org/resources/2022-aaha-canine-vaccination-guidelines/",
+    "source_name": "AAHA 2022 Canine Vaccination Guidelines"
+  },
+  {
+    "species": "dog",
+    "vaccine_name": "Bordetella",
+    "core": false,
+    "age_weeks_start": 8,
+    "age_weeks_end": null,
+    "interval_description": "Recommended for dogs with boarding, daycare, grooming, or group exposure. Intranasal or oral: single dose; injectable: two doses 2-4 weeks apart. Booster annually (or every 6 months for high-risk dogs).",
+    "notes": "Non-core (lifestyle) vaccine. Protects against kennel cough.",
+    "source_url": "https://www.aaha.org/resources/2022-aaha-canine-vaccination-guidelines/",
+    "source_name": "AAHA 2022 Canine Vaccination Guidelines"
+  },
+  {
+    "species": "dog",
+    "vaccine_name": "Lyme (Borrelia burgdorferi)",
+    "core": false,
+    "age_weeks_start": 12,
+    "age_weeks_end": null,
+    "interval_description": "Two initial doses 2-4 weeks apart starting at 12 weeks; booster annually. Recommended for dogs in tick-endemic regions (northeast US, upper midwest, parts of Canada).",
+    "notes": "Non-core (lifestyle) vaccine. Combine with year-round tick prevention.",
+    "source_url": "https://www.aaha.org/resources/2022-aaha-canine-vaccination-guidelines/",
+    "source_name": "AAHA 2022 Canine Vaccination Guidelines"
+  },
+  {
+    "species": "cat",
+    "vaccine_name": "FVRCP",
+    "core": true,
+    "age_weeks_start": 6,
+    "age_weeks_end": 16,
+    "interval_description": "Initial series every 3-4 weeks from 6-8 weeks through at least 16 weeks of age. Booster 1 year later, then every 3 years for low-risk adults.",
+    "notes": "Feline Viral Rhinotracheitis, Calicivirus, Panleukopenia. Core vaccine for all cats per AAFP.",
+    "source_url": "https://catvets.com/guidelines/practice-guidelines/aafp-aaha-feline-vaccination-guidelines",
+    "source_name": "AAFP/AAHA Feline Vaccination Guidelines"
+  },
+  {
+    "species": "cat",
+    "vaccine_name": "Rabies",
+    "core": true,
+    "age_weeks_start": 12,
+    "age_weeks_end": 16,
+    "interval_description": "Single dose at 12-16 weeks of age; booster 1 year later; then per product label (1 or 3 years) and local law.",
+    "notes": "Core vaccine. Legally required in most US/Canada jurisdictions.",
+    "source_url": "https://catvets.com/guidelines/practice-guidelines/aafp-aaha-feline-vaccination-guidelines",
+    "source_name": "AAFP/AAHA Feline Vaccination Guidelines"
+  },
+  {
+    "species": "cat",
+    "vaccine_name": "FeLV",
+    "core": true,
+    "age_weeks_start": 8,
+    "age_weeks_end": null,
+    "interval_description": "Two doses 3-4 weeks apart starting at 8 weeks of age. Considered core for all kittens. Adults: annually for at-risk cats (outdoor/multi-cat), may be discontinued for strictly indoor, single-cat households.",
+    "notes": "Feline Leukemia Virus. AAFP recommends FeLV testing before vaccination.",
+    "source_url": "https://catvets.com/guidelines/practice-guidelines/aafp-aaha-feline-vaccination-guidelines",
+    "source_name": "AAFP/AAHA Feline Vaccination Guidelines"
+  }
+]

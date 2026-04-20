@@ -86,6 +86,10 @@ async def search_knowledge(
                     "title": k["title"],
                     "url": k.get("url"),
                     "source": "knowledge",
+                    # Surface the cosine distance so audit logging can
+                    # derive zero-recall / min-distance later. Additive —
+                    # existing iOS clients ignore unknown keys.
+                    "distance": k.get("distance"),
                 })
         for h in result["history"]:
             if h.get("content"):

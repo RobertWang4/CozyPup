@@ -1,0 +1,101 @@
+[
+  {
+    "species": "dog",
+    "parasite_category": "broad",
+    "life_stage": "puppy_kitten",
+    "interval_description": "Deworm every 2 weeks from 2 weeks of age until 12 weeks, then monthly until 6 months of age.",
+    "notes": "CAPC recommends starting early due to high prevalence of roundworms and hookworms in puppies. Use a product effective against roundworms and hookworms.",
+    "source_url": "https://capcvet.org/guidelines/general-guidelines/",
+    "source_name": "CAPC General Guidelines"
+  },
+  {
+    "species": "dog",
+    "parasite_category": "broad",
+    "life_stage": "adult",
+    "interval_description": "Year-round broad-spectrum parasite control with monthly administration; fecal testing 1-2 times per year (more often for high-risk dogs).",
+    "notes": "CAPC recommends year-round prevention in all regions of the US/Canada.",
+    "source_url": "https://capcvet.org/guidelines/general-guidelines/",
+    "source_name": "CAPC General Guidelines"
+  },
+  {
+    "species": "dog",
+    "parasite_category": "heartworm",
+    "life_stage": "puppy_kitten",
+    "interval_description": "Begin heartworm prevention as early as the product label allows (typically by 8 weeks of age). Administer monthly year-round.",
+    "notes": "No heartworm test needed before starting in puppies under 7 months; test annually thereafter.",
+    "source_url": "https://capcvet.org/guidelines/heartworm/",
+    "source_name": "CAPC Heartworm Guidelines"
+  },
+  {
+    "species": "dog",
+    "parasite_category": "heartworm",
+    "life_stage": "adult",
+    "interval_description": "Monthly heartworm preventive year-round, with annual antigen + microfilaria testing.",
+    "notes": "Year-round prevention recommended even in cooler climates due to unpredictable mosquito activity.",
+    "source_url": "https://capcvet.org/guidelines/heartworm/",
+    "source_name": "CAPC Heartworm Guidelines"
+  },
+  {
+    "species": "dog",
+    "parasite_category": "flea_tick",
+    "life_stage": "adult",
+    "interval_description": "Year-round flea and tick prevention; product application per label (typically monthly topical/oral, or every 3 months for some isoxazolines).",
+    "notes": "CAPC recommends year-round protection throughout the US/Canada.",
+    "source_url": "https://capcvet.org/guidelines/ticks/",
+    "source_name": "CAPC Ticks Guidelines"
+  },
+  {
+    "species": "dog",
+    "parasite_category": "broad",
+    "life_stage": "pregnant",
+    "interval_description": "Deworm the dam during pregnancy and lactation per veterinarian guidance to reduce transmission to puppies.",
+    "notes": "Specific product and timing should be directed by a veterinarian; CAPC notes perinatal transmission of roundworms and hookworms is common.",
+    "source_url": "https://capcvet.org/guidelines/general-guidelines/",
+    "source_name": "CAPC General Guidelines"
+  },
+  {
+    "species": "cat",
+    "parasite_category": "broad",
+    "life_stage": "puppy_kitten",
+    "interval_description": "Deworm every 2 weeks from 3 weeks of age through 9 weeks, then monthly until 6 months.",
+    "notes": "Focus on roundworms and hookworms; use products approved for kittens at appropriate ages.",
+    "source_url": "https://capcvet.org/guidelines/general-guidelines/",
+    "source_name": "CAPC General Guidelines"
+  },
+  {
+    "species": "cat",
+    "parasite_category": "broad",
+    "life_stage": "adult",
+    "interval_description": "Year-round broad-spectrum parasite control with monthly administration; annual fecal testing (twice yearly for outdoor/hunting cats).",
+    "notes": "Indoor-only cats still benefit from year-round prevention due to indirect exposure.",
+    "source_url": "https://capcvet.org/guidelines/general-guidelines/",
+    "source_name": "CAPC General Guidelines"
+  },
+  {
+    "species": "cat",
+    "parasite_category": "heartworm",
+    "life_stage": "adult",
+    "interval_description": "Monthly feline heartworm preventive year-round. No approved adulticide exists for cats, so prevention is critical.",
+    "notes": "Heartworm disease in cats is often underdiagnosed; prevention recommended for all cats including indoor.",
+    "source_url": "https://capcvet.org/guidelines/heartworm/",
+    "source_name": "CAPC Heartworm Guidelines"
+  },
+  {
+    "species": "cat",
+    "parasite_category": "flea_tick",
+    "life_stage": "adult",
+    "interval_description": "Year-round flea prevention with feline-labeled product (typically monthly). Tick prevention where exposure risk exists.",
+    "notes": "Never apply canine permethrin products to cats — toxic to felines.",
+    "source_url": "https://capcvet.org/guidelines/fleas/",
+    "source_name": "CAPC Fleas Guidelines"
+  },
+  {
+    "species": "cat",
+    "parasite_category": "tapeworm",
+    "life_stage": "adult",
+    "interval_description": "Treat when tapeworm segments or fleas are observed; year-round flea control prevents most Dipylidium tapeworm transmission.",
+    "notes": "Outdoor hunting cats should be screened more frequently.",
+    "source_url": "https://capcvet.org/guidelines/tapeworms/",
+    "source_name": "CAPC Tapeworms Guidelines"
+  }
+]

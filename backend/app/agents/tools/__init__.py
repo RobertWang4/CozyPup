@@ -28,6 +28,7 @@ import app.agents.tools.reminders # noqa: F401
 import app.agents.tools.misc      # noqa: F401
 import app.agents.tools.tasks     # noqa: F401
 import app.agents.tools.knowledge  # noqa: F401
+import app.agents.tools.schedule  # noqa: F401
 
 from app.agents.tools.registry import get_registered_tools
 
@@ -41,6 +42,7 @@ from app.agents.tools.calendar import (
     upload_event_photo,
 )
 from app.agents.tools.knowledge import search_knowledge
+from app.agents.tools.schedule import get_deworming_schedule, get_vaccine_schedule
 from app.agents.tools.misc import (
     draft_email,
     get_directions_tool,
@@ -106,6 +108,9 @@ __all__ = [
     "get_directions_tool",
     # knowledge
     "search_knowledge",
+    # schedule
+    "get_vaccine_schedule",
+    "get_deworming_schedule",
 ]
 
 

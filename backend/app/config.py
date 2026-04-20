@@ -8,7 +8,7 @@ class Settings(BaseSettings):
     model: str = "openai/grok-4-1-fast-non-reasoning"
     # Emergency model — only used when emergency keywords are detected (e.g. seizure, poisoning).
     # Typically a more capable/accurate model for safety-critical responses.
-    emergency_model: str = "openai/kimi-k2.5"
+    emergency_model: str = "openai/gpt-5"
     embedding_model: str = "openai/text-embedding-3-small"
     # RAG retrieval — drop results whose cosine distance exceeds this threshold.
     # Empirically: <0.3 very relevant, 0.3–0.5 loosely related, >0.6 mostly noise.
@@ -78,6 +78,11 @@ class Settings(BaseSettings):
     server_public_url: str = "http://168.138.75.153:8000"
 
     gcs_bucket: str = ""  # GCS bucket for file uploads (e.g. "cozypup-avatars")
+
+    # RAG observability admin endpoint — shared secret passed in the
+    # `X-Admin-Token` header for GET /admin/rag/stats. Unset → endpoint
+    # fails closed with 403. Populate via ADMIN_API_TOKEN env var.
+    admin_api_token: str | None = None
 
     # Deployment environment — "dev" enables unsafe endpoints (e.g. /admin/auth/dev-login).
     # Set via ENVIRONMENT env var in Cloud Run. Defaults to "dev" locally.

@@ -184,24 +184,28 @@ async def run(top_n: int, label: str | None):
     print(f"NEGATIVE  reject: {neg_pass}/{neg_total} = {_pct(neg_pass, neg_total)}  (top1_d >= {NEGATIVE_DISTANCE_FLOOR})")
     print(f"EMERGENCY route:  {emg_pass}/{emg_total} = {_pct(emg_pass, emg_total)}")
 
+    summary = {
+        "positive_total": pos_total,
+        "positive_top1": pos_top1,
+        "positive_topN": pos_topN,
+        "negative_total": neg_total,
+        "negative_pass": neg_pass,
+        "emergency_total": emg_total,
+        "emergency_pass": emg_pass,
+    }
+
     # also dump JSON next to queries.json for diffing
     if label:
         out = Path(__file__).parent / f"result_{label}.json"
         out.write_text(json.dumps({
             "label": label,
             "top_n": top_n,
-            "summary": {
-                "positive_total": pos_total,
-                "positive_top1": pos_top1,
-                "positive_topN": pos_topN,
-                "negative_total": neg_total,
-                "negative_pass": neg_pass,
-                "emergency_total": emg_total,
-                "emergency_pass": emg_pass,
-            },
+            "summary": summary,
             "rows": rows_out,
         }, indent=2, ensure_ascii=False), encoding="utf-8")
         print(f"\nWrote {out}")
+
+    return {"top_n": top_n, "summary": summary, "rows": rows_out}
 
 
 def main():

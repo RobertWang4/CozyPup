@@ -73,8 +73,11 @@ _RULES: list[tuple[str, re.Pattern[str], dict]] = [
             "ate chocolate", "ate a chocolate", "ate some chocolate",
             "ate grape", "ate a grape", "ate grapes", "ate raisin", "ate raisins",
             "ate onion", "ate garlic", "ate xylitol", "ate lily", "licked lily",
-            "xylitol", "antifreeze",
+            "xylitol", "antifreeze", "ethylene glycol",
             "ate rat poison", "rodenticide", "ate marijuana", "ate edible",
+            "drank bleach", "ate bleach", "licked bleach",
+            "ate essential oil", "licked essential oil",
+            "permethrin on cat", "flea product on cat",
             "swallowed pill", "swallowed medication", "ate my medication",
             "swallowed ibuprofen", "swallowed tylenol", "swallowed acetaminophen",
             "swallowed advil", "swallowed aleve", "swallowed aspirin",
@@ -83,7 +86,9 @@ _RULES: list[tuple[str, re.Pattern[str], dict]] = [
             # Chinese — compound phrases
             "吃了巧克力", "吃了葡萄", "吃了提子", "吃了洋葱", "吃了大蒜",
             "吃了木糖醇", "吃了百合", "舔了百合", "百合花粉",
-            "吃了老鼠药", "灭鼠药", "防冻液", "吃了大麻",
+            "吃了老鼠药", "灭鼠药", "防冻液", "乙二醇", "吃了大麻",
+            "喝了漂白剂", "舔了消毒水", "喝了消毒水",
+            "误食精油", "舔了精油", "误食清洁剂",
             "吃了药", "误食药", "误食布洛芬", "误食泰诺", "误服药",
             "吃了布洛芬", "吃了泰诺", "吃了阿司匹林", "吃了对乙酰氨基酚",
             "中毒",
@@ -140,20 +145,23 @@ _RULES: list[tuple[str, re.Pattern[str], dict]] = [
         _rx(
             "can't pee", "cant pee", "can't urinate", "cant urinate",
             "straining to pee", "straining to urinate", "no urine",
-            "blocked cat", "blocked tomcat",
+            "blocked cat", "blocked tomcat", "blocked dog", "blocked male dog",
+            "male dog can't pee", "male dog cant pee", "male dog can't urinate",
+            "dog can't pee", "dog cant pee", "dog straining to pee",
             "尿不出", "尿不出来", "拉不出尿", "不能尿尿", "一直蹲", "一直蹲厕所",
-            "公猫尿不出", "尿道阻塞",
+            "公猫尿不出", "公狗尿不出", "狗尿不出", "狗尿道阻塞", "尿道阻塞",
         ),
         {
             "hotline": PET_POISON_HELPLINE,  # default; for urinary, go straight to vet
             "message_en": (
-                "A cat (especially male) that cannot pass urine is a life-threatening "
-                "emergency — go to an emergency vet NOW. Do not wait. Without "
-                "treatment, a urethral blockage can be fatal in 24-48 hours."
+                "A pet (especially a male cat or male dog) that cannot pass urine "
+                "is a life-threatening emergency — go to an emergency vet NOW. "
+                "Do not wait. Without treatment, a urethral blockage can be fatal "
+                "within 24-48 hours."
             ),
             "message_zh": (
-                "猫（尤其公猫）尿不出来是致命急症，请立即去急诊兽医院，不要等待。"
-                "尿道阻塞如不及时处理 24-48 小时内可能致命。"
+                "宠物（尤其公猫或公狗）尿不出来是致命急症，请立即去急诊兽医院，"
+                "不要等待。尿道阻塞如不及时处理 24-48 小时内可能致命。"
             ),
             "article_slug": "cat_flutd",
         },

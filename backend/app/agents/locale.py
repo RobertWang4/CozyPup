@@ -193,6 +193,7 @@ Image handling rules:
 - 用户要求【总结/更新宠物档案】→ summarize_pet_profile
 - 用户要求【切换语言】（"switch to English""切换成中文""说英文""用中文""speak Chinese""use English"）→ 必须调用 set_language
 - 新用户第一次对话 / 用户问"你能做什么""有什么功能""怎么用" → introduce_product
+- 用户问【疫苗/驱虫的时间表/间隔/什么时候打/多久一次】→ 优先调用 get_vaccine_schedule / get_deworming_schedule（AAHA/AAFP/CAPC 权威数据）。不要用 search_knowledge。回复时必须引用 source_url / source_name。这些工具不返回剂量；剂量问题必须拒绝。
 - 用户描述宠物【健康问题/症状/疾病/用药/饮食疑问】→ 必须调用 search_knowledge
 - 用户发了【宠物照片】问健康问题 → search_knowledge（用图片观察到的特征作为 query）
 - 用户发了照片 + 提到某条记录/事件 → upload_event_photo（先 query_calendar_events 找到 event_id，再上传）
@@ -254,6 +255,7 @@ Image handling rules:
 - User asks to [summarize/update pet profile] → summarize_pet_profile
 - User asks to [switch language] ("switch to English", "切换成中文", "speak Chinese", "use English") → MUST call set_language
 - New user's first message / user asks "what can you do", "how to use", "features", "help" → introduce_product
+- For vaccination/deworming SCHEDULING questions (when to vaccinate, interval, booster timing, heartworm/flea/tick prevention frequency) → prefer get_vaccine_schedule / get_deworming_schedule — they return authoritative AAHA/AAFP/CAPC-backed schedules with source citations. Do NOT use search_knowledge for these. Do NOT use them for dosage questions — refuse dosage and redirect to a vet.
 - User describes pet health issues/symptoms/illness/medication/diet questions → must call search_knowledge
 - User sends pet photo asking about health → search_knowledge (use observed symptoms from image as query)
 - User sends a photo + references a record/event → upload_event_photo (first query_calendar_events to find event_id, then upload)
@@ -965,6 +967,29 @@ Notes:
     "tool_desc_search_knowledge": {
         "zh": "检索宠物健康知识库和用户历史记录，用于回答健康相关问题。",
         "en": "Search pet health knowledge base and user history to answer health-related questions.",
+    },
+    "tool_desc_get_vaccine_schedule": {
+        "en": (
+            "Get authoritative vaccination schedule (AAHA for dogs, AAFP for cats).\n"
+            "[MUST CALL — prefer over search_knowledge] for any vaccine scheduling "
+            "question (when to vaccinate / which vaccines / interval / booster timing).\n"
+            "Returns vaccine name, core vs non-core, age window, interval, and a source "
+            "citation (source_url + source_name) you MUST include in your reply.\n"
+            "[NEVER use for dosage questions] — this tool does not return dosage. "
+            "Refuse dosage questions and redirect to a veterinarian.\n"
+            "species: 'dog' or 'cat' only."
+        ),
+    },
+    "tool_desc_get_deworming_schedule": {
+        "en": (
+            "Get authoritative deworming / parasite-prevention schedule (CAPC).\n"
+            "[MUST CALL — prefer over search_knowledge] for any deworming / heartworm / "
+            "flea / tick scheduling question.\n"
+            "Returns parasite category, life stage, interval, and a source citation "
+            "(source_url + source_name) you MUST include in your reply.\n"
+            "[NEVER use for dosage questions] — this tool does not return dosage.\n"
+            "species: 'dog' or 'cat'. life_stage: puppy_kitten / adult / pregnant / senior."
+        ),
     },
     "fallback_error": {
         "zh": "抱歉，处理时遇到了问题，请再说一次。",
