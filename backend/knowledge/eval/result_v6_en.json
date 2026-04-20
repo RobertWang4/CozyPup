@@ -1,0 +1,838 @@
+{
+  "label": "v6_en",
+  "top_n": 3,
+  "summary": {
+    "positive_total": 30,
+    "positive_top1": 28,
+    "positive_topN": 29,
+    "negative_total": 3,
+    "negative_pass": 3,
+    "emergency_total": 3,
+    "emergency_pass": 3
+  },
+  "rows": [
+    {
+      "query": "my dog ate chocolate what do I do",
+      "kind": "positive",
+      "expected": [
+        "Toxic Foods"
+      ],
+      "top1_hit": true,
+      "topN_hit": true,
+      "top_titles": [
+        [
+          "Toxic Foods for Dogs and Cats",
+          0.39674416799877965
+        ],
+        [
+          "Toxic Foods for Dogs and Cats",
+          0.42620871741201605
+        ],
+        [
+          "Toxic Foods for Dogs and Cats",
+          0.4310426712036133
+        ]
+      ]
+    },
+    {
+      "query": "dog ate a grape this morning",
+      "kind": "positive",
+      "expected": [
+        "Toxic Foods"
+      ],
+      "top1_hit": true,
+      "topN_hit": true,
+      "top_titles": [
+        [
+          "Toxic Foods for Dogs and Cats",
+          0.5099635434107201
+        ],
+        [
+          "Toxic Foods for Dogs and Cats",
+          0.5139701954144114
+        ],
+        [
+          "Toxic Foods for Dogs and Cats",
+          0.5578035712242126
+        ]
+      ]
+    },
+    {
+      "query": "cat licked lily pollen off fur",
+      "kind": "positive",
+      "expected": [
+        "Toxic Plants"
+      ],
+      "top1_hit": true,
+      "topN_hit": true,
+      "top_titles": [
+        [
+          "Toxic Plants for Dogs and Cats",
+          0.46211229151821986
+        ],
+        [
+          "Toxic Plants for Dogs and Cats",
+          0.48163041362943637
+        ],
+        [
+          "Toxic Plants for Dogs and Cats",
+          0.483695924282074
+        ]
+      ]
+    },
+    {
+      "query": "my dog swallowed ibuprofen",
+      "kind": "positive",
+      "expected": [
+        "Human Medications"
+      ],
+      "top1_hit": true,
+      "topN_hit": true,
+      "top_titles": [
+        [
+          "Human Medications That Are Toxic to Pets",
+          0.45955345275679416
+        ],
+        [
+          "Swallowed Foreign Objects in Dogs",
+          0.48221434705810495
+        ],
+        [
+          "Swallowed Foreign Objects in Dogs",
+          0.48650838474904134
+        ]
+      ]
+    },
+    {
+      "query": "cat ate a tylenol pill",
+      "kind": "positive",
+      "expected": [
+        "Human Medications"
+      ],
+      "top1_hit": true,
+      "topN_hit": true,
+      "top_titles": [
+        [
+          "Human Medications That Are Toxic to Pets",
+          0.4065241813659668
+        ],
+        [
+          "Human Medications That Are Toxic to Pets",
+          0.4321516752243042
+        ],
+        [
+          "Human Medications That Are Toxic to Pets",
+          0.4450964331626892
+        ]
+      ]
+    },
+    {
+      "query": "my puppy won't stop vomiting",
+      "kind": "positive",
+      "expected": [
+        "Vomiting in Dogs"
+      ],
+      "top1_hit": true,
+      "topN_hit": true,
+      "top_titles": [
+        [
+          "Vomiting in Dogs",
+          0.44233606583881546
+        ],
+        [
+          "Vomiting in Dogs",
+          0.4427420496940613
+        ],
+        [
+          "Vomiting in Dogs",
+          0.45792317390441895
+        ]
+      ]
+    },
+    {
+      "query": "cat throwing up hairballs every week",
+      "kind": "positive",
+      "expected": [
+        "Vomiting in Cats"
+      ],
+      "top1_hit": true,
+      "topN_hit": true,
+      "top_titles": [
+        [
+          "Vomiting in Cats",
+          0.3508116393797601
+        ],
+        [
+          "Vomiting in Cats",
+          0.43929806713473296
+        ],
+        [
+          "Vomiting in Cats",
+          0.4457704489504717
+        ]
+      ]
+    },
+    {
+      "query": "dog has diarrhea for two days",
+      "kind": "positive",
+      "expected": [
+        "Diarrhea in Dogs"
+      ],
+      "top1_hit": true,
+      "topN_hit": true,
+      "top_titles": [
+        [
+          "Diarrhea in Dogs",
+          0.45099856105450886
+        ],
+        [
+          "Diarrhea in Dogs",
+          0.45810434471938843
+        ],
+        [
+          "Diarrhea in Dogs",
+          0.4644227666350881
+        ]
+      ]
+    },
+    {
+      "query": "male cat keeps going to the litter box but nothing comes out",
+      "kind": "positive",
+      "expected": [
+        "FLUTD",
+        "Urinary"
+      ],
+      "top1_hit": false,
+      "topN_hit": true,
+      "top_titles": [
+        [
+          "Behavior Problems in Cats",
+          0.43306583166122037
+        ],
+        [
+          "Behavior Problems in Cats",
+          0.44694200474369394
+        ],
+        [
+          "Feline Lower Urinary Tract Disease (FLUTD)",
+          0.4499030441103542
+        ]
+      ]
+    },
+    {
+      "query": "when should I vaccinate my puppy",
+      "kind": "positive",
+      "expected": [
+        "Vaccination",
+        "Puppy"
+      ],
+      "top1_hit": true,
+      "topN_hit": true,
+      "top_titles": [
+        [
+          "Dog Vaccinations",
+          0.3700431585311845
+        ],
+        [
+          "Puppy Care — First Weeks at Home",
+          0.3836584229876491
+        ],
+        [
+          "Dog Vaccinations",
+          0.3946426636406585
+        ]
+      ]
+    },
+    {
+      "query": "when to spay a female dog",
+      "kind": "positive",
+      "expected": [
+        "Spay",
+        "Neuter"
+      ],
+      "top1_hit": true,
+      "topN_hit": true,
+      "top_titles": [
+        [
+          "Spaying and Neutering Dogs",
+          0.43339262603653106
+        ],
+        [
+          "Spaying and Neutering Dogs",
+          0.45772993564605324
+        ],
+        [
+          "Spaying and Neutering Dogs",
+          0.48702655693967245
+        ]
+      ]
+    },
+    {
+      "query": "my dog's eye is red and gooey",
+      "kind": "positive",
+      "expected": [
+        "Eye",
+        "Conjunctivitis"
+      ],
+      "top1_hit": true,
+      "topN_hit": true,
+      "top_titles": [
+        [
+          "Red or Irritated Eyes in Dogs (Conjunctivitis)",
+          0.3143231272697449
+        ],
+        [
+          "Red or Irritated Eyes in Dogs (Conjunctivitis)",
+          0.32038144347778175
+        ],
+        [
+          "Red or Irritated Eyes in Dogs (Conjunctivitis)",
+          0.322928786277771
+        ]
+      ]
+    },
+    {
+      "query": "cat's eye is squinting and closed",
+      "kind": "positive",
+      "expected": [
+        "Eye",
+        "Conjunctivitis"
+      ],
+      "top1_hit": true,
+      "topN_hit": true,
+      "top_titles": [
+        [
+          "Red or Irritated Eyes in Cats (Conjunctivitis)",
+          0.39150319670150246
+        ],
+        [
+          "Red or Irritated Eyes in Cats (Conjunctivitis)",
+          0.39167094230651855
+        ],
+        [
+          "Red or Irritated Eyes in Cats (Conjunctivitis)",
+          0.39783567766865946
+        ]
+      ]
+    },
+    {
+      "query": "dog keeps scratching ears dark stuff inside",
+      "kind": "positive",
+      "expected": [
+        "Ear Mites"
+      ],
+      "top1_hit": true,
+      "topN_hit": true,
+      "top_titles": [
+        [
+          "Ear Mites in Dogs",
+          0.3884008576036264
+        ],
+        [
+          "Ear Mites in Dogs",
+          0.407547253145357
+        ],
+        [
+          "Ear Mites in Dogs",
+          0.4099939534062699
+        ]
+      ]
+    },
+    {
+      "query": "cat shaking head and scratching ears",
+      "kind": "positive",
+      "expected": [
+        "Ear Mites"
+      ],
+      "top1_hit": true,
+      "topN_hit": true,
+      "top_titles": [
+        [
+          "Ear Mites in Cats",
+          0.3678051014062691
+        ],
+        [
+          "Ear Mites in Cats",
+          0.386128342978456
+        ],
+        [
+          "Ear Mites in Cats",
+          0.4030044078826862
+        ]
+      ]
+    },
+    {
+      "query": "my dog has bad breath and tartar",
+      "kind": "positive",
+      "expected": [
+        "Dental"
+      ],
+      "top1_hit": true,
+      "topN_hit": true,
+      "top_titles": [
+        [
+          "Dental Care and Tartar in Dogs",
+          0.32240988648085067
+        ],
+        [
+          "Dental Care and Tartar in Dogs",
+          0.3264333003550711
+        ],
+        [
+          "Dental Care and Tartar in Dogs",
+          0.3356433312786544
+        ]
+      ]
+    },
+    {
+      "query": "older cat losing weight but eating more",
+      "kind": "positive",
+      "expected": [
+        "Hyperthyroidism"
+      ],
+      "top1_hit": true,
+      "topN_hit": true,
+      "top_titles": [
+        [
+          "Hyperthyroidism in Cats",
+          0.3441536416870007
+        ],
+        [
+          "Hyperthyroidism in Cats",
+          0.36873984653411895
+        ],
+        [
+          "Hyperthyroidism in Cats",
+          0.38042253676854376
+        ]
+      ]
+    },
+    {
+      "query": "dog overgrooming belly bald spot",
+      "kind": "positive",
+      "expected": [
+        "Skin",
+        "Dermatitis"
+      ],
+      "top1_hit": true,
+      "topN_hit": true,
+      "top_titles": [
+        [
+          "Skin Disorders (Dermatitis) in Dogs",
+          0.5388152599334717
+        ],
+        [
+          "Skin Disorders (Dermatitis) in Dogs",
+          0.546488729328588
+        ],
+        [
+          "Skin Disorders (Dermatitis) in Dogs",
+          0.547410984105852
+        ]
+      ]
+    },
+    {
+      "query": "dog barking nonstop separation anxiety",
+      "kind": "positive",
+      "expected": [
+        "Behavior Problems in Dogs"
+      ],
+      "top1_hit": true,
+      "topN_hit": true,
+      "top_titles": [
+        [
+          "Behavior Problems in Dogs",
+          0.4394659996032715
+        ],
+        [
+          "Behavior Problems in Dogs",
+          0.4524228572845459
+        ],
+        [
+          "Behavior Problems in Dogs",
+          0.477694241863145
+        ]
+      ]
+    },
+    {
+      "query": "cat peeing outside litter box",
+      "kind": "positive",
+      "expected": [
+        "Behavior Problems in Cats"
+      ],
+      "top1_hit": true,
+      "topN_hit": true,
+      "top_titles": [
+        [
+          "Behavior Problems in Cats",
+          0.38648061591155713
+        ],
+        [
+          "Behavior Problems in Cats",
+          0.3903602827024797
+        ],
+        [
+          "Behavior Problems in Cats",
+          0.4165808210719111
+        ]
+      ]
+    },
+    {
+      "query": "just brought home a new puppy what do I do first",
+      "kind": "positive",
+      "expected": [
+        "Puppy"
+      ],
+      "top1_hit": true,
+      "topN_hit": true,
+      "top_titles": [
+        [
+          "Puppy Care — First Weeks at Home",
+          0.34563046583856216
+        ],
+        [
+          "Puppy Care — First Weeks at Home",
+          0.34873400177758906
+        ],
+        [
+          "Puppy Care — First Weeks at Home",
+          0.3575363350648755
+        ]
+      ]
+    },
+    {
+      "query": "first week with a new kitten checklist",
+      "kind": "positive",
+      "expected": [
+        "Kitten"
+      ],
+      "top1_hit": true,
+      "topN_hit": true,
+      "top_titles": [
+        [
+          "Kitten Care — First Weeks at Home",
+          0.3056485652923584
+        ],
+        [
+          "Kitten Care — First Weeks at Home",
+          0.32357513904571533
+        ],
+        [
+          "Kitten Care — First Weeks at Home",
+          0.33763253688812256
+        ]
+      ]
+    },
+    {
+      "query": "dog swallowed a sock",
+      "kind": "positive",
+      "expected": [
+        "Foreign",
+        "Swallowed"
+      ],
+      "top1_hit": true,
+      "topN_hit": true,
+      "top_titles": [
+        [
+          "Swallowed Foreign Objects in Dogs",
+          0.4453362226486206
+        ],
+        [
+          "Swallowed Foreign Objects in Dogs",
+          0.4723441915306922
+        ],
+        [
+          "Swallowed Foreign Objects in Dogs",
+          0.4760418562839165
+        ]
+      ]
+    },
+    {
+      "query": "how often should I deworm my dog",
+      "kind": "positive",
+      "expected": [
+        "Deworming",
+        "Parasites"
+      ],
+      "top1_hit": true,
+      "topN_hit": true,
+      "top_titles": [
+        [
+          "Deworming and Intestinal Parasites in Dogs",
+          0.4159112076865146
+        ],
+        [
+          "Deworming and Intestinal Parasites in Dogs",
+          0.44304905360059876
+        ],
+        [
+          "Deworming and Intestinal Parasites in Dogs",
+          0.4835996051311927
+        ]
+      ]
+    },
+    {
+      "query": "cat parasite prevention indoor",
+      "kind": "positive",
+      "expected": [
+        "Deworming",
+        "Parasites"
+      ],
+      "top1_hit": true,
+      "topN_hit": true,
+      "top_titles": [
+        [
+          "Deworming and Intestinal Parasites in Cats",
+          0.4077364206314087
+        ],
+        [
+          "Deworming and Intestinal Parasites in Cats",
+          0.4313954202588256
+        ],
+        [
+          "Deworming and Intestinal Parasites in Cats",
+          0.4429316852729498
+        ]
+      ]
+    },
+    {
+      "query": "how much should I feed my 3 month old puppy",
+      "kind": "positive",
+      "expected": [
+        "Feeding",
+        "Nutrition",
+        "Puppy"
+      ],
+      "top1_hit": true,
+      "topN_hit": true,
+      "top_titles": [
+        [
+          "Puppy Care — First Weeks at Home",
+          0.4726564320735379
+        ],
+        [
+          "Feeding Your Dog or Cat — Nutrition Basics",
+          0.5230812430381775
+        ],
+        [
+          "Feeding Your Dog or Cat — Nutrition Basics",
+          0.5347365002255586
+        ]
+      ]
+    },
+    {
+      "query": "can my dog eat apples",
+      "kind": "positive",
+      "expected": [
+        "Feeding",
+        "Nutrition"
+      ],
+      "top1_hit": true,
+      "topN_hit": true,
+      "top_titles": [
+        [
+          "Feeding Your Dog or Cat — Nutrition Basics",
+          0.48879748582839966
+        ],
+        [
+          "Toxic Foods for Dogs and Cats",
+          0.4903761159925286
+        ],
+        [
+          "Toxic Foods for Dogs and Cats",
+          0.4942166510691246
+        ]
+      ]
+    },
+    {
+      "query": "my dog is limping on his back leg",
+      "kind": "positive",
+      "expected": [
+        "Trauma",
+        "Senior Dog"
+      ],
+      "top1_hit": false,
+      "topN_hit": false,
+      "top_titles": [
+        [
+          "Osteoarthritis and Lameness in Dogs",
+          0.45682951550659634
+        ],
+        [
+          "Osteoarthritis and Lameness in Dogs",
+          0.46225808448368544
+        ],
+        [
+          "Osteoarthritis and Lameness in Dogs",
+          0.4693799140494983
+        ]
+      ]
+    },
+    {
+      "query": "dog coughing a lot lately",
+      "kind": "positive",
+      "expected": [
+        "Respiratory"
+      ],
+      "top1_hit": true,
+      "topN_hit": true,
+      "top_titles": [
+        [
+          "Coughing, Breathing Problems, and Respiratory Issues",
+          0.4093359532754405
+        ],
+        [
+          "Coughing, Breathing Problems, and Respiratory Issues",
+          0.42852047511813096
+        ],
+        [
+          "Coughing, Breathing Problems, and Respiratory Issues",
+          0.44559493985206144
+        ]
+      ]
+    },
+    {
+      "query": "senior dog stiff after nap",
+      "kind": "positive",
+      "expected": [
+        "Senior Dog"
+      ],
+      "top1_hit": true,
+      "topN_hit": true,
+      "top_titles": [
+        [
+          "Senior Dog Care",
+          0.4679887732264032
+        ],
+        [
+          "Senior Dog Care",
+          0.4820444275167234
+        ],
+        [
+          "Osteoarthritis and Lameness in Dogs",
+          0.4837944199916365
+        ]
+      ]
+    },
+    {
+      "query": "what's the weather like today",
+      "kind": "negative",
+      "passed": true,
+      "top1_distance": 0.7321209668029208,
+      "top_titles": [
+        [
+          "Heatstroke in Dogs and Cats",
+          0.7321209668029208
+        ],
+        [
+          "Heatstroke in Dogs and Cats",
+          0.7429723066977325
+        ],
+        [
+          "Heatstroke in Dogs and Cats",
+          0.7496300041234494
+        ]
+      ]
+    },
+    {
+      "query": "write me a python script",
+      "kind": "negative",
+      "passed": true,
+      "top1_distance": 0.8532255764930743,
+      "top_titles": [
+        [
+          "Giving Medications to Pets",
+          0.8532255764930743
+        ],
+        [
+          "Giving Medications to Pets",
+          0.8718194888937758
+        ],
+        [
+          "Human Medications That Are Toxic to Pets",
+          0.873024531062031
+        ]
+      ]
+    },
+    {
+      "query": "how do I train for a marathon",
+      "kind": "negative",
+      "passed": true,
+      "top1_distance": 0.7847142240234743,
+      "top_titles": [
+        [
+          "Puppy Care — First Weeks at Home",
+          0.7847142240234743
+        ],
+        [
+          "Behavior Problems in Dogs",
+          0.8004999876469362
+        ],
+        [
+          "Puppy Care — First Weeks at Home",
+          0.8121136314936653
+        ]
+      ]
+    },
+    {
+      "query": "my dog is seizing right now",
+      "kind": "emergency",
+      "passed": true,
+      "category": "seizure",
+      "fallback_top_titles": [
+        [
+          "Seizures in Dogs and Cats",
+          0.42305049758848456
+        ],
+        [
+          "Seizures in Dogs and Cats",
+          0.4378091096878052
+        ],
+        [
+          "Seizures in Dogs and Cats",
+          0.44206947088241577
+        ]
+      ]
+    },
+    {
+      "query": "my dog was hit by a car",
+      "kind": "emergency",
+      "passed": true,
+      "category": "severe_trauma",
+      "fallback_top_titles": [
+        [
+          "Bleeding, Trauma, and Wound First Aid for Pets",
+          0.5698348283767669
+        ],
+        [
+          "Bleeding, Trauma, and Wound First Aid for Pets",
+          0.575891984227537
+        ],
+        [
+          "Bleeding, Trauma, and Wound First Aid for Pets",
+          0.5800838422725287
+        ]
+      ]
+    },
+    {
+      "query": "cat is open mouth breathing and has blue gums",
+      "kind": "emergency",
+      "passed": true,
+      "category": "respiratory_distress",
+      "fallback_top_titles": [
+        [
+          "Dental Care and Tartar in Cats",
+          0.42232552633728493
+        ],
+        [
+          "Coughing, Breathing Problems, and Respiratory Issues",
+          0.43121918625945865
+        ],
+        [
+          "Dental Care and Tartar in Cats",
+          0.4507932008258344
+        ]
+      ]
+    }
+  ]
+}

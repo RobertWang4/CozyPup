@@ -353,6 +353,38 @@ class AdminAuditLog(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
 
+class ChatAuditLog(Base):
+    """Immutable audit trail: one row per chat turn.
+
+    Used for legal/compliance evidence (pet-health app, US/Canada).
+    Retention: 2+ years. Writes are fire-and-forget — must never
+    block or fail the user-facing chat response.
+    """
+
+    __tablename__ = "chat_audit_log"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False, index=True
+    )
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("users.id"), nullable=False, index=True
+    )
+    pet_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("pets.id", ondelete="SET NULL"), nullable=True, index=True
+    )
+    species: Mapped[str | None] = mapped_column(String(20), nullable=True)
+    raw_query: Mapped[str] = mapped_column(Text, nullable=False)
+    is_emergency_route: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, server_default=sa.text("false")
+    )
+    retrieved_chunks: Mapped[list | None] = mapped_column(JSONB, nullable=True)
+    llm_output: Mapped[str | None] = mapped_column(Text, nullable=True)
+    response_time_ms: Mapped[int | None] = mapped_column(sa.Integer, nullable=True)
+    model_used: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    metadata_json: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
+
+
 class FeatureFlag(Base):
     __tablename__ = "feature_flags"
 

@@ -9,12 +9,36 @@ client can surface a "Sources" drawer.
 import logging
 import uuid
 
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.agents.tools.registry import register_tool
+from app.models import Pet
 from app.rag.retrieval import retrieve_knowledge
 
 logger = logging.getLogger(__name__)
+
+
+async def _resolve_species(
+    db: AsyncSession,
+    user_id: uuid.UUID,
+    pet_id: uuid.UUID | None,
+) -> str | None:
+    """Derive species from the named pet, or from the user's single pet.
+
+    Ensures the RAG filter never runs unbounded when the LLM forgets to pass
+    species. If the user has exactly one pet, we can safely default to it.
+    """
+    if pet_id:
+        pet = await db.get(Pet, pet_id)
+        if pet and pet.user_id == user_id:
+            val = pet.species
+            return val.value if hasattr(val, "value") else str(val)
+    rows = (await db.execute(select(Pet).where(Pet.user_id == user_id))).scalars().all()
+    if len(rows) == 1:
+        val = rows[0].species
+        return val.value if hasattr(val, "value") else str(val)
+    return None
 
 
 @register_tool("search_knowledge", accepts_kwargs=True)
@@ -34,6 +58,9 @@ async def search_knowledge(
             pet_id = uuid.UUID(pet_id)
         except ValueError:
             pet_id = None
+
+    if not species:
+        species = await _resolve_species(db, user_id, pet_id)
 
     try:
         result = await retrieve_knowledge(

@@ -1,0 +1,572 @@
+{
+  "label": "baseline",
+  "top_n": 3,
+  "summary": {
+    "total": 25,
+    "top1_hits": 19,
+    "topN_hits": 23
+  },
+  "rows": [
+    {
+      "query": "我家狗吃了巧克力怎么办",
+      "expected": [
+        "Toxic Foods",
+        "Food"
+      ],
+      "top1_hit": true,
+      "topN_hit": true,
+      "top_titles": [
+        [
+          "Toxic Foods for Dogs and Cats",
+          0.5331829746743437
+        ],
+        [
+          "Toxic Foods for Dogs and Cats",
+          0.5443892724049926
+        ],
+        [
+          "Toxic Foods for Dogs and Cats",
+          0.5514314678731909
+        ]
+      ]
+    },
+    {
+      "query": "狗吃了葡萄",
+      "expected": [
+        "Toxic Foods"
+      ],
+      "top1_hit": true,
+      "topN_hit": true,
+      "top_titles": [
+        [
+          "Toxic Foods for Dogs and Cats",
+          0.5717455489483796
+        ],
+        [
+          "Toxic Foods for Dogs and Cats",
+          0.6160906255245209
+        ],
+        [
+          "Toxic Foods for Dogs and Cats",
+          0.6221610082483886
+        ]
+      ]
+    },
+    {
+      "query": "猫舔了百合花花粉",
+      "expected": [
+        "Toxic Plants",
+        "Plants"
+      ],
+      "top1_hit": false,
+      "topN_hit": true,
+      "top_titles": [
+        [
+          "Swallowed Foreign Objects in Cats",
+          0.577299177646637
+        ],
+        [
+          "Toxic Plants for Dogs and Cats",
+          0.5791809856891632
+        ],
+        [
+          "Swallowed Foreign Objects in Cats",
+          0.5824640144386293
+        ]
+      ]
+    },
+    {
+      "query": "狗误食布洛芬",
+      "expected": [
+        "Human Medications",
+        "Medications"
+      ],
+      "top1_hit": false,
+      "topN_hit": false,
+      "top_titles": [
+        [
+          "Toxic Foods for Dogs and Cats",
+          0.5845902213698486
+        ],
+        [
+          "Swallowed Foreign Objects in Dogs",
+          0.5871257924212581
+        ],
+        [
+          "Swallowed Foreign Objects in Dogs",
+          0.6188313961029026
+        ]
+      ]
+    },
+    {
+      "query": "猫吃了对乙酰氨基酚泰诺",
+      "expected": [
+        "Human Medications"
+      ],
+      "top1_hit": false,
+      "topN_hit": false,
+      "top_titles": [
+        [
+          "Toxic Foods for Dogs and Cats",
+          0.5543668334921368
+        ],
+        [
+          "Toxic Foods for Dogs and Cats",
+          0.5607101059383146
+        ],
+        [
+          "Swallowed Foreign Objects in Cats",
+          0.5613577961921568
+        ]
+      ]
+    },
+    {
+      "query": "狗拉肚子好几天了",
+      "expected": [
+        "Diarrhea in Dogs"
+      ],
+      "top1_hit": true,
+      "topN_hit": true,
+      "top_titles": [
+        [
+          "Diarrhea in Dogs",
+          0.6048757967426891
+        ],
+        [
+          "Diarrhea in Dogs",
+          0.6121620535850497
+        ],
+        [
+          "Vomiting in Dogs",
+          0.6169022778389123
+        ]
+      ]
+    },
+    {
+      "query": "猫呕吐反复吐",
+      "expected": [
+        "Vomiting in Cats"
+      ],
+      "top1_hit": true,
+      "topN_hit": true,
+      "top_titles": [
+        [
+          "Vomiting in Cats",
+          0.47000761419511783
+        ],
+        [
+          "Vomiting in Cats",
+          0.4761501266866838
+        ],
+        [
+          "Vomiting in Cats",
+          0.48508301466208514
+        ]
+      ]
+    },
+    {
+      "query": "狗吐黄水",
+      "expected": [
+        "Vomiting in Dogs"
+      ],
+      "top1_hit": false,
+      "topN_hit": true,
+      "top_titles": [
+        [
+          "Diarrhea in Dogs",
+          0.5183197227144729
+        ],
+        [
+          "Diarrhea in Dogs",
+          0.5524676708896284
+        ],
+        [
+          "Vomiting in Dogs",
+          0.5571464759954272
+        ]
+      ]
+    },
+    {
+      "query": "猫不能尿尿一直蹲",
+      "expected": [
+        "FLUTD",
+        "Urinary"
+      ],
+      "top1_hit": false,
+      "topN_hit": true,
+      "top_titles": [
+        [
+          "Behavior Problems in Cats",
+          0.5019556878831564
+        ],
+        [
+          "Behavior Problems in Cats",
+          0.5707752364411802
+        ],
+        [
+          "Feline Lower Urinary Tract Disease (FLUTD)",
+          0.5728103177064461
+        ]
+      ]
+    },
+    {
+      "query": "幼犬疫苗什么时候打",
+      "expected": [
+        "Vaccination",
+        "Puppy Care"
+      ],
+      "top1_hit": true,
+      "topN_hit": true,
+      "top_titles": [
+        [
+          "Dog Vaccinations",
+          0.47625397074979436
+        ],
+        [
+          "Dog Vaccinations",
+          0.4940894095328272
+        ],
+        [
+          "Dog Vaccinations",
+          0.4965355096182531
+        ]
+      ]
+    },
+    {
+      "query": "狗要不要绝育",
+      "expected": [
+        "Spaying and Neutering"
+      ],
+      "top1_hit": true,
+      "topN_hit": true,
+      "top_titles": [
+        [
+          "Spaying and Neutering Dogs",
+          0.5729228003575086
+        ],
+        [
+          "Spaying and Neutering Dogs",
+          0.6115018791855502
+        ],
+        [
+          "Spaying and Neutering Dogs",
+          0.6281382219873799
+        ]
+      ]
+    },
+    {
+      "query": "狗眼睛红有分泌物",
+      "expected": [
+        "Eyes in Dogs",
+        "Conjunctivitis"
+      ],
+      "top1_hit": true,
+      "topN_hit": true,
+      "top_titles": [
+        [
+          "Red or Irritated Eyes in Dogs (Conjunctivitis)",
+          0.47526725979252216
+        ],
+        [
+          "Red or Irritated Eyes in Dogs (Conjunctivitis)",
+          0.47911687257537416
+        ],
+        [
+          "Red or Irritated Eyes in Dogs (Conjunctivitis)",
+          0.48099683168521
+        ]
+      ]
+    },
+    {
+      "query": "猫眼睛一直闭着",
+      "expected": [
+        "Eyes in Cats",
+        "Conjunctivitis"
+      ],
+      "top1_hit": true,
+      "topN_hit": true,
+      "top_titles": [
+        [
+          "Red or Irritated Eyes in Cats (Conjunctivitis)",
+          0.5241907097158045
+        ],
+        [
+          "Red or Irritated Eyes in Cats (Conjunctivitis)",
+          0.5383841853852325
+        ],
+        [
+          "Red or Irritated Eyes in Cats (Conjunctivitis)",
+          0.5392483335509397
+        ]
+      ]
+    },
+    {
+      "query": "狗耳朵一直挠有黑色分泌物",
+      "expected": [
+        "Ear Mites in Dogs"
+      ],
+      "top1_hit": true,
+      "topN_hit": true,
+      "top_titles": [
+        [
+          "Ear Mites in Dogs",
+          0.5819353808126073
+        ],
+        [
+          "Ear Mites in Dogs",
+          0.5994814813755148
+        ],
+        [
+          "Ear Mites in Dogs",
+          0.6077160420333159
+        ]
+      ]
+    },
+    {
+      "query": "猫老摇头挠耳朵",
+      "expected": [
+        "Ear Mites in Cats"
+      ],
+      "top1_hit": true,
+      "topN_hit": true,
+      "top_titles": [
+        [
+          "Ear Mites in Cats",
+          0.5483371346197796
+        ],
+        [
+          "Ear Mites in Cats",
+          0.5502822071145641
+        ],
+        [
+          "Behavior Problems in Cats",
+          0.5924169664134395
+        ]
+      ]
+    },
+    {
+      "query": "狗口臭牙结石",
+      "expected": [
+        "Dental"
+      ],
+      "top1_hit": true,
+      "topN_hit": true,
+      "top_titles": [
+        [
+          "Dental Care and Tartar in Dogs",
+          0.508046745294717
+        ],
+        [
+          "Dental Care and Tartar in Dogs",
+          0.5238066287271193
+        ],
+        [
+          "Dental Care and Tartar in Dogs",
+          0.538859569038229
+        ]
+      ]
+    },
+    {
+      "query": "老猫瘦了又爱吃",
+      "expected": [
+        "Hyperthyroidism"
+      ],
+      "top1_hit": true,
+      "topN_hit": true,
+      "top_titles": [
+        [
+          "Hyperthyroidism in Cats",
+          0.6072008481978359
+        ],
+        [
+          "Hyperthyroidism in Cats",
+          0.6134069196339291
+        ],
+        [
+          "Hyperthyroidism in Cats",
+          0.6288318855266632
+        ]
+      ]
+    },
+    {
+      "query": "狗老舔自己身上舔到秃",
+      "expected": [
+        "Skin Disorders",
+        "Dermatitis"
+      ],
+      "top1_hit": false,
+      "topN_hit": true,
+      "top_titles": [
+        [
+          "Behavior Problems in Dogs",
+          0.635245588592789
+        ],
+        [
+          "Skin Disorders (Dermatitis) in Dogs",
+          0.6579996551275453
+        ],
+        [
+          "Skin Disorders (Dermatitis) in Dogs",
+          0.6599903398743563
+        ]
+      ]
+    },
+    {
+      "query": "狗乱叫和分离焦虑",
+      "expected": [
+        "Behavior Problems in Dogs"
+      ],
+      "top1_hit": true,
+      "topN_hit": true,
+      "top_titles": [
+        [
+          "Behavior Problems in Dogs",
+          0.4824157953262329
+        ],
+        [
+          "Behavior Problems in Dogs",
+          0.531560782380194
+        ],
+        [
+          "Behavior Problems in Dogs",
+          0.5534624324280746
+        ]
+      ]
+    },
+    {
+      "query": "猫在家里乱拉尿",
+      "expected": [
+        "Behavior Problems in Cats"
+      ],
+      "top1_hit": true,
+      "topN_hit": true,
+      "top_titles": [
+        [
+          "Behavior Problems in Cats",
+          0.5101899212711993
+        ],
+        [
+          "Behavior Problems in Cats",
+          0.5244177892457113
+        ],
+        [
+          "Behavior Problems in Cats",
+          0.5299288034439054
+        ]
+      ]
+    },
+    {
+      "query": "小狗刚到家第一天",
+      "expected": [
+        "Puppy"
+      ],
+      "top1_hit": true,
+      "topN_hit": true,
+      "top_titles": [
+        [
+          "Puppy Care — First Weeks at Home",
+          0.4963127374649048
+        ],
+        [
+          "Puppy Care — First Weeks at Home",
+          0.5184036769385689
+        ],
+        [
+          "Puppy Care — First Weeks at Home",
+          0.5343719998376362
+        ]
+      ]
+    },
+    {
+      "query": "小猫刚接回家怎么照顾",
+      "expected": [
+        "Kitten"
+      ],
+      "top1_hit": true,
+      "topN_hit": true,
+      "top_titles": [
+        [
+          "Kitten Care — First Weeks at Home",
+          0.49816595012444087
+        ],
+        [
+          "Kitten Care — First Weeks at Home",
+          0.5069942172173123
+        ],
+        [
+          "Kitten Care — First Weeks at Home",
+          0.5133153055106192
+        ]
+      ]
+    },
+    {
+      "query": "狗吞了袜子",
+      "expected": [
+        "Foreign",
+        "Swallowed"
+      ],
+      "top1_hit": true,
+      "topN_hit": true,
+      "top_titles": [
+        [
+          "Swallowed Foreign Objects in Dogs",
+          0.5711622578598408
+        ],
+        [
+          "Swallowed Foreign Objects in Dogs",
+          0.6062032706979836
+        ],
+        [
+          "Swallowed Foreign Objects in Dogs",
+          0.6303396004640811
+        ]
+      ]
+    },
+    {
+      "query": "狗驱虫多久一次",
+      "expected": [
+        "Deworming",
+        "Parasites"
+      ],
+      "top1_hit": true,
+      "topN_hit": true,
+      "top_titles": [
+        [
+          "Deworming and Intestinal Parasites in Dogs",
+          0.6388396836018693
+        ],
+        [
+          "Deworming and Intestinal Parasites in Dogs",
+          0.6428828367134503
+        ],
+        [
+          "Puppy Care — First Weeks at Home",
+          0.6586110998855685
+        ]
+      ]
+    },
+    {
+      "query": "猫驱虫",
+      "expected": [
+        "Deworming",
+        "Parasites"
+      ],
+      "top1_hit": true,
+      "topN_hit": true,
+      "top_titles": [
+        [
+          "Deworming and Intestinal Parasites in Cats",
+          0.5986677408218384
+        ],
+        [
+          "Deworming and Intestinal Parasites in Cats",
+          0.6009855270385742
+        ],
+        [
+          "Deworming and Intestinal Parasites in Cats",
+          0.6134140261062393
+        ]
+      ]
+    }
+  ]
+}

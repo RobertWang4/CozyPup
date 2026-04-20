@@ -15,6 +15,7 @@ import asyncio
 import base64
 import json
 import logging
+import time
 import uuid
 from datetime import date
 from pathlib import Path
@@ -27,6 +28,7 @@ from sse_starlette.sse import EventSourceResponse
 
 # --- Agent 模块导入 ---
 from app.agents.emergency import build_emergency_hint, detect_emergency  # 紧急关键词检测 & 构建紧急提示
+from app.agents.emergency_router import classify_emergency, render_for_user  # 紧急情况短路路由（跳过 RAG + LLM）
 from app.agents.locale import detect_language                            # 语言检测（中/英）
 from app.agents.orchestrator import run_orchestrator, OrchestratorResult  # 统一 Agent Loop
 from app.agents.pending_actions import pop_action                        # 待确认动作的存取（用于 confirm-action）
@@ -34,6 +36,7 @@ from app.agents.post_processor import execute_suggested_actions           # 后�
 from app.agents.pre_processing import pre_process                        # 预处理：从用户消息中预分析可能的工具调用
 from app.agents.prompts_v2 import build_messages, build_system_prompt    # 构建 system prompt 和消息列表
 from app.agents.context_agent import trigger_summary_if_needed           # 上下文压缩：消息过多时自动摘要
+from app.services.chat_audit import log_chat_turn, extract_retrieved_chunks  # Legal audit trail — fire-and-forget
 from app.agents.trace_collector import TraceCollector, INACTIVE_TRACE    # Debug trace 收集器
 from app.agents.tools import execute_tool                                # 工具执行器（用于 confirm-action 直接执行）
 from app.auth import get_current_user_id                                 # JWT 认证依赖，提取 user_id
@@ -274,6 +277,12 @@ async def _event_generator(
       Phase 4: 后处理（兜底执行、档案提取、消息保存、上下文压缩）
     """
 
+    # Audit timer — captures wall-clock response time for chat_audit_log.
+    audit_start = time.monotonic()
+    # Mutable flag set to True if the emergency router short-circuits
+    # the RAG path. Read in Phase 4 when writing the audit row.
+    audit_is_emergency_route = False
+
     # ========== Phase 0: 会话初始化 ==========
 
     # 1. 获取或创建当日会话
@@ -349,6 +358,80 @@ async def _event_generator(
             "user_id": str(user_id),
             "keywords": emergency_result.keywords,
         })
+
+    # ========== Emergency short-circuit ==========
+    # For UNAMBIGUOUS emergencies (toxin ingestion, seizure, urinary obstruction,
+    # open-mouth-breathing cat, GDV, heatstroke, severe trauma, dystocia, collapse)
+    # we bypass RAG + LLM entirely and emit a structured emergency card. This:
+    #   - removes LLM latency (~2-8s) on time-critical queries
+    #   - removes the risk of the model producing unsafe free-form text
+    #   - delivers a hotline number the owner can call immediately
+    # The legal logic: we are NOT giving diagnosis or dosage — we are directing
+    # the user to call a pet-poison hotline or go to an emergency vet.
+    emergency_match = classify_emergency(request.message)
+    if emergency_match is not None:
+        audit_is_emergency_route = True
+        trace.record("emergency_short_circuit", {
+            "category": emergency_match.category,
+            "keywords": emergency_match.keywords,
+        })
+        logger.info("emergency_short_circuit", extra={
+            "session_id": session_id,
+            "user_id": str(user_id),
+            "category": emergency_match.category,
+            "keywords": emergency_match.keywords,
+        })
+
+        # Persist the user message so session history stays consistent.
+        await _save_message(
+            db, session.id, user_id, MessageRole.user, request.message,
+        )
+
+        card = render_for_user(emergency_match, lang=lang)
+        yield {"event": "card", "data": json.dumps(card, ensure_ascii=False)}
+        # iOS also listens for event="emergency" per the docstring below; mirror it.
+        yield {"event": "emergency", "data": json.dumps(card, ensure_ascii=False)}
+
+        # Save a minimal assistant turn so history + audit have the emitted content.
+        await _save_message(
+            db, session.id, user_id, MessageRole.assistant,
+            card["message"], json.dumps([card], ensure_ascii=False),
+        )
+
+        # Fire-and-forget audit row (must not raise).
+        try:
+            _audit_pet_id = pets[0].id if pets else None
+            _audit_species = (
+                getattr(pets[0].species, "value", str(pets[0].species)) if pets else None
+            )
+            log_chat_turn(
+                user_id=user_id,
+                pet_id=_audit_pet_id,
+                species=_audit_species,
+                raw_query=request.message or "",
+                is_emergency_route=True,
+                retrieved_chunks=[],
+                llm_output=card["message"],
+                response_time_ms=int((time.monotonic() - audit_start) * 1000),
+                model_used=None,
+                metadata_json={
+                    "session_id": session_id,
+                    "lang": lang,
+                    "short_circuit": True,
+                    "category": emergency_match.category,
+                    "keyword_emergency": bool(emergency_result.detected),
+                    "correlation_id": get_correlation_id(),
+                    "client_version": client_version,
+                },
+            )
+        except Exception as _audit_exc:  # noqa: BLE001
+            logger.warning("chat_audit_hook_error", extra={"error": str(_audit_exc)[:300]})
+
+        yield {
+            "event": "done",
+            "data": json.dumps({"intent": "emergency", "session_id": session_id}),
+        }
+        return
 
     # Stage 3: 加载最近的历史消息作为上下文（必须在保存用户消息之前，避免重复）
     context_messages = await _get_recent_messages(db, session.id, limit=MAX_CONTEXT_MESSAGES)
@@ -641,6 +724,34 @@ async def _event_generator(
         "total_completion_tokens": getattr(result, "total_completion_tokens", None),
         "model": getattr(result, "model_used", ""),
     })
+
+    # --- Legal audit log (fire-and-forget, must never raise) ---
+    try:
+        _audit_pet_id = pets[0].id if pets else None
+        _audit_species = (
+            getattr(pets[0].species, "value", str(pets[0].species)) if pets else None
+        )
+        log_chat_turn(
+            user_id=user_id,
+            pet_id=_audit_pet_id,
+            species=_audit_species,
+            raw_query=request.message or "",
+            is_emergency_route=audit_is_emergency_route,
+            retrieved_chunks=extract_retrieved_chunks(all_cards),
+            llm_output=result.response_text or None,
+            response_time_ms=int((time.monotonic() - audit_start) * 1000),
+            model_used=getattr(result, "model_used", None) or model,
+            metadata_json={
+                "session_id": session_id,
+                "lang": lang,
+                "tools_called": sorted(result.tools_called) if result.tools_called else [],
+                "keyword_emergency": bool(emergency_result.detected),
+                "correlation_id": get_correlation_id(),
+                "client_version": client_version,
+            },
+        )
+    except Exception as _audit_exc:  # noqa: BLE001 — audit must never break the stream
+        logger.warning("chat_audit_hook_error", extra={"error": str(_audit_exc)[:300]})
 
     # 发送 done 事件 — iOS 端收到后停止 loading 动画，标记流结束
     yield {
