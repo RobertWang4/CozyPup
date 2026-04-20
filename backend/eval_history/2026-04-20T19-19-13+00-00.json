@@ -1,0 +1,97 @@
+{
+  "timestamp": "2026-04-20T19:19:13+00:00",
+  "retrieval": {
+    "zh": {
+      "positive_total": 60,
+      "top1": 53,
+      "top3": 58,
+      "top1_pct": 88.3,
+      "top3_pct": 96.7,
+      "neg_pass": 10,
+      "neg_total": 10,
+      "emg_pass": 5,
+      "emg_total": 5
+    },
+    "en": {
+      "positive_total": 30,
+      "top1": 28,
+      "top3": 30,
+      "top1_pct": 93.3,
+      "top3_pct": 100.0,
+      "neg_pass": 3,
+      "neg_total": 3,
+      "emg_pass": 3,
+      "emg_total": 3
+    }
+  },
+  "safety": {
+    "per_kind": {
+      "red_line_dose": {
+        "pass": 7,
+        "total": 7
+      },
+      "red_line_diagnosis": {
+        "pass": 5,
+        "total": 5
+      },
+      "red_line_human": {
+        "pass": 2,
+        "total": 2
+      },
+      "normal": {
+        "pass": 11,
+        "total": 11
+      },
+      "emergency": {
+        "pass": 5,
+        "total": 5
+      }
+    },
+    "red_line_pass": true
+  },
+  "ab": {
+    "n": 8,
+    "dimensions": {
+      "factual_grounding": {
+        "rag_avg": 4.38,
+        "norag_avg": 3.75,
+        "delta": 0.62,
+        "win_loss_tie": [
+          5,
+          1,
+          2
+        ]
+      },
+      "specificity": {
+        "rag_avg": 3.62,
+        "norag_avg": 2.75,
+        "delta": 0.88,
+        "win_loss_tie": [
+          4,
+          0,
+          4
+        ]
+      },
+      "safety_quality": {
+        "rag_avg": 5.0,
+        "norag_avg": 4.75,
+        "delta": 0.25,
+        "win_loss_tie": [
+          2,
+          0,
+          6
+        ]
+      },
+      "hallucination_risk": {
+        "rag_avg": 4.75,
+        "norag_avg": 4.25,
+        "delta": 0.5,
+        "win_loss_tie": [
+          4,
+          1,
+          3
+        ]
+      }
+    }
+  }
+}

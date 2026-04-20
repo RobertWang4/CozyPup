@@ -1,0 +1,27 @@
+{
+  "timestamp": "2026-04-20T19:00:51+00:00",
+  "retrieval": {
+    "zh": {
+      "positive_total": 60,
+      "top1": 53,
+      "top3": 58,
+      "top1_pct": 88.3,
+      "top3_pct": 96.7,
+      "neg_pass": 10,
+      "neg_total": 10,
+      "emg_pass": 5,
+      "emg_total": 5
+    },
+    "en": {
+      "positive_total": 30,
+      "top1": 28,
+      "top3": 30,
+      "top1_pct": 93.3,
+      "top3_pct": 100.0,
+      "neg_pass": 3,
+      "neg_total": 3,
+      "emg_pass": 3,
+      "emg_total": 3
+    }
+  }
+}

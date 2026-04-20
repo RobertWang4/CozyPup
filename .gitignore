@@ -73,6 +73,12 @@ claude-progress.txt
 # E2E test reports (generated, not tracked)
 backend/tests/e2e/reports/
 
+# Eval orchestrator intermediates — per-run _latest files overwritten each run.
+# Persisted snapshots live under backend/eval_history/.
+backend/knowledge/eval/result__latest*.json
+backend/knowledge/eval/e2e_result__latest.json
+backend/knowledge/eval/ab_result__latest.json
+
 
 # Superpowers plans/specs (Claude Code working docs)
 docs/superpowers/
