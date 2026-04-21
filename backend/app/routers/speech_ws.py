@@ -17,6 +17,7 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+import time
 import uuid
 from typing import Optional
 
@@ -59,6 +60,8 @@ async def speech_stream(websocket: WebSocket) -> None:
     set_user_id(user_id)
 
     await websocket.accept()
+    started_at = time.monotonic()
+    audio_bytes = 0  # PCM16 16k mono → 32000 bytes per second
     logger.info(json.dumps({
         "event": "speech_stream_start",
         "correlation_id": correlation_id,
@@ -115,6 +118,8 @@ async def speech_stream(websocket: WebSocket) -> None:
                     await session.send_audio(b"", last=True)
                     return
                 if "bytes" in msg and msg["bytes"] is not None:
+                    nonlocal audio_bytes
+                    audio_bytes += len(msg["bytes"])
                     await session.send_audio(msg["bytes"], last=False)
                 elif "text" in msg and msg["text"]:
                     try:
@@ -151,9 +156,16 @@ async def speech_stream(websocket: WebSocket) -> None:
     except Exception:
         pass
 
+    # Wall-clock session duration (connect → close).
+    wall_seconds = round(time.monotonic() - started_at, 3)
+    # Audio seconds billed by Volcengine ≈ PCM16 mono 16 kHz → 32 000 bytes/sec.
+    audio_seconds = round(audio_bytes / 32000.0, 3)
     logger.info(json.dumps({
         "event": "speech_stream_end",
         "correlation_id": correlation_id,
         "user_id": user_id,
         "logid": session.logid,
+        "wall_seconds": wall_seconds,
+        "audio_seconds": audio_seconds,
+        "audio_bytes": audio_bytes,
     }))

@@ -299,6 +299,34 @@ Backend env vars are managed via Cloud Run (secrets in Secret Manager, plain var
 - **LLM API 限流** — 取决于中转站的 rate limit，需要确认并加 fallback
 - **LLM Observability 升级路径** — 用户量上来后考虑 OpenTelemetry + Cloud Trace，或 Langfuse（开源 LLM 追踪）
 
+## 语音识别（豆包 ASR）
+
+流式语音输入走火山引擎 `/api/v3/sauc/bigmodel_async`。后端 `app/routers/speech_ws.py` 做 WS 代理，iOS `SpeechService.swift` 推 PCM16 16k mono。
+
+### 配额监控
+
+每次 speech session 结束会写一条 `speech_stream_end` 结构化日志，含 `audio_seconds`（= 实际送给火山的音频秒数，按计费）。汇总命令：
+
+```bash
+# 本月累计消耗（小时）
+gcloud logging read 'resource.type=cloud_run_revision AND jsonPayload.event="speech_stream_end"' \
+  --project=cozypup-39487 --freshness=30d --format=json \
+  | python -c 'import json,sys; logs=json.load(sys.stdin); s=sum(json.loads(l["jsonPayload"]["message"]).get("audio_seconds",0) for l in logs if "jsonPayload" in l and "message" in l["jsonPayload"]); print(f"{s/3600:.2f} hours ({len(logs)} sessions)")'
+```
+
+免费额度 20 小时。接近 16 小时（80%）就要准备切账号或买时长包。
+
+### 切换火山账号
+
+```bash
+# 预先用 gcloud secrets create DOUBAO_APP_ID_V2 / DOUBAO_ACCESS_TOKEN_V2 存好第二套凭证
+gcloud run services update backend \
+  --update-secrets="DOUBAO_APP_ID=DOUBAO_APP_ID_V2:latest,DOUBAO_ACCESS_TOKEN=DOUBAO_ACCESS_TOKEN_V2:latest" \
+  --region=northamerica-northeast1 --project=cozypup-39487
+```
+
+`DOUBAO_RESOURCE_ID` 默认 `volc.bigasr.sauc.duration`（1.0 小时版），换成 2.0 需要同步改 env。
+
 ## RAG 宠物健康问答
 
 RAG pipeline 已搭建完成，用于提升健康问答准确性。LLM 通过 `search_knowledge` 工具检索外部知识库 + 用户历史记录。
