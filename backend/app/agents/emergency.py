@@ -1,7 +1,7 @@
 """Emergency detection — keyword-based check for urgent pet health situations.
 
 Runs before the main orchestrator call. When any keyword matches, the chat
-router routes the request to the emergency model (Kimi K2.5 — more accurate
+router routes the request to the emergency model (GPT-5 — more accurate
 but slower/pricier) and injects an emergency hint into the system prompt so
 the LLM is forced to call `trigger_emergency`.
 

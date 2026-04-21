@@ -7,7 +7,7 @@ model producing unsafe text on critical queries.
 
 Scope vs. `emergency.py`:
 - `emergency.py::detect_emergency` is a broad keyword net used to route
-  ambiguous emergencies to the more accurate/expensive Kimi model and to
+  ambiguous emergencies to the more accurate/expensive GPT-5 model and to
   nudge the LLM to invoke `trigger_emergency`.
 - `emergency_router.py::classify_emergency` is a tighter classifier that
   ONLY fires on unambiguous emergencies and emits a ready-to-ship payload
