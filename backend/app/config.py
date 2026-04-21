@@ -84,6 +84,12 @@ class Settings(BaseSettings):
     # fails closed with 403. Populate via ADMIN_API_TOKEN env var.
     admin_api_token: str | None = None
 
+    # Doubao (Volcengine) streaming ASR — big model v3 bidirectional streaming
+    doubao_app_id: str = ""
+    doubao_access_token: str = ""
+    doubao_resource_id: str = "volc.seedasr.sauc.duration"  # 2.0 小时版
+    doubao_ws_url: str = "wss://openspeech.bytedance.com/api/v3/sauc/bigmodel_async"
+
     # Deployment environment — "dev" enables unsafe endpoints (e.g. /admin/auth/dev-login).
     # Set via ENVIRONMENT env var in Cloud Run. Defaults to "dev" locally.
     environment: str = "dev"

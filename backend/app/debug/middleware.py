@@ -31,6 +31,7 @@ ROUTE_MODULE_MAP = {
     "/api/v1/chat/sessions": "app.routers.chat_history",
     "/api/v1/chat": "app.routers.chat",
     "/api/v1/devices": "app.routers.devices",
+    "/api/v1/speech": "app.routers.speech_ws",
 }
 
 
