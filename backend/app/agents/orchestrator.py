@@ -66,6 +66,10 @@ class OrchestratorResult:
     cards: list[dict] = field(default_factory=list)
     confirm_cards: list[dict] = field(default_factory=list)
     tools_called: set[str] = field(default_factory=set)
+    # Tools that actually executed (not deferred behind a confirm card and
+    # not an error). Used by the write-claim nag so a confirm-pending delete
+    # doesn't count as a real write.
+    tools_executed: set[str] = field(default_factory=set)
     plan_steps: list[dict] = field(default_factory=list)  # Steps from plan() tool
     total_prompt_tokens: int = 0
     total_completion_tokens: int = 0
@@ -509,7 +513,23 @@ async def dispatch_tool(
         result.confirm_cards.append(card)
         if on_card:
             await maybe_await(on_card, card)
-        return {"status": "waiting_confirm", "message": desc}
+        # Strongly-worded result so the LLM does NOT claim completion. grok-4-1
+        # has a tendency to say "已删除" after seeing any status field — we beef
+        # this up with explicit anti-fabrication instructions.
+        return {
+            "status": "waiting_confirm",
+            "executed": False,
+            "db_changed": False,
+            "instruction_for_assistant": (
+                "⚠️ 此操作【尚未执行】。系统已向用户弹出确认卡片，用户必须点击才会真正执行。"
+                "你【绝对不能】告诉用户'已删除/已修改/已更新'——数据库完全没变。"
+                "正确回复应该是：'已准备好，请在卡片上点击确认～'（用用户语言）。"
+                "⚠️ THIS ACTION HAS NOT EXECUTED. A confirmation card was shown; the user must tap it. "
+                "DO NOT say 'deleted/updated/saved' — the DB is unchanged. "
+                "Say something like: 'Ready — please tap confirm on the card.'"
+            ),
+            "description": desc,
+        }
 
     # --- Validate ---
     errors = validate_tool_args(fn_name, fn_args)
@@ -531,6 +551,11 @@ async def dispatch_tool(
 
         tool_result = await execute_tool(fn_name, fn_args, db, user_id, **exec_kwargs)
         await db.commit()
+        # Mark as truly executed only when the handler reports success. This
+        # is what the write-claim nag consults — confirm-pending and errored
+        # calls don't count.
+        if tool_result.get("success"):
+            result.tools_executed.add(fn_name)
     except Exception as exc:
         logger.error("dispatch_tool_error", extra={
             "tool": fn_name, "error": str(exc)[:300],
@@ -628,6 +653,135 @@ def _inject_nudge(
         )
 
     messages.append({"role": "user", "content": nudge_text})
+
+
+# ---------------------------------------------------------------------------
+# Write-claim guard — catch LLM hallucinating "已更新/已删除" without a write
+# ---------------------------------------------------------------------------
+
+# All tools that actually mutate persisted state. If the LLM's text claims a
+# mutation happened but none of these were called, it's a fabrication.
+_WRITE_TOOLS: set[str] = {
+    "create_calendar_event", "update_calendar_event", "delete_calendar_event",
+    "create_reminder", "update_reminder", "delete_reminder", "delete_all_reminders",
+    "create_pet", "delete_pet", "update_pet_profile",
+    "save_pet_profile_md", "summarize_pet_profile",
+    "create_daily_task", "manage_daily_task",
+    "set_pet_avatar", "upload_event_photo", "remove_event_photo",
+    "add_event_location", "set_language",
+}
+
+# Completed-action phrases that indicate the LLM claims a write happened.
+# Keep these narrow — they should only match past-tense success claims,
+# not user requests or future-tense descriptions.
+_WRITE_CLAIM_ZH = re.compile(
+    r"已(?:更新|改为|改成|修改|删除|记录|保存|添加|创建|设置|关联|附加|修正|取消|清空)"
+    r"|(?:更新|修改|删除|记录|保存|添加|修正|调整)好了"
+    r"|(?:改好了|改成了|删掉了|记下了|记好了|设好了|存好了|加上了|附上了|挪到了|移到了)"
+)
+_WRITE_CLAIM_EN = re.compile(
+    r"\b(?:updated|changed (?:it |the [^ ]+ )?to|deleted|removed|recorded|saved|added|created|modified|attached|cleared|canceled|cancelled|set it to|renamed)\b",
+    re.IGNORECASE,
+)
+
+
+def _text_claims_write(text: str, lang: str) -> bool:
+    """True if the reply text claims a mutation that we should verify happened."""
+    if not text:
+        return False
+    if lang == "zh":
+        return bool(_WRITE_CLAIM_ZH.search(text))
+    return bool(_WRITE_CLAIM_EN.search(text))
+
+
+# User disagreement / pushback phrases. When the latest user message matches,
+# we suspect the LLM's prior chat turns have fabricated a completion, and
+# inject a strong "trust the DB, not chat history" directive before the loop.
+_PUSHBACK_ZH = re.compile(
+    r"你没(?:删|改|更新|保存|做|执行)"
+    r"|没删(?:掉|啊|呢|嘛)?|没改(?:掉|啊|呢)?|没更新|没生效|没执行"
+    r"|明明还在|还在啊|还(?:存在|有)呢|没反应"
+    r"|再(?:查|看|试|检查)一[下眼次]"
+    r"|你好好(?:看|查)"
+    r"|你看一下|你看看"
+    r"|骗人|瞎说|撒谎"
+)
+_PUSHBACK_EN = re.compile(
+    r"\b(?:you didn'?t|didn'?t actually|not deleted|not removed|still (?:there|exists|showing)|"
+    r"nothing happened|check again|look again|try again|liar|lying|fake)\b",
+    re.IGNORECASE,
+)
+
+
+def _detect_pushback(text: str, lang: str) -> bool:
+    """True if the user's latest message disputes a prior completion claim."""
+    if not text:
+        return False
+    if lang == "zh":
+        return bool(_PUSHBACK_ZH.search(text))
+    # Be lenient: either regex may catch bilingual users
+    return bool(_PUSHBACK_EN.search(text) or _PUSHBACK_ZH.search(text))
+
+
+def _inject_pushback_preamble(messages: list[dict], lang: str) -> None:
+    """Append a high-priority system directive just before the final user turn.
+
+    The LLM's own prior '已删除/updated' statements in chat history are
+    unreliable — they may be fabrications from rounds where no write tool
+    actually executed. This preamble tells the LLM to ignore them and
+    re-verify against the DB by calling tools fresh.
+    """
+    if lang == "zh":
+        note = (
+            "⚠️【系统强制指令 — 最高优先级】用户正在反驳你之前的操作声明。\n"
+            "你之前在对话里说过的'已删除/已更新/已修改/已保存'【可能是编造的】——"
+            "很多轮你只调了查询工具就凭空说'完成了'，数据库根本没变。\n"
+            "现在：\n"
+            "1. 【忽略】对话历史里所有'已X'的声明。它们不是事实。\n"
+            "2. 【必须】立刻调用查询工具（query_calendar_events / list_reminders / list_pets 等）重新查真实 DB 状态。\n"
+            "3. 如果 DB 里东西还在，立刻调用对应的写工具（delete_calendar_event / update_* 等）真正执行。\n"
+            "4. 只有写工具返回 success=True 后，才能告诉用户'已删除/已更新'。\n"
+            "5. 如果是 waiting_confirm，告诉用户'请点击卡片确认'，不是'已完成'。"
+        )
+    else:
+        note = (
+            "⚠️ [SYSTEM OVERRIDE — HIGHEST PRIORITY] The user is disputing a prior completion claim.\n"
+            "Your earlier 'deleted/updated/saved' statements in this chat history MAY BE FABRICATIONS — "
+            "in several rounds you only called query tools yet claimed completion. The DB was never changed.\n"
+            "Now:\n"
+            "1. IGNORE every past 'done/deleted/updated' claim in the chat history. Do not trust them.\n"
+            "2. IMMEDIATELY call a fresh query tool (query_calendar_events / list_reminders / list_pets / etc.) to see real DB state.\n"
+            "3. If the item still exists in DB, IMMEDIATELY call the corresponding write tool (delete_* / update_*) to actually execute.\n"
+            "4. Only after the write tool returns success=True may you tell the user it's done.\n"
+            "5. If it returns waiting_confirm, tell the user to tap the confirm card — do NOT say 'done'."
+        )
+    messages.append({"role": "system", "content": note})
+
+
+def _inject_write_claim_nag(
+    messages: list[dict],
+    last_text: str,
+    lang: str,
+) -> None:
+    """Nag the LLM when it claimed a write but didn't call any write tool."""
+    if last_text:
+        messages.append({"role": "assistant", "content": last_text})
+    if lang == "zh":
+        nag = (
+            "⚠️ 严重错误：你的回复声称已经更新/删除/修改了数据，但你这一轮和上一轮都【没有调用任何写工具】"
+            "（update_calendar_event / delete_calendar_event / update_pet_profile / update_reminder / manage_daily_task 等）。\n"
+            "查询工具（query_calendar_events / list_reminders / list_daily_tasks）【不会修改数据】。\n"
+            "必须立刻调用对应的写工具完成用户要求的操作。不要再用文字假装。"
+        )
+    else:
+        nag = (
+            "⚠️ CRITICAL: Your reply claimed the data was updated/deleted/modified, but you did NOT call any write tool "
+            "this turn or the previous turn (update_calendar_event / delete_calendar_event / update_pet_profile / "
+            "update_reminder / manage_daily_task, etc.).\n"
+            "Query tools (query_calendar_events / list_reminders / list_daily_tasks) do NOT modify data.\n"
+            "Call the correct write tool NOW to actually perform the change. Do not fabricate completion again."
+        )
+    messages.append({"role": "user", "content": nag})
 
 
 # ---------------------------------------------------------------------------
@@ -872,9 +1026,30 @@ async def run_orchestrator(
     messages = [{"role": "system", "content": system_prompt}]
     messages.extend(context_messages)
 
+    # Pushback defense: if the user's latest turn disputes a prior completion
+    # claim, inject a high-priority system note so the LLM ignores its own
+    # fabricated chat history and re-verifies against the DB.
+    latest_user_text = ""
+    for m in reversed(context_messages):
+        if m.get("role") == "user":
+            c = m.get("content")
+            if isinstance(c, str):
+                latest_user_text = c
+            elif isinstance(c, list):
+                latest_user_text = " ".join(
+                    part.get("text", "") for part in c if isinstance(part, dict)
+                )
+            break
+    if _detect_pushback(latest_user_text, lang):
+        _inject_pushback_preamble(messages, lang)
+        logger.info("pushback_preamble_injected", extra={
+            "user_text_sample": latest_user_text[:120],
+        })
+
     text_parts: list[str] = []
     nudge_used = False
     plan_nag_used = False
+    write_claim_nag_used = False
 
     # Extract dispatch_tool kwargs up front so they're not forwarded to the LLM
     images = kwargs.pop("images", None)
@@ -957,6 +1132,30 @@ async def run_orchestrator(
                     else:
                         nag = f"Your plan has unfinished steps:\n{step_list}\nPlease call the corresponding tools now."
                     messages.append({"role": "user", "content": nag})
+                    continue
+
+            # Write-claim guard: LLM's final text claims a write happened
+            # (已更新/已删除/updated/deleted) but no write tool ACTUALLY executed
+            # this whole run (only queries, or everything was deferred behind
+            # confirm cards, or tools errored). Force one more round.
+            if not write_claim_nag_used:
+                has_write = bool(result.tools_executed & _WRITE_TOOLS)
+                accumulated_text = "".join(text_parts)
+                if not has_write and _text_claims_write(accumulated_text, lang):
+                    write_claim_nag_used = True
+                    trace.record("write_claim_nag_triggered", {
+                        "round": round_num,
+                        "tools_called": list(result.tools_called),
+                        "text_sample": accumulated_text[-200:],
+                    })
+                    logger.warning("write_claim_nag_triggered", extra={
+                        "round": round_num,
+                        "tools_called": list(result.tools_called),
+                    })
+                    _inject_write_claim_nag(messages, round_text, lang)
+                    # Clear the fabricated text from text_parts so the final
+                    # response reflects the real (next-round) outcome.
+                    text_parts.pop()
                     continue
 
             # Nudge: only fire when the LLM called zero tools. If it called

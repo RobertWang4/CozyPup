@@ -222,16 +222,48 @@ async def update_calendar_event(
         n = arguments.get("notes")
         event.notes = n if n else None
 
+    # Pet association: accept pet_ids (multi) or pet_id (single). REPLACES the
+    # existing list — LLM is instructed to include all desired pets.
+    raw_new_pet_ids = arguments.get("pet_ids")
+    if raw_new_pet_ids is None and "pet_id" in arguments:
+        raw_new_pet_ids = [arguments["pet_id"]] if arguments["pet_id"] else []
+    if raw_new_pet_ids is not None:
+        new_pet_ids_str = [str(pid) for pid in raw_new_pet_ids]
+        # Validate ownership
+        validated: list[str] = []
+        first_valid: uuid.UUID | None = None
+        for pid_str in new_pet_ids_str:
+            pid = uuid.UUID(pid_str)
+            owned = await db.execute(select(Pet).where(Pet.id == pid, Pet.user_id == user_id))
+            if owned.scalar_one_or_none():
+                validated.append(pid_str)
+                if first_valid is None:
+                    first_valid = pid
+        if not validated:
+            return {"success": False, "error": "No valid pets found for the given pet_id(s)"}
+        event.pet_ids = validated
+        event.pet_id = first_valid  # keep legacy single FK in sync
+        flag_modified(event, "pet_ids")
+
     event.edited = True
     await db.flush()
 
-    # Load pet name for card
-    pet_result = await db.execute(select(Pet).where(Pet.id == event.pet_id))
-    pet = pet_result.scalar_one_or_none()
+    # Load pet names for card (prefer pet_ids, fall back to legacy pet_id)
+    pet_names: list[str] = []
+    ids_for_card = event.pet_ids or ([str(event.pet_id)] if event.pet_id else [])
+    for pid_str in ids_for_card:
+        try:
+            pid = uuid.UUID(pid_str)
+        except (ValueError, TypeError):
+            continue
+        pr = await db.execute(select(Pet).where(Pet.id == pid))
+        p = pr.scalar_one_or_none()
+        if p:
+            pet_names.append(p.name)
 
     card = {
         "type": "record",
-        "pet_name": pet.name if pet else "Unknown",
+        "pet_name": ", ".join(pet_names) if pet_names else "Unknown",
         "date": event.event_date.isoformat(),
         "category": event.category.value,
         "title": event.title,

@@ -139,10 +139,11 @@ _BASE_TOOL_DEFINITIONS = [
         "function": {
             "name": "update_calendar_event",
             "description": (
-                "修改已有的日历事件。\n"
-                "当用户想更正/修改之前记录的事件时使用 (日期写错了/标题要改)。\n"
-                "不要用于: 记录新事件 (用 create_calendar_event)。\n"
-                "必须先调 query_calendar_events 获取 event_id。"
+                "修改已有的日历事件（实际执行数据库写入）。\n"
+                "【必须调用】用户要求更正/修改/改名任何已记录事件时必须调用，不能用文字假装完成。\n"
+                "【强制两步流程】先 query_calendar_events 拿到 event_id → 同一轮内（或下一轮）必须接着调用 update_calendar_event 完成修改。\n"
+                "⚠️ 只查不改是严重错误：不许 query_calendar_events 后直接输出“已改为…”的文字而不调用本工具。\n"
+                "不要用于: 记录新事件 (用 create_calendar_event)。"
             ),
             "parameters": {
                 "type": "object",
@@ -175,6 +176,21 @@ _BASE_TOOL_DEFINITIONS = [
                     "notes": {
                         "type": "string",
                         "description": "New free-form notes / caption (empty string clears).",
+                    },
+                    "pet_id": {
+                        "type": "string",
+                        "description": "Replace pet association with a single pet (UUID). Use pet_ids for multi-pet events.",
+                    },
+                    "pet_ids": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "description": (
+                            "Replace pet association with a list of pet UUIDs. "
+                            "Use this when the user wants to ADD another pet to an existing event "
+                            "(e.g. '把 summer 加进去' → pass [existing_pet_id, summer_id]). "
+                            "You MUST include ALL pets that should be on the event after the change — "
+                            "this REPLACES the list, it does not append. Omit to keep unchanged."
+                        ),
                     },
                 },
                 "required": ["event_id"],
@@ -440,10 +456,11 @@ _BASE_TOOL_DEFINITIONS = [
         "function": {
             "name": "delete_calendar_event",
             "description": (
-                "删除日历事件记录。\n"
-                "当用户要求删除之前记录的事件时使用。\n"
-                "不要用于: 修改事件 (用 update_calendar_event)。\n"
-                "必须先调 query_calendar_events 获取 event_id。"
+                "删除日历事件记录（实际执行数据库删除）。\n"
+                "【必须调用】用户要求删除已记录事件时必须调用，不能用文字假装完成。\n"
+                "【强制两步流程】先 query_calendar_events 拿到 event_id → 同一轮内（或下一轮）必须接着调用 delete_calendar_event 完成删除。\n"
+                "⚠️ 只查不删是严重错误：不许 query_calendar_events 后直接输出“已删除”的文字而不调用本工具。\n"
+                "不要用于: 修改事件 (用 update_calendar_event)。"
             ),
             "parameters": {
                 "type": "object",
@@ -479,10 +496,11 @@ _BASE_TOOL_DEFINITIONS = [
         "function": {
             "name": "update_reminder",
             "description": (
-                "修改已有的提醒。\n"
-                "当用户要改提醒的时间/标题/内容时使用。\n"
-                "不要用于: 创建新提醒 (用 create_reminder)。\n"
-                "必须先调 list_reminders 获取 reminder_id。"
+                "修改已有的提醒（实际执行数据库写入）。\n"
+                "【必须调用】用户要求改提醒的时间/标题/内容时必须调用，不能用文字假装完成。\n"
+                "【强制两步流程】先 list_reminders 拿到 reminder_id → 必须接着调用 update_reminder 完成修改。\n"
+                "⚠️ 只列不改是严重错误：不许列完后直接输出“已修改”的文字而不调用本工具。\n"
+                "不要用于: 创建新提醒 (用 create_reminder)。"
             ),
             "parameters": {
                 "type": "object",

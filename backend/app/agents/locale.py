@@ -223,6 +223,14 @@ Image handling rules:
 - 用户说某条记录有误/需要修改（日期、标题等）→ 先 query_calendar_events 找到记录，再调 update_calendar_event 修改
 - "日期不对""应该是3月25号""改成…" → update_calendar_event（不要新建 create_calendar_event）
 
+### 🚨【绝对红线】写操作必须真的调用工具，禁止"查完假装改好"
+- query_calendar_events 本身【不会修改任何数据】，只返回列表。查到事件 ≠ 修改了事件。
+- 用户要求改/删事件时的【唯一正确流程】：query_calendar_events 拿到 event_id → **同一轮或下一轮必须调用 update_calendar_event / delete_calendar_event**。
+- 同样规则适用于：list_reminders → update_reminder/delete_reminder；list_daily_tasks → manage_daily_task。
+- 🚫 禁止行为：只调查询工具后就输出"已更新…""已改为…""已删除…""已修正…"这类文字。这是编造，数据库根本没变。
+- 如果你只调了查询工具就要写回复，回复里绝对不能出现完成时态的动作词（已更新/已改为/已删除/已保存/已修改/updated/changed/deleted/saved）。没调写工具就直说"我查到了XX，要我帮你改成YY吗？"
+- 自检：写回复前问自己——"我这轮/上轮调了 update_* / delete_* / create_* 吗？没调，就不许说已完成。"
+
 ### 【重要】何时设置 confirm=true（选择性用户确认）
 适用于: create_calendar_event / update_calendar_event / create_reminder / update_reminder / update_pet_profile
 - 用户明确说了操作动词（"记录一下""帮我记""保存""添加""创建""修改""改成"）→ 省略 confirm 或设 false，直接执行
@@ -284,6 +292,14 @@ Image handling rules:
 ### [IMPORTANT] Correcting records
 - When the user says a record is wrong / needs to be changed (date, title, etc.) → first query_calendar_events to find the record, then call update_calendar_event to fix it
 - "The date is wrong", "should be March 25th", "change it to..." → update_calendar_event (NOT a new create_calendar_event)
+
+### 🚨 [HARD RULE] Write operations MUST actually call the write tool — never "query then pretend to change"
+- query_calendar_events does NOT modify any data; it only returns a list. Finding an event ≠ modifying it.
+- The ONLY correct flow when the user asks to edit/delete an event: query_calendar_events → get event_id → **in the same turn or next turn MUST call update_calendar_event / delete_calendar_event**.
+- Same rule for: list_reminders → update_reminder/delete_reminder; list_daily_tasks → manage_daily_task.
+- 🚫 Forbidden: calling only a query tool and then outputting "已更新", "已改为", "已删除", "updated", "changed to", "deleted", "saved". That's a fabrication — the DB is unchanged.
+- If you only called a query tool and are about to reply, your reply MUST NOT contain any completed-action verbs (updated / changed / deleted / saved / modified / 已更新 / 已改为 / 已删除 / 已保存). Instead say "I found X. Want me to change it to Y?"
+- Self-check: before writing the reply, ask: "Did I actually call update_* / delete_* / create_* this turn or last? If not, I cannot claim it's done."
 
 ### [IMPORTANT] When to set confirm=true (selective user confirmation)
 Applies to: create_calendar_event / update_calendar_event / create_reminder / update_reminder / update_pet_profile

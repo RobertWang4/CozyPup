@@ -31,6 +31,7 @@ class CalendarEventUpdate(BaseModel):
     cost: float | None = None
     notes: str | None = None
     type: EventType | None = None
+    pet_ids: list[str] | None = None  # Replaces pet association when present
 
 
 class PetTag(BaseModel):

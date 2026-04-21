@@ -210,6 +210,24 @@ async def update_event(
         event.notes = req.notes if req.notes != "" else None
     if req.type is not None:
         event.type = req.type
+    if req.pet_ids is not None:
+        validated: list[str] = []
+        first_valid: uuid.UUID | None = None
+        for pid_str in req.pet_ids:
+            try:
+                pid = uuid.UUID(pid_str)
+            except (ValueError, TypeError):
+                continue
+            owned = await db.execute(select(Pet).where(Pet.id == pid, Pet.user_id == user_id))
+            if owned.scalar_one_or_none():
+                validated.append(pid_str)
+                if first_valid is None:
+                    first_valid = pid
+        if not validated:
+            raise HTTPException(status_code=400, detail="No valid pets in pet_ids")
+        event.pet_ids = validated
+        event.pet_id = first_valid
+        flag_modified(event, "pet_ids")
 
     event.edited = True
     await db.commit()
