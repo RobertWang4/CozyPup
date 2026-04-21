@@ -530,6 +530,16 @@ async def _event_generator(
         sse_event = "emergency" if card_type == "emergency" else "card"
         await queue.put({"event": sse_event, "data": json.dumps(card_data)})
 
+    async def on_thinking(text: str, tool_name: str):
+        """Server-generated status string, shown as gray italic bubble on iOS.
+        Fired the moment the LLM's tool name is identified in the stream, so
+        the user sees activity without the LLM emitting opener text (which
+        caused decoder-drift fabrication on grok-4-1-fast)."""
+        await queue.put({
+            "event": "thinking",
+            "data": json.dumps({"text": text, "tool": tool_name}, ensure_ascii=False),
+        })
+
     async def _run_orchestrator_to_queue():
         """在独立 Task 中运行 orchestrator，结果通过队列传递。
 
@@ -550,6 +560,7 @@ async def _event_generator(
                 session_id=session.id,
                 on_token=on_token,           # token 流式回调
                 on_card=on_card,             # 卡片回调
+                on_thinking=on_thinking,     # 思考气泡（工具名字幕）
                 today=today_str,
                 suggested_actions=suggested_actions,  # 预分析的工具调用（用于 nudge）
                 location=request.location,   # 用户位置（用于附近搜索）

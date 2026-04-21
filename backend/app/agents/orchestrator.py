@@ -656,6 +656,98 @@ def _inject_nudge(
 
 
 # ---------------------------------------------------------------------------
+# Thinking indicators — server-generated status text per tool (no LLM drift)
+# ---------------------------------------------------------------------------
+#
+# Replaces the old "LLM speaks before tool" rule. The orchestrator emits a
+# short gray status string the moment it sees a tool name arrive in the
+# stream, so the user sees activity without the LLM burning decoder tokens
+# on completion text that leads to fabrication.
+
+_THINKING_ZH: dict[str, str] = {
+    "query_calendar_events": "查日历中…",
+    "list_reminders": "查提醒中…",
+    "list_pets": "查宠物档案…",
+    "list_daily_tasks": "查待办…",
+    "search_places": "找附近…",
+    "search_places_text": "搜地点…",
+    "get_place_details": "查地点详情…",
+    "get_directions": "规划路线…",
+    "search_knowledge": "查知识库…",
+    "get_vaccine_schedule": "查疫苗时间表…",
+    "get_deworming_schedule": "查驱虫时间表…",
+    "summarize_pet_profile": "整理档案…",
+    "introduce_product": "准备介绍…",
+    "request_images": "查看图片…",
+    "plan": "拆解步骤…",
+    "create_calendar_event": "正在记录…",
+    "update_calendar_event": "正在修改…",
+    "delete_calendar_event": "正在删除…",
+    "create_reminder": "设置提醒…",
+    "update_reminder": "修改提醒…",
+    "delete_reminder": "取消提醒…",
+    "delete_all_reminders": "清空提醒…",
+    "create_pet": "创建档案…",
+    "update_pet_profile": "更新档案…",
+    "delete_pet": "删除档案…",
+    "save_pet_profile_md": "整理档案…",
+    "create_daily_task": "创建待办…",
+    "manage_daily_task": "处理待办…",
+    "set_pet_avatar": "更换头像…",
+    "upload_event_photo": "附加照片…",
+    "remove_event_photo": "移除照片…",
+    "add_event_location": "关联地点…",
+    "set_language": "切换语言…",
+    "trigger_emergency": "紧急处理中…",
+    "draft_email": "撰写邮件…",
+}
+_THINKING_EN: dict[str, str] = {
+    "query_calendar_events": "Checking calendar…",
+    "list_reminders": "Checking reminders…",
+    "list_pets": "Checking profiles…",
+    "list_daily_tasks": "Checking tasks…",
+    "search_places": "Searching nearby…",
+    "search_places_text": "Looking up place…",
+    "get_place_details": "Getting place info…",
+    "get_directions": "Building directions…",
+    "search_knowledge": "Searching knowledge base…",
+    "get_vaccine_schedule": "Fetching vaccine schedule…",
+    "get_deworming_schedule": "Fetching deworming schedule…",
+    "summarize_pet_profile": "Summarizing profile…",
+    "introduce_product": "Preparing intro…",
+    "request_images": "Viewing images…",
+    "plan": "Planning steps…",
+    "create_calendar_event": "Recording…",
+    "update_calendar_event": "Updating…",
+    "delete_calendar_event": "Deleting…",
+    "create_reminder": "Setting reminder…",
+    "update_reminder": "Updating reminder…",
+    "delete_reminder": "Canceling reminder…",
+    "delete_all_reminders": "Clearing reminders…",
+    "create_pet": "Creating profile…",
+    "update_pet_profile": "Updating profile…",
+    "delete_pet": "Deleting profile…",
+    "save_pet_profile_md": "Saving profile…",
+    "create_daily_task": "Creating task…",
+    "manage_daily_task": "Updating task…",
+    "set_pet_avatar": "Updating avatar…",
+    "upload_event_photo": "Attaching photo…",
+    "remove_event_photo": "Removing photo…",
+    "add_event_location": "Tagging location…",
+    "set_language": "Switching language…",
+    "trigger_emergency": "Emergency mode…",
+    "draft_email": "Drafting email…",
+}
+
+
+def _thinking_text(tool_name: str, lang: str) -> str:
+    """Status string shown in the gray thinking bubble for a given tool."""
+    if lang == "zh":
+        return _THINKING_ZH.get(tool_name, "处理中…")
+    return _THINKING_EN.get(tool_name, "Working…")
+
+
+# ---------------------------------------------------------------------------
 # Write-claim guard — catch LLM hallucinating "已更新/已删除" without a write
 # ---------------------------------------------------------------------------
 
@@ -822,6 +914,7 @@ async def _stream_completion(
     messages: list[dict],
     model: str,
     on_token: Callable | None = None,
+    on_thinking: Callable | None = None,
     lang: str = "zh",
     trace: TraceCollector = INACTIVE_TRACE,
     round_num: int = 0,
@@ -837,6 +930,7 @@ async def _stream_completion(
     text_parts = []
     tool_calls_map = {}
     usage = {}
+    announced_tools: set[int] = set()  # tc indices whose thinking text already fired
 
     # If trace is active, fire parallel non-streaming call to capture full JSON
     capture_task = None
@@ -891,6 +985,21 @@ async def _stream_completion(
                             tc["function"]["name"] += tc_delta.function.name
                         if tc_delta.function and tc_delta.function.arguments:
                             tc["function"]["arguments"] += tc_delta.function.arguments
+
+                        # Fire a thinking indicator the first time this
+                        # tool_call's name is known. Pure server-side string,
+                        # so no LLM decoder drift.
+                        if (
+                            on_thinking
+                            and idx not in announced_tools
+                            and tc["function"]["name"]
+                        ):
+                            announced_tools.add(idx)
+                            await maybe_await(
+                                on_thinking,
+                                _thinking_text(tc["function"]["name"], lang),
+                                tc["function"]["name"],
+                            )
 
                 # Capture usage from final chunk (provider-dependent)
                 if hasattr(chunk, "usage") and chunk.usage:
@@ -994,6 +1103,7 @@ async def run_orchestrator(
     session_id=None,
     on_token: Callable[[str], Awaitable[None]] | None = None,
     on_card: Callable[[dict], Awaitable[None]] | None = None,
+    on_thinking: Callable[[str, str], Awaitable[None]] | None = None,
     today: str = "",
     suggested_actions: list[SuggestedAction] | None = None,
     trace: TraceCollector = INACTIVE_TRACE,
@@ -1066,7 +1176,7 @@ async def run_orchestrator(
 
         # Stream the LLM response
         round_text, tool_calls, usage = await _stream_completion(
-            messages, use_model, on_token, lang=lang,
+            messages, use_model, on_token, on_thinking=on_thinking, lang=lang,
             trace=trace, round_num=round_num,
         )
 
