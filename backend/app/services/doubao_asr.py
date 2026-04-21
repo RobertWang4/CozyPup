@@ -180,12 +180,33 @@ class DoubaoAsrSession:
                 "connect_id": self.connect_id,
             })
         )
-        self._ws = await websockets.connect(
-            settings.doubao_ws_url,
-            additional_headers=headers,
-            max_size=16 * 1024 * 1024,
-            open_timeout=10,
-        )
+        try:
+            self._ws = await websockets.connect(
+                settings.doubao_ws_url,
+                additional_headers=headers,
+                max_size=16 * 1024 * 1024,
+                open_timeout=10,
+            )
+        except websockets.exceptions.InvalidStatus as e:
+            # Handshake failed — log the status, any API-specific error headers,
+            # and the response body so we can diagnose 403s, 401s, etc.
+            resp = e.response
+            body_preview = ""
+            try:
+                body_preview = (resp.body or b"").decode("utf-8", errors="replace")[:400]
+            except Exception:
+                body_preview = repr(resp.body)[:400]
+            logger.error(json.dumps({
+                "event": "doubao_asr_handshake_failed",
+                "status": resp.status_code,
+                "api_status": resp.headers.get("X-Api-Status-Code"),
+                "api_message": resp.headers.get("X-Api-Message"),
+                "logid": resp.headers.get("X-Tt-Logid"),
+                "body": body_preview,
+                "resource_id": settings.doubao_resource_id,
+                "app_id": settings.doubao_app_id,
+            }))
+            raise
         try:
             self._logid = self._ws.response.headers.get("X-Tt-Logid")
         except Exception:
