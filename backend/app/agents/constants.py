@@ -165,7 +165,18 @@ def needs_confirm(fn_name: str, fn_args: dict, user_text: str = "") -> bool:
 
 # Tools that the LLM frequently forgets to call — nudge and post-processor
 # will only force these. All other pre-processor suggestions are advisory only.
-NUDGE_TOOLS = {"search_places", "trigger_emergency", "set_language"}
+# Tools the nudge mechanism can force-retry when the LLM ignored a
+# high-confidence preprocessor suggestion. Restored delete/update/manage on
+# 2026-04-20 — removing them in ba71264 caused a hallucination regression for
+# "删掉X" / "改成X" where grok-4-1-fast would emit completion text without
+# calling the write tool. Keep create_* out: the preprocessor over-suggests
+# record-event for casual chat, and false nudges there are worse than misses.
+NUDGE_TOOLS = {
+    "search_places", "trigger_emergency", "set_language",
+    "delete_calendar_event", "update_calendar_event",
+    "delete_reminder", "delete_all_reminders",
+    "manage_daily_task",
+}
 
 # Tools whose results are simple enough to skip the Round 2 LLM call.
 # After successful execution, we use the LLM's streaming text from Round 1
