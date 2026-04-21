@@ -1280,6 +1280,51 @@ async def run_orchestrator(
     raw_text = "".join(text_parts)
     # Strip leaked XML/HTML tags from LLM output (grok sometimes outputs <parameter> or <xai:function_call>)
     result.response_text = _re.sub(r"</?(?:parameter|xai:function_call|function_call)[^>]*>", "", raw_text).strip()
+
+    # Final fabrication guard: if the LLM's response claims a write ("已删除
+    # /updated") but no write tool actually executed AND no confirm card is
+    # pending (the card itself would signal "pending" correctly), replace the
+    # fabricated text with an honest failure message and emit a warning card.
+    # This is Level 2 "UI truth" — users should never see a lie.
+    has_real_write = bool(result.tools_executed & _WRITE_TOOLS)
+    has_pending_confirm = bool(result.confirm_cards)
+    if (
+        not has_real_write
+        and not has_pending_confirm
+        and _text_claims_write(result.response_text, lang)
+    ):
+        logger.warning("fabrication_blocked", extra={
+            "tools_called": list(result.tools_called),
+            "tools_executed": list(result.tools_executed),
+            "text_sample": result.response_text[:200],
+        })
+        trace.record("fabrication_blocked", {
+            "tools_called": list(result.tools_called),
+            "tools_executed": list(result.tools_executed),
+            "text_sample": result.response_text[:200],
+        })
+        if lang == "zh":
+            honest = (
+                "抱歉，这条操作我没能成功执行 😔\n"
+                "请再说一次您的请求，或者在日历/档案里手动操作。"
+            )
+            warn_message = "操作未能完成，数据库未变更"
+        else:
+            honest = (
+                "Sorry — I couldn't actually execute that action 😔\n"
+                "Please try saying it again, or do it manually in the calendar / profile."
+            )
+            warn_message = "Action did not complete — database unchanged"
+        result.response_text = honest
+        warning_card = {
+            "type": "warning",
+            "severity": "error",
+            "message": warn_message,
+        }
+        result.cards.append(warning_card)
+        if on_card:
+            await maybe_await(on_card, warning_card)
+
     if not result.response_text.strip() and not result.confirm_cards and not result.cards:
         fallback = t("fallback_error", lang)
         result.response_text = fallback

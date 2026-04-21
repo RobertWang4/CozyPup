@@ -248,6 +248,20 @@ async def update_calendar_event(
     event.edited = True
     await db.flush()
 
+    # Verification: re-SELECT from DB to confirm the row state matches what we
+    # just wrote. If the refetched row's title/category/date don't match, the
+    # write didn't persist — report failure so the orchestrator can warn.
+    verify_result = await db.execute(
+        select(CalendarEvent).where(CalendarEvent.id == event_id, CalendarEvent.user_id == user_id)
+    )
+    verified_row = verify_result.scalar_one_or_none()
+    verified = (
+        verified_row is not None
+        and verified_row.title == event.title
+        and verified_row.event_date == event.event_date
+        and verified_row.category == event.category
+    )
+
     # Load pet names for card (prefer pet_ids, fall back to legacy pet_id)
     pet_names: list[str] = []
     ids_for_card = event.pet_ids or ([str(event.pet_id)] if event.pet_id else [])
@@ -268,10 +282,12 @@ async def update_calendar_event(
         "category": event.category.value,
         "title": event.title,
         "old_date": old_date,
+        "verified": verified,
     }
 
     return {
-        "success": True,
+        "success": verified,
+        "verified": verified,
         "event_id": str(event.id),
         "title": event.title,
         "event_date": event.event_date.isoformat(),
@@ -301,13 +317,22 @@ async def delete_calendar_event(
     await db.delete(event)
     await db.flush()
 
+    # Verification: re-SELECT to confirm the row is gone.
+    verify_result = await db.execute(
+        select(CalendarEvent).where(CalendarEvent.id == event_id, CalendarEvent.user_id == user_id)
+    )
+    still_exists = verify_result.scalar_one_or_none() is not None
+    verified = not still_exists
+
     return {
-        "success": True,
+        "success": verified,
+        "verified": verified,
         "event_id": str(event_id),
         "title": title,
         "card": {
             "type": "event_deleted",
             "title": title,
+            "verified": verified,
         },
     }
 
