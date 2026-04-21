@@ -115,9 +115,8 @@ def _parse_server_frame(frame: bytes) -> AsrEvent:
             text = repr(body)
         return AsrEvent(kind="error", code=error_code, text=text)
 
-    # Full server response / ack — server sets sequence flag, so 4 bytes sequence
-    # follow the header before payload size.
-    has_sequence = bool(flags & 0b0001) or bool(flags & 0b0010) or bool(flags & 0b0011)
+    # Flag bits: 0b0001 = has sequence, 0b0010 = last/final packet.
+    has_sequence = bool(flags & 0b0001)
     if has_sequence:
         if len(frame) < offset + 4:
             return AsrEvent(kind="error", code=-1, text="missing sequence")
