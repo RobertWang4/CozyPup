@@ -5,7 +5,7 @@ class Settings(BaseSettings):
     database_url: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/cozypup"
     # Main model — used for chat orchestration, tool execution, profile extraction, and context summary.
     # Change this ONE value to test a different model for all normal operations.
-    model: str = "openai/grok-4-1-fast-non-reasoning"
+    model: str = "deepseek/deepseek-v4-flash"
     # Emergency model — only used when emergency keywords are detected (e.g. seizure, poisoning).
     # Typically a more capable/accurate model for safety-critical responses.
     emergency_model: str = "openai/gpt-5"
