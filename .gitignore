@@ -19,6 +19,13 @@ backend/logs/error_snapshots/*.json
 .vscode/
 .idea/
 
+# Codex CLI config (contains API keys)
+.codex/
+
+# Backend runtime artifacts
+backend/backend.log
+backend/reports/
+
 # OS
 .DS_Store
 

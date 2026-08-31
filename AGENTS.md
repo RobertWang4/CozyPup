@@ -1,6 +1,6 @@
-# CLAUDE.md
+# AGENTS.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Codex (Codex.ai/code) when working with code in this repository.
 
 ## Project Overview
 
@@ -92,7 +92,7 @@ admin debug replay <correlation_id>
 admin debug generate-test <correlation_id>
 ```
 
-Full reference: [`docs/ADMIN_CLI.md`](docs/ADMIN_CLI.md) (also ships an `<!-- ai-cheatsheet -->` block designed for Claude Code sessions to load the admin command surface on demand).
+Full reference: [`docs/ADMIN_CLI.md`](docs/ADMIN_CLI.md) (also ships an `<!-- ai-cheatsheet -->` block designed for Codex sessions to load the admin command surface on demand).
 
 **Trace logging**: Always-on structured JSON logs at every pipeline step (chat_request → llm_request → llm_response → tool_call → tool_result → chat_response). Written to `cozypup.trace` logger → stdout → Cloud Logging. Each entry carries `correlation_id` and `user_id` from ContextVars. Admin routes additionally leave rows in `admin_audit_log` for every write.
 
@@ -285,7 +285,7 @@ Backend env vars are managed via Cloud Run (secrets in Secret Manager, plain var
 ## Implementation Status
 
 - **Done**: All REST APIs, database models, iOS SwiftUI frontend, frontend-backend integration, Constrained Agent architecture, plan tool (multi-step planning), E2E audit infrastructure
-- **Not done**: Phase 4 push notifications, MemWeaver knowledge base content (pipeline done, needs knowledge articles), Phase 5 宠物共享（多主人共享 + 会员体系）
+- **Not done**: Phase 4 push notifications, MemWeaver health knowledge content (pipeline done, needs knowledge articles), Phase 5 宠物共享（多主人共享 + 会员体系）
 - **Spec**: `docs/superpowers/specs/2026-03-17-petcare-agent-design.md` has the full architecture (incl. design system, agent evolution roadmap, iOS standards)
 
 ## TODO: Production Readiness
@@ -327,69 +327,62 @@ gcloud run services update backend \
 
 `DOUBAO_RESOURCE_ID` 默认 `volc.bigasr.sauc.duration`（1.0 小时版），换成 2.0 需要同步改 env。
 
-## MemWeaver 记忆与知识问答
+## MemWeaver 记忆与健康知识
 
-RAG 已被 MemWeaver 记忆系统取代，统一管理"外部知识"和"用户历史"两类检索，用于提升健康问答准确性。LLM 通过 `search_knowledge` 工具检索。
+MemWeaver-style memory pipeline 已搭建完成，用于统一用户/宠物记忆和健康知识库。LLM 通过 agent loop 自动获得相关记忆上下文；健康问题仍通过 `search_knowledge` 工具检索 trusted knowledge + 用户历史，但底层只走 `app.memory`。
 
 ### 架构
 
 ```
-用户问健康问题 → LLM 调用 search_knowledge(query, pet_id, species)
-  → embed_text(query) 生成向量 (OpenAI text-embedding-3-small, 1536 维)
-  → retrieve_memweaver_context(): 一次 pgvector 查询 UNION 出
-      - 用户 behavioral/cognitive 记忆节点 (按 user_id/pet_id 过滤)
-      - 全局 knowledge 节点 (按 species 过滤)
-  → 按 cosine distance 阈值过滤 + behavioral 记忆按新鲜度加权排序
-  → 返回 knowledge + history + references card
+用户输入 → build_memory_context(message, pets)
+  → retrieve_memweaver_context(query, user_id, pet_id, species)
+  → 查询 memory_nodes:
+      behavioral（具体事件/对话）
+      cognitive（长期摘要/偏好）
+      knowledge（全局健康知识）
+  → system prompt 注入 memory context
+健康问题 → LLM 调用 search_knowledge(query, pet_id, species)
+  → 同一套 MemWeaver retrieval
+  → 返回 knowledge + history + references card（兼容 iOS）
   → LLM 结合宠物档案生成回答 + 按需问诊引导
   → iOS 显示 References 按钮 → 点击弹出 drawer
 ```
-
-日历事件写入/删除时，`app/memory/event_sync.py` 会异步同步生成/清理对应的 behavioral 记忆节点（`schedule_event_memory` / `schedule_event_memory_delete`）。
 
 ### 文件结构
 
 ```
 backend/app/memory/
-├── types.py            # MemorySnippet / KnowledgeSnippet / RetrievedContext 数据类
-├── embeddings.py        # embed_text() — OpenAI text-embedding-3-small via LiteLLM，带进程内 LRU 缓存
-├── store.py             # upsert_behavioral_memory / upsert_cognitive_memory / upsert_knowledge_memory / delete_memory_for_source
-├── retrieval.py          # retrieve_memweaver_context() — pgvector 向量检索 + 新鲜度加权
-├── context_builder.py    # build_memory_context() — 聊天主循环调用入口，带超时保护
-├── event_sync.py         # 日历事件 ↔ behavioral 记忆节点 同步
-├── render.py             # render_retrieved_context() — 渲染为 prompt 里的 Markdown 片段
-└── ingest.py             # CLI 批量导入知识库 → knowledge 节点
+├── __init__.py
+├── embeddings.py       # embed_text() — memory node embedding via LiteLLM
+├── retrieval.py        # retrieve_memweaver_context() — pgvector + recency rerank
+├── store.py            # upsert behavioral/cognitive/knowledge nodes
+├── event_sync.py       # calendar event → behavioral memory
+├── context_builder.py  # agent loop memory context
+└── ingest.py           # CLI 批量导入 trusted knowledge
 
-backend/knowledge/       # 外部知识库 markdown 文件（待填充）
+backend/knowledge/      # 外部知识库 markdown 文件（待填充）
 ```
-
-`app/agents/tools/knowledge.py` 里的 `search_knowledge` 工具就是薄封装，直接调用 `retrieve_memweaver_context`。
 
 ### 知识库管理
 
 ```bash
 cd backend
-python -m app.memory.ingest --file knowledge/dog_vomiting.md --species dog --category digestive
+python -m app.memory.ingest --file knowledge/dog_vomiting.md --species dog --category 消化系统
 python -m app.memory.ingest --dir knowledge/ --species dog
 python -m app.memory.ingest --stats
 ```
 
-知识库文件格式：markdown，可选 YAML frontmatter（title, url）。按段落切分为 ~400 字 chunks，每个 chunk 生成 embedding 存入 `memory_nodes`。
+知识库文件格式：markdown，可选 YAML frontmatter（title, url, species, category, aliases）。按段落切分为 ~400 字 chunks，每个 chunk 生成 knowledge memory node。
 
 ### 数据模型
 
-- **MemoryNode** — 统一的记忆/知识节点表，`node_type` 三选一：
-  - `behavioral` — 具体事件记忆（如日历事件），带 `occurred_at`，检索时按新鲜度加权
-  - `cognitive` — 长期/归纳性记忆（用户偏好、宠物长期状况等）
-  - `knowledge` — 外部知识库文章 chunk（全局，不挂 user_id）
-  - 每个节点存 `embedding`（pgvector, 1536 维）、`metadata_json`、`source_kind`/`source_id`（去重/回溯用）
-- **MemoryEdge** — 节点间关系表（`semantic` / `temporal` / `hierarchy`），目前只在删除节点时级联清理，**尚未有代码写入或用于检索排序**（边检索未启用）
+- **MemoryNode** — 统一记忆节点，`node_type` 枚举：`behavioral` / `cognitive` / `knowledge`
+- **MemoryEdge** — 记忆节点关系，`edge_type` 枚举：`semantic` / `temporal` / `hierarchy`，目前只在删除节点时级联清理，**尚未有代码写入或用于检索排序**（边检索未启用）
 - Embedding 模型：OpenAI text-embedding-3-small（1536 维），配置项 `embedding_model`
 
 ### 待完成
 
 - 填充知识库内容（狗/猫常见疾病、症状、用药、疫苗等 markdown 文件）
-- MemoryEdge 图谱检索（目前只做纯向量检索，边未使用）
 - iOS References drawer 中历史记录跳转到日历事件详情
 
 ## How to Add a New Tool (Checklist)

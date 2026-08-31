@@ -24,6 +24,6 @@ Each file can optionally have YAML frontmatter:
 ## Ingest
 
     cd backend
-    python -m app.rag.ingest --file knowledge/dog_vomiting.md --species dog --category 消化系统
-    python -m app.rag.ingest --dir knowledge/ --species dog
-    python -m app.rag.ingest --stats
+    python -m app.memory.ingest --file knowledge/dog_vomiting.md --species dog --category digestive
+    python -m app.memory.ingest --dir knowledge/ --species dog
+    python -m app.memory.ingest --stats
