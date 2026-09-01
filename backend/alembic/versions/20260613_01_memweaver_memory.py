@@ -22,8 +22,12 @@ depends_on: Union[str, Sequence[str], None] = None
 def upgrade() -> None:
     op.execute("CREATE EXTENSION IF NOT EXISTS vector")
 
-    memorynodetype = sa.Enum("behavioral", "cognitive", "knowledge", name="memorynodetype")
-    memoryedgetype = sa.Enum("semantic", "temporal", "hierarchy", name="memoryedgetype")
+    memorynodetype = sa.Enum(
+        "behavioral", "cognitive", "knowledge", name="memorynodetype", create_type=False
+    )
+    memoryedgetype = sa.Enum(
+        "semantic", "temporal", "hierarchy", name="memoryedgetype", create_type=False
+    )
     memorynodetype.create(op.get_bind(), checkfirst=True)
     memoryedgetype.create(op.get_bind(), checkfirst=True)
 
