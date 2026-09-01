@@ -1,0 +1,24 @@
+{
+  "id": "legacy_10_5_zh",
+  "description": "Migrated legacy e2e case 10.5 (zh).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "10.5",
+    "language": "zh"
+  },
+  "language": "zh",
+  "messages": [
+    "怎么去那里？"
+  ],
+  "expect": {
+    "tools": [
+      "get_directions"
+    ]
+  },
+  "pets": [
+    {
+      "name": "小维",
+      "species": "dog"
+    }
+  ]
+}

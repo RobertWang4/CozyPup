@@ -1,0 +1,33 @@
+{
+  "id": "legacy_24_2_zh",
+  "description": "Migrated legacy e2e case 24.2 (zh).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "24.2",
+    "language": "zh"
+  },
+  "language": "zh",
+  "messages": [
+    "分类应该是 medical 不是 diet"
+  ],
+  "expect": {
+    "tools": [
+      "update_calendar_event"
+    ]
+  },
+  "pets": [
+    {
+      "name": "小维",
+      "species": "dog"
+    }
+  ],
+  "events": [
+    {
+      "pet_name": "小维",
+      "event_date": "today",
+      "title": "散步",
+      "category": "daily",
+      "raw_text": "seed event for migrated e2e scenario"
+    }
+  ]
+}

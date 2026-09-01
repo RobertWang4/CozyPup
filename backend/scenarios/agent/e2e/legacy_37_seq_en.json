@@ -1,0 +1,35 @@
+{
+  "id": "legacy_37_seq_en",
+  "description": "Migrated legacy e2e case 37_seq (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "37_seq",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "Weiwei went to the vet today",
+    "At Vanier Animal Hospital",
+    "It cost 1500",
+    "This is the examination report",
+    "The doctor said to give probiotics daily for a week",
+    "Remind me to follow up next week",
+    "Summarize this vet visit"
+  ],
+  "expect": {
+    "tools": [
+      "create_calendar_event",
+      "add_event_location",
+      "update_calendar_event",
+      "create_daily_task",
+      "create_reminder",
+      "query_calendar_events"
+    ]
+  },
+  "pets": [
+    {
+      "name": "Weiwei",
+      "species": "dog"
+    }
+  ]
+}

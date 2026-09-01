@@ -1,0 +1,33 @@
+{
+  "id": "legacy_10_7_zh",
+  "description": "Migrated legacy e2e case 10.7 (zh).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "10.7",
+    "language": "zh"
+  },
+  "language": "zh",
+  "messages": [
+    "就是在 Central Park"
+  ],
+  "expect": {
+    "tools": [
+      "add_event_location"
+    ]
+  },
+  "pets": [
+    {
+      "name": "小维",
+      "species": "dog"
+    }
+  ],
+  "events": [
+    {
+      "pet_name": "小维",
+      "event_date": "today",
+      "title": "散步",
+      "category": "daily",
+      "raw_text": "seed event needing location"
+    }
+  ]
+}

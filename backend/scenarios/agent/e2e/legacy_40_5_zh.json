@@ -1,0 +1,24 @@
+{
+  "id": "legacy_40_5_zh",
+  "description": "Migrated legacy e2e case 40.5 (zh).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "40.5",
+    "language": "zh"
+  },
+  "language": "zh",
+  "messages": [
+    "小维体重30公斤，生日2023年3月"
+  ],
+  "expect": {
+    "tools": [
+      "update_pet_profile"
+    ]
+  },
+  "pets": [
+    {
+      "name": "小维",
+      "species": "dog"
+    }
+  ]
+}

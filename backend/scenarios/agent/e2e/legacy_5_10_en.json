@@ -1,0 +1,27 @@
+{
+  "id": "legacy_5_10_en",
+  "description": "Migrated legacy e2e case 5.10 (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "5.10",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "Delete Huahua"
+  ],
+  "expect": {
+    "tools": [
+      "delete_pet"
+    ],
+    "cards": [
+      "confirm_action"
+    ]
+  },
+  "pets": [
+    {
+      "name": "Huahua",
+      "species": "cat"
+    }
+  ]
+}

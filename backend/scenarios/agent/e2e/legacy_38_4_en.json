@@ -1,0 +1,18 @@
+{
+  "id": "legacy_38_4_en",
+  "description": "Migrated legacy e2e case 38.4 (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "38.4",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "Look up my pets"
+  ],
+  "expect": {
+    "tools": [
+      "list_pets"
+    ]
+  }
+}

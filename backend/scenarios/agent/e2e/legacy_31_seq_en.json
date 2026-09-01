@@ -1,0 +1,30 @@
+{
+  "id": "legacy_31_seq_en",
+  "description": "Migrated legacy e2e case 31_seq (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "31_seq",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "Help me find a dog park nearby",
+    "How are the reviews for the first one?",
+    "How do I get there?",
+    "OK, record that Weiwei went to this park today"
+  ],
+  "expect": {
+    "tools": [
+      "search_places",
+      "get_place_details",
+      "get_directions",
+      "create_calendar_event"
+    ]
+  },
+  "pets": [
+    {
+      "name": "Weiwei",
+      "species": "dog"
+    }
+  ]
+}

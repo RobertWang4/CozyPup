@@ -2,6 +2,7 @@ import pytest
 import json
 from unittest.mock import AsyncMock, patch, MagicMock
 from app.agents.orchestrator import run_orchestrator, OrchestratorResult
+from app.agents.trace_collector import TraceCollector
 
 
 def _make_stream_chunks(content=None, tool_calls=None):
@@ -68,6 +69,58 @@ async def test_path_a_pure_chat():
     assert result.response_text == "你好！很高兴见到你"
     assert len(result.cards) == 0
     assert len(tokens) > 0
+
+
+@pytest.mark.asyncio
+async def test_orchestrator_emits_runtime_events_for_model_round():
+    chunks = _make_stream_chunks(content="你好")
+    trace = TraceCollector(active=True)
+
+    with patch("app.agents.orchestrator.litellm.acompletion", new_callable=AsyncMock, return_value=MockAsyncIterator(chunks)):
+        await run_orchestrator(
+            message="你好",
+            system_prompt="test",
+            context_messages=[{"role": "user", "content": "你好"}],
+            model="test-model",
+            trace=trace,
+        )
+
+    events = trace.to_dict()["events"]
+    event_types = [event["type"] for event in events]
+    assert event_types == ["model_started", "model_completed", "run_completed"]
+    assert events[0]["data"] == {"round": 0, "model": "test-model", "is_vision": False}
+    assert events[1]["data"]["tool_calls"] == []
+    assert events[2]["data"]["tools_called"] == []
+
+
+@pytest.mark.asyncio
+async def test_orchestrator_emits_runtime_events_for_tool_call():
+    tool_args = {"pet_id": "abc", "event_date": "2026-03-24", "title": "吃狗粮", "category": "diet"}
+    chunks = _make_stream_chunks(tool_calls=[{"name": "create_calendar_event", "args": tool_args}])
+    trace = TraceCollector(active=True)
+
+    mock_execute = AsyncMock(return_value={"success": True, "card": {"type": "record"}})
+
+    with patch("app.agents.orchestrator.litellm.acompletion", new_callable=AsyncMock, return_value=MockAsyncIterator(chunks)), \
+         patch("app.agents.orchestrator.validate_tool_args", return_value=[]), \
+         patch("app.agents.orchestrator.execute_tool", mock_execute):
+        await run_orchestrator(
+            message="三妹吃了狗粮",
+            system_prompt="test",
+            context_messages=[{"role": "user", "content": "三妹吃了狗粮"}],
+            db=AsyncMock(),
+            user_id="user-1",
+            trace=trace,
+        )
+
+    events = trace.to_dict()["events"]
+    event_types = [event["type"] for event in events]
+    assert "tool_call_started" in event_types
+    assert "tool_call_completed" in event_types
+    completed = next(event for event in events if event["type"] == "tool_call_completed")
+    assert completed["data"]["tool"] == "create_calendar_event"
+    assert completed["data"]["success"] is True
+
 
 @pytest.mark.asyncio
 async def test_single_tool_call():
@@ -162,7 +215,7 @@ async def test_confirm_gate_single():
 
     with patch("app.agents.orchestrator.litellm.acompletion", new_callable=AsyncMock, return_value=MockAsyncIterator(chunks)), \
          patch("app.agents.orchestrator.validate_tool_args", return_value=[]), \
-         patch("app.agents.orchestrator.store_action", new_callable=AsyncMock, return_value="action-123"):
+         patch("app.agents.tool_confirmation.store_action", new_callable=AsyncMock, return_value="action-123"):
         result = await run_orchestrator(
             message="删除三妹",
             system_prompt="test",
@@ -173,6 +226,53 @@ async def test_confirm_gate_single():
 
     assert len(result.confirm_cards) == 1
     assert result.confirm_cards[0]["type"] == "confirm_action"
+
+
+@pytest.mark.asyncio
+async def test_create_pet_confirm_card_includes_tool_fields():
+    """Create-pet confirm card should show the prepared pet attributes."""
+    tool_call = {
+        "id": "call-1",
+        "function": {
+            "name": "create_pet",
+            "arguments": json.dumps({
+                "name": "维尼",
+                "species": "dog",
+                "gender": "male",
+                "breed": "可卡布",
+            }, ensure_ascii=False),
+        },
+    }
+
+    from app.agents.orchestrator import OrchestratorResult, dispatch_tool
+
+    result = OrchestratorResult()
+    cards = []
+
+    async def capture_card(card):
+        cards.append(card)
+
+    with patch("app.agents.tool_confirmation.store_action", new_callable=AsyncMock, return_value="action-123"):
+        tool_result = await dispatch_tool(
+            tool_call,
+            AsyncMock(),
+            "11111111-1111-1111-1111-111111111111",
+            "22222222-2222-2222-2222-222222222222",
+            result,
+            capture_card,
+            "zh",
+            _messages=[{"role": "user", "content": "我有一只公的可卡布叫维尼"}],
+        )
+
+    assert tool_result["status"] == "waiting_confirm"
+    assert cards == result.confirm_cards
+    assert result.confirm_cards[0]["title"] == "新增宠物确认"
+    assert result.confirm_cards[0]["action_kind"] == "create_pet"
+    assert result.confirm_cards[0]["fields"] == [
+        {"label": "名字", "value": "维尼"},
+        {"label": "性别", "value": "公"},
+        {"label": "品种", "value": "可卡布"},
+    ]
 
 @pytest.mark.asyncio
 async def test_error_handling():

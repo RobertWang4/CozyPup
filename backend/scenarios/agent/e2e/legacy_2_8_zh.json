@@ -1,0 +1,27 @@
+{
+  "id": "legacy_2_8_zh",
+  "description": "Migrated legacy e2e case 2.8 (zh).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "2.8",
+    "language": "zh"
+  },
+  "language": "zh",
+  "messages": [
+    "今天做了驱虫"
+  ],
+  "expect": {
+    "tools": [
+      "create_calendar_event"
+    ],
+    "cards": [
+      "record"
+    ]
+  },
+  "pets": [
+    {
+      "name": "小维",
+      "species": "dog"
+    }
+  ]
+}

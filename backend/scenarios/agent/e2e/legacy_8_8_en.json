@@ -1,0 +1,24 @@
+{
+  "id": "legacy_8_8_en",
+  "description": "Migrated legacy e2e case 8.8 (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "8.8",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "Change dog walking to twice a day"
+  ],
+  "expect": {
+    "tools": [
+      "manage_daily_task"
+    ]
+  },
+  "pets": [
+    {
+      "name": "Weiwei",
+      "species": "dog"
+    }
+  ]
+}

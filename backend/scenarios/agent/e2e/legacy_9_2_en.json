@@ -1,0 +1,24 @@
+{
+  "id": "legacy_9_2_en",
+  "description": "Migrated legacy e2e case 9.2 (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "9.2",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "Don't forget to take Weiwei for vaccination next Tuesday"
+  ],
+  "expect": {
+    "tools": [
+      "create_reminder"
+    ]
+  },
+  "pets": [
+    {
+      "name": "Weiwei",
+      "species": "dog"
+    }
+  ]
+}

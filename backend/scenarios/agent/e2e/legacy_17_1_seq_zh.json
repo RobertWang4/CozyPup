@@ -1,0 +1,31 @@
+{
+  "id": "legacy_17_1_seq_zh",
+  "description": "Migrated legacy e2e case 17.1_seq (zh).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "17.1_seq",
+    "language": "zh"
+  },
+  "language": "zh",
+  "messages": [
+    "小维今天吃了狗粮",
+    "还喝了很多水",
+    "下午去公园散步了",
+    "遇到了一只金毛",
+    "它们玩了很久",
+    "回来之后洗了澡",
+    "小维最近怎么样？"
+  ],
+  "expect": {
+    "tools": [
+      "create_calendar_event",
+      "query_calendar_events"
+    ]
+  },
+  "pets": [
+    {
+      "name": "小维",
+      "species": "dog"
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "id": "legacy_38_5_en",
+  "description": "Migrated legacy e2e case 38.5 (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "38.5",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "My tasks"
+  ],
+  "expect": {
+    "tools": [
+      "list_daily_tasks"
+    ]
+  }
+}

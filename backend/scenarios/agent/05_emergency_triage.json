@@ -1,0 +1,12 @@
+{
+  "id": "emergency_triage",
+  "description": "Severe symptoms should trigger the emergency path.",
+  "language": "en",
+  "pets": [{"name": "Max", "species": "dog"}],
+  "messages": ["Max is having seizures and can barely breathe."],
+  "expect": {
+    "cards": ["emergency"],
+    "emergency": true,
+    "contains_any": ["emergency", "vet", "urgent"]
+  }
+}

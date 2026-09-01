@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CozyPup — Chat</title>
+<link rel="stylesheet" href="../css/common.css">
+<style>
+.chat-screen {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* Header */
+.chat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-5);
+  padding-top: var(--space-2);
+  background: var(--bg);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.header-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  font-size: 15px;
+  transition: all var(--transition-fast);
+  color: var(--textSecondary);
+}
+.header-btn:hover {
+  background: var(--accentSoft);
+  color: var(--accent);
+  transform: scale(1.05);
+}
+
+.header-logo {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radiusSmall);
+  background: linear-gradient(135deg, var(--accent), #D4734A);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  box-shadow: 0 4px 12px rgba(232,131,92,0.2);
+}
+
+/* Messages area */
+.messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* Welcome state */
+.welcome-card {
+  background: linear-gradient(135deg, var(--surface) 0%, var(--surface2) 100%);
+  border-radius: var(--radius);
+  padding: var(--space-6);
+  margin: var(--space-4) 0;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  overflow: hidden;
+}
+.welcome-card::before {
+  content: '';
+  position: absolute;
+  top: -40px;
+  right: -40px;
+  width: 120px;
+  height: 120px;
+  background: radial-gradient(circle, var(--accentSoft) 0%, transparent 70%);
+  border-radius: 50%;
+}
+
+.welcome-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, var(--accent), #D4734A);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  margin-bottom: var(--space-4);
+}
+
+.welcome-card h2 {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: var(--space-3);
+  color: var(--text);
+}
+
+.welcome-card p {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--textSecondary);
+}
+
+/* Chat bubbles */
+.message-row {
+  display: flex;
+  gap: var(--space-3);
+  max-width: 100%;
+}
+.message-row.user {
+  flex-direction: row-reverse;
+}
+
+.message-bubble {
+  max-width: 75%;
+  padding: var(--space-4) var(--space-5);
+  border-radius: var(--radius);
+  font-size: 15px;
+  line-height: 1.6;
+  position: relative;
+  animation: fadeInUp 0.35s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.message-bubble.ai {
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-bottom-left-radius: var(--space-2);
+}
+
+.message-bubble.user {
+  background: linear-gradient(135deg, var(--accent) 0%, #D4734A 100%);
+  color: white;
+  border-bottom-right-radius: var(--space-2);
+  box-shadow: 0 4px 12px rgba(232,131,92,0.2);
+}
+
+.message-meta {
+  font-size: 11px;
+  color: var(--textTertiary);
+  margin-top: var(--space-1);
+  padding: 0 var(--space-2);
+}
+
+/* Thinking indicator */
+.thinking {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-5);
+  color: var(--textTertiary);
+  font-size: 13px;
+}
+.thinking-dots {
+  display: flex;
+  gap: 4px;
+}
+.thinking-dots span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--typingDot);
+  animation: pulse 1.4s ease-in-out infinite;
+}
+.thinking-dots span:nth-child(2) { animation-delay: 0.2s; }
+.thinking-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+/* Quick actions */
+.quick-actions {
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.quick-actions-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--textTertiary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.quick-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.quick-chip {
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-full);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  font-size: 14px;
+  color: var(--textSecondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+.quick-chip:hover {
+  background: var(--accentSoft);
+  color: var(--accent);
+  border-color: var(--accentSoft);
+  transform: translateY(-1px);
+}
+
+/* Input area */
+.input-area {
+  padding: var(--space-4);
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+}
+
+.input-wrapper {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-3);
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--border);
+  transition: all var(--transition-base);
+}
+.input-wrapper:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(232,131,92,0.12);
+}
+
+.input-field {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 16px;
+  color: var(--text);
+  font-family: var(--font-body);
+  resize: none;
+  outline: none;
+  max-height: 100px;
+  padding: var(--space-1) 0;
+}
+.input-field::placeholder {
+  color: var(--inputPlaceholder);
+}
+
+.input-actions {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.icon-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  color: var(--textTertiary);
+  cursor: pointer;
+  font-size: 18px;
+  transition: all var(--transition-fast);
+}
+.icon-btn:hover {
+  background: var(--accentSoft);
+  color: var(--accent);
+}
+
+.send-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  background: var(--accent);
+  color: white;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all var(--transition-base);
+}
+.send-btn:hover {
+  opacity: 0.9;
+  transform: scale(1.08);
+}
+
+/* Inline cards */
+.inline-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: var(--space-5);
+  margin-top: var(--space-3);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  animation: scaleIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.inline-card-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.inline-card-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radiusSmall);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.inline-card-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.inline-card-subtitle {
+  font-size: 13px;
+  color: var(--textSecondary);
+}
+
+/* Disclaimer */
+.disclaimer {
+  text-align: center;
+  font-size: 11px;
+  color: var(--textTertiary);
+  padding: var(--space-2) var(--space-4);
+}
+
+/* Emergency banner */
+.emergency-banner {
+  background: var(--redSoft);
+  border: 1px solid rgba(211,95,95,0.2);
+  border-radius: var(--radiusSmall);
+  padding: var(--space-4);
+  margin: var(--space-3) var(--space-4);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  animation: slideInLeft 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.emergency-banner .icon {
+  font-size: 24px;
+}
+.emergency-banner .text {
+  flex: 1;
+}
+.emergency-banner .text strong {
+  display: block;
+  color: var(--red);
+  font-size: 14px;
+  margin-bottom: 2px;
+}
+.emergency-banner .text span {
+  font-size: 13px;
+  color: var(--textSecondary);
+}
+</style>
+</head>
+<body>
+<div class="phone-frame">
+  <div class="status-bar">
+    <span class="time">9:41</span>
+    <div class="icons">📶 🔋</div>
+  </div>
+
+  <div class="screen chat-screen">
+    <!-- Header -->
+    <div class="chat-header">
+      <button class="header-btn">📅</button>
+      <button class="header-btn">✅</button>
+      <div class="header-logo">🐾</div>
+      <div style="width:80px"></div>
+      <button class="header-btn">⚙️</button>
+    </div>
+
+    <!-- Emergency Banner (demo) -->
+    <div class="emergency-banner">
+      <span class="icon">🚨</span>
+      <div class="text">
+        <strong>检测到紧急情况</strong>
+        <span>附近宠物医院 · 2.3km</span>
+      </div>
+      <button class="header-btn" style="background:var(--red);color:white;border:none;">📍</button>
+    </div>
+
+    <!-- Messages -->
+    <div class="messages">
+      <!-- Welcome -->
+      <div class="message-row">
+        <div class="message-bubble ai">
+          <div class="welcome-avatar">🐾</div>
+          <h2 style="font-family:var(--font-display);font-size:20px;margin-bottom:8px;">你好！我是 CozyPup</h2>
+          <p style="font-size:14px;line-height:1.7;color:var(--textSecondary);">
+            你的宠物专属管家 🐾
+            <br><br>
+            我可以帮你：记录健康状况、设置疫苗提醒、查找附近宠物医院、解答养宠问题。
+            <br><br>
+            先告诉我你家毛孩子叫什么吧～
+          </p>
+        </div>
+      </div>
+
+      <!-- User message -->
+      <div class="message-row user">
+        <div class="message-bubble user">
+          我家柴犬叫维尼，今年2岁了，最近有点呕吐
+        </div>
+      </div>
+
+      <!-- AI thinking -->
+      <div class="message-row">
+        <div class="thinking">
+          <span>正在分析...</span>
+          <div class="thinking-dots">
+            <span></span><span></span><span></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- AI response with inline card -->
+      <div class="message-row">
+        <div class="message-bubble ai">
+          了解了，维尼呕吐可能有几种原因。让我先帮你记录一下这个情况，同时建议你观察几点：
+          <br><br>
+          • 呕吐物的颜色和质地<br>
+          • 是否伴有腹泻<br>
+          • 食欲和精神状态
+
+          <div class="inline-card">
+            <div class="inline-card-header">
+              <div class="inline-card-icon" style="background:var(--redSoft);">📝</div>
+              <div>
+                <div class="inline-card-title">健康记录已创建</div>
+                <div class="inline-card-subtitle">维尼 · 消化系统 · 2026-04-24</div>
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:12px;">
+              <span class="pill pill-active">🩺 观察中</span>
+              <span class="pill pill-inactive">📅 3天后提醒</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+      <div class="quick-actions-title">快速操作</div>
+      <div class="quick-chips">
+        <span class="quick-chip">💉 记录疫苗</span>
+        <span class="quick-chip">🏥 找宠物医院</span>
+        <span class="quick-chip">🍖 饮食建议</span>
+        <span class="quick-chip">⚖️ 体重记录</span>
+      </div>
+    </div>
+
+    <!-- Input -->
+    <div class="input-area">
+      <div class="input-wrapper">
+        <button class="icon-btn">📎</button>
+        <textarea class="input-field" rows="1" placeholder="问问关于维尼的事..."></textarea>
+        <div class="input-actions">
+          <button class="icon-btn">🎤</button>
+          <button class="send-btn">➜</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="disclaimer">AI 生成的内容，不构成医疗建议</div>
+  </div>
+
+  <div class="home-indicator"></div>
+</div>
+
+<nav class="demo-nav">
+  <a href="login.html">登录</a>
+  <a href="chat.html" class="active">聊天</a>
+  <a href="calendar.html">日历</a>
+  <a href="settings.html">设置</a>
+  <a href="pet-profile.html">宠物</a>
+  <a href="cards.html">卡片</a>
+</nav>
+
+<script>
+  // Auto-resize textarea
+  const textarea = document.querySelector('.input-field');
+  textarea.addEventListener('input', function() {
+    this.style.height = 'auto';
+    this.style.height = Math.min(this.scrollHeight, 100) + 'px';
+  });
+</script>
+</body>
+</html>

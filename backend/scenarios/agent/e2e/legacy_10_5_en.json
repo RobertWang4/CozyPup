@@ -1,0 +1,24 @@
+{
+  "id": "legacy_10_5_en",
+  "description": "Migrated legacy e2e case 10.5 (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "10.5",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "How do I get there?"
+  ],
+  "expect": {
+    "tools": [
+      "get_directions"
+    ]
+  },
+  "pets": [
+    {
+      "name": "Weiwei",
+      "species": "dog"
+    }
+  ]
+}

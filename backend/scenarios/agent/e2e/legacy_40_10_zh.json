@@ -1,0 +1,24 @@
+{
+  "id": "legacy_40_10_zh",
+  "description": "Migrated legacy e2e case 40.10 (zh).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "40.10",
+    "language": "zh"
+  },
+  "language": "zh",
+  "messages": [
+    "小维今天去公园玩了，记录一下"
+  ],
+  "expect": {
+    "tools": [
+      "create_calendar_event"
+    ]
+  },
+  "pets": [
+    {
+      "name": "小维",
+      "species": "dog"
+    }
+  ]
+}

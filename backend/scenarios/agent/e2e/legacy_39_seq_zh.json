@@ -1,0 +1,40 @@
+{
+  "id": "legacy_39_seq_zh",
+  "description": "Migrated legacy e2e case 39_seq (zh).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "39_seq",
+    "language": "zh"
+  },
+  "language": "zh",
+  "messages": [
+    "小维今天吃了狗粮",
+    "下午散步了",
+    "晚上洗了澡",
+    "小维体重30公斤",
+    "花了50块买了新项圈",
+    "提醒我下周打疫苗",
+    "每天遛狗两次",
+    "小维对鸡肉过敏",
+    "附近有狗公园吗",
+    "今天总共记了什么？",
+    "小维体重多少来着？",
+    "第一条记录是什么？"
+  ],
+  "expect": {
+    "tools": [
+      "create_calendar_event",
+      "update_pet_profile",
+      "create_reminder",
+      "create_daily_task",
+      "search_places",
+      "query_calendar_events"
+    ]
+  },
+  "pets": [
+    {
+      "name": "小维",
+      "species": "dog"
+    }
+  ]
+}

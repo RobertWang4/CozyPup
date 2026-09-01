@@ -1,0 +1,25 @@
+{
+  "id": "legacy_12_1_en",
+  "description": "Migrated legacy e2e case 12.1 (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "12.1",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "My cat is suddenly having seizures!"
+  ],
+  "expect": {
+    "cards": [
+      "emergency"
+    ],
+    "emergency": true
+  },
+  "pets": [
+    {
+      "name": "Weiwei",
+      "species": "dog"
+    }
+  ]
+}

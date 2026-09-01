@@ -1,0 +1,28 @@
+{
+  "id": "legacy_41_8_en",
+  "description": "Migrated legacy e2e case 41.8 (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "41.8",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "Ate dog food"
+  ],
+  "expect": {},
+  "pets": [
+    {
+      "name": "Weiwei",
+      "species": "dog"
+    },
+    {
+      "name": "Doudou",
+      "species": "dog"
+    },
+    {
+      "name": "Huahua",
+      "species": "cat"
+    }
+  ]
+}

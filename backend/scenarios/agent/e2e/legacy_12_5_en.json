@@ -1,0 +1,28 @@
+{
+  "id": "legacy_12_5_en",
+  "description": "Migrated legacy e2e case 12.5 (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "12.5",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "When was the last poisoning incident?"
+  ],
+  "expect": {
+    "tools": [
+      "query_calendar_events"
+    ],
+    "forbidden_tools": [
+      "trigger_emergency"
+    ],
+    "emergency": false
+  },
+  "pets": [
+    {
+      "name": "Weiwei",
+      "species": "dog"
+    }
+  ]
+}

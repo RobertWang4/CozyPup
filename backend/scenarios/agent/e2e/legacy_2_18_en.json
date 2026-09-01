@@ -1,0 +1,28 @@
+{
+  "id": "legacy_2_18_en",
+  "description": "Migrated legacy e2e case 2.18 (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "2.18",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "Take Weiwei for vaccination tomorrow at 3pm, remind me"
+  ],
+  "expect": {
+    "tools": [
+      "create_calendar_event",
+      "create_reminder"
+    ],
+    "cards": [
+      "record"
+    ]
+  },
+  "pets": [
+    {
+      "name": "Weiwei",
+      "species": "dog"
+    }
+  ]
+}

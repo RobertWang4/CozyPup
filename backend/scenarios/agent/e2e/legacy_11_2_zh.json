@@ -1,0 +1,28 @@
+{
+  "id": "legacy_11_2_zh",
+  "description": "Migrated legacy e2e case 11.2 (zh).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "11.2",
+    "language": "zh"
+  },
+  "language": "zh",
+  "messages": [
+    "Draft an email to the vet about Weiwei's vaccination history"
+  ],
+  "expect": {
+    "tools": [
+      "draft_email"
+    ]
+  },
+  "pets": [
+    {
+      "name": "小维",
+      "species": "dog"
+    },
+    {
+      "name": "Weiwei",
+      "species": "dog"
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "id": "legacy_41_9_en",
+  "description": "Migrated legacy e2e case 41.9 (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "41.9",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "Delete Huahua's record"
+  ],
+  "expect": {
+    "tools": [
+      "delete_calendar_event"
+    ]
+  },
+  "pets": [
+    {
+      "name": "Huahua",
+      "species": "cat"
+    },
+    {
+      "name": "Weiwei",
+      "species": "dog"
+    },
+    {
+      "name": "Doudou",
+      "species": "dog"
+    }
+  ]
+}

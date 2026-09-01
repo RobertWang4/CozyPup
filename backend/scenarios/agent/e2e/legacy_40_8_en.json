@@ -1,0 +1,24 @@
+{
+  "id": "legacy_40_8_en",
+  "description": "Migrated legacy e2e case 40.8 (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "40.8",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "Weiwei ate dog food today, walked in the afternoon, and had a bath in the evening"
+  ],
+  "expect": {
+    "tools": [
+      "create_calendar_event"
+    ]
+  },
+  "pets": [
+    {
+      "name": "Weiwei",
+      "species": "dog"
+    }
+  ]
+}

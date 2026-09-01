@@ -1,0 +1,24 @@
+{
+  "id": "legacy_16_4_zh",
+  "description": "Migrated legacy e2e case 16.4 (zh).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "16.4",
+    "language": "zh"
+  },
+  "language": "zh",
+  "messages": [
+    "帮我记录小维今天吃了狗粮"
+  ],
+  "expect": {
+    "tools": [
+      "create_calendar_event"
+    ]
+  },
+  "pets": [
+    {
+      "name": "小维",
+      "species": "dog"
+    }
+  ]
+}

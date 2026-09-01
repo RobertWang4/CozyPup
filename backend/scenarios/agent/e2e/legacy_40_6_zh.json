@@ -1,0 +1,28 @@
+{
+  "id": "legacy_40_6_zh",
+  "description": "Migrated legacy e2e case 40.6 (zh).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "40.6",
+    "language": "zh"
+  },
+  "language": "zh",
+  "messages": [
+    "今天遛了狗、喂了猫粮、给花花洗了澡"
+  ],
+  "expect": {
+    "tools": [
+      "create_calendar_event"
+    ]
+  },
+  "pets": [
+    {
+      "name": "小维",
+      "species": "dog"
+    },
+    {
+      "name": "花花",
+      "species": "cat"
+    }
+  ]
+}

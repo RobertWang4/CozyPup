@@ -1,0 +1,41 @@
+{
+  "id": "legacy_26_seq_zh",
+  "description": "Migrated legacy e2e case 26_seq (zh).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "26_seq",
+    "language": "zh"
+  },
+  "language": "zh",
+  "messages": [
+    "早上给小维喂了狗粮",
+    "花了30块买的新狗粮",
+    "上午带小维去公园散步了",
+    "就是在 Parkdale Park",
+    "拍了张照片",
+    "下午小维吐了",
+    "附近有24小时宠物急诊吗",
+    "第一家怎么走？",
+    "帮我给兽医写一封邮件说明情况",
+    "今天花了多少钱？",
+    "总结一下今天"
+  ],
+  "expect": {
+    "tools": [
+      "create_calendar_event",
+      "update_calendar_event",
+      "add_event_location",
+      "upload_event_photo",
+      "search_places",
+      "get_directions",
+      "draft_email",
+      "query_calendar_events"
+    ]
+  },
+  "pets": [
+    {
+      "name": "小维",
+      "species": "dog"
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "id": "legacy_15_2_zh",
+  "description": "Migrated legacy e2e case 15.2 (zh).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "15.2",
+    "language": "zh"
+  },
+  "language": "zh",
+  "messages": [
+    "帮我总结一下小维的档案"
+  ],
+  "expect": {
+    "tools": [
+      "summarize_pet_profile"
+    ]
+  },
+  "pets": [
+    {
+      "name": "小维",
+      "species": "dog"
+    }
+  ]
+}

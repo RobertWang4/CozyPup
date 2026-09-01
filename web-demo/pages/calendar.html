@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CozyPup — Calendar</title>
+<link rel="stylesheet" href="../css/common.css">
+<style>
+.calendar-screen {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--bg);
+}
+
+/* Drawer style header */
+.drawer-header {
+  padding: var(--space-6);
+  padding-top: 70px;
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  position: relative;
+}
+
+.pet-avatars {
+  display: flex;
+  gap: var(--space-2);
+  flex: 1;
+}
+
+.pet-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-full);
+  background: var(--surface);
+  border: 2px solid transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  position: relative;
+}
+.pet-avatar.active {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accentSoft);
+}
+.pet-avatar.active::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 5px solid var(--accent);
+}
+.pet-avatar.dimmed {
+  opacity: 0.4;
+}
+
+.mode-btns {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.mode-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  font-size: 14px;
+  transition: all var(--transition-fast);
+  color: var(--textSecondary);
+}
+.mode-btn:hover, .mode-btn.active {
+  background: var(--accentSoft);
+  color: var(--accent);
+}
+
+/* Category filter */
+.category-filter {
+  display: flex;
+  gap: var(--space-2);
+  padding: 0 var(--space-6) var(--space-4);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.category-filter::-webkit-scrollbar { display: none; }
+
+.cat-pill {
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  border: 1px solid var(--border);
+}
+.cat-pill.active {
+  color: white;
+  border-color: transparent;
+}
+.cat-pill:not(.active) {
+  background: var(--surface);
+  color: var(--textSecondary);
+}
+.cat-pill:not(.active):hover {
+  background: var(--surface2);
+}
+
+.cat-daily.active { background: var(--accent); }
+.cat-diet.active { background: var(--green); }
+.cat-medical.active { background: var(--blue); }
+.cat-abnormal.active { background: var(--red); }
+
+/* Calendar card */
+.calendar-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  margin: 0 var(--space-4);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+}
+
+.calendar-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-5);
+}
+
+.calendar-nav button {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  border: none;
+  background: transparent;
+  color: var(--textSecondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  transition: all var(--transition-fast);
+}
+.calendar-nav button:hover {
+  background: var(--surface2);
+  color: var(--text);
+}
+
+.calendar-nav h2 {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+/* Weekday headers */
+.weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  margin-bottom: var(--space-3);
+}
+.weekdays span {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--textTertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Days grid */
+.days-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.day-cell {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radiusSmall);
+  cursor: pointer;
+  position: relative;
+  transition: all var(--transition-fast);
+  font-size: 14px;
+  color: var(--text);
+}
+.day-cell:hover {
+  background: var(--surface2);
+}
+.day-cell.selected {
+  background: var(--accent);
+  color: white;
+  box-shadow: 0 4px 12px rgba(232,131,92,0.2);
+}
+.day-cell.today {
+  font-weight: 700;
+}
+.day-cell.today:not(.selected) {
+  color: var(--accent);
+}
+.day-cell.other-month {
+  color: var(--textTertiary);
+}
+
+.day-dots {
+  display: flex;
+  gap: 2px;
+  margin-top: 2px;
+}
+.day-dots span {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+}
+
+/* Events list */
+.events-section {
+  padding: var(--space-4);
+}
+
+.events-section h3 {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--textTertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: var(--space-4);
+}
+
+.event-card {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  background: var(--surface);
+  border-radius: var(--radius);
+  margin-bottom: var(--space-3);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-base);
+  cursor: pointer;
+}
+.event-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.event-color {
+  width: 4px;
+  align-self: stretch;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
+
+.event-info h4 {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+.event-info p {
+  font-size: 13px;
+  color: var(--textSecondary);
+  margin-bottom: var(--space-1);
+}
+.event-tags {
+  display: flex;
+  gap: var(--space-1);
+}
+
+/* Timeline view (alternative) */
+.timeline {
+  padding: var(--space-4);
+}
+
+.timeline-item {
+  display: flex;
+  gap: var(--space-4);
+  position: relative;
+  padding-bottom: var(--space-5);
+}
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: 19px;
+  top: 36px;
+  bottom: 0;
+  width: 2px;
+  background: var(--border);
+}
+.timeline-item:last-child::before { display: none; }
+
+.timeline-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: var(--radius-full);
+  margin-top: 14px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+.timeline-dot::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: var(--radius-full);
+  background: inherit;
+  opacity: 0.3;
+}
+
+.timeline-content {
+  flex: 1;
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: var(--space-4);
+  border: 1px solid var(--border);
+}
+
+.timeline-date {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--textTertiary);
+  margin-bottom: var(--space-2);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Tab switcher */
+.tab-bar {
+  display: flex;
+  padding: var(--space-2);
+  background: var(--surface);
+  border-radius: var(--radius-full);
+  margin: 0 var(--space-4) var(--space-4);
+}
+.tab-bar button {
+  flex: 1;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-full);
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--textSecondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-family: var(--font-body);
+}
+.tab-bar button.active {
+  background: var(--text);
+  color: var(--surface);
+}
+</style>
+</head>
+<body>
+<div class="phone-frame">
+  <div class="status-bar">
+    <span class="time">9:41</span>
+    <div class="icons">📶 🔋</div>
+  </div>
+
+  <div class="screen calendar-screen">
+    <!-- Header with pet avatars -->
+    <div class="drawer-header">
+      <div class="pet-avatars">
+        <div class="pet-avatar active">🐕</div>
+        <div class="pet-avatar">🐈</div>
+      </div>
+      <div class="mode-btns">
+        <button class="mode-btn active" title="Calendar">📅</button>
+        <button class="mode-btn" title="Timeline">📋</button>
+        <button class="mode-btn" title="Tasks">✅</button>
+      </div>
+    </div>
+
+    <!-- Category filter -->
+    <div class="category-filter">
+      <span class="cat-pill cat-daily active">日常</span>
+      <span class="cat-pill cat-diet">饮食</span>
+      <span class="cat-pill cat-medical">医疗</span>
+      <span class="cat-pill cat-abnormal">异常</span>
+    </div>
+
+    <!-- Calendar Card -->
+    <div class="calendar-card">
+      <div class="calendar-nav">
+        <button>◀</button>
+        <h2>April 2026</h2>
+        <button>▶</button>
+      </div>
+      <div class="weekdays">
+        <span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span>
+      </div>
+      <div class="days-grid">
+        <div class="day-cell other-month">30</div>
+        <div class="day-cell other-month">31</div>
+        <div class="day-cell">1</div>
+        <div class="day-cell">2</div>
+        <div class="day-cell">3</div>
+        <div class="day-cell">4</div>
+        <div class="day-cell">5</div>
+        <div class="day-cell">6</div>
+        <div class="day-cell">7</div>
+        <div class="day-cell">8</div>
+        <div class="day-cell">9</div>
+        <div class="day-cell">10</div>
+        <div class="day-cell">11</div>
+        <div class="day-cell">12</div>
+        <div class="day-cell">13</div>
+        <div class="day-cell">14</div>
+        <div class="day-cell">15</div>
+        <div class="day-cell">16</div>
+        <div class="day-cell">17</div>
+        <div class="day-cell">18</div>
+        <div class="day-cell">19</div>
+        <div class="day-cell">20</div>
+        <div class="day-cell">21</div>
+        <div class="day-cell">22</div>
+        <div class="day-cell">23</div>
+        <div class="day-cell today selected">24
+          <div class="day-dots"><span style="background:var(--blue)"></span><span style="background:var(--red)"></span></div>
+        </div>
+        <div class="day-cell">25</div>
+        <div class="day-cell">26</div>
+        <div class="day-cell">27</div>
+        <div class="day-cell">28</div>
+        <div class="day-cell">29</div>
+        <div class="day-cell">30</div>
+        <div class="day-cell other-month">1</div>
+        <div class="day-cell other-month">2</div>
+      </div>
+    </div>
+
+    <!-- Events for selected date -->
+    <div class="events-section">
+      <h3>4月24日 · 今天</h3>
+
+      <div class="event-card">
+        <div class="event-color" style="background:var(--blue)"></div>
+        <div class="event-info">
+          <h4>年度疫苗接种</h4>
+          <p>维尼 · 14:30 · 瑞鹏宠物医院</p>
+          <div class="event-tags">
+            <span class="pill" style="background:var(--blue-soft);color:var(--blue)">医疗</span>
+            <span class="pill" style="background:var(--orange-soft);color:var(--orange)">💰 ¥280</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="event-card">
+        <div class="event-color" style="background:var(--red)"></div>
+        <div class="event-info">
+          <h4>呕吐观察</h4>
+          <p>维尼 · 上午 · 已记录症状</p>
+          <div class="event-tags">
+            <span class="pill" style="background:var(--redSoft);color:var(--red)">异常</span>
+            <span class="pill" style="background:var(--orange-soft);color:var(--orange)">⏰ 3天后提醒</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="event-card">
+        <div class="event-color" style="background:var(--green)"></div>
+        <div class="event-info">
+          <h4>每日称重</h4>
+          <p>咪咪 · 15.2kg · 正常范围</p>
+          <div class="event-tags">
+            <span class="pill" style="background:var(--green-soft);color:var(--green)">日常</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="home-indicator"></div>
+</div>
+
+<nav class="demo-nav">
+  <a href="login.html">登录</a>
+  <a href="chat.html">聊天</a>
+  <a href="calendar.html" class="active">日历</a>
+  <a href="settings.html">设置</a>
+  <a href="pet-profile.html">宠物</a>
+  <a href="cards.html">卡片</a>
+</nav>
+</body>
+</html>

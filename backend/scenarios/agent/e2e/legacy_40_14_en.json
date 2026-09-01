@@ -1,0 +1,26 @@
+{
+  "id": "legacy_40_14_en",
+  "description": "Migrated legacy e2e case 40.14 (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "40.14",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "Record eating dog food, record walking, remind about vaccination, create medicine task"
+  ],
+  "expect": {
+    "tools": [
+      "create_calendar_event",
+      "create_reminder",
+      "create_daily_task"
+    ]
+  },
+  "pets": [
+    {
+      "name": "Weiwei",
+      "species": "dog"
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "id": "legacy_38_7_zh",
+  "description": "Migrated legacy e2e case 38.7 (zh).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "38.7",
+    "language": "zh"
+  },
+  "language": "zh",
+  "messages": [
+    "小维上次中毒是什么时候？"
+  ],
+  "expect": {
+    "tools": [
+      "query_calendar_events"
+    ],
+    "forbidden_tools": [
+      "trigger_emergency"
+    ],
+    "emergency": false
+  },
+  "pets": [
+    {
+      "name": "小维",
+      "species": "dog"
+    }
+  ]
+}

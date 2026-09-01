@@ -1,0 +1,25 @@
+{
+  "id": "legacy_12_1_zh",
+  "description": "Migrated legacy e2e case 12.1 (zh).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "12.1",
+    "language": "zh"
+  },
+  "language": "zh",
+  "messages": [
+    "我的猫突然抽搐了！"
+  ],
+  "expect": {
+    "cards": [
+      "emergency"
+    ],
+    "emergency": true
+  },
+  "pets": [
+    {
+      "name": "小维",
+      "species": "dog"
+    }
+  ]
+}

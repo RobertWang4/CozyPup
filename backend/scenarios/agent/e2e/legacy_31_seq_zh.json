@@ -1,0 +1,30 @@
+{
+  "id": "legacy_31_seq_zh",
+  "description": "Migrated legacy e2e case 31_seq (zh).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "31_seq",
+    "language": "zh"
+  },
+  "language": "zh",
+  "messages": [
+    "帮我找附近的狗公园",
+    "第一家评价怎么样？",
+    "怎么去那里？",
+    "好，记录一下小维今天去了这个公园"
+  ],
+  "expect": {
+    "tools": [
+      "search_places",
+      "get_place_details",
+      "get_directions",
+      "create_calendar_event"
+    ]
+  },
+  "pets": [
+    {
+      "name": "小维",
+      "species": "dog"
+    }
+  ]
+}

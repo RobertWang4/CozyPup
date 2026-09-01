@@ -1,0 +1,27 @@
+{
+  "id": "legacy_20_4_en",
+  "description": "Migrated legacy e2e case 20.4 (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "20.4",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "Delete the dog walking task"
+  ],
+  "expect": {
+    "tools": [
+      "manage_daily_task"
+    ],
+    "cards": [
+      "confirm_action"
+    ]
+  },
+  "pets": [
+    {
+      "name": "Weiwei",
+      "species": "dog"
+    }
+  ]
+}

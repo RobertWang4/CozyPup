@@ -1,0 +1,32 @@
+{
+  "id": "legacy_41_13_en",
+  "description": "Migrated legacy e2e case 41.13 (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "41.13",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "Huahua ate cat food today"
+  ],
+  "expect": {
+    "tools": [
+      "create_calendar_event"
+    ]
+  },
+  "pets": [
+    {
+      "name": "Huahua",
+      "species": "cat"
+    },
+    {
+      "name": "Weiwei",
+      "species": "dog"
+    },
+    {
+      "name": "Doudou",
+      "species": "dog"
+    }
+  ]
+}

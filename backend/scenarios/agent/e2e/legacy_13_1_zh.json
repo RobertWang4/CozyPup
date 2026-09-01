@@ -1,0 +1,18 @@
+{
+  "id": "legacy_13_1_zh",
+  "description": "Migrated legacy e2e case 13.1 (zh).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "13.1",
+    "language": "zh"
+  },
+  "language": "zh",
+  "messages": [
+    "switch to English"
+  ],
+  "expect": {
+    "tools": [
+      "set_language"
+    ]
+  }
+}

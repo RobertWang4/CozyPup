@@ -1,0 +1,32 @@
+{
+  "id": "legacy_41_14_zh",
+  "description": "Migrated legacy e2e case 41.14 (zh).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "41.14",
+    "language": "zh"
+  },
+  "language": "zh",
+  "messages": [
+    "我的记录"
+  ],
+  "expect": {
+    "tools": [
+      "query_calendar_events"
+    ]
+  },
+  "pets": [
+    {
+      "name": "小维",
+      "species": "dog"
+    },
+    {
+      "name": "豆豆",
+      "species": "dog"
+    },
+    {
+      "name": "花花",
+      "species": "cat"
+    }
+  ]
+}

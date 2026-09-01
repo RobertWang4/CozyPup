@@ -1,0 +1,29 @@
+{
+  "id": "legacy_28_seq_en",
+  "description": "Migrated legacy e2e case 28_seq (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "28_seq",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "I got a new cat named Huahua",
+    "She's a British Shorthair blue cat",
+    "Female, already spayed",
+    "Weighs 4 kg, birthday June 2023",
+    "Allergic to chicken",
+    "Use this as the avatar",
+    "Help me summarize Huahua's profile",
+    "Does Huahua have any records?"
+  ],
+  "expect": {
+    "tools": [
+      "create_pet",
+      "update_pet_profile",
+      "set_pet_avatar",
+      "summarize_pet_profile",
+      "query_calendar_events"
+    ]
+  }
+}

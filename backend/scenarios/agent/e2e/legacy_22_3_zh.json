@@ -1,0 +1,24 @@
+{
+  "id": "legacy_22_3_zh",
+  "description": "Migrated legacy e2e case 22.3 (zh).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "22.3",
+    "language": "zh"
+  },
+  "language": "zh",
+  "messages": [
+    "删除所有待办"
+  ],
+  "expect": {
+    "tools": [
+      "manage_daily_task"
+    ]
+  },
+  "pets": [
+    {
+      "name": "小维",
+      "species": "dog"
+    }
+  ]
+}

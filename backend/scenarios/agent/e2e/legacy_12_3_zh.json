@@ -1,0 +1,25 @@
+{
+  "id": "legacy_12_3_zh",
+  "description": "Migrated legacy e2e case 12.3 (zh).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "12.3",
+    "language": "zh"
+  },
+  "language": "zh",
+  "messages": [
+    "小维呼吸困难！"
+  ],
+  "expect": {
+    "cards": [
+      "emergency"
+    ],
+    "emergency": true
+  },
+  "pets": [
+    {
+      "name": "小维",
+      "species": "dog"
+    }
+  ]
+}

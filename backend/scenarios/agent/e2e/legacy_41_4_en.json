@@ -1,0 +1,32 @@
+{
+  "id": "legacy_41_4_en",
+  "description": "Migrated legacy e2e case 41.4 (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "41.4",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "Doudou vomited"
+  ],
+  "expect": {
+    "tools": [
+      "create_calendar_event"
+    ]
+  },
+  "pets": [
+    {
+      "name": "Doudou",
+      "species": "dog"
+    },
+    {
+      "name": "Weiwei",
+      "species": "dog"
+    },
+    {
+      "name": "Huahua",
+      "species": "cat"
+    }
+  ]
+}

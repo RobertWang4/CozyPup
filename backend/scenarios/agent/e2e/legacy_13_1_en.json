@@ -1,0 +1,18 @@
+{
+  "id": "legacy_13_1_en",
+  "description": "Migrated legacy e2e case 13.1 (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "13.1",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "switch to English"
+  ],
+  "expect": {
+    "tools": [
+      "set_language"
+    ]
+  }
+}

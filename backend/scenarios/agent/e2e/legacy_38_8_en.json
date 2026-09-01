@@ -1,0 +1,24 @@
+{
+  "id": "legacy_38_8_en",
+  "description": "Migrated legacy e2e case 38.8 (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "38.8",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "I got a new dog named Weiwei"
+  ],
+  "expect": {
+    "forbidden_tools": [
+      "create_pet"
+    ]
+  },
+  "pets": [
+    {
+      "name": "Weiwei",
+      "species": "dog"
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "id": "legacy_8_3_zh",
+  "description": "Migrated legacy e2e case 8.3 (zh).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "8.3",
+    "language": "zh"
+  },
+  "language": "zh",
+  "messages": [
+    "每天喂两次药"
+  ],
+  "expect": {
+    "tools": [
+      "create_daily_task"
+    ]
+  },
+  "pets": [
+    {
+      "name": "小维",
+      "species": "dog"
+    }
+  ]
+}

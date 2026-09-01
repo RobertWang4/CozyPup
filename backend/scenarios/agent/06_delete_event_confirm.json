@@ -1,0 +1,22 @@
+{
+  "id": "delete_event_confirm",
+  "description": "Deletion should use the calendar lookup/delete flow and surface a confirmation card.",
+  "language": "en",
+  "pets": [{"name": "Max", "species": "dog"}],
+  "events": [
+    {
+      "pet_name": "Max",
+      "event_date": "today",
+      "title": "Vomiting",
+      "category": "abnormal",
+      "raw_text": "Max vomited today."
+    }
+  ],
+  "messages": ["Delete Max's vomiting record from today."],
+  "expect": {
+    "tools": ["delete_calendar_event"],
+    "cards": ["confirm_action"],
+    "forbidden_tools": ["create_calendar_event"],
+    "contains_any": ["confirm", "tap", "delete"]
+  }
+}

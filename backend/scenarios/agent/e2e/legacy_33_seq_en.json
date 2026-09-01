@@ -1,0 +1,36 @@
+{
+  "id": "legacy_33_seq_en",
+  "description": "Migrated legacy e2e case 33_seq (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "33_seq",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "Weiwei ate dog food today",
+    "Huahua also ate cat food",
+    "They both went to the park together",
+    "Weiwei vomited at the park",
+    "What has Huahua eaten recently?",
+    "Remind me to give Weiwei medicine tomorrow",
+    "Huahua needs it too"
+  ],
+  "expect": {
+    "tools": [
+      "create_calendar_event",
+      "query_calendar_events",
+      "create_reminder"
+    ]
+  },
+  "pets": [
+    {
+      "name": "Weiwei",
+      "species": "dog"
+    },
+    {
+      "name": "Huahua",
+      "species": "cat"
+    }
+  ]
+}

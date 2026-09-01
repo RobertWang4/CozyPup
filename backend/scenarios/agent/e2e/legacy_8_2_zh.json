@@ -1,0 +1,24 @@
+{
+  "id": "legacy_8_2_zh",
+  "description": "Migrated legacy e2e case 8.2 (zh).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "8.2",
+    "language": "zh"
+  },
+  "language": "zh",
+  "messages": [
+    "这周每天给小维量体温"
+  ],
+  "expect": {
+    "tools": [
+      "create_daily_task"
+    ]
+  },
+  "pets": [
+    {
+      "name": "小维",
+      "species": "dog"
+    }
+  ]
+}

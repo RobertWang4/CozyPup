@@ -1,0 +1,24 @@
+{
+  "id": "legacy_10_8_zh",
+  "description": "Migrated legacy e2e case 10.8 (zh).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "10.8",
+    "language": "zh"
+  },
+  "language": "zh",
+  "messages": [
+    "带小维去了 Vanier Animal Hospital 做体检"
+  ],
+  "expect": {
+    "tools": [
+      "create_calendar_event"
+    ]
+  },
+  "pets": [
+    {
+      "name": "小维",
+      "species": "dog"
+    }
+  ]
+}

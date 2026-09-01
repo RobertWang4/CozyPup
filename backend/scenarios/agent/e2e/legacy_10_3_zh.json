@@ -1,0 +1,24 @@
+{
+  "id": "legacy_10_3_zh",
+  "description": "Migrated legacy e2e case 10.3 (zh).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "10.3",
+    "language": "zh"
+  },
+  "language": "zh",
+  "messages": [
+    "北京朝阳区宠物医院"
+  ],
+  "expect": {
+    "tools": [
+      "search_places_text"
+    ]
+  },
+  "pets": [
+    {
+      "name": "小维",
+      "species": "dog"
+    }
+  ]
+}

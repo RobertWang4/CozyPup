@@ -1,0 +1,18 @@
+{
+  "id": "legacy_41_15_en",
+  "description": "Migrated legacy e2e case 41.15 (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "41.15",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "I got another cat named Huahua"
+  ],
+  "expect": {
+    "tools": [
+      "create_pet"
+    ]
+  }
+}

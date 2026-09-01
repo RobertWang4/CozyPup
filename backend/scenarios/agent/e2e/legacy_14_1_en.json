@@ -1,0 +1,24 @@
+{
+  "id": "legacy_14_1_en",
+  "description": "Migrated legacy e2e case 14.1 (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "14.1",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "Ate dog food"
+  ],
+  "expect": {},
+  "pets": [
+    {
+      "name": "Weiwei",
+      "species": "dog"
+    },
+    {
+      "name": "Huahua",
+      "species": "cat"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "id": "legacy_20_1_en",
+  "description": "Migrated legacy e2e case 20.1 (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "20.1",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "Delete Weiwei"
+  ],
+  "expect": {
+    "tools": [
+      "delete_pet"
+    ],
+    "cards": [
+      "confirm_action"
+    ]
+  },
+  "pets": [
+    {
+      "name": "Weiwei",
+      "species": "dog"
+    }
+  ]
+}

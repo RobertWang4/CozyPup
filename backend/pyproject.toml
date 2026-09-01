@@ -27,17 +27,13 @@ dependencies = [
 [project.scripts]
 debug = "app.admin_cli.main:debug_shim"
 admin = "app.admin_cli.main:cli"
+agent = "app.agent_harness.cli:cli"
 
 [project.optional-dependencies]
 dev = ["respx>=0.21.0", "pytest-asyncio>=0.23.0"]
 
 [tool.setuptools.packages.find]
 include = ["app*"]
-
-[tool.pytest.ini_options]
-markers = [
-    "rag_eval: opt-in RAG retrieval regression eval; hits real DB + embedding endpoint. Run with `pytest -m rag_eval`.",
-]
 
 [build-system]
 requires = ["setuptools>=75.0"]

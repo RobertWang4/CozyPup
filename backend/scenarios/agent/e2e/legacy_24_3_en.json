@@ -1,0 +1,33 @@
+{
+  "id": "legacy_24_3_en",
+  "description": "Migrated legacy e2e case 24.3 (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "24.3",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "Change it to 'Park Walk'"
+  ],
+  "expect": {
+    "tools": [
+      "update_calendar_event"
+    ]
+  },
+  "pets": [
+    {
+      "name": "Weiwei",
+      "species": "dog"
+    }
+  ],
+  "events": [
+    {
+      "pet_name": "Weiwei",
+      "event_date": "today",
+      "title": "Walk",
+      "category": "daily",
+      "raw_text": "seed event for migrated e2e scenario"
+    }
+  ]
+}

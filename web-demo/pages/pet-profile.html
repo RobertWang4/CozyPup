@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CozyPup — Pet Profile</title>
+<link rel="stylesheet" href="../css/common.css">
+<style>
+.profile-screen {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--bg);
+}
+
+.profile-scroll {
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* Cover image area */
+.cover-area {
+  height: 240px;
+  background: linear-gradient(135deg, #E8C8A0 0%, #D4A574 50%, #C49464 100%);
+  position: relative;
+  border-radius: 0 0 var(--radius) var(--radius);
+  overflow: hidden;
+}
+.cover-area::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.08'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+.cover-gradient {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 120px;
+  background: linear-gradient(to top, var(--bg), transparent);
+}
+
+/* Toolbar */
+.profile-toolbar {
+  position: absolute;
+  top: 50px;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-5);
+  z-index: 10;
+}
+.toolbar-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.2);
+  backdrop-filter: blur(10px);
+  border: none;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+.toolbar-btn:hover {
+  background: rgba(255,255,255,0.35);
+}
+
+/* Floating avatar */
+.avatar-section {
+  display: flex;
+  justify-content: center;
+  margin-top: -50px;
+  position: relative;
+  z-index: 2;
+}
+
+.pet-avatar-large {
+  width: 100px;
+  height: 100px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, var(--surface), var(--surface2));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+  border: 4px solid var(--bg);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Name section */
+.name-section {
+  text-align: center;
+  padding: var(--space-4) var(--space-6);
+}
+.name-section h1 {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: var(--space-1);
+}
+.name-section .breed {
+  font-size: 15px;
+  color: var(--textSecondary);
+  margin-bottom: var(--space-3);
+}
+.name-section .tags {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-2);
+}
+
+/* Info grid */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-3);
+  padding: 0 var(--space-5);
+  margin-bottom: var(--space-6);
+}
+
+.info-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: var(--space-5);
+  text-align: center;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-base);
+  cursor: pointer;
+}
+.info-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+.info-card .label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--textTertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: var(--space-2);
+}
+.info-card .value {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--text);
+}
+.info-card .sub {
+  font-size: 13px;
+  color: var(--textSecondary);
+  margin-top: 2px;
+}
+
+/* Bio card */
+.bio-card {
+  margin: 0 var(--space-5) var(--space-6);
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: var(--space-6);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  position: relative;
+}
+.bio-card::before {
+  content: '"';
+  position: absolute;
+  top: var(--space-4);
+  right: var(--space-5);
+  font-family: var(--font-display);
+  font-size: 60px;
+  color: var(--border);
+  line-height: 1;
+}
+
+.bio-card h3 {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: var(--space-3);
+  color: var(--text);
+}
+.bio-card p {
+  font-size: 15px;
+  line-height: 1.8;
+  color: var(--textSecondary);
+}
+
+/* Stats / Health section */
+.health-section {
+  margin: 0 var(--space-5) var(--space-6);
+}
+.health-section h3 {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--textTertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: var(--space-4);
+}
+
+.health-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: var(--space-5);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+
+.health-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--border);
+}
+.health-row:last-child {
+  border-bottom: none;
+}
+.health-row .left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+.health-row .icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radiusSmall);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+.health-row .label {
+  font-size: 15px;
+  color: var(--text);
+}
+.health-row .value {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+/* Progress bar */
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  border-radius: var(--radius-full);
+  background: var(--surface2);
+  margin-top: var(--space-2);
+  overflow: hidden;
+}
+.progress-bar .fill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  background: linear-gradient(90deg, var(--accent), #D4734A);
+  transition: width 1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Edit FAB */
+.edit-fab {
+  position: absolute;
+  bottom: var(--space-8);
+  right: var(--space-6);
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, var(--accent), #D4734A);
+  color: white;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(232,131,92,0.2);
+  transition: all var(--transition-base);
+  z-index: 50;
+}
+.edit-fab:hover {
+  transform: scale(1.08) translateY(-2px);
+  box-shadow: 0 8px 24px rgba(232,131,92,0.25);
+}
+</style>
+</head>
+<body>
+<div class="phone-frame">
+  <div class="status-bar">
+    <span class="time">9:41</span>
+    <div class="icons">📶 🔋</div>
+  </div>
+
+  <div class="screen profile-screen">
+    <div class="profile-scroll">
+      <!-- Cover -->
+      <div class="cover-area">
+        <div class="cover-gradient"></div>
+        <div class="profile-toolbar">
+          <button class="toolbar-btn">←</button>
+          <span style="color:white;font-size:13px;font-weight:600;letter-spacing:2px;text-transform:uppercase;opacity:0.9;">PROFILE</span>
+          <button class="toolbar-btn">✏️</button>
+        </div>
+      </div>
+
+      <!-- Avatar -->
+      <div class="avatar-section">
+        <div class="pet-avatar-large">🐕</div>
+      </div>
+
+      <!-- Name -->
+      <div class="name-section">
+        <h1>维尼</h1>
+        <div class="breed">柴犬 · 2岁3个月</div>
+        <div class="tags">
+          <span class="pill pill-active">♂ 公</span>
+          <span class="pill pill-inactive">已绝育</span>
+          <span class="pill pill-inactive">15.2kg</span>
+        </div>
+      </div>
+
+      <!-- Info Grid -->
+      <div class="info-grid">
+        <div class="info-card">
+          <div class="label">年龄</div>
+          <div class="value">2岁</div>
+          <div class="sub">2023.07.22</div>
+        </div>
+        <div class="info-card">
+          <div class="label">体重</div>
+          <div class="value">15.2</div>
+          <div class="sub">kg</div>
+        </div>
+        <div class="info-card">
+          <div class="label">下次疫苗</div>
+          <div class="value" style="color:var(--orange)">87</div>
+          <div class="sub">天后</div>
+        </div>
+        <div class="info-card">
+          <div class="label">本月事件</div>
+          <div class="value" style="color:var(--blue)">12</div>
+          <div class="sub">条记录</div>
+        </div>
+      </div>
+
+      <!-- Bio -->
+      <div class="bio-card">
+        <h3>性格档案</h3>
+        <p>性格黏人但独立。特别怕打雷，每次下雨都要躲在床底下。喜欢在公园追松鼠，但永远追不到。最爱的零食是冻干三文鱼。</p>
+      </div>
+
+      <!-- Health Stats -->
+      <div class="health-section">
+        <h3>健康概览</h3>
+        <div class="health-card">
+          <div class="health-row">
+            <div class="left">
+              <div class="icon" style="background:var(--green-soft);">💉</div>
+              <span class="label">疫苗接种</span>
+            </div>
+            <span class="value" style="color:var(--green)">✓ 已接种</span>
+          </div>
+          <div class="health-row">
+            <div class="left">
+              <div class="icon" style="background:var(--blue-soft);">🐛</div>
+              <span class="label">驱虫</span>
+            </div>
+            <span class="value" style="color:var(--blue)">✓ 本月已做</span>
+          </div>
+          <div class="health-row">
+            <div class="left">
+              <div class="icon" style="background:var(--orange-soft);">⚖️</div>
+              <span class="label">体重趋势</span>
+            </div>
+            <span class="value">+0.3kg</span>
+          </div>
+          <div style="padding-top:var(--space-3);">
+            <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--textTertiary);margin-bottom:var(--space-2);">
+              <span>健康评分</span>
+              <span style="color:var(--text);font-weight:600;">92/100</span>
+            </div>
+            <div class="progress-bar">
+              <div class="fill" style="width:92%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="height:40px;"></div>
+    </div>
+
+    <button class="edit-fab">✎</button>
+  </div>
+
+  <div class="home-indicator"></div>
+</div>
+
+<nav class="demo-nav">
+  <a href="login.html">登录</a>
+  <a href="chat.html">聊天</a>
+  <a href="calendar.html">日历</a>
+  <a href="settings.html">设置</a>
+  <a href="pet-profile.html" class="active">宠物</a>
+  <a href="cards.html">卡片</a>
+</nav>
+</body>
+</html>

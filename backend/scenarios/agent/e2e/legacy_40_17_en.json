@@ -1,0 +1,24 @@
+{
+  "id": "legacy_40_17_en",
+  "description": "Migrated legacy e2e case 40.17 (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "40.17",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "Record a walk"
+  ],
+  "expect": {
+    "tools": [
+      "create_calendar_event"
+    ]
+  },
+  "pets": [
+    {
+      "name": "Weiwei",
+      "species": "dog"
+    }
+  ]
+}

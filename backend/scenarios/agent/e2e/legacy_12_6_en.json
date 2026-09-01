@@ -1,0 +1,28 @@
+{
+  "id": "legacy_12_6_en",
+  "description": "Migrated legacy e2e case 12.6 (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "12.6",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "Has Weiwei had seizures before?"
+  ],
+  "expect": {
+    "tools": [
+      "query_calendar_events"
+    ],
+    "forbidden_tools": [
+      "trigger_emergency"
+    ],
+    "emergency": false
+  },
+  "pets": [
+    {
+      "name": "Weiwei",
+      "species": "dog"
+    }
+  ]
+}

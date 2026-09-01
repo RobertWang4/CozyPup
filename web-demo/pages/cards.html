@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CozyPup — Cards</title>
+<link rel="stylesheet" href="../css/common.css">
+<style>
+.cards-screen {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--bg);
+}
+
+.cards-header {
+  padding: var(--space-6);
+  padding-top: 70px;
+  padding-bottom: var(--space-4);
+}
+.cards-header h1 {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--text);
+}
+.cards-header p {
+  font-size: 15px;
+  color: var(--textSecondary);
+  margin-top: var(--space-1);
+}
+
+.cards-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 var(--space-5);
+  padding-bottom: var(--space-8);
+}
+
+.cards-scroll h2 {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--textTertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin: var(--space-6) 0 var(--space-4);
+}
+.cards-scroll h2:first-child {
+  margin-top: 0;
+}
+
+/* ===== Card Styles ===== */
+.ai-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: var(--space-6);
+  margin-bottom: var(--space-5);
+  border: 1px solid var(--border);
+  box-shadow:
+    0 1px 2px rgba(61, 44, 30, 0.04),
+    0 4px 12px rgba(61, 44, 30, 0.06),
+    inset 0 1px 0 rgba(255,255,255,0.5);
+  transition: all var(--transition-base);
+  animation: scaleIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.ai-card:hover {
+  box-shadow:
+    0 4px 6px rgba(61, 44, 30, 0.05),
+    0 12px 24px rgba(61, 44, 30, 0.08),
+    inset 0 1px 0 rgba(255,255,255,0.5);
+  transform: translateY(-2px);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+.card-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radiusSmall);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  box-shadow: inset 0 1px 2px rgba(255,255,255,0.4);
+}
+.card-meta .label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--textTertiary);
+}
+.card-meta .title {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text);
+  margin-top: 2px;
+  letter-spacing: -0.02em;
+}
+.card-meta .subtitle {
+  font-size: 13px;
+  color: var(--textSecondary);
+  margin-top: 3px;
+}
+
+.card-body {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--textSecondary);
+}
+
+.card-footer {
+  display: flex;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+
+/* Action Card (single button) */
+.card-action-btn {
+  flex: 1;
+  padding: var(--space-3) var(--space-5);
+  border-radius: var(--radius-full);
+  border: none;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-family: var(--font-body);
+  text-align: center;
+}
+.card-action-btn.primary {
+  background: linear-gradient(135deg, var(--accent) 0%, #D4734A 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(232,131,92,0.25);
+}
+.card-action-btn.primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(232,131,92,0.3);
+}
+.card-action-btn.secondary {
+  background: var(--surface2);
+  color: var(--textSecondary);
+}
+.card-action-btn.secondary:hover {
+  background: var(--border);
+  color: var(--text);
+  transform: translateY(-1px);
+}
+.card-action-btn.danger {
+  background: linear-gradient(135deg, var(--red) 0%, #C05050 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(211,95,95,0.25);
+}
+.card-action-btn.danger:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(211,95,95,0.3);
+}
+
+/* Confirm Card */
+.confirm-card {
+  position: relative;
+  border-left: none;
+}
+.confirm-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: var(--space-6);
+  bottom: var(--space-6);
+  width: 4px;
+  border-radius: 0 4px 4px 0;
+  background: var(--accent);
+}
+.confirm-msg {
+  font-size: 15px;
+  color: var(--text);
+  margin-bottom: var(--space-4);
+  line-height: 1.7;
+}
+
+/* Place Card */
+.place-card {
+  display: flex;
+  gap: var(--space-4);
+  align-items: flex-start;
+}
+.place-img {
+  width: 80px;
+  height: 80px;
+  border-radius: var(--radiusSmall);
+  background: var(--surface2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  flex-shrink: 0;
+}
+.place-info h4 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+.place-info .rating {
+  font-size: 13px;
+  color: var(--orange);
+  margin-bottom: var(--space-1);
+}
+.place-info .address {
+  font-size: 13px;
+  color: var(--textSecondary);
+}
+.place-tags {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+
+/* Email Card */
+.email-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--surface2);
+  border-radius: var(--radiusSmall);
+  margin-bottom: var(--space-4);
+}
+.email-header .from-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  background: var(--accentSoft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+.email-header .from-info {
+  flex: 1;
+}
+.email-header .from-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+}
+.email-header .from-email {
+  font-size: 12px;
+  color: var(--textTertiary);
+}
+
+.email-subject {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: var(--space-3);
+}
+.email-body {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--textSecondary);
+  background: var(--surface2);
+  padding: var(--space-4);
+  border-radius: var(--radiusSmall);
+}
+
+/* Task Card */
+.task-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--border);
+}
+.task-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+.task-check {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  border: 2px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+  font-size: 12px;
+  color: transparent;
+}
+.task-check.checked {
+  background: var(--green);
+  border-color: var(--green);
+  color: white;
+}
+.task-text {
+  flex: 1;
+  font-size: 15px;
+  color: var(--text);
+}
+.task-text.done {
+  text-decoration: line-through;
+  color: var(--textTertiary);
+}
+.task-time {
+  font-size: 12px;
+  color: var(--textTertiary);
+}
+
+/* Directions Card */
+.directions-map {
+  height: 140px;
+  background: linear-gradient(135deg, #E8DDD4 0%, #D4C8BC 100%);
+  border-radius: var(--radiusSmall);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+  margin-bottom: var(--space-4);
+  position: relative;
+  overflow: hidden;
+}
+.directions-map::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%239C8B7A' fill-opacity='0.1'%3E%3Cpath d='M0 0h40v40H0V0zm20 20h20v20H20V20zM0 20h20v20H0V20z'/%3E%3C/g%3E%3C/svg%3E");
+}
+.directions-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.directions-info .eta {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text);
+}
+.directions-info .distance {
+  font-size: 14px;
+  color: var(--textSecondary);
+}
+
+/* References Card */
+.ref-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.ref-item {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  background: var(--surface2);
+  border-radius: var(--radiusSmall);
+  transition: all var(--transition-fast);
+  cursor: pointer;
+}
+.ref-item:hover {
+  background: var(--surface2);
+  opacity: 0.8;
+}
+.ref-num {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-full);
+  background: var(--accentSoft);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+.ref-content h4 {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+.ref-content p {
+  font-size: 12px;
+  color: var(--textTertiary);
+}
+</style>
+</head>
+<body>
+<div class="phone-frame">
+  <div class="status-bar">
+    <span class="time">9:41</span>
+    <div class="icons">📶 🔋</div>
+  </div>
+
+  <div class="screen cards-screen">
+    <div class="cards-header">
+      <h1>卡片组件</h1>
+      <p>AI 生成的各种交互卡片</p>
+    </div>
+
+    <div class="cards-scroll">
+      <h2>记录卡片</h2>
+      <div class="ai-card">
+        <div class="card-header">
+          <div class="card-icon" style="background:var(--green-soft);">📝</div>
+          <div class="card-meta">
+            <div class="label">已创建</div>
+            <div class="title">疫苗接种记录</div>
+            <div class="subtitle">维尼 · 2026.04.24 · 💰 ¥280</div>
+          </div>
+        </div>
+        <div class="card-body">
+          记录了维尼的年度狂犬疫苗接种，下次接种时间为2027年4月。
+        </div>
+        <div class="card-footer">
+          <button class="card-action-btn secondary">查看详情</button>
+          <button class="card-action-btn primary">添加到日历</button>
+        </div>
+      </div>
+
+      <h2>确认卡片</h2>
+      <div class="ai-card confirm-card">
+        <div class="card-header">
+          <div class="card-icon" style="background:var(--orange-soft);">⚠️</div>
+          <div class="card-meta">
+            <div class="label">需要确认</div>
+            <div class="title">删除提醒</div>
+          </div>
+        </div>
+        <div class="confirm-msg">确定要删除维尼的每月驱虫提醒吗？此操作无法撤销。</div>
+        <div class="card-footer">
+          <button class="card-action-btn secondary">取消</button>
+          <button class="card-action-btn primary" style="background:var(--red)">确认删除</button>
+        </div>
+      </div>
+
+      <h2>地点卡片</h2>
+      <div class="ai-card">
+        <div class="place-card">
+          <div class="place-img">🏥</div>
+          <div class="place-info">
+            <h4>瑞鹏宠物医院</h4>
+            <div class="rating">⭐ 4.8 · 2.3km · 营业中</div>
+            <div class="address">北京市朝阳区建国路88号</div>
+            <div class="place-tags">
+              <span class="pill" style="background:var(--blue-soft);color:var(--blue);">24小时</span>
+              <span class="pill" style="background:var(--green-soft);color:var(--green);">可急诊</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h2>导航卡片</h2>
+      <div class="ai-card">
+        <div class="directions-map">🗺️</div>
+        <div class="directions-info">
+          <div>
+            <div class="eta">12 分钟</div>
+            <div class="distance">2.3km · 建国路 → 朝阳路</div>
+          </div>
+          <button class="card-action-btn primary">开始导航</button>
+        </div>
+      </div>
+
+      <h2>邮件卡片</h2>
+      <div class="ai-card">
+        <div class="card-header">
+          <div class="card-icon" style="background:var(--blue-soft);">📧</div>
+          <div class="card-meta">
+            <div class="label">邮件草稿</div>
+            <div class="title">月度健康报告</div>
+          </div>
+        </div>
+        <div class="email-header">
+          <div class="from-icon">👤</div>
+          <div class="from-info">
+            <div class="from-name">Robert</div>
+            <div class="from-email">robert@example.com</div>
+          </div>
+        </div>
+        <div class="email-subject">维尼的四月健康报告</div>
+        <div class="email-body">
+          尊敬的医生，<br><br>
+          以下是维尼本月健康状况：<br>
+          - 体重：15.2kg（+0.3kg）<br>
+          - 疫苗：已接种<br>
+          - 活动量：正常<br><br>
+          请查收。
+        </div>
+        <div class="card-footer" style="margin-top:var(--space-5);">
+          <button class="card-action-btn secondary">编辑</button>
+          <button class="card-action-btn primary">发送</button>
+        </div>
+      </div>
+
+      <h2>每日任务</h2>
+      <div class="ai-card">
+        <div class="card-header">
+          <div class="card-icon" style="background:var(--orange-soft);">📋</div>
+          <div class="card-meta">
+            <div class="label">今日任务</div>
+            <div class="title">维尼的日常护理</div>
+          </div>
+        </div>
+        <div class="task-item">
+          <div class="task-check checked">✓</div>
+          <span class="task-text done">早晚各一次遛狗</span>
+          <span class="task-time">07:00</span>
+        </div>
+        <div class="task-item">
+          <div class="task-check"></div>
+          <span class="task-text">补充益生菌</span>
+          <span class="task-time">09:00</span>
+        </div>
+        <div class="task-item">
+          <div class="task-check"></div>
+          <span class="task-text">梳毛清理</span>
+          <span class="task-time">19:00</span>
+        </div>
+      </div>
+
+      <h2>知识引用</h2>
+      <div class="ai-card">
+        <div class="card-header">
+          <div class="card-icon" style="background:var(--purple-soft);">📚</div>
+          <div class="card-meta">
+            <div class="label">参考资料</div>
+            <div class="title">狗狗呕吐的常见原因</div>
+          </div>
+        </div>
+        <div class="ref-list">
+          <div class="ref-item">
+            <div class="ref-num">1</div>
+            <div class="ref-content">
+              <h4>犬类消化系统疾病诊疗指南</h4>
+              <p>中国农业大学动物医学院 · 2025</p>
+            </div>
+          </div>
+          <div class="ref-item">
+            <div class="ref-num">2</div>
+            <div class="ref-content">
+              <h4>宠物呕吐的原因与处理</h4>
+              <p>维基百科 · 宠物健康</p>
+            </div>
+          </div>
+          <div class="ref-item">
+            <div class="ref-num">3</div>
+            <div class="ref-content">
+              <h4>维尼历史健康记录</h4>
+              <p>CozyPup · 2026.03.15</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="home-indicator"></div>
+</div>
+
+<nav class="demo-nav">
+  <a href="login.html">登录</a>
+  <a href="chat.html">聊天</a>
+  <a href="calendar.html">日历</a>
+  <a href="settings.html">设置</a>
+  <a href="pet-profile.html">宠物</a>
+  <a href="cards.html" class="active">卡片</a>
+</nav>
+</body>
+</html>

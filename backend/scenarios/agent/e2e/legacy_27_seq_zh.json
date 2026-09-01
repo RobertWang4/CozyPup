@@ -1,0 +1,32 @@
+{
+  "id": "legacy_27_seq_zh",
+  "description": "Migrated legacy e2e case 27_seq (zh).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "27_seq",
+    "language": "zh"
+  },
+  "language": "zh",
+  "messages": [
+    "小维今天打了疫苗",
+    "花了200",
+    "提醒我下次三个月后再打",
+    "那条记录标题改成'第二针疫苗'",
+    "删掉刚才那个提醒",
+    "再帮我记一条：小维今天洗了澡"
+  ],
+  "expect": {
+    "tools": [
+      "create_calendar_event",
+      "update_calendar_event",
+      "create_reminder",
+      "delete_reminder"
+    ]
+  },
+  "pets": [
+    {
+      "name": "小维",
+      "species": "dog"
+    }
+  ]
+}

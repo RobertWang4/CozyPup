@@ -1,0 +1,32 @@
+{
+  "id": "legacy_41_9_zh",
+  "description": "Migrated legacy e2e case 41.9 (zh).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "41.9",
+    "language": "zh"
+  },
+  "language": "zh",
+  "messages": [
+    "删掉花花的记录"
+  ],
+  "expect": {
+    "tools": [
+      "delete_calendar_event"
+    ]
+  },
+  "pets": [
+    {
+      "name": "花花",
+      "species": "cat"
+    },
+    {
+      "name": "小维",
+      "species": "dog"
+    },
+    {
+      "name": "豆豆",
+      "species": "dog"
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "id": "legacy_2_11_zh",
+  "description": "Migrated legacy e2e case 2.11 (zh).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "2.11",
+    "language": "zh"
+  },
+  "language": "zh",
+  "messages": [
+    "记录吃狗粮，提醒打疫苗"
+  ],
+  "expect": {
+    "tools": [
+      "create_calendar_event",
+      "create_reminder"
+    ],
+    "cards": [
+      "record"
+    ]
+  },
+  "pets": [
+    {
+      "name": "小维",
+      "species": "dog"
+    }
+  ]
+}

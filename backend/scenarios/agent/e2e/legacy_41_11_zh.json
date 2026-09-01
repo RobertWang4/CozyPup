@@ -1,0 +1,32 @@
+{
+  "id": "legacy_41_11_zh",
+  "description": "Migrated legacy e2e case 41.11 (zh).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "41.11",
+    "language": "zh"
+  },
+  "language": "zh",
+  "messages": [
+    "花花也要喂"
+  ],
+  "expect": {
+    "tools": [
+      "create_reminder"
+    ]
+  },
+  "pets": [
+    {
+      "name": "花花",
+      "species": "cat"
+    },
+    {
+      "name": "小维",
+      "species": "dog"
+    },
+    {
+      "name": "豆豆",
+      "species": "dog"
+    }
+  ]
+}

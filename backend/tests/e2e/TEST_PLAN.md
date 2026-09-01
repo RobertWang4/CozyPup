@@ -246,7 +246,7 @@ pytest tests/e2e/ -v --tb=short
 
 ---
 
-## 21. Health Q&A (RAG)
+## 21. Health Q&A (MemWeaver)
 
 | # | Input | Expected | Validation |
 |---|-------|----------|------------|

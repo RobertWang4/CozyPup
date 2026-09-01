@@ -1,0 +1,35 @@
+{
+  "id": "legacy_37_seq_zh",
+  "description": "Migrated legacy e2e case 37_seq (zh).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "37_seq",
+    "language": "zh"
+  },
+  "language": "zh",
+  "messages": [
+    "小维今天去看病了",
+    "在 Vanier Animal Hospital",
+    "花了1500",
+    "这是检查报告",
+    "医生说要每天喂益生菌，连续一周",
+    "提醒我下周复查",
+    "总结一下这次看病的情况"
+  ],
+  "expect": {
+    "tools": [
+      "create_calendar_event",
+      "add_event_location",
+      "update_calendar_event",
+      "create_daily_task",
+      "create_reminder",
+      "query_calendar_events"
+    ]
+  },
+  "pets": [
+    {
+      "name": "小维",
+      "species": "dog"
+    }
+  ]
+}

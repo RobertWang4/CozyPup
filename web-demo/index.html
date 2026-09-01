@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CozyPup — 设计 Demo</title>
+<link rel="stylesheet" href="css/common.css">
+<style>
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-8);
+  gap: var(--space-8);
+}
+
+.landing {
+  text-align: center;
+  max-width: 480px;
+}
+
+.landing h1 {
+  font-family: var(--font-display);
+  font-size: 48px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: var(--space-4);
+  letter-spacing: -1px;
+}
+
+.landing p {
+  font-size: 18px;
+  color: var(--textSecondary);
+  line-height: 1.7;
+  margin-bottom: var(--space-8);
+}
+
+.page-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-5);
+  width: 100%;
+  max-width: 800px;
+}
+
+.page-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: var(--space-6);
+  text-align: center;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  text-decoration: none;
+  color: inherit;
+}
+.page-card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-4px);
+}
+
+.page-card .icon {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radiusSmall);
+  background: linear-gradient(135deg, var(--accent), #D4734A);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  margin: 0 auto var(--space-4);
+  color: white;
+}
+
+.page-card h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: var(--space-1);
+}
+.page-card p {
+  font-size: 13px;
+  color: var(--textTertiary);
+}
+
+.design-notes {
+  margin-top: var(--space-8);
+  padding: var(--space-6);
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  max-width: 800px;
+  width: 100%;
+}
+.design-notes h2 {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: var(--space-4);
+  color: var(--text);
+}
+.design-notes ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.design-notes li {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  font-size: 14px;
+  color: var(--textSecondary);
+  line-height: 1.6;
+}
+.design-notes li::before {
+  content: '•';
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 1;
+}
+
+@media (max-width: 640px) {
+  .page-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="landing">
+  <h1>CozyPup</h1>
+  <p>设计系统 v2 — 网页端原型预览<br>颜色与 iOS Tokens.swift 完全一致<br>点击下方卡片查看各页面 demo</p>
+</div>
+
+<div class="page-grid">
+  <a href="pages/login.html" class="page-card">
+    <div class="icon">🔐</div>
+    <h3>登录 / 注册</h3>
+    <p>Apple / Google 登录</p>
+  </a>
+  <a href="pages/chat.html" class="page-card">
+    <div class="icon">💬</div>
+    <h3>聊天主界面</h3>
+    <p>AI 对话 + 卡片</p>
+  </a>
+  <a href="pages/calendar.html" class="page-card">
+    <div class="icon">📅</div>
+    <h3>日历 / 时间线</h3>
+    <p>事件管理 + 筛选</p>
+  </a>
+  <a href="pages/settings.html" class="page-card">
+    <div class="icon">⚙️</div>
+    <h3>设置抽屉</h3>
+    <p>个人资料 + 偏好</p>
+  </a>
+  <a href="pages/pet-profile.html" class="page-card">
+    <div class="icon">🐾</div>
+    <h3>宠物档案</h3>
+    <p>详情 + 健康概览</p>
+  </a>
+  <a href="pages/cards.html" class="page-card">
+    <div class="icon">🃏</div>
+    <h3>卡片组件库</h3>
+    <p>所有 AI 卡片类型</p>
+  </a>
+</div>
+
+<div class="design-notes">
+  <h2>设计改进方向（颜色延续现有 Tokens）</h2>
+  <ul>
+    <li><strong>更精致的排版层次</strong> — Playfair Display 衬线标题 + Inter 无衬线正文，形成编辑杂志般的阅读体验</li>
+    <li><strong>卡片材质升级</strong> — 保留 surface / surface2 / bg 三层，但增加微妙阴影和 hover 动效</li>
+    <li><strong>有机装饰元素</strong> — 登录页飘动爪印、档案页封面图+渐变遮罩、纹理 overlay</li>
+    <li><strong>微交互系统</strong> — 每个可交互元素都有 hover 状态、缩放反馈、颜色过渡</li>
+    <li><strong>健康数据可视化</strong> — 宠物档案新增健康评分进度条、数据卡片网格</li>
+    <li><strong>Settings 品牌化重构</strong> — 从系统 List 升级为 Card Sections，更像个人中心</li>
+  </ul>
+</div>
+
+</body>
+</html>

@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 def extract_retrieved_chunks(cards: Iterable[dict] | None) -> list[dict]:
     """Pull knowledge-source items out of a `references` card.
 
-    The RAG tool emits {"type": "references", "items": [...]}. Each
+    The knowledge retrieval tool emits {"type": "references", "items": [...]}. Each
     knowledge item has title/url; distance is not surfaced to the card,
     so we store None when unavailable.
     """

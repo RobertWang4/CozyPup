@@ -1,0 +1,34 @@
+{
+  "id": "legacy_40_3_zh",
+  "description": "Migrated legacy e2e case 40.3 (zh).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "40.3",
+    "language": "zh"
+  },
+  "language": "zh",
+  "messages": [
+    "帮我删掉昨天的记录，再记一条今天散步了"
+  ],
+  "expect": {
+    "tools": [
+      "delete_calendar_event",
+      "create_calendar_event"
+    ]
+  },
+  "pets": [
+    {
+      "name": "小维",
+      "species": "dog"
+    }
+  ],
+  "events": [
+    {
+      "pet_name": "小维",
+      "event_date": "yesterday",
+      "title": "散步",
+      "category": "daily",
+      "raw_text": "seed event for migrated e2e scenario"
+    }
+  ]
+}

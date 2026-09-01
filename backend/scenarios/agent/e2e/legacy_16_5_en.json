@@ -1,0 +1,24 @@
+{
+  "id": "legacy_16_5_en",
+  "description": "Migrated legacy e2e case 16.5 (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "16.5",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "Weiwei has red spots on the skin, what's going on?"
+  ],
+  "expect": {
+    "tools": [
+      "search_knowledge"
+    ]
+  },
+  "pets": [
+    {
+      "name": "Weiwei",
+      "species": "dog"
+    }
+  ]
+}

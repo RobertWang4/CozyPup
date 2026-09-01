@@ -1,0 +1,24 @@
+{
+  "id": "legacy_40_13_zh",
+  "description": "Migrated legacy e2e case 40.13 (zh).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "40.13",
+    "language": "zh"
+  },
+  "language": "zh",
+  "messages": [
+    "遛了狗、喂了猫粮、洗了澡、打了疫苗"
+  ],
+  "expect": {
+    "tools": [
+      "create_calendar_event"
+    ]
+  },
+  "pets": [
+    {
+      "name": "小维",
+      "species": "dog"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "id": "basic_chat",
+  "description": "A simple greeting should stay conversational and avoid tools.",
+  "language": "en",
+  "messages": ["Hi CozyPup, what can you help me with?"],
+  "expect": {
+    "forbidden_tools": [
+      "create_calendar_event",
+      "update_calendar_event",
+      "delete_calendar_event",
+      "create_pet",
+      "delete_pet",
+      "trigger_emergency"
+    ],
+    "contains_any": ["help", "record", "pet"]
+  }
+}

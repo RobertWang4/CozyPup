@@ -1,0 +1,26 @@
+{
+  "id": "legacy_40_14_zh",
+  "description": "Migrated legacy e2e case 40.14 (zh).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "40.14",
+    "language": "zh"
+  },
+  "language": "zh",
+  "messages": [
+    "记录吃狗粮，记录散步，提醒打疫苗，创建喂药待办"
+  ],
+  "expect": {
+    "tools": [
+      "create_calendar_event",
+      "create_reminder",
+      "create_daily_task"
+    ]
+  },
+  "pets": [
+    {
+      "name": "小维",
+      "species": "dog"
+    }
+  ]
+}

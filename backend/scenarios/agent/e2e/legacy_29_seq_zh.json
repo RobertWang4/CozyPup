@@ -1,0 +1,31 @@
+{
+  "id": "legacy_29_seq_zh",
+  "description": "Migrated legacy e2e case 29_seq (zh).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "29_seq",
+    "language": "zh"
+  },
+  "language": "zh",
+  "messages": [
+    "小维今天去体检了",
+    "不对，是昨天",
+    "分类改成daily",
+    "标题改成'年度体检'",
+    "算了，删掉这条",
+    "重新记一下：小维昨天做了年度体检，花了500"
+  ],
+  "expect": {
+    "tools": [
+      "create_calendar_event",
+      "update_calendar_event",
+      "delete_calendar_event"
+    ]
+  },
+  "pets": [
+    {
+      "name": "小维",
+      "species": "dog"
+    }
+  ]
+}

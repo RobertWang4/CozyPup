@@ -7,6 +7,9 @@ Trace data is emitted as `event: __debug__` SSE events at the end of the stream.
 import time
 import json
 from dataclasses import dataclass, field
+from typing import Any
+
+from app.agents.runtime import AgentEvent
 
 
 @dataclass
@@ -15,6 +18,7 @@ class TraceCollector:
 
     active: bool = False
     steps: list[dict] = field(default_factory=list)
+    events: list[dict] = field(default_factory=list)
     llm_rounds: list[dict] = field(default_factory=list)
     start_time: float = field(default_factory=time.monotonic)
     total_prompt_tokens: int = 0
@@ -31,6 +35,18 @@ class TraceCollector:
         if data is not None:
             entry["data"] = data if isinstance(data, (dict, list)) else str(data)
         self.steps.append(entry)
+
+    def record_event(self, event: AgentEvent | str, data: dict[str, Any] | None = None):
+        """Record a stable agent runtime event with timing."""
+        if not self.active:
+            return
+        agent_event = event if isinstance(event, AgentEvent) else AgentEvent(type=event, data=data or {})
+        payload = agent_event.to_sse()
+        self.events.append({
+            "type": payload["event"],
+            "data": payload["data"],
+            "elapsed_ms": int((time.monotonic() - self.start_time) * 1000),
+        })
 
     def record_llm_response(self, round_num: int, raw_response: dict):
         """Record a full non-streaming LLM response JSON."""
@@ -56,6 +72,7 @@ class TraceCollector:
             "total_completion_tokens": self.total_completion_tokens,
             "total_tokens": self.total_prompt_tokens + self.total_completion_tokens,
             "steps": self.steps,
+            "events": self.events,
             "llm_rounds": self.llm_rounds,
         }
 

@@ -1,0 +1,27 @@
+{
+  "id": "legacy_2_17_zh",
+  "description": "Migrated legacy e2e case 2.17 (zh).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "2.17",
+    "language": "zh"
+  },
+  "language": "zh",
+  "messages": [
+    "遛狗途中买了零食50块"
+  ],
+  "expect": {
+    "tools": [
+      "create_calendar_event"
+    ],
+    "cards": [
+      "record"
+    ]
+  },
+  "pets": [
+    {
+      "name": "小维",
+      "species": "dog"
+    }
+  ]
+}

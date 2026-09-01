@@ -189,7 +189,7 @@ MESSAGES = {
     },
     "15.2": {"zh": "帮我总结一下小维的档案", "en": "Help me summarize Weiwei's profile"},
 
-    # ═══ 十六、健康知识问答 (RAG) ═══
+    # ═══ 十六、健康知识问答 (MemWeaver) ═══
     "16.1": {"zh": "小维呕吐了怎么办", "en": "What should I do if my dog is vomiting?"},
     "16.2": {"zh": "小维最近老是拉肚子", "en": "My dog Weiwei has had diarrhea recently"},
     "16.3": {

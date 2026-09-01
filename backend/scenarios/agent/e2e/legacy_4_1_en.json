@@ -1,0 +1,33 @@
+{
+  "id": "legacy_4_1_en",
+  "description": "Migrated legacy e2e case 4.1 (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "4.1",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "The date on that last record is wrong, it should be March 25th"
+  ],
+  "expect": {
+    "tools": [
+      "update_calendar_event"
+    ]
+  },
+  "pets": [
+    {
+      "name": "Weiwei",
+      "species": "dog"
+    }
+  ],
+  "events": [
+    {
+      "pet_name": "Weiwei",
+      "event_date": "today",
+      "title": "Walk",
+      "category": "daily",
+      "raw_text": "seed event for migrated e2e scenario"
+    }
+  ]
+}

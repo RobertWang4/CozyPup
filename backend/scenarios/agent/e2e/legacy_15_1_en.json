@@ -1,0 +1,24 @@
+{
+  "id": "legacy_15_1_en",
+  "description": "Migrated legacy e2e case 15.1 (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "15.1",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "Weiwei is very afraid of thunder, timid personality"
+  ],
+  "expect": {
+    "tools": [
+      "update_pet_profile"
+    ]
+  },
+  "pets": [
+    {
+      "name": "Weiwei",
+      "species": "dog"
+    }
+  ]
+}

@@ -9,20 +9,28 @@ class Settings(BaseSettings):
     # Emergency model — only used when emergency keywords are detected (e.g. seizure, poisoning).
     # Typically a more capable/accurate model for safety-critical responses.
     emergency_model: str = "openai/gpt-5"
-    embedding_model: str = "openai/text-embedding-3-small"
-    # RAG retrieval — drop results whose cosine distance exceeds this threshold.
-    # Empirically: <0.3 very relevant, 0.3–0.5 loosely related, >0.6 mostly noise.
-    rag_distance_threshold: float = 0.6
-    # In-process LRU cache for query embeddings. Set to 0 to disable.
-    rag_embed_cache_size: int = 256
-    # Multi-query expansion via cheap LLM rewrite. Adds N alternate phrasings
-    # (zh↔en, colloquial↔clinical) and unions the retrieval results. Falls back
-    # to the original query on LLM failure.
-    rag_enable_query_expansion: bool = True
-    rag_query_expansion_variants: int = 2
-    # Keyword-based intent detection that boosts the right article bucket for
-    # "pet ate X" queries (toxic food / plant / medication / foreign object).
-    rag_enable_intent_filter: bool = True
+    # Vision model — used for rounds where images are injected into the message list
+    # (after request_images). Must support multimodal input. Falls back to `model` if unset.
+    vision_model: str = ""
+    # Optional separate API base/key for the vision model (e.g. when chat uses
+    # DeepSeek official but Grok is only available through a proxy). Falls back
+    # to model_api_base / model_api_key.
+    vision_model_api_base: str = ""
+    vision_model_api_key: str = ""
+    # Enable OpenAI-style strict mode on tool definitions (injects "strict": true
+    # and additionalProperties: false on every function schema). Safe with DeepSeek
+    # and OpenAI; disable if your proxy/provider rejects unknown function fields.
+    # Auto-detection: when model starts with "deepseek/" or api_base contains
+    # "deepseek.com/beta" it defaults to True, otherwise False.
+    strict_tools: bool | None = None
+    embedding_model: str = "text-embedding-3-small"
+    embedding_api_base: str = "https://api.openai.com/v1"
+    embedding_api_key: str = ""
+    # MemWeaver-style memory retrieval.
+    memory_distance_threshold: float = 0.6
+    memory_embed_cache_size: int = 256
+    memory_recency_lambda: float = 0.01
+    memory_recency_weight: float = 0.05
     model_api_base: str = ""   # Proxy base URL (e.g. https://api.shubiaobiao.cn/v1)
     model_api_key: str = ""    # Proxy API key
     google_places_api_key: str = ""
@@ -78,11 +86,6 @@ class Settings(BaseSettings):
     server_public_url: str = "http://168.138.75.153:8000"
 
     gcs_bucket: str = ""  # GCS bucket for file uploads (e.g. "cozypup-avatars")
-
-    # RAG observability admin endpoint — shared secret passed in the
-    # `X-Admin-Token` header for GET /admin/rag/stats. Unset → endpoint
-    # fails closed with 403. Populate via ADMIN_API_TOKEN env var.
-    admin_api_token: str | None = None
 
     # Doubao (Volcengine) streaming ASR — big model v3 bidirectional streaming
     doubao_app_id: str = ""

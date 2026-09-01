@@ -1,0 +1,36 @@
+{
+  "id": "legacy_33_seq_zh",
+  "description": "Migrated legacy e2e case 33_seq (zh).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "33_seq",
+    "language": "zh"
+  },
+  "language": "zh",
+  "messages": [
+    "小维今天吃了狗粮",
+    "花花也吃了猫粮",
+    "它们俩一起去公园玩了",
+    "小维在公园吐了",
+    "花花最近吃了什么？",
+    "提醒我明天给小维喂药",
+    "花花也要喂"
+  ],
+  "expect": {
+    "tools": [
+      "create_calendar_event",
+      "query_calendar_events",
+      "create_reminder"
+    ]
+  },
+  "pets": [
+    {
+      "name": "小维",
+      "species": "dog"
+    },
+    {
+      "name": "花花",
+      "species": "cat"
+    }
+  ]
+}

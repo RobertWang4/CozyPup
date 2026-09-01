@@ -1,0 +1,27 @@
+{
+  "id": "legacy_2_14_en",
+  "description": "Migrated legacy e2e case 2.14 (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "2.14",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "Bath cost 80 yuan"
+  ],
+  "expect": {
+    "tools": [
+      "create_calendar_event"
+    ],
+    "cards": [
+      "record"
+    ]
+  },
+  "pets": [
+    {
+      "name": "Weiwei",
+      "species": "dog"
+    }
+  ]
+}

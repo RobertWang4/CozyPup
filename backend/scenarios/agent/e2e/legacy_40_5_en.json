@@ -1,0 +1,24 @@
+{
+  "id": "legacy_40_5_en",
+  "description": "Migrated legacy e2e case 40.5 (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "40.5",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "Weiwei weighs 30 kg, birthday March 2023"
+  ],
+  "expect": {
+    "tools": [
+      "update_pet_profile"
+    ]
+  },
+  "pets": [
+    {
+      "name": "Weiwei",
+      "species": "dog"
+    }
+  ]
+}

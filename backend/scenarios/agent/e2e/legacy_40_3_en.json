@@ -1,0 +1,34 @@
+{
+  "id": "legacy_40_3_en",
+  "description": "Migrated legacy e2e case 40.3 (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "40.3",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "Delete yesterday's record and add a new one for today's walk"
+  ],
+  "expect": {
+    "tools": [
+      "delete_calendar_event",
+      "create_calendar_event"
+    ]
+  },
+  "pets": [
+    {
+      "name": "Weiwei",
+      "species": "dog"
+    }
+  ],
+  "events": [
+    {
+      "pet_name": "Weiwei",
+      "event_date": "yesterday",
+      "title": "Walk",
+      "category": "daily",
+      "raw_text": "seed event for migrated e2e scenario"
+    }
+  ]
+}

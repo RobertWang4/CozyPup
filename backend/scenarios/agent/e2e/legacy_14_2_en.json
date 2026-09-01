@@ -1,0 +1,28 @@
+{
+  "id": "legacy_14_2_en",
+  "description": "Migrated legacy e2e case 14.2 (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "14.2",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "Weiwei and Huahua went for a walk together"
+  ],
+  "expect": {
+    "tools": [
+      "create_calendar_event"
+    ]
+  },
+  "pets": [
+    {
+      "name": "Weiwei",
+      "species": "dog"
+    },
+    {
+      "name": "Huahua",
+      "species": "cat"
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "id": "legacy_29_seq_en",
+  "description": "Migrated legacy e2e case 29_seq (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "29_seq",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "Weiwei went for a checkup today",
+    "No, it was yesterday",
+    "Change the category to daily",
+    "Change the title to 'Annual checkup'",
+    "Never mind, delete this record",
+    "Let me re-record: Weiwei had an annual checkup yesterday, cost 500"
+  ],
+  "expect": {
+    "tools": [
+      "create_calendar_event",
+      "update_calendar_event",
+      "delete_calendar_event"
+    ]
+  },
+  "pets": [
+    {
+      "name": "Weiwei",
+      "species": "dog"
+    }
+  ]
+}

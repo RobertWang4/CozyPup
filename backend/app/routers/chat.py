@@ -27,22 +27,27 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sse_starlette.sse import EventSourceResponse
 
 # --- Agent 模块导入 ---
-from app.agents.emergency import build_emergency_hint, detect_emergency  # 紧急关键词检测 & 构建紧急提示
-from app.agents.emergency_router import classify_emergency, render_for_user  # 紧急情况短路路由（跳过 RAG + LLM）
+from app.agents.chat_turn import build_agent_prompt_input
+from app.agents.chat_finalizer import (
+    apply_profile_extraction,
+    chat_turn_memory_source_id as _chat_turn_memory_source_id,
+    finalize_assistant_turn,
+    record_chat_audit,
+    should_run_final_fallback,
+)
+from app.agents.emergency import detect_emergency                        # 紧急关键词检测
+from app.agents.emergency_router import classify_emergency, render_for_user  # 紧急情况短路路由（跳过 memory + LLM）
+from app.agents.engine import AgentEngine, AgentRunInput
 from app.agents.locale import detect_language                            # 语言检测（中/英）
-from app.agents.orchestrator import run_orchestrator, OrchestratorResult  # 统一 Agent Loop
+from app.agents.orchestrator import OrchestratorResult                   # 统一 Agent Loop
 from app.agents.pending_actions import pop_action                        # 待确认动作的存取（用于 confirm-action）
 from app.agents.post_processor import execute_suggested_actions           # 后处理：最终兜底执行
 from app.agents.pre_processing import pre_process                        # 预处理：从用户消息中预分析可能的工具调用
-from app.agents.prompts_v2 import build_messages, build_system_prompt    # 构建 system prompt 和消息列表
-from app.agents.context_agent import trigger_summary_if_needed           # 上下文压缩：消息过多时自动摘要
-from app.services.chat_audit import log_chat_turn, extract_retrieved_chunks  # Legal audit trail — fire-and-forget
 from app.agents.trace_collector import TraceCollector, INACTIVE_TRACE    # Debug trace 收集器
 from app.agents.tools import execute_tool                                # 工具执行器（用于 confirm-action 直接执行）
 from app.auth import get_current_user_id                                 # JWT 认证依赖，提取 user_id
 from app.debug.correlation import get_correlation_id                      # 当前请求的 correlation ID
 from app.middleware.subscription import require_active_subscription      # 订阅状态检查
-from app.config import settings                                          # 全局配置（模型名、API key 等）
 from app.database import get_db                                          # 数据库会话依赖
 from app.models import Chat, ChatSession, MessageRole, Pet, User         # SQLAlchemy 数据模型
 from datetime import datetime, timedelta, timezone                       # Used for trial expiry check
@@ -225,22 +230,6 @@ async def _save_message(
     return msg
 
 
-def _build_context_messages(context_messages: list[Chat]) -> list[dict]:
-    """将数据库中的 Chat 对象转换为 LLM 需要的消息格式。
-
-    注意：历史消息中的图片不会重新发送给 LLM（太贵了），
-    只添加文字提示让 LLM 知道用户之前发过图，并提示可以通过 request_images 获取。
-    """
-    msgs = []
-    for m in context_messages:
-        content = m.content or ""
-        if m.image_urls:
-            n = len(m.image_urls)
-            content += f"\n[附带了{n}张图片，如需查看可调用 request_images]"
-        msgs.append({"role": m.role.value, "content": content})
-    return msgs
-
-
 # 哨兵对象，用于标记 SSE 流结束。用 object() 而不是 None，
 # 因为 None 可能是合法的队列值，而 object() 实例是全局唯一的。
 _SENTINEL = object()
@@ -280,7 +269,7 @@ async def _event_generator(
     # Audit timer — captures wall-clock response time for chat_audit_log.
     audit_start = time.monotonic()
     # Mutable flag set to True if the emergency router short-circuits
-    # the RAG path. Read in Phase 4 when writing the audit row.
+    # the memory path. Read in Phase 4 when writing the audit row.
     audit_is_emergency_route = False
 
     # ========== Phase 0: 会话初始化 ==========
@@ -362,7 +351,7 @@ async def _event_generator(
     # ========== Emergency short-circuit ==========
     # For UNAMBIGUOUS emergencies (toxin ingestion, seizure, urinary obstruction,
     # open-mouth-breathing cat, GDV, heatstroke, severe trauma, dystocia, collapse)
-    # we bypass RAG + LLM entirely and emit a structured emergency card. This:
+    # we bypass memory + LLM entirely and emit a structured emergency card. This:
     #   - removes LLM latency (~2-8s) on time-critical queries
     #   - removes the risk of the model producing unsafe free-form text
     #   - delivers a hotline number the owner can call immediately
@@ -398,34 +387,25 @@ async def _event_generator(
             card["message"], json.dumps([card], ensure_ascii=False),
         )
 
-        # Fire-and-forget audit row (must not raise).
-        try:
-            _audit_pet_id = pets[0].id if pets else None
-            _audit_species = (
-                getattr(pets[0].species, "value", str(pets[0].species)) if pets else None
-            )
-            log_chat_turn(
-                user_id=user_id,
-                pet_id=_audit_pet_id,
-                species=_audit_species,
-                raw_query=request.message or "",
-                is_emergency_route=True,
-                retrieved_chunks=[],
-                llm_output=card["message"],
-                response_time_ms=int((time.monotonic() - audit_start) * 1000),
-                model_used=None,
-                metadata_json={
-                    "session_id": session_id,
-                    "lang": lang,
-                    "short_circuit": True,
-                    "category": emergency_match.category,
-                    "keyword_emergency": bool(emergency_result.detected),
-                    "correlation_id": get_correlation_id(),
-                    "client_version": client_version,
-                },
-            )
-        except Exception as _audit_exc:  # noqa: BLE001
-            logger.warning("chat_audit_hook_error", extra={"error": str(_audit_exc)[:300]})
+        record_chat_audit(
+            user_id=user_id,
+            pets=pets,
+            raw_query=request.message or "",
+            is_emergency_route=True,
+            all_cards=[],
+            llm_output=card["message"],
+            response_time_ms=int((time.monotonic() - audit_start) * 1000),
+            model_used=None,
+            session_id=session_id,
+            lang=lang,
+            tools_called=None,
+            keyword_emergency=bool(emergency_result.detected),
+            client_version=client_version,
+            metadata_extra={
+                "short_circuit": True,
+                "category": emergency_match.category,
+            },
+        )
 
         yield {
             "event": "done",
@@ -443,52 +423,25 @@ async def _event_generator(
 
     # ========== Phase 2: 构建 Prompt ==========
 
-    # 构建紧急提示（如果检测到紧急关键词，告诉 LLM 优先处理紧急情况）
-    emergency_hint = (
-        build_emergency_hint(emergency_result.keywords, lang=lang)
-        if emergency_result.detected
-        else None
+    image_count = len(request.images) if request.images else 0
+    prompt_input = await build_agent_prompt_input(
+        message=request.message,
+        db=db,
+        user_id=user_id,
+        pets=pets,
+        session_summary=session.context_summary if session else None,
+        context_messages=context_messages,
+        emergency_result=emergency_result,
+        suggested_actions=suggested_actions,
+        lang=lang,
+        image_count=image_count,
     )
-
-    # 构建预处理器提示 — 把预分析出的工具调用建议注入 prompt，
-    # 引导 LLM 直接使用这些工具，减少 LLM 自己分析的负担
-    preprocessor_hints = []
-    for action in suggested_actions:
-        if action.confidence >= 0.5:  # 只注入置信度 >= 50% 的建议
-            preprocessor_hints.append(
-                f"{action.tool_name}({json.dumps(action.arguments, ensure_ascii=False)})"
-            )
-
-    # 首次用户检测：无历史消息 + 无上下文摘要 = 新用户第一条消息
-    is_first_message = not context_messages and not session.context_summary
-    if is_first_message:
-        first_hint = "introduce_product() — 这是新用户的第一条消息，先介绍产品功能" if lang == "zh" else "introduce_product() — This is a new user's first message, introduce product features first"
-        preprocessor_hints.append(first_hint)
-
-    # 多事件检测：如果用户一句话里提到了多个事件/提醒，
-    # 提示 LLM 每个事件要单独调用一次工具（否则 LLM 容易只调一次）
-    event_count = sum(1 for a in suggested_actions if a.tool_name == "create_calendar_event")
-    reminder_count = sum(1 for a in suggested_actions if a.tool_name == "create_reminder")
-    total_actions = event_count + reminder_count
-    if total_actions >= 2:
-        hint = "⚠️ 检测到多个事件/提醒意图，请确保每件事单独调用一次工具" if lang == "zh" else "⚠️ Multiple events/reminders detected — make a separate tool call for each"
-        preprocessor_hints.append(hint)
-
-    # 模型选择：紧急情况用更准确的模型（Kimi K2.5），日常用便宜的模型（Qwen3.5-Plus）
-    is_emergency = emergency_result.detected
-    model = settings.emergency_model if is_emergency else settings.model
-    trace.record("model_selected", {"model": model, "is_emergency": is_emergency})
-
-    # 构建 system prompt（按缓存友好的顺序组装各部分）
-    today_str = date.today().isoformat()
-    system_prompt = build_system_prompt(
-        pets=pets,                                                      # 宠物档案信息
-        session_summary=session.context_summary if session else None,   # 之前的对话摘要
-        emergency_hint=emergency_hint,                                  # 紧急提示
-        preprocessor_hints=preprocessor_hints if preprocessor_hints else None,  # 预分析建议
-        today=today_str,                                                # 今天日期
-        lang=lang,                                                      # 语言
-    )
+    model = prompt_input.model
+    today_str = prompt_input.today
+    system_prompt = prompt_input.system_prompt
+    messages = prompt_input.messages
+    recent_image_urls = prompt_input.recent_image_urls
+    trace.record("model_selected", {"model": model, "is_emergency": emergency_result.detected})
     trace.record("system_prompt", {"length": len(system_prompt), "content": system_prompt})
 
     # 等待图片保存完成（之前一直在后台线程并行运行）
@@ -497,20 +450,6 @@ async def _event_generator(
         saved_image_urls = await image_save_task
         # 异步回填图片 URL 到之前保存的用户消息
         _track_task(_backfill_image_urls(session.id, user_id, saved_image_urls))
-
-    # 从历史消息中提取最近的图片 URL（用于第二轮引用历史图片的场景）
-    # 只取最近一条带图片的用户消息，避免传太多无关图片
-    recent_image_urls: list[str] = []
-    for m in reversed(context_messages):
-        if m.role == MessageRole.user and m.image_urls:
-            recent_image_urls = list(m.image_urls)
-            break
-
-    # 构建消息列表 — 图片不发给 LLM（太贵），只加文字提示
-    # 图片会在 executor 层根据工具调用结果附加
-    recent_msgs = _build_context_messages(context_messages)
-    image_count = len(request.images) if request.images else 0
-    messages = build_messages(recent_msgs, request.message, image_count=image_count)
 
     # ========== Phase 3: 运行 Orchestrator（核心 LLM 调用 + 工具执行） ==========
 
@@ -550,25 +489,27 @@ async def _event_generator(
         4. 最终返回 OrchestratorResult（包含完整回复文本和所有卡片）
         """
         try:
-            result = await run_orchestrator(
-                message=request.message,
-                system_prompt=system_prompt,
-                context_messages=messages,   # 历史消息 + 当前用户消息
-                model=model,                 # 根据是否紧急选择的模型
-                db=db,
-                user_id=user_id,
-                session_id=session.id,
+            result = await AgentEngine().run(
+                AgentRunInput(
+                    message=request.message,
+                    messages=messages,        # 历史消息 + 当前用户消息
+                    system_prompt=system_prompt,
+                    model=model,              # 根据是否紧急选择的模型
+                    db=db,
+                    user_id=user_id,
+                    session_id=session.id,
+                    location=request.location,
+                    language=lang,
+                    image_urls=saved_image_urls or [],
+                ),
                 on_token=on_token,           # token 流式回调
                 on_card=on_card,             # 卡片回调
                 on_thinking=on_thinking,     # 思考气泡（工具名字幕）
                 today=today_str,
                 suggested_actions=suggested_actions,  # 预分析的工具调用（用于 nudge）
-                location=request.location,   # 用户位置（用于附近搜索）
                 images=request.images,       # 原始 base64 图片（用于图片分析工具）
-                image_urls=saved_image_urls, # 已保存的图片 URL
                 recent_image_urls=recent_image_urls,  # 历史消息中的图片 URL（回退用）
                 pets=pets,                   # 宠物列表（用于 confirm 描述）
-                lang=lang,
                 trace=trace,                 # Debug trace 收集器
             )
             await queue.put(("_result", result))  # 用元组包装结果，和普通 SSE 事件区分
@@ -627,16 +568,7 @@ async def _event_generator(
     # Nudge 机制（在 orchestrator 内部）已处理大部分"LLM 不调工具"的情况。
     # 这里只处理 nudge 也失败后的最终兜底：如果仍然没有工具被调用，
     # 但预处理有高置信度建议，直接确定性执行。
-    from app.agents.constants import NUDGE_TOOLS
-    no_tools_called = not result.cards and not result.confirm_cards and not result.tools_called
-    # Only fallback for critical tools (search_places, trigger_emergency, set_language)
-    # Other pre-processor suggestions are advisory — trust the LLM's judgment
-    critical_missed = any(
-        a.confidence >= 0.8 and a.tool_name in NUDGE_TOOLS
-        for a in suggested_actions
-    )
-
-    if no_tools_called and critical_missed:
+    if should_run_final_fallback(result, suggested_actions):
         trace.record("post_processor_fallback", {
             "triggered": True,
             "suggested_count": len(suggested_actions),
@@ -646,6 +578,7 @@ async def _event_generator(
             "suggested_count": len(suggested_actions),
         })
         # Only execute critical tools in fallback, not all suggestions
+        from app.agents.constants import NUDGE_TOOLS
         critical_actions = [a for a in suggested_actions if a.tool_name in NUDGE_TOOLS]
         fallback_cards = await execute_suggested_actions(
             critical_actions, db, user_id,
@@ -656,63 +589,25 @@ async def _event_generator(
             result.cards.append(card)
             yield {"event": "card", "data": json.dumps(card)}
 
-    # 等待 profile extractor 的 LLM 调用完成，将提取的信息合并到宠物档案
-    try:
-        extracted = await extractor_task
-        if extracted:
-            from app.agents.profile_extractor import merge_into_profile_md
-            # 找到目标宠物对象
-            target_pet = next(
-                (p for p in pets if str(p.id) == extracted["pet_id"]), None
-            )
-            if target_pet:
-                # 将提取的信息（品种、年龄、体重等）合并到宠物的 profile_md
-                new_md = await merge_into_profile_md(
-                    target_pet, extracted["info"], lang=lang,
-                )
-                if new_md:
-                    target_pet.profile_md = new_md
-                    await db.commit()
-                    logger.info("profile_extractor_saved", extra={
-                        "keys": list(extracted["info"].keys()),
-                        "md_length": len(new_md),
-                    })
-    except Exception as e:
-        logger.warning("profile_extractor_save_error", extra={"error": str(e)[:200]})
-
-    # --- RAG: 异步生成本轮对话的 embedding ---
-    async def _write_embedding_bg():
-        try:
-            from app.rag.writer import write_chat_embedding
-            from app.database import async_session as _async_session
-            emb_content = f"用户: {request.message}\n助手: {result.response_text[:500]}"
-            async with _async_session() as bg_db:
-                await write_chat_embedding(
-                    db=bg_db,
-                    user_id=user_id,
-                    source_id=session.id,
-                    content=emb_content,
-                )
-        except Exception as e:
-            logger.warning("embedding_bg_error", extra={"error": str(e)[:200]})
-    _track_task(_write_embedding_bg())
-
-    # 保存助手的完整回复到数据库（包含所有卡片的 JSON）
-    all_cards = result.cards + result.confirm_cards
-    cards_json = json.dumps(all_cards) if all_cards else None
-    await _save_message(
-        db, session.id, user_id, MessageRole.assistant,
-        result.response_text, cards_json
+    await apply_profile_extraction(
+        extractor_task=extractor_task,
+        pets=pets,
+        db=db,
+        lang=lang,
     )
 
-    # 触发上下文压缩（异步、非阻塞）
-    # 当会话消息数超过阈值时，用 LLM 把旧消息压缩成摘要，存到 session.context_summary
-    # 必须用独立的 DB session — 当前 session 在响应结束后会被关闭
-    from app.database import async_session
-    async def _summarize_bg():
-        async with async_session() as bg_db:
-            await trigger_summary_if_needed(session.id, bg_db, lang=lang)
-    _track_task(_summarize_bg())
+    finalization = await finalize_assistant_turn(
+        db=db,
+        session_id=session.id,
+        user_id=user_id,
+        assistant_role=MessageRole.assistant,
+        result=result,
+        user_message=request.message,
+        lang=lang,
+        save_message=_save_message,
+        track_task=_track_task,
+    )
+    all_cards = finalization.all_cards
 
     # 发送 debug trace（仅在 X-Debug: true 时）
     if trace.active:
@@ -736,33 +631,21 @@ async def _event_generator(
         "model": getattr(result, "model_used", ""),
     })
 
-    # --- Legal audit log (fire-and-forget, must never raise) ---
-    try:
-        _audit_pet_id = pets[0].id if pets else None
-        _audit_species = (
-            getattr(pets[0].species, "value", str(pets[0].species)) if pets else None
-        )
-        log_chat_turn(
-            user_id=user_id,
-            pet_id=_audit_pet_id,
-            species=_audit_species,
-            raw_query=request.message or "",
-            is_emergency_route=audit_is_emergency_route,
-            retrieved_chunks=extract_retrieved_chunks(all_cards),
-            llm_output=result.response_text or None,
-            response_time_ms=int((time.monotonic() - audit_start) * 1000),
-            model_used=getattr(result, "model_used", None) or model,
-            metadata_json={
-                "session_id": session_id,
-                "lang": lang,
-                "tools_called": sorted(result.tools_called) if result.tools_called else [],
-                "keyword_emergency": bool(emergency_result.detected),
-                "correlation_id": get_correlation_id(),
-                "client_version": client_version,
-            },
-        )
-    except Exception as _audit_exc:  # noqa: BLE001 — audit must never break the stream
-        logger.warning("chat_audit_hook_error", extra={"error": str(_audit_exc)[:300]})
+    record_chat_audit(
+        user_id=user_id,
+        pets=pets,
+        raw_query=request.message or "",
+        is_emergency_route=audit_is_emergency_route,
+        all_cards=all_cards,
+        llm_output=result.response_text or None,
+        response_time_ms=int((time.monotonic() - audit_start) * 1000),
+        model_used=getattr(result, "model_used", None) or model,
+        session_id=session_id,
+        lang=lang,
+        tools_called=result.tools_called,
+        keyword_emergency=bool(emergency_result.detected),
+        client_version=client_version,
+    )
 
     # 发送 done 事件 — iOS 端收到后停止 loading 动画，标记流结束
     yield {

@@ -1,7 +1,7 @@
 """Emergency short-circuit router.
 
 Purpose: for HIGH-CONFIDENCE life-threatening pet emergencies, return a
-structured response *before* the LLM runs. This bypasses both RAG and the
+structured response *before* the LLM runs. This bypasses both memory retrieval and the
 chat model, saving ~2-8 seconds of latency and removing the risk of the
 model producing unsafe text on critical queries.
 
@@ -316,7 +316,7 @@ def classify_emergency(message: str) -> EmergencyMatch | None:
     """Return a structured EmergencyMatch for unambiguous emergencies, else None.
 
     The caller should short-circuit the chat pipeline when this returns
-    non-None: skip RAG, skip the LLM, emit the EmergencyMatch as a direct
+    non-None: skip memory retrieval, skip the LLM, emit the EmergencyMatch as a direct
     structured response so the owner sees guidance immediately.
     """
     if not message or not message.strip():

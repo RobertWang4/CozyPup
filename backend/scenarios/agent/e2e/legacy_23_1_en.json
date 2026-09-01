@@ -1,0 +1,24 @@
+{
+  "id": "legacy_23_1_en",
+  "description": "Migrated legacy e2e case 23.1 (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "23.1",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "Are there any pet hospitals nearby?"
+  ],
+  "expect": {
+    "tools": [
+      "search_places"
+    ]
+  },
+  "pets": [
+    {
+      "name": "Weiwei",
+      "species": "dog"
+    }
+  ]
+}

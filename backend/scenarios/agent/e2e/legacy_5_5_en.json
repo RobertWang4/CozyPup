@@ -1,0 +1,24 @@
+{
+  "id": "legacy_5_5_en",
+  "description": "Migrated legacy e2e case 5.5 (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "5.5",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "Huahua weighs 5 kilograms"
+  ],
+  "expect": {
+    "tools": [
+      "update_pet_profile"
+    ]
+  },
+  "pets": [
+    {
+      "name": "Huahua",
+      "species": "cat"
+    }
+  ]
+}

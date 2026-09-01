@@ -1,0 +1,28 @@
+{
+  "id": "legacy_2_11_en",
+  "description": "Migrated legacy e2e case 2.11 (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "2.11",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "Record eating dog food, remind me about vaccination"
+  ],
+  "expect": {
+    "tools": [
+      "create_calendar_event",
+      "create_reminder"
+    ],
+    "cards": [
+      "record"
+    ]
+  },
+  "pets": [
+    {
+      "name": "Weiwei",
+      "species": "dog"
+    }
+  ]
+}

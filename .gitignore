@@ -89,3 +89,6 @@ backend/knowledge/eval/ab_result__latest.json
 
 # Superpowers plans/specs (Claude Code working docs)
 docs/superpowers/
+.DS_Store
+backend/supabase/
+screenshots/

@@ -1,0 +1,24 @@
+{
+  "id": "legacy_23_2_en",
+  "description": "Migrated legacy e2e case 23.2 (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "23.2",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "switch to English"
+  ],
+  "expect": {
+    "tools": [
+      "set_language"
+    ]
+  },
+  "pets": [
+    {
+      "name": "Weiwei",
+      "species": "dog"
+    }
+  ]
+}

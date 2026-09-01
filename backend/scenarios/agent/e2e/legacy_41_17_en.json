@@ -1,0 +1,32 @@
+{
+  "id": "legacy_41_17_en",
+  "description": "Migrated legacy e2e case 41.17 (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "41.17",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "Huahua is 3 years old, British Shorthair blue cat"
+  ],
+  "expect": {
+    "tools": [
+      "update_pet_profile"
+    ]
+  },
+  "pets": [
+    {
+      "name": "Huahua",
+      "species": "cat"
+    },
+    {
+      "name": "Weiwei",
+      "species": "dog"
+    },
+    {
+      "name": "Doudou",
+      "species": "dog"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "id": "legacy_3_1_zh",
+  "description": "Migrated legacy e2e case 3.1 (zh).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "3.1",
+    "language": "zh"
+  },
+  "language": "zh",
+  "messages": [
+    "小维上次打疫苗是什么时候？"
+  ],
+  "expect": {
+    "tools": [
+      "query_calendar_events"
+    ],
+    "forbidden_tools": [
+      "create_calendar_event"
+    ]
+  },
+  "pets": [
+    {
+      "name": "小维",
+      "species": "dog"
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "id": "legacy_40_16_en",
+  "description": "Migrated legacy e2e case 40.16 (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "40.16",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "Delete everything"
+  ],
+  "expect": {
+    "cards": [
+      "confirm_action"
+    ]
+  },
+  "pets": [
+    {
+      "name": "Weiwei",
+      "species": "dog"
+    }
+  ]
+}

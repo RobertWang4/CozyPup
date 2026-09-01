@@ -1,0 +1,28 @@
+{
+  "id": "legacy_40_12_en",
+  "description": "Migrated legacy e2e case 40.12 (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "40.12",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "Weiwei and Huahua went to the park together today, bought snacks for 50 on the way"
+  ],
+  "expect": {
+    "tools": [
+      "create_calendar_event"
+    ]
+  },
+  "pets": [
+    {
+      "name": "Weiwei",
+      "species": "dog"
+    },
+    {
+      "name": "Huahua",
+      "species": "cat"
+    }
+  ]
+}

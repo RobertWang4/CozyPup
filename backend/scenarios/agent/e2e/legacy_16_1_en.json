@@ -1,0 +1,24 @@
+{
+  "id": "legacy_16_1_en",
+  "description": "Migrated legacy e2e case 16.1 (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "16.1",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "What should I do if my dog is vomiting?"
+  ],
+  "expect": {
+    "tools": [
+      "search_knowledge"
+    ]
+  },
+  "pets": [
+    {
+      "name": "Weiwei",
+      "species": "dog"
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "id": "legacy_15_1_zh",
+  "description": "Migrated legacy e2e case 15.1 (zh).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "15.1",
+    "language": "zh"
+  },
+  "language": "zh",
+  "messages": [
+    "小维很怕打雷，性格胆小"
+  ],
+  "expect": {
+    "tools": [
+      "update_pet_profile"
+    ]
+  },
+  "pets": [
+    {
+      "name": "小维",
+      "species": "dog"
+    }
+  ]
+}

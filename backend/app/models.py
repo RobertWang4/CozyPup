@@ -51,11 +51,16 @@ class MessageRole(str, enum.Enum):
     assistant = "assistant"
 
 
-class SourceType(str, enum.Enum):
-    chat_turn = "chat_turn"
-    daily_summary = "daily_summary"
-    calendar_event = "calendar_event"
-    knowledge_base = "knowledge_base"
+class MemoryNodeType(str, enum.Enum):
+    behavioral = "behavioral"
+    cognitive = "cognitive"
+    knowledge = "knowledge"
+
+
+class MemoryEdgeType(str, enum.Enum):
+    semantic = "semantic"
+    temporal = "temporal"
+    hierarchy = "hierarchy"
 
 
 # ---------- Models ----------
@@ -72,7 +77,7 @@ class User(Base):
     phone_number: Mapped[str | None] = mapped_column(String(20))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
-    subscription_status: Mapped[str] = mapped_column(String(20), nullable=False, server_default="trial")  # "trial" | "active" | "expired"
+    subscription_status: Mapped[str] = mapped_column(String(20), nullable=False, server_default="active")  # "trial" | "active" | "expired"
     trial_start_date: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     subscription_expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     subscription_product_id: Mapped[str | None] = mapped_column(String(100))
@@ -295,32 +300,42 @@ class DeviceToken(Base):
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
 
-class Embedding(Base):
-    __tablename__ = "embeddings"
+class MemoryNode(Base):
+    __tablename__ = "memory_nodes"
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    user_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=True)
-    pet_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("pets.id", ondelete="SET NULL"))
-    source_type: Mapped[SourceType] = mapped_column(Enum(SourceType), nullable=False)
+    user_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=True, index=True)
+    pet_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("pets.id", ondelete="SET NULL"), nullable=True, index=True)
+    node_type: Mapped[MemoryNodeType] = mapped_column(Enum(MemoryNodeType), nullable=False, index=True)
+    source_kind: Mapped[str] = mapped_column(String(50), nullable=False)
     source_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False)
+    title: Mapped[str] = mapped_column(String(500), default="")
     content: Mapped[str] = mapped_column(Text, nullable=False)
     embedding: Mapped[list] = mapped_column(Vector(1536), nullable=False)
     metadata_json: Mapped[dict | None] = mapped_column(JSON)
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
-
-
-class KnowledgeArticle(Base):
-    __tablename__ = "knowledge_articles"
-
-    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    title: Mapped[str] = mapped_column(String(500), nullable=False)
-    content: Mapped[str] = mapped_column(Text, nullable=False)
-    category: Mapped[str] = mapped_column(String(100), nullable=False)
-    species: Mapped[str] = mapped_column(String(20), nullable=False, default="all")
-    url: Mapped[str | None] = mapped_column(String(2000))
-    metadata_json: Mapped[dict | None] = mapped_column(JSON)
+    occurred_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True, index=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+    __table_args__ = (
+        UniqueConstraint("node_type", "source_kind", "source_id", name="uq_memory_nodes_source"),
+    )
+
+
+class MemoryEdge(Base):
+    __tablename__ = "memory_edges"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    source_node_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("memory_nodes.id", ondelete="CASCADE"), nullable=False, index=True)
+    target_node_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("memory_nodes.id", ondelete="CASCADE"), nullable=False, index=True)
+    edge_type: Mapped[MemoryEdgeType] = mapped_column(Enum(MemoryEdgeType), nullable=False)
+    weight: Mapped[float] = mapped_column(Float, nullable=False, default=1.0)
+    metadata_json: Mapped[dict | None] = mapped_column(JSON)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+    __table_args__ = (
+        UniqueConstraint("source_node_id", "target_node_id", "edge_type", name="uq_memory_edges_pair_type"),
+    )
 
 
 class DailySummary(Base):

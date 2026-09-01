@@ -1,0 +1,24 @@
+{
+  "id": "legacy_9_6_zh",
+  "description": "Migrated legacy e2e case 9.6 (zh).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "9.6",
+    "language": "zh"
+  },
+  "language": "zh",
+  "messages": [
+    "取消所有提醒"
+  ],
+  "expect": {
+    "tools": [
+      "delete_all_reminders"
+    ]
+  },
+  "pets": [
+    {
+      "name": "小维",
+      "species": "dog"
+    }
+  ]
+}

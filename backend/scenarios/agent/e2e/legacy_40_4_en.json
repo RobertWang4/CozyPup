@@ -1,0 +1,25 @@
+{
+  "id": "legacy_40_4_en",
+  "description": "Migrated legacy e2e case 40.4 (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "40.4",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "Create a daily dog walking task for Weiwei, and record that I already walked today"
+  ],
+  "expect": {
+    "tools": [
+      "create_daily_task",
+      "create_calendar_event"
+    ]
+  },
+  "pets": [
+    {
+      "name": "Weiwei",
+      "species": "dog"
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "id": "legacy_38_7_en",
+  "description": "Migrated legacy e2e case 38.7 (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "38.7",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "When was Weiwei's last poisoning incident?"
+  ],
+  "expect": {
+    "tools": [
+      "query_calendar_events"
+    ],
+    "forbidden_tools": [
+      "trigger_emergency"
+    ],
+    "emergency": false
+  },
+  "pets": [
+    {
+      "name": "Weiwei",
+      "species": "dog"
+    }
+  ]
+}

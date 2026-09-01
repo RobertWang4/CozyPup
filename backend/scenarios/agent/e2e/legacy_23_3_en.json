@@ -1,0 +1,25 @@
+{
+  "id": "legacy_23_3_en",
+  "description": "Migrated legacy e2e case 23.3 (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "23.3",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "Weiwei has been poisoned!"
+  ],
+  "expect": {
+    "cards": [
+      "emergency"
+    ],
+    "emergency": true
+  },
+  "pets": [
+    {
+      "name": "Weiwei",
+      "species": "dog"
+    }
+  ]
+}

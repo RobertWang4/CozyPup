@@ -1,0 +1,32 @@
+{
+  "id": "legacy_32_seq_en",
+  "description": "Migrated legacy e2e case 32_seq (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "32_seq",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "Weiwei went out to play today",
+    "What breed is in this photo?",
+    "Use that photo as Weiwei's avatar",
+    "Add this one to the earlier record too",
+    "Delete the first photo"
+  ],
+  "expect": {
+    "tools": [
+      "create_calendar_event",
+      "request_images",
+      "set_pet_avatar",
+      "upload_event_photo",
+      "remove_event_photo"
+    ]
+  },
+  "pets": [
+    {
+      "name": "Weiwei",
+      "species": "dog"
+    }
+  ]
+}

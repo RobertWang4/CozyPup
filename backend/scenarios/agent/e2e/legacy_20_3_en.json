@@ -1,0 +1,27 @@
+{
+  "id": "legacy_20_3_en",
+  "description": "Migrated legacy e2e case 20.3 (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "20.3",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "Cancel this reminder"
+  ],
+  "expect": {
+    "tools": [
+      "delete_reminder"
+    ],
+    "cards": [
+      "confirm_action"
+    ]
+  },
+  "pets": [
+    {
+      "name": "Weiwei",
+      "species": "dog"
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "id": "legacy_5_5_zh",
+  "description": "Migrated legacy e2e case 5.5 (zh).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "5.5",
+    "language": "zh"
+  },
+  "language": "zh",
+  "messages": [
+    "花花体重5公斤"
+  ],
+  "expect": {
+    "tools": [
+      "update_pet_profile"
+    ]
+  },
+  "pets": [
+    {
+      "name": "花花",
+      "species": "cat"
+    }
+  ]
+}

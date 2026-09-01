@@ -34,11 +34,17 @@ from typing import Callable, Awaitable
 import litellm
 
 from app.agents import llm_extra_kwargs
-from app.agents.constants import SKIP_ROUND2_TOOLS, maybe_await, needs_confirm
+from app.agents.constants import SKIP_ROUND2_TOOLS, maybe_await
+from app.agents.control_tools import handle_control_tool
 from app.agents.locale import t
 from app.agents.micro_compact import micro_compact
 from app.agents.pending_actions import store_action
 from app.agents.pre_processing.types import SuggestedAction
+from app.agents.tool_confirmation import handle_tool_confirmation
+from app.agents.tool_context import ToolDispatchContext
+from app.agents.tool_execution import handle_tool_execution
+from app.agents.tool_guards import apply_tool_guards
+from app.agents.tool_invocation import parse_tool_invocation
 from app.agents.tools import execute_tool, get_tool_definitions
 from app.agents.trace_collector import TraceCollector, INACTIVE_TRACE
 from app.agents.validation import validate_tool_args
@@ -74,193 +80,6 @@ class OrchestratorResult:
     total_prompt_tokens: int = 0
     total_completion_tokens: int = 0
     model_used: str = ""
-
-
-# ---------------------------------------------------------------------------
-# _describe_tool_call — human-readable summary shown on confirm cards
-# ---------------------------------------------------------------------------
-
-def _describe_tool_call(
-    fn_name: str,
-    fn_args: dict,
-    pets: list | None = None,
-    lang: str = "zh",
-    event_info: dict | None = None,
-    image_urls: list[str] | None = None,
-) -> str:
-    """Generate human-readable description from LLM's tool call arguments.
-
-    event_info (optional) is looked up from DB for delete/update_calendar_event
-    so the confirm card can show which event is being modified.
-    image_urls (optional) is used to show "(1 张图片)" on create_calendar_event
-    confirm cards.
-    """
-    def _pet_name(pid: str) -> str:
-        if not pets:
-            return ""
-        for p in pets:
-            if str(p.id if hasattr(p, "id") else p.get("id", "")) == pid:
-                return p.name if hasattr(p, "name") else p.get("name", "")
-        return ""
-
-    def _label(name_str: str) -> str:
-        if not name_str:
-            return ""
-        return f"「{name_str}」" if lang == "zh" else f"{name_str}'s"
-
-    pid = fn_args.get("pet_id", "")
-    name = _pet_name(pid)
-    label = _label(name)
-
-    if fn_name == "update_pet_profile":
-        info = fn_args.get("info", {})
-        if "name" in info:
-            return t("desc_rename", lang).format(label=label, name=info['name'])
-        from app.agents.tools.pets import _format_saved_fields
-        fields = _format_saved_fields(info, lang)
-        if fields:
-            sep = "、" if lang == "zh" else ", "
-            pairs = sep.join(f"{f['label']}: {f['value']}" for f in fields)
-            return t("desc_update_pet", lang).format(label=label, keys=pairs)
-        keys = ", ".join(info.keys())
-        return t("desc_update_pet", lang).format(label=label, keys=keys)
-    if fn_name == "create_pet":
-        return t("desc_create_pet", lang).format(name=fn_args.get('name', ''))
-    if fn_name == "delete_pet":
-        return t("desc_delete_pet", lang).format(label=label)
-    if fn_name == "create_calendar_event":
-        title = fn_args.get("title", "")
-        d = fn_args.get("event_date", "")
-        # multi-pet: label uses first pet_ids entry if pet_id absent
-        if not label:
-            pet_ids = fn_args.get("pet_ids") or []
-            if pet_ids:
-                label = _label(_pet_name(str(pet_ids[0])))
-        meta_parts = []
-        cost = fn_args.get("cost")
-        if cost:
-            meta_parts.append(f"${cost:g}" if isinstance(cost, (int, float)) else f"${cost}")
-        ev_time = fn_args.get("event_time")
-        if ev_time:
-            meta_parts.append(str(ev_time))
-        if image_urls:
-            if lang == "zh":
-                meta_parts.append(f"📷 {len(image_urls)} 张")
-            else:
-                meta_parts.append(f"📷 {len(image_urls)}")
-        if fn_args.get("reminder_at"):
-            meta_parts.append("🔔")
-        base = " ".join(
-            t("desc_create_event", lang).format(label=label, title=title, date=d).split()
-        )
-        if meta_parts:
-            sep = " · "
-            base += (" （" + sep.join(meta_parts) + "）") if lang == "zh" else (" (" + sep.join(meta_parts) + ")")
-        return base
-    if fn_name in ("update_calendar_event", "delete_calendar_event"):
-        if event_info and event_info.get("title"):
-            ev_pet = event_info.get("pet_name") or ""
-            if lang == "zh":
-                ev_label = f"「{ev_pet}」" if ev_pet else ""
-            else:
-                ev_label = f"{ev_pet}'s" if ev_pet else ""
-            key = "desc_update_event" if fn_name == "update_calendar_event" else "desc_delete_event"
-            return " ".join(t(key, lang).format(
-                label=ev_label,
-                title=event_info["title"],
-                date=event_info.get("date", ""),
-            ).split())
-        key_generic = (
-            "desc_update_event_generic" if fn_name == "update_calendar_event"
-            else "desc_delete_event_generic"
-        )
-        return t(key_generic, lang)
-    if fn_name == "create_reminder":
-        return t("desc_create_reminder", lang).format(title=fn_args.get('title', ''))
-    if fn_name == "update_reminder":
-        return t("desc_update_reminder", lang)
-    if fn_name == "delete_reminder":
-        return t("desc_delete_reminder", lang)
-    if fn_name == "delete_all_reminders":
-        return t("desc_delete_all_reminders", lang)
-    if fn_name == "manage_daily_task":
-        action = fn_args.get("action", "")
-        title = fn_args.get("title", "") or (fn_args.get("updates") or {}).get("title", "")
-        if action == "delete_all":
-            return t("desc_daily_task_delete_all", lang)
-        if action == "delete":
-            return t("desc_daily_task_delete", lang).format(title=title)
-        if action == "deactivate":
-            return t("desc_daily_task_deactivate", lang).format(title=title)
-    if fn_name == "draft_email":
-        return t("desc_draft_email", lang).format(subject=fn_args.get('subject', ''))
-    if fn_name == "save_pet_profile_md":
-        return t("desc_save_profile", lang).format(label=label)
-    if fn_name == "set_pet_avatar":
-        return t("desc_set_avatar", lang).format(label=label)
-    if fn_name == "upload_event_photo":
-        return t("desc_upload_photo", lang)
-    if fn_name == "remove_event_photo":
-        return "删除事件照片" if lang == "zh" else "Remove event photo"
-    if fn_name == "create_daily_task":
-        title = fn_args.get("title", "")
-        return (f"添加日常任务「{title}」" if lang == "zh"
-                else f"Add daily task \"{title}\"")
-    if fn_name == "set_language":
-        target = fn_args.get("language", "")
-        target_label = {"zh": "中文", "en": "English"}.get(target, target)
-        return (f"切换语言为 {target_label}" if lang == "zh"
-                else f"Switch language to {target_label}")
-    if fn_name == "manage_daily_task":
-        title = fn_args.get("title", "") or (fn_args.get("updates") or {}).get("title", "")
-        action = fn_args.get("action", "")
-        return (f"更新日常任务「{title}」({action})" if lang == "zh"
-                else f"Update daily task \"{title}\" ({action})")
-    return fn_name
-
-
-# ---------------------------------------------------------------------------
-# _lookup_event_info — fetch event display fields for confirm cards
-# ---------------------------------------------------------------------------
-
-async def _lookup_event_info(db, user_id, event_id_raw, pets: list | None = None) -> dict | None:
-    """Return {title, date, pet_name} for a calendar event, or None if not found."""
-    import uuid as _uuid
-    from sqlalchemy import select
-    from app.models import CalendarEvent
-
-    try:
-        event_id = _uuid.UUID(str(event_id_raw))
-    except (ValueError, TypeError):
-        return None
-
-    try:
-        result = await db.execute(
-            select(CalendarEvent).where(
-                CalendarEvent.id == event_id,
-                CalendarEvent.user_id == user_id,
-            )
-        )
-        event = result.scalar_one_or_none()
-    except Exception:
-        return None
-
-    if not event:
-        return None
-
-    pet_name = ""
-    if pets and event.pet_id:
-        pid_str = str(event.pet_id)
-        for p in pets:
-            if str(p.id if hasattr(p, "id") else p.get("id", "")) == pid_str:
-                pet_name = p.name if hasattr(p, "name") else p.get("name", "")
-                break
-
-    return {
-        "title": event.title,
-        "date": event.event_date.isoformat() if event.event_date else "",
-        "pet_name": pet_name,
-    }
 
 
 # ---------------------------------------------------------------------------
@@ -328,276 +147,53 @@ async def dispatch_tool(
         fn commits so the router sees persisted state).
       - Appends to result.cards / result.confirm_cards / result.tools_called.
     """
-    fn_name = tool_call["function"]["name"]
-
     try:
-        fn_args = json.loads(tool_call["function"]["arguments"])
-    except json.JSONDecodeError as exc:
-        return {"error": f"Invalid JSON arguments: {exc}"}
+        invocation = parse_tool_invocation(tool_call)
+    except ValueError as exc:
+        return {"error": str(exc)}
+
+    fn_name = invocation.name
+    fn_args = invocation.arguments
 
     result.tools_called.add(fn_name)
+    context = ToolDispatchContext(
+        db=db,
+        user_id=user_id,
+        session_id=session_id,
+        result=result,
+        on_card=on_card,
+        lang=lang,
+        pets=pets,
+        images=images,
+        image_urls=image_urls,
+        recent_image_urls=recent_image_urls,
+        location=kwargs.get("location"),
+        messages=kwargs.get("_messages", []),
+    )
 
-    # Guard: LLM sometimes invents events for pets the user did not mention
-    # (e.g. user says "Vinnie ate" but LLM creates one for Huahua too).
-    # Block the call server-side — cheaper + more reliable than prompting harder.
-    if fn_name == "create_calendar_event" and fn_args.get("pet_id") and pets:
-        user_msgs = [m.get("content", "") for m in kwargs.get("_messages", []) if m.get("role") == "user" and isinstance(m.get("content"), str)]
-        last_user = user_msgs[-1] if user_msgs else ""
-        # Find which pets are mentioned by name
-        mentioned_pet_ids = set()
-        for p in pets:
-            pname = p.name if hasattr(p, "name") else p.get("name", "")
-            pid = str(p.id if hasattr(p, "id") else p.get("id", ""))
-            if pname and pname.lower() in last_user.lower():
-                mentioned_pet_ids.add(pid)
-        # If user mentioned specific pet(s) but this call is for an unmentioned pet, block it
-        if mentioned_pet_ids and fn_args["pet_id"] not in mentioned_pet_ids:
-            blocked_name = ""
-            for p in pets:
-                pid = str(p.id if hasattr(p, "id") else p.get("id", ""))
-                if pid == fn_args["pet_id"]:
-                    blocked_name = p.name if hasattr(p, "name") else p.get("name", "")
-            logger.info("pet_mismatch_blocked", extra={
-                "blocked_pet": blocked_name,
-                "mentioned": list(mentioned_pet_ids),
-                "user_text": last_user[:60],
-            })
-            return {"success": False, "error": f"用户只提到了特定的宠物，没有提到{blocked_name}。请只为用户提到的宠物创建事件。"}
+    guard_result = apply_tool_guards(invocation, context)
+    if guard_result is not None:
+        return guard_result
 
-    # Guard: refuse to create a second pet with the same name as an existing
-    # one (case-insensitive). Duplicate creation is a classic LLM failure
-    # mode; the error message steers the LLM to update_pet_profile instead.
-    if fn_name == "create_pet" and fn_args.get("name") and pets:
-        new_name = str(fn_args["name"]).strip().lower()
-        for p in pets:
-            existing_name = (p.name if hasattr(p, "name") else p.get("name", "")) or ""
-            existing_id = str(p.id if hasattr(p, "id") else p.get("id", ""))
-            if existing_name.strip().lower() == new_name:
-                logger.info("duplicate_pet_blocked", extra={
-                    "name": new_name,
-                    "existing_id": existing_id,
-                })
-                return {
-                    "success": False,
-                    "error": (
-                        f"宠物「{existing_name}」已经存在 (id={existing_id})。"
-                        f"不要重复创建 — 如需补充信息，请改用 update_pet_profile 并传 pet_id。"
-                    ),
-                }
+    control_result = handle_control_tool(
+        invocation,
+        context,
+        load_images_from_urls=_load_images_from_urls,
+    )
+    if control_result is not None:
+        return control_result
 
-    # Best-effort cost backfill: LLM frequently forgets to extract the
-    # amount the user mentioned. Regex-extract so the calendar event has it.
-    if fn_name == "create_calendar_event" and fn_args.get("cost") is None:
-        import re
-        user_msgs = [m.get("content", "") for m in kwargs.get("_messages", []) if m.get("role") == "user" and isinstance(m.get("content"), str)]
-        last_user = user_msgs[-1] if user_msgs else ""
-        # Match: 花了300/花了300块/花了100/300元/cost 50
-        cost_match = re.search(r"花了?\s*(\d+(?:\.\d+)?)\s*[块元刀]?|(\d+(?:\.\d+)?)\s*[块元刀]", last_user)
-        if cost_match:
-            amount = float(cost_match.group(1) or cost_match.group(2))
-            fn_args["cost"] = amount
-            tool_call["function"]["arguments"] = json.dumps(fn_args, ensure_ascii=False)
-            logger.info("cost_auto_fixed", extra={"extracted": amount, "user_text": last_user[:60]})
+    confirmation_result = await handle_tool_confirmation(invocation, context)
+    if confirmation_result is not None:
+        return confirmation_result
 
-    # Best-effort end_date backfill: LLM often omits end_date when the user
-    # said "for the next 7 days" or "until April 10", silently turning a
-    # bounded task into a permanent one. Regex-extract common phrasings.
-    if fn_name == "create_daily_task" and not fn_args.get("end_date"):
-        import re
-        from datetime import date as _date, timedelta as _td
-        user_msgs = [m.get("content", "") for m in kwargs.get("_messages", []) if m.get("role") == "user" and isinstance(m.get("content"), str)]
-        last_user = user_msgs[-1] if user_msgs else ""
-        today = _date.today()
-        extracted_end = None
-
-        # "到4月10号" / "到4月10日"
-        m = re.search(r"到(\d{1,2})月(\d{1,2})[号日]", last_user)
-        if m:
-            month, day = int(m.group(1)), int(m.group(2))
-            year = today.year if month >= today.month else today.year + 1
-            try:
-                extracted_end = _date(year, month, day)
-            except ValueError:
-                pass
-
-        # "到下周日" / "到下周六" etc
-        if not extracted_end:
-            m = re.search(r"到?下周([一二三四五六日天])", last_user)
-            if m:
-                weekday_map = {"一": 0, "二": 1, "三": 2, "四": 3, "五": 4, "六": 5, "日": 6, "天": 6}
-                target_wd = weekday_map.get(m.group(1), 6)
-                days_ahead = (target_wd - today.weekday()) % 7 + 7  # next week
-                extracted_end = today + _td(days=days_ahead)
-
-        # "接下来7天" / "接下来N天"
-        if not extracted_end:
-            m = re.search(r"接下来(\d+)天", last_user)
-            if m:
-                extracted_end = today + _td(days=int(m.group(1)))
-
-        # "这周" / "本周"
-        if not extracted_end and re.search(r"[这本]周", last_user):
-            days_to_sunday = 6 - today.weekday()
-            extracted_end = today + _td(days=max(days_to_sunday, 1))
-
-        if extracted_end:
-            fn_args["end_date"] = extracted_end.isoformat()
-            # Rewrite the tool_call arguments so execute_tool sees the fix
-            tool_call["function"]["arguments"] = json.dumps(fn_args, ensure_ascii=False)
-            logger.info("end_date_auto_fixed", extra={
-                "extracted": extracted_end.isoformat(),
-                "user_text": last_user[:60],
-            })
-
-    # plan tool is purely control-flow (LLM declares the decomposition) — it
-    # does not touch the DB. We just record the steps so the plan-nag check
-    # in the main loop knows what to wait for.
-    if fn_name == "plan":
-        steps = fn_args.get("steps", [])
-        result.plan_steps = steps
-        step_summary = "; ".join(f"[{s.get('id')}] {s.get('action')}" for s in steps)
-        return {
-            "status": "planned",
-            "message": f"已规划 {len(steps)} 个步骤: {step_summary}",
-            "steps": steps,
-        }
-
-    # request_images returns a sentinel (_inject_images) that the main loop
-    # reads and turns into a proper multimodal user message before the next
-    # round, so the LLM actually sees the pixels.
-    if fn_name == "request_images":
-        if images:
-            return {
-                "status": "images_loaded",
-                "message": "图片已加载" if lang == "zh" else "Images loaded",
-                "_inject_images": images,
-            }
-        # No new images this turn — fall back to photos from recent messages
-        if recent_image_urls:
-            history_images = _load_images_from_urls(recent_image_urls)
-            if history_images:
-                return {
-                    "status": "images_loaded",
-                    "message": ("已加载历史消息中的图片" if lang == "zh"
-                                else "Loaded images from previous messages"),
-                    "_inject_images": history_images,
-                }
-        return {"error": "用户没有附带图片" if lang == "zh" else "No images attached"}
-
-    # Confirm gate: always-confirm tools + mutating tools without an explicit
-    # action verb in the user's message get a confirm card instead of
-    # executing. The tool call is persisted in pending_actions so a later
-    # /confirm endpoint can replay it once the user taps confirm.
-    user_msgs = [m.get("content", "") for m in kwargs.get("_messages", []) if m.get("role") == "user" and isinstance(m.get("content"), str)]
-    last_user_text = user_msgs[-1] if user_msgs else ""
-    if needs_confirm(fn_name, fn_args, last_user_text) and session_id:
-        event_info = None
-        if fn_name in {"delete_calendar_event", "update_calendar_event"} and fn_args.get("event_id"):
-            event_info = await _lookup_event_info(db, user_id, fn_args["event_id"], pets=pets)
-        effective_urls = image_urls or recent_image_urls
-        desc = _describe_tool_call(
-            fn_name, fn_args, pets=pets, lang=lang,
-            event_info=event_info, image_urls=effective_urls,
-        )
-        # Persist image_urls inside the stored args so the confirm endpoint
-        # can re-run the tool with the original photos attached — otherwise
-        # the photos would be gone by the time the user taps confirm.
-        stored_args = dict(fn_args)
-        if effective_urls and fn_name == "create_calendar_event":
-            stored_args["_image_urls"] = list(effective_urls)
-        action_id = await store_action(
-            db=db, user_id=str(user_id), session_id=str(session_id),
-            tool_name=fn_name, arguments=stored_args, description=desc,
-        )
-        card = {"type": "confirm_action", "action_id": action_id, "message": desc}
-        result.confirm_cards.append(card)
-        if on_card:
-            await maybe_await(on_card, card)
-        # Strongly-worded result so the LLM does NOT claim completion. grok-4-1
-        # has a tendency to say "已删除" after seeing any status field — we beef
-        # this up with explicit anti-fabrication instructions.
-        return {
-            "status": "waiting_confirm",
-            "executed": False,
-            "db_changed": False,
-            "instruction_for_assistant": (
-                "⚠️ 此操作【尚未执行】。系统已向用户弹出确认卡片，用户必须点击才会真正执行。"
-                "你【绝对不能】告诉用户'已删除/已修改/已更新'——数据库完全没变。"
-                "正确回复应该是：'已准备好，请在卡片上点击确认～'（用用户语言）。"
-                "⚠️ THIS ACTION HAS NOT EXECUTED. A confirmation card was shown; the user must tap it. "
-                "DO NOT say 'deleted/updated/saved' — the DB is unchanged. "
-                "Say something like: 'Ready — please tap confirm on the card.'"
-            ),
-            "description": desc,
-        }
-
-    # --- Validate ---
-    errors = validate_tool_args(fn_name, fn_args)
-    if errors:
-        return {"error": "; ".join(errors)}
-
-    # --- Execute ---
-    try:
-        # Pass image_urls/location/lang to every handler; handlers that don't
-        # need them simply accept **kwargs and ignore the extras.
-        exec_kwargs = {"lang": lang}
-        if "location" in kwargs:
-            exec_kwargs["location"] = kwargs["location"]
-        # Prefer current-turn photos; fall back to photos from recent messages
-        # so follow-up messages ("attach THIS one too") still work.
-        effective_image_urls = image_urls or recent_image_urls
-        if effective_image_urls:
-            exec_kwargs["image_urls"] = effective_image_urls
-
-        tool_result = await execute_tool(fn_name, fn_args, db, user_id, **exec_kwargs)
-        await db.commit()
-        # Mark as truly executed only when the handler reports success. This
-        # is what the write-claim nag consults — confirm-pending and errored
-        # calls don't count.
-        if tool_result.get("success"):
-            result.tools_executed.add(fn_name)
-    except Exception as exc:
-        logger.error("dispatch_tool_error", extra={
-            "tool": fn_name, "error": str(exc)[:300],
-        })
-        return {"error": str(exc)[:200]}
-
-    # Keep RAG embeddings in sync with calendar_event writes.
-    if tool_result.get("success") and tool_result.get("event_id"):
-        from app.rag.event_sync import (
-            schedule_event_embedding,
-            schedule_event_embedding_delete,
-        )
-        if fn_name in ("create_calendar_event", "update_calendar_event"):
-            schedule_event_embedding(tool_result["event_id"])
-        elif fn_name == "delete_calendar_event":
-            schedule_event_embedding_delete(tool_result["event_id"])
-
-    # Some handlers (e.g. gender/species first-time set) run a partial update
-    # and then return needs_confirm=True for the lockable portion. Surface
-    # a confirm card for that leftover piece.
-    if tool_result.get("needs_confirm") and session_id:
-        confirm_tool = tool_result.get("confirm_tool", fn_name)
-        confirm_args = tool_result.get("confirm_arguments", fn_args)
-        confirm_desc = tool_result.get("confirm_description", f"确认执行 {fn_name}")
-        action_id = await store_action(
-            db=db, user_id=str(user_id), session_id=str(session_id),
-            tool_name=confirm_tool, arguments=confirm_args, description=confirm_desc,
-        )
-        card = {"type": "confirm_action", "action_id": action_id, "message": confirm_desc}
-        result.confirm_cards.append(card)
-        if on_card:
-            await maybe_await(on_card, card)
-        return tool_result
-
-    # --- Emit card ---
-    card = tool_result.get("card")
-    if card:
-        result.cards.append(card)
-        if on_card:
-            await maybe_await(on_card, card)
-
-    return tool_result
+    return await handle_tool_execution(
+        invocation,
+        context,
+        validate=validate_tool_args,
+        execute=execute_tool,
+        store_pending_action=store_action,
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -886,6 +482,7 @@ async def _capture_non_streaming(
     lang: str,
     round_num: int,
     trace: TraceCollector,
+    is_vision: bool = False,
 ):
     """Parallel non-streaming call to capture the full chat.completion JSON."""
     try:
@@ -899,7 +496,7 @@ async def _capture_non_streaming(
                 temperature=0.3,
                 stream=False,
                 drop_params=True,
-                **llm_extra_kwargs(),
+                **llm_extra_kwargs(vision=is_vision),
             ),
             timeout=60,
         )
@@ -918,6 +515,7 @@ async def _stream_completion(
     lang: str = "zh",
     trace: TraceCollector = INACTIVE_TRACE,
     round_num: int = 0,
+    is_vision: bool = False,
 ) -> tuple[str, list[dict], dict]:
     """Stream the LLM response and return (text, tool_calls, usage).
 
@@ -936,7 +534,7 @@ async def _stream_completion(
     capture_task = None
     if trace.active:
         capture_task = asyncio.create_task(
-            _capture_non_streaming(messages, model, lang, round_num, trace)
+            _capture_non_streaming(messages, model, lang, round_num, trace, is_vision=is_vision)
         )
 
     max_retries = 2
@@ -951,7 +549,7 @@ async def _stream_completion(
                 stream=True,
                 stream_options={"include_usage": True},
                 drop_params=True,
-                **llm_extra_kwargs(),
+                **llm_extra_kwargs(vision=is_vision),
             )
 
             async for chunk in response:
@@ -1130,6 +728,7 @@ async def run_orchestrator(
     lang = kwargs.pop("lang", "zh")
     result = OrchestratorResult()
     use_model = model or settings.model
+    vision_model = settings.vision_model or use_model
     result.model_used = use_model
 
     # Seed the message list with system prompt + recent history
@@ -1156,6 +755,20 @@ async def run_orchestrator(
             "user_text_sample": latest_user_text[:120],
         })
 
+    def _latest_user_has_images() -> bool:
+        """True if the last user message contains image_url content parts."""
+        for m in reversed(messages):
+            if m.get("role") == "user":
+                content = m.get("content")
+                if isinstance(content, list):
+                    return any(
+                        part.get("type") == "image_url"
+                        for part in content
+                        if isinstance(part, dict)
+                    )
+                return False
+        return False
+
     text_parts: list[str] = []
     nudge_used = False
     plan_nag_used = False
@@ -1174,15 +787,32 @@ async def run_orchestrator(
         if round_num > 0:
             micro_compact(messages)
 
+        # Switch to vision model when images are in the last user message
+        is_vision = _latest_user_has_images()
+        round_model = vision_model if is_vision else use_model
+
+        trace.record_event("model_started", {
+            "round": round_num,
+            "model": round_model,
+            "is_vision": is_vision,
+        })
+
         # Stream the LLM response
         round_text, tool_calls, usage = await _stream_completion(
-            messages, use_model, on_token, on_thinking=on_thinking, lang=lang,
-            trace=trace, round_num=round_num,
+            messages, round_model, on_token, on_thinking=on_thinking, lang=lang,
+            trace=trace, round_num=round_num, is_vision=is_vision,
         )
 
         # Accumulate token usage
         result.total_prompt_tokens += usage.get("prompt_tokens", 0)
         result.total_completion_tokens += usage.get("completion_tokens", 0)
+        trace.record_event("model_completed", {
+            "round": round_num,
+            "model": round_model,
+            "tool_calls": [tc["function"]["name"] for tc in tool_calls],
+            "prompt_tokens": usage.get("prompt_tokens", 0),
+            "completion_tokens": usage.get("completion_tokens", 0),
+        })
 
         # Log LLM request
         trace_log("llm_request", round=round_num, data={
@@ -1313,6 +943,11 @@ async def run_orchestrator(
                 "tool_name": tc_name,
                 "arguments": tc_args_str,
             })
+            trace.record_event("tool_call_started", {
+                "round": round_num,
+                "tool": tc_name,
+                "args": tc_args_str,
+            })
 
             tool_result = await dispatch_tool(
                 tc, db, user_id, session_id, result, on_card, lang,
@@ -1344,6 +979,13 @@ async def run_orchestrator(
                 "result_keys": list(tool_result.keys()),
                 "success": tool_result.get("success"),
                 "error": tool_result.get("error"),
+            })
+            trace.record_event("tool_call_completed", {
+                "round": round_num,
+                "tool": tc_name,
+                "success": tool_result.get("success"),
+                "error": tool_result.get("error"),
+                "result_keys": list(tool_result.keys()),
             })
 
             # Strip internal markers (keys starting with _) before serialising
@@ -1440,5 +1082,14 @@ async def run_orchestrator(
         result.response_text = fallback
         if on_token:
             await maybe_await(on_token, fallback)
+
+    trace.record_event("run_completed", {
+        "tools_called": sorted(result.tools_called),
+        "tools_executed": sorted(result.tools_executed),
+        "cards_count": len(result.cards),
+        "confirm_cards_count": len(result.confirm_cards),
+        "prompt_tokens": result.total_prompt_tokens,
+        "completion_tokens": result.total_completion_tokens,
+    })
 
     return result

@@ -19,7 +19,6 @@ from app.routers.subscription import router as subscription_router
 from app.routers.family import router as family_router
 from app.routers.pet_sharing import router as pet_sharing_router
 from app.routers.admin.router import admin_router
-from app.routers.admin_rag import router as admin_rag_router
 from app.routers.web_invite import router as web_invite_router
 from app.routers.speech_ws import router as speech_ws_router
 from app.middleware.rate_limit import ChatRateLimitMiddleware
@@ -62,7 +61,6 @@ app.include_router(subscription_router)
 app.include_router(family_router)
 app.include_router(pet_sharing_router)
 app.include_router(admin_router)
-app.include_router(admin_rag_router)
 from app.routers.flags import flags_router
 app.include_router(flags_router)
 app.include_router(web_invite_router)

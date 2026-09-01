@@ -1,0 +1,33 @@
+{
+  "id": "legacy_4_5_en",
+  "description": "Migrated legacy e2e case 4.5 (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "4.5",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "Actually it cost 800"
+  ],
+  "expect": {
+    "tools": [
+      "update_calendar_event"
+    ]
+  },
+  "pets": [
+    {
+      "name": "Weiwei",
+      "species": "dog"
+    }
+  ],
+  "events": [
+    {
+      "pet_name": "Weiwei",
+      "event_date": "today",
+      "title": "Walk",
+      "category": "daily",
+      "raw_text": "seed event for migrated e2e scenario"
+    }
+  ]
+}

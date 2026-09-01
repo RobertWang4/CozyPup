@@ -1,0 +1,32 @@
+{
+  "id": "legacy_34_seq_en",
+  "description": "Migrated legacy e2e case 34_seq (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "34_seq",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "Remind me to walk the dog every day",
+    "Add another: give medicine twice a day",
+    "Take Weiwei's temperature every day this week",
+    "What tasks do I have?",
+    "Change medicine to three times a day",
+    "Cancel the temperature task",
+    "Delete all tasks"
+  ],
+  "expect": {
+    "tools": [
+      "create_daily_task",
+      "list_daily_tasks",
+      "manage_daily_task"
+    ]
+  },
+  "pets": [
+    {
+      "name": "Weiwei",
+      "species": "dog"
+    }
+  ]
+}

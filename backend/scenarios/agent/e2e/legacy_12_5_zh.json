@@ -1,0 +1,28 @@
+{
+  "id": "legacy_12_5_zh",
+  "description": "Migrated legacy e2e case 12.5 (zh).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "12.5",
+    "language": "zh"
+  },
+  "language": "zh",
+  "messages": [
+    "上次中毒是什么时候"
+  ],
+  "expect": {
+    "tools": [
+      "query_calendar_events"
+    ],
+    "forbidden_tools": [
+      "trigger_emergency"
+    ],
+    "emergency": false
+  },
+  "pets": [
+    {
+      "name": "小维",
+      "species": "dog"
+    }
+  ]
+}

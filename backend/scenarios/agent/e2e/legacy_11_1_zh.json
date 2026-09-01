@@ -1,0 +1,24 @@
+{
+  "id": "legacy_11_1_zh",
+  "description": "Migrated legacy e2e case 11.1 (zh).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "11.1",
+    "language": "zh"
+  },
+  "language": "zh",
+  "messages": [
+    "帮我写一封邮件给兽医说明小维最近皮肤过敏"
+  ],
+  "expect": {
+    "tools": [
+      "draft_email"
+    ]
+  },
+  "pets": [
+    {
+      "name": "小维",
+      "species": "dog"
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "id": "legacy_32_seq_zh",
+  "description": "Migrated legacy e2e case 32_seq (zh).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "32_seq",
+    "language": "zh"
+  },
+  "language": "zh",
+  "messages": [
+    "小维今天出去玩了",
+    "这张照片是什么品种？",
+    "用刚才那张照片当小维头像",
+    "把这张也加到刚才的记录",
+    "删掉第一张照片"
+  ],
+  "expect": {
+    "tools": [
+      "create_calendar_event",
+      "request_images",
+      "set_pet_avatar",
+      "upload_event_photo",
+      "remove_event_photo"
+    ]
+  },
+  "pets": [
+    {
+      "name": "小维",
+      "species": "dog"
+    }
+  ]
+}

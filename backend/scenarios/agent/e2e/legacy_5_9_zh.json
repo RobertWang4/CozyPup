@@ -1,0 +1,21 @@
+{
+  "id": "legacy_5_9_zh",
+  "description": "Migrated legacy e2e case 5.9 (zh).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "5.9",
+    "language": "zh"
+  },
+  "language": "zh",
+  "messages": [
+    "我养了一只新狗叫小维"
+  ],
+  "expect": {
+    "tools": [
+      "create_pet"
+    ],
+    "cards": [
+      "confirm_action"
+    ]
+  }
+}

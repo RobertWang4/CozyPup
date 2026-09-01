@@ -1,0 +1,25 @@
+{
+  "id": "legacy_23_3_zh",
+  "description": "Migrated legacy e2e case 23.3 (zh).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "23.3",
+    "language": "zh"
+  },
+  "language": "zh",
+  "messages": [
+    "小维中毒了！"
+  ],
+  "expect": {
+    "cards": [
+      "emergency"
+    ],
+    "emergency": true
+  },
+  "pets": [
+    {
+      "name": "小维",
+      "species": "dog"
+    }
+  ]
+}

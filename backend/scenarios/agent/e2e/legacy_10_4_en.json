@@ -1,0 +1,24 @@
+{
+  "id": "legacy_10_4_en",
+  "description": "Migrated legacy e2e case 10.4 (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "10.4",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "How are the reviews for the first one?"
+  ],
+  "expect": {
+    "tools": [
+      "get_place_details"
+    ]
+  },
+  "pets": [
+    {
+      "name": "Weiwei",
+      "species": "dog"
+    }
+  ]
+}

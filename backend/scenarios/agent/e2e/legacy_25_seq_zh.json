@@ -1,0 +1,31 @@
+{
+  "id": "legacy_25_seq_zh",
+  "description": "Migrated legacy e2e case 25_seq (zh).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "25_seq",
+    "language": "zh"
+  },
+  "language": "zh",
+  "messages": [
+    "你好！",
+    "我养了一只金毛叫小维",
+    "她3岁了，体重30公斤",
+    "她今天吃了鸡肉拌饭",
+    "不对，是昨天的事",
+    "提醒我下周一带她去看兽医",
+    "我到现在记录了什么？",
+    "她很怕打雷，性格胆小"
+  ],
+  "expect": {
+    "tools": [
+      "introduce_product",
+      "create_pet",
+      "update_pet_profile",
+      "create_calendar_event",
+      "update_calendar_event",
+      "create_reminder",
+      "query_calendar_events"
+    ]
+  }
+}

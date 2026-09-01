@@ -1,0 +1,31 @@
+{
+  "id": "legacy_25_seq_en",
+  "description": "Migrated legacy e2e case 25_seq (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "25_seq",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "Hello!",
+    "I have a golden retriever named Winnie",
+    "She's 3 years old, weighs 30kg",
+    "She ate chicken and rice today",
+    "Actually that was yesterday",
+    "Remind me to take her to the vet next Monday",
+    "What have I recorded so far?",
+    "She's scared of thunder and very shy"
+  ],
+  "expect": {
+    "tools": [
+      "introduce_product",
+      "create_pet",
+      "update_pet_profile",
+      "create_calendar_event",
+      "update_calendar_event",
+      "create_reminder",
+      "query_calendar_events"
+    ]
+  }
+}

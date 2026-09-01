@@ -1,0 +1,24 @@
+{
+  "id": "legacy_11_2_en",
+  "description": "Migrated legacy e2e case 11.2 (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "11.2",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "Draft an email to the vet about Weiwei's vaccination history"
+  ],
+  "expect": {
+    "tools": [
+      "draft_email"
+    ]
+  },
+  "pets": [
+    {
+      "name": "Weiwei",
+      "species": "dog"
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "id": "legacy_35_seq_en",
+  "description": "Migrated legacy e2e case 35_seq (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "35_seq",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "Weiwei suddenly started having seizures!!",
+    "Is there a 24-hour pet ER nearby?",
+    "How do I get to the nearest one?",
+    "Record this: Weiwei had a seizure episode today",
+    "Help me write an email to the vet about the situation",
+    "Remind me to take Weiwei for a follow-up tomorrow"
+  ],
+  "expect": {
+    "tools": [
+      "search_places",
+      "get_directions",
+      "create_calendar_event",
+      "draft_email",
+      "create_reminder"
+    ],
+    "cards": [
+      "emergency"
+    ],
+    "emergency": true
+  },
+  "pets": [
+    {
+      "name": "Weiwei",
+      "species": "dog"
+    }
+  ]
+}

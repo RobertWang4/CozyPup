@@ -1,0 +1,25 @@
+{
+  "id": "legacy_40_4_zh",
+  "description": "Migrated legacy e2e case 40.4 (zh).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "40.4",
+    "language": "zh"
+  },
+  "language": "zh",
+  "messages": [
+    "给小维创建一个每天遛狗的待办，顺便记录今天已经遛了"
+  ],
+  "expect": {
+    "tools": [
+      "create_daily_task",
+      "create_calendar_event"
+    ]
+  },
+  "pets": [
+    {
+      "name": "小维",
+      "species": "dog"
+    }
+  ]
+}

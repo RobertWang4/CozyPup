@@ -1,0 +1,18 @@
+{
+  "id": "create_pet",
+  "description": "User introduces a new pet, so the agent should create a pet profile.",
+  "language": "en",
+  "auto_confirm": true,
+  "messages": ["I have a new dog named Max."],
+  "expect": {
+    "tools": ["create_pet"],
+    "forbidden_tools": ["create_calendar_event", "trigger_emergency"],
+    "cards": ["confirm_action"],
+    "contains_any": ["confirm", "add", "profile", "Max"],
+    "side_effects": {
+      "pets": [
+        {"name": "Max", "species": "dog"}
+      ]
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "id": "mild_symptom_no_emergency",
+  "description": "Mild symptom advice should not trigger emergency routing.",
+  "language": "en",
+  "pets": [{"name": "Max", "species": "dog"}],
+  "messages": ["Max vomited once this morning but is still playful. What should I watch for?"],
+  "expect": {
+    "tools": ["search_knowledge"],
+    "forbidden_tools": ["trigger_emergency", "create_calendar_event"],
+    "emergency": false,
+    "contains_any": ["watch", "monitor", "vet"]
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "id": "legacy_41_10_en",
+  "description": "Migrated legacy e2e case 41.10 (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "41.10",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "Huahua weighs 4 kg"
+  ],
+  "expect": {
+    "tools": [
+      "update_pet_profile"
+    ]
+  },
+  "pets": [
+    {
+      "name": "Huahua",
+      "species": "cat"
+    },
+    {
+      "name": "Weiwei",
+      "species": "dog"
+    },
+    {
+      "name": "Doudou",
+      "species": "dog"
+    }
+  ]
+}

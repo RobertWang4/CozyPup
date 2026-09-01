@@ -2,7 +2,7 @@
 
 Structured, deterministic lookups for vaccination and deworming SCHEDULES
 (timing + vaccine/parasite name + authoritative citation). Used in place
-of RAG for scheduling questions so answers are 100% traceable to
+of free-form retrieval for scheduling questions so answers are 100% traceable to
 AAHA / AAFP / CAPC guidelines.
 
 These tools intentionally do NOT return dosage. Dosage is a vet-only

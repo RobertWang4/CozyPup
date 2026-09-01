@@ -1,0 +1,24 @@
+{
+  "id": "legacy_9_4_en",
+  "description": "Migrated legacy e2e case 9.4 (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "9.4",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "Change it to the day after tomorrow at 3pm"
+  ],
+  "expect": {
+    "tools": [
+      "update_reminder"
+    ]
+  },
+  "pets": [
+    {
+      "name": "Weiwei",
+      "species": "dog"
+    }
+  ]
+}

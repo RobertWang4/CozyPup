@@ -1,0 +1,24 @@
+{
+  "id": "legacy_8_3_en",
+  "description": "Migrated legacy e2e case 8.3 (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "8.3",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "Give medicine twice a day"
+  ],
+  "expect": {
+    "tools": [
+      "create_daily_task"
+    ]
+  },
+  "pets": [
+    {
+      "name": "Weiwei",
+      "species": "dog"
+    }
+  ]
+}

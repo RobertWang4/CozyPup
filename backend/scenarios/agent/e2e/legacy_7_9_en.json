@@ -1,0 +1,24 @@
+{
+  "id": "legacy_7_9_en",
+  "description": "Migrated legacy e2e case 7.9 (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "7.9",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "Delete the photo from that record"
+  ],
+  "expect": {
+    "tools": [
+      "remove_event_photo"
+    ]
+  },
+  "pets": [
+    {
+      "name": "Weiwei",
+      "species": "dog"
+    }
+  ]
+}

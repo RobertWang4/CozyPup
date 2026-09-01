@@ -1,0 +1,31 @@
+{
+  "id": "legacy_17_1_seq_en",
+  "description": "Migrated legacy e2e case 17.1_seq (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "17.1_seq",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "Weiwei ate dog food today",
+    "Also drank a lot of water",
+    "Went to the park in the afternoon",
+    "Met a golden retriever",
+    "They played for a long time",
+    "Took a bath after coming back",
+    "How has Weiwei been recently?"
+  ],
+  "expect": {
+    "tools": [
+      "create_calendar_event",
+      "query_calendar_events"
+    ]
+  },
+  "pets": [
+    {
+      "name": "Weiwei",
+      "species": "dog"
+    }
+  ]
+}

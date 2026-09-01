@@ -320,7 +320,7 @@ pytest tests/e2e/ -v --tb=short
 
 ---
 
-## 16. 健康知识问答（search_knowledge / RAG）
+## 16. 健康知识问答（search_knowledge / MemWeaver）
 
 | # | 输入 | 预期输出 | 验证 |
 |---|------|---------|------|

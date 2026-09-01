@@ -1,0 +1,37 @@
+{
+  "id": "legacy_1_3_seq_en",
+  "description": "Migrated legacy e2e case 1.3_seq (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "1.3_seq",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "Hello",
+    "The weather is great today",
+    "What do you think"
+  ],
+  "expect": {
+    "forbidden_tools": [
+      "create_calendar_event",
+      "update_calendar_event",
+      "delete_calendar_event",
+      "create_pet",
+      "update_pet_profile",
+      "delete_pet",
+      "create_reminder",
+      "update_reminder",
+      "delete_reminder",
+      "delete_all_reminders",
+      "create_daily_task",
+      "manage_daily_task",
+      "set_pet_avatar",
+      "upload_event_photo",
+      "remove_event_photo",
+      "add_event_location",
+      "trigger_emergency",
+      "search_places"
+    ]
+  }
+}

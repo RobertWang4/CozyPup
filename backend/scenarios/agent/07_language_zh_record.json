@@ -1,0 +1,22 @@
+{
+  "id": "language_zh_record",
+  "description": "Chinese record request should stay Chinese and call the record tool.",
+  "language": "zh",
+  "pets": [{"name": "小维", "species": "dog"}],
+  "messages": ["帮我记录小维今天吐了两次"],
+  "expect": {
+    "tools": ["create_calendar_event"],
+    "forbidden_tools": ["trigger_emergency"],
+    "cards": ["record"],
+    "contains_any": ["记录", "记下"],
+    "side_effects": {
+      "events": [
+        {
+          "pet_name": "小维",
+          "category": "abnormal",
+          "title_contains_any": ["吐", "呕吐"]
+        }
+      ]
+    }
+  }
+}

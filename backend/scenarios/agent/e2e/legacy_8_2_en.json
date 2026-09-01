@@ -1,0 +1,24 @@
+{
+  "id": "legacy_8_2_en",
+  "description": "Migrated legacy e2e case 8.2 (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "8.2",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "Take Weiwei's temperature every day this week"
+  ],
+  "expect": {
+    "tools": [
+      "create_daily_task"
+    ]
+  },
+  "pets": [
+    {
+      "name": "Weiwei",
+      "species": "dog"
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "id": "legacy_41_4_zh",
+  "description": "Migrated legacy e2e case 41.4 (zh).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "41.4",
+    "language": "zh"
+  },
+  "language": "zh",
+  "messages": [
+    "豆豆吐了"
+  ],
+  "expect": {
+    "tools": [
+      "create_calendar_event"
+    ]
+  },
+  "pets": [
+    {
+      "name": "豆豆",
+      "species": "dog"
+    },
+    {
+      "name": "小维",
+      "species": "dog"
+    },
+    {
+      "name": "花花",
+      "species": "cat"
+    }
+  ]
+}

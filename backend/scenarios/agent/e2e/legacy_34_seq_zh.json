@@ -1,0 +1,32 @@
+{
+  "id": "legacy_34_seq_zh",
+  "description": "Migrated legacy e2e case 34_seq (zh).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "34_seq",
+    "language": "zh"
+  },
+  "language": "zh",
+  "messages": [
+    "每天提醒我遛狗",
+    "再加一个：每天喂两次药",
+    "这周每天给小维量体温",
+    "我有哪些待办？",
+    "把喂药改成每天3次",
+    "取消量体温的任务",
+    "删除所有待办"
+  ],
+  "expect": {
+    "tools": [
+      "create_daily_task",
+      "list_daily_tasks",
+      "manage_daily_task"
+    ]
+  },
+  "pets": [
+    {
+      "name": "小维",
+      "species": "dog"
+    }
+  ]
+}

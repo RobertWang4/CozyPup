@@ -1,0 +1,37 @@
+{
+  "id": "legacy_35_seq_zh",
+  "description": "Migrated legacy e2e case 35_seq (zh).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "35_seq",
+    "language": "zh"
+  },
+  "language": "zh",
+  "messages": [
+    "小维突然开始抽搐了！！",
+    "附近有24小时急诊吗",
+    "怎么去最近的那家？",
+    "帮我记录一下，小维今天抽搐发作了",
+    "帮我写封邮件给兽医说明情况",
+    "提醒我明天带小维复查"
+  ],
+  "expect": {
+    "tools": [
+      "search_places",
+      "get_directions",
+      "create_calendar_event",
+      "draft_email",
+      "create_reminder"
+    ],
+    "cards": [
+      "emergency"
+    ],
+    "emergency": true
+  },
+  "pets": [
+    {
+      "name": "小维",
+      "species": "dog"
+    }
+  ]
+}

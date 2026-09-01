@@ -151,18 +151,18 @@ CozyPup 有两种"提醒"概念：
 - `DirectionsCard`：导航路线（距离、时长、预览、一键打开系统地图）
 - `LocationPickerCard`：地图选点（用于手动指定事件地点）
 
-### 7. 健康知识库（RAG）
+### 7. MemWeaver 记忆与健康知识库
 
-面向宠物健康问答场景的检索增强生成。
+面向宠物健康问答和个性化对话的统一记忆系统。
 
 **数据**：
-- `KnowledgeArticle` 表存外部知识文章（标题、内容、分类、物种、URL、元数据）
-- 使用 OpenAI text-embedding-3-small（1536 维）生成向量
-- 向量存储在 `Embedding` 表（pgvector），`source_type` 标识来源（knowledge_base / chat_turn / daily_summary / calendar_event）
+- `MemoryNode` 表存统一记忆节点：`behavioral`（具体事件/对话）、`cognitive`（长期摘要/偏好）、`knowledge`（全局健康知识）
+- `MemoryEdge` 表存节点关系：`semantic` / `temporal` / `hierarchy`
+- 使用 OpenAI text-embedding-3-small（1536 维）生成向量，存入 `memory_nodes.embedding`
 
 **检索流程**（`search_knowledge` 工具）：
 1. 用户问健康问题 → LLM 调用 `search_knowledge`
-2. 后端同时查两个源：全局知识库 + 用户自己的历史记录
+2. 后端查询 MemWeaver 记忆：trusted knowledge + 用户 behavioral/cognitive memory
 3. 按物种过滤（dog/cat/all）
 4. 返回 Top-K = 3 个最相关结果（`{knowledge: [...], history: [...]}`
 5. LLM 基于结果 + 宠物档案生成个性化回答
@@ -172,13 +172,13 @@ CozyPup 有两种"提醒"概念：
 
 **知识库管理**（CLI）：
 ```bash
-python -m app.rag.ingest --file knowledge/dog_vomiting.md --species dog --category 消化系统
-python -m app.rag.ingest --dir knowledge/ --species dog
-python -m app.rag.ingest --stats
+python -m app.memory.ingest --file knowledge/dog_vomiting.md --species dog --category 消化系统
+python -m app.memory.ingest --dir knowledge/ --species dog
+python -m app.memory.ingest --stats
 ```
 格式：Markdown，可选 YAML frontmatter（title、url）；按段落切分为 ~400 字 chunk。
 
-**现状**：RAG pipeline 已搭好，待填充大量知识库内容。
+**现状**：MemWeaver memory pipeline 已搭好，待填充大量知识库内容。
 
 ### 8. 紧急响应
 
@@ -399,7 +399,7 @@ python -m app.rag.ingest --stats
 - **日常模型**：`grok-4-1-fast`（便宜、快速，SSE 流式）
 - **紧急模型**：`kimi-k2.5`（准确、安全）
 - **上下文压缩模型**：廉价模型 + temperature=0.1
-- **Embedding**：`text-embedding-3-small`
+- **Memory embedding**：`text-embedding-3-small`
 - 所有模型通过 LiteLLM 代理，统一接口
 
 ### 多步规划（Plan 工具）
@@ -620,8 +620,8 @@ PostgreSQL，所有表用 UUID 做主键。
 | `DailyTaskCompletion` | task_id, date, count (unique on task_id+date) | 完成进度 |
 | `DeviceToken` | user_id, token, platform | APNs 注册 |
 | `PendingAction` | user_id, session_id, tool_name, arguments(JSON), description | 待确认动作 |
-| `KnowledgeArticle` | title, content, category, species, url, metadata_json | 外部知识文章 |
-| `Embedding` | user_id, pet_id, source_type, source_id, content, embedding(pgvector 1536), metadata_json | 向量存储 |
+| `MemoryNode` | user_id, pet_id, node_type, source_kind, source_id, title, content, embedding(pgvector 1536), metadata_json, occurred_at | 统一记忆节点 |
+| `MemoryEdge` | source_node_id, target_node_id, edge_type, weight, metadata_json | 记忆节点关系 |
 | `DailySummary` | user_id, session_id, session_date, summary (unique per day) | 每日对话摘要 |
 
 ---
@@ -701,6 +701,6 @@ ios-app/CozyPup/
 ## 十二、已知未完成项
 
 - Phase 4 推送通知（基础设施已有，完整的提醒调度逻辑待完善）
-- 知识库内容填充（RAG pipeline 已完成，但 knowledge 目录暂为空）
+- 知识库内容填充（MemWeaver pipeline 已完成，但 knowledge 目录暂为空）
 - iOS 端 References drawer 中的历史记录跳转到日历事件详情
 - 生产环境安全加固：禁用 `/auth/dev` 端点、CORS 白名单审查

@@ -1,0 +1,18 @@
+{
+  "id": "legacy_41_15_zh",
+  "description": "Migrated legacy e2e case 41.15 (zh).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "41.15",
+    "language": "zh"
+  },
+  "language": "zh",
+  "messages": [
+    "我又养了一只猫叫花花"
+  ],
+  "expect": {
+    "tools": [
+      "create_pet"
+    ]
+  }
+}

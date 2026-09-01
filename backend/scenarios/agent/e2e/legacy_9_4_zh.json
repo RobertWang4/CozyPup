@@ -1,0 +1,24 @@
+{
+  "id": "legacy_9_4_zh",
+  "description": "Migrated legacy e2e case 9.4 (zh).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "9.4",
+    "language": "zh"
+  },
+  "language": "zh",
+  "messages": [
+    "改成后天下午3点"
+  ],
+  "expect": {
+    "tools": [
+      "update_reminder"
+    ]
+  },
+  "pets": [
+    {
+      "name": "小维",
+      "species": "dog"
+    }
+  ]
+}

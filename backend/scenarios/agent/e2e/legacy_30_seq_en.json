@@ -1,0 +1,38 @@
+{
+  "id": "legacy_30_seq_en",
+  "description": "Migrated legacy e2e case 30_seq (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "30_seq",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "Weiwei ate dog food today",
+    "Weiwei has been having diarrhea recently, what should I do?",
+    "Are there any pet hospitals nearby?",
+    "Remind me to go to that hospital tomorrow",
+    "Remind me to give Weiwei probiotics every day",
+    "Weiwei is suddenly having seizures!",
+    "It's fine, false alarm"
+  ],
+  "expect": {
+    "tools": [
+      "create_calendar_event",
+      "search_knowledge",
+      "search_places",
+      "create_reminder",
+      "create_daily_task"
+    ],
+    "cards": [
+      "emergency"
+    ],
+    "emergency": true
+  },
+  "pets": [
+    {
+      "name": "Weiwei",
+      "species": "dog"
+    }
+  ]
+}

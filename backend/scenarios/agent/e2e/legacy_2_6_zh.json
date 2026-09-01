@@ -1,0 +1,27 @@
+{
+  "id": "legacy_2_6_zh",
+  "description": "Migrated legacy e2e case 2.6 (zh).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "2.6",
+    "language": "zh"
+  },
+  "language": "zh",
+  "messages": [
+    "小维吐了"
+  ],
+  "expect": {
+    "tools": [
+      "create_calendar_event"
+    ],
+    "cards": [
+      "record"
+    ]
+  },
+  "pets": [
+    {
+      "name": "小维",
+      "species": "dog"
+    }
+  ]
+}

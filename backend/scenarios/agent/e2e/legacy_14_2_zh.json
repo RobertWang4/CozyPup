@@ -1,0 +1,28 @@
+{
+  "id": "legacy_14_2_zh",
+  "description": "Migrated legacy e2e case 14.2 (zh).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "14.2",
+    "language": "zh"
+  },
+  "language": "zh",
+  "messages": [
+    "小维和花花一起散步了"
+  ],
+  "expect": {
+    "tools": [
+      "create_calendar_event"
+    ]
+  },
+  "pets": [
+    {
+      "name": "小维",
+      "species": "dog"
+    },
+    {
+      "name": "花花",
+      "species": "cat"
+    }
+  ]
+}

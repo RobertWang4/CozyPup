@@ -1,0 +1,24 @@
+{
+  "id": "legacy_5_4_en",
+  "description": "Migrated legacy e2e case 5.4 (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "5.4",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "Actually Huahua is male"
+  ],
+  "expect": {
+    "tools": [
+      "update_pet_profile"
+    ]
+  },
+  "pets": [
+    {
+      "name": "Huahua",
+      "species": "cat"
+    }
+  ]
+}

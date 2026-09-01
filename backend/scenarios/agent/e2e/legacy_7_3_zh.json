@@ -1,0 +1,24 @@
+{
+  "id": "legacy_7_3_zh",
+  "description": "Migrated legacy e2e case 7.3 (zh).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "7.3",
+    "language": "zh"
+  },
+  "language": "zh",
+  "messages": [
+    "把这张照片加到刚才的记录"
+  ],
+  "expect": {
+    "tools": [
+      "upload_event_photo"
+    ]
+  },
+  "pets": [
+    {
+      "name": "小维",
+      "species": "dog"
+    }
+  ]
+}

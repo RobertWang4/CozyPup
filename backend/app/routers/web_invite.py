@@ -599,7 +599,11 @@ async def _finalize_invite_acceptance(
     user_q = await db.execute(select(User).where(User.email == email))
     user = user_q.scalar_one_or_none()
     if user is None:
-        user = User(email=email, name=name, auth_provider=auth_provider)
+        user = User(
+            email=email, name=name, auth_provider=auth_provider,
+            subscription_status="active",
+            subscription_expires_at=None,
+        )
         db.add(user)
         await db.flush()
         logger.info(

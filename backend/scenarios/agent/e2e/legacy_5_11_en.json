@@ -1,0 +1,28 @@
+{
+  "id": "legacy_5_11_en",
+  "description": "Migrated legacy e2e case 5.11 (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "5.11",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "How many pets do I have?"
+  ],
+  "expect": {
+    "tools": [
+      "list_pets"
+    ]
+  },
+  "pets": [
+    {
+      "name": "Weiwei",
+      "species": "dog"
+    },
+    {
+      "name": "Huahua",
+      "species": "cat"
+    }
+  ]
+}

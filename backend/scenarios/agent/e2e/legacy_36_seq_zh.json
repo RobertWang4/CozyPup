@@ -1,0 +1,35 @@
+{
+  "id": "legacy_36_seq_zh",
+  "description": "Migrated legacy e2e case 36_seq (zh).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "36_seq",
+    "language": "zh"
+  },
+  "language": "zh",
+  "messages": [
+    "switch to English",
+    "Winnie ate dog food today",
+    "Delete that record",
+    "切换成中文",
+    "小维今天散步了",
+    "删掉这条"
+  ],
+  "expect": {
+    "tools": [
+      "set_language",
+      "create_calendar_event",
+      "delete_calendar_event"
+    ]
+  },
+  "pets": [
+    {
+      "name": "小维",
+      "species": "dog"
+    },
+    {
+      "name": "Winnie",
+      "species": "dog"
+    }
+  ]
+}

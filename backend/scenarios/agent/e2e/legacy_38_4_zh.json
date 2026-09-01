@@ -1,0 +1,18 @@
+{
+  "id": "legacy_38_4_zh",
+  "description": "Migrated legacy e2e case 38.4 (zh).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "38.4",
+    "language": "zh"
+  },
+  "language": "zh",
+  "messages": [
+    "帮我查一下我的宠物"
+  ],
+  "expect": {
+    "tools": [
+      "list_pets"
+    ]
+  }
+}

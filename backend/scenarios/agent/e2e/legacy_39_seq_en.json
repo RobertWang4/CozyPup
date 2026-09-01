@@ -1,0 +1,40 @@
+{
+  "id": "legacy_39_seq_en",
+  "description": "Migrated legacy e2e case 39_seq (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "39_seq",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "Weiwei ate dog food today",
+    "Went for a walk in the afternoon",
+    "Had a bath in the evening",
+    "Weiwei weighs 30 kg",
+    "Spent 50 yuan on a new collar",
+    "Remind me to get vaccinated next week",
+    "Walk the dog twice a day",
+    "Weiwei is allergic to chicken",
+    "Are there any dog parks nearby?",
+    "What did I record in total today?",
+    "How much does Weiwei weigh again?",
+    "What was the first record?"
+  ],
+  "expect": {
+    "tools": [
+      "create_calendar_event",
+      "update_pet_profile",
+      "create_reminder",
+      "create_daily_task",
+      "search_places",
+      "query_calendar_events"
+    ]
+  },
+  "pets": [
+    {
+      "name": "Weiwei",
+      "species": "dog"
+    }
+  ]
+}

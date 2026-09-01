@@ -1,0 +1,24 @@
+{
+  "id": "legacy_10_2_zh",
+  "description": "Migrated legacy e2e case 10.2 (zh).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "10.2",
+    "language": "zh"
+  },
+  "language": "zh",
+  "messages": [
+    "帮我找最近的狗公园"
+  ],
+  "expect": {
+    "tools": [
+      "search_places"
+    ]
+  },
+  "pets": [
+    {
+      "name": "小维",
+      "species": "dog"
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "id": "legacy_40_12_zh",
+  "description": "Migrated legacy e2e case 40.12 (zh).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "40.12",
+    "language": "zh"
+  },
+  "language": "zh",
+  "messages": [
+    "小维和花花今天一起去公园散步了，路上买了零食花了50"
+  ],
+  "expect": {
+    "tools": [
+      "create_calendar_event"
+    ]
+  },
+  "pets": [
+    {
+      "name": "小维",
+      "species": "dog"
+    },
+    {
+      "name": "花花",
+      "species": "cat"
+    }
+  ]
+}

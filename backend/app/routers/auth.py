@@ -51,8 +51,9 @@ async def _find_or_create_user(
             name=name,
             auth_provider=provider,
             avatar_url=avatar_url or "",
-            subscription_status="trial",
-            trial_start_date=datetime.now(timezone.utc),
+            subscription_status="active",
+            trial_start_date=None,
+            subscription_expires_at=None,
         )
         db.add(user)
         await db.commit()

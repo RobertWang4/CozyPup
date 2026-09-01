@@ -1,0 +1,41 @@
+{
+  "id": "legacy_26_seq_en",
+  "description": "Migrated legacy e2e case 26_seq (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "26_seq",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "Fed Weiwei dog food this morning",
+    "Spent 30 yuan on new dog food",
+    "Took Weiwei to the park for a walk this morning",
+    "It was at Parkdale Park",
+    "Took a photo",
+    "Weiwei vomited in the afternoon",
+    "Is there a 24-hour pet ER nearby?",
+    "How do I get to the first one?",
+    "Help me write an email to the vet explaining the situation",
+    "How much did I spend today?",
+    "Summarize today"
+  ],
+  "expect": {
+    "tools": [
+      "create_calendar_event",
+      "update_calendar_event",
+      "add_event_location",
+      "upload_event_photo",
+      "search_places",
+      "get_directions",
+      "draft_email",
+      "query_calendar_events"
+    ]
+  },
+  "pets": [
+    {
+      "name": "Weiwei",
+      "species": "dog"
+    }
+  ]
+}

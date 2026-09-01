@@ -1,0 +1,24 @@
+{
+  "id": "legacy_21_2_en",
+  "description": "Migrated legacy e2e case 21.2 (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "21.2",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "How has Weiwei been recently?"
+  ],
+  "expect": {
+    "tools": [
+      "query_calendar_events"
+    ]
+  },
+  "pets": [
+    {
+      "name": "Weiwei",
+      "species": "dog"
+    }
+  ]
+}

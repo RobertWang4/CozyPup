@@ -1,0 +1,25 @@
+{
+  "id": "legacy_40_11_zh",
+  "description": "Migrated legacy e2e case 40.11 (zh).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "40.11",
+    "language": "zh"
+  },
+  "language": "zh",
+  "messages": [
+    "带小维去医院花了2000，提醒我下周复查"
+  ],
+  "expect": {
+    "tools": [
+      "create_calendar_event",
+      "create_reminder"
+    ]
+  },
+  "pets": [
+    {
+      "name": "小维",
+      "species": "dog"
+    }
+  ]
+}

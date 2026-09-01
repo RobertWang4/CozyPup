@@ -1,0 +1,38 @@
+{
+  "id": "legacy_30_seq_zh",
+  "description": "Migrated legacy e2e case 30_seq (zh).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "30_seq",
+    "language": "zh"
+  },
+  "language": "zh",
+  "messages": [
+    "小维今天吃了狗粮",
+    "小维最近拉肚子怎么办？",
+    "附近有宠物医院吗",
+    "提醒我明天去那家医院",
+    "每天提醒我给小维吃益生菌",
+    "小维突然抽搐了！",
+    "没事了，虚惊一场"
+  ],
+  "expect": {
+    "tools": [
+      "create_calendar_event",
+      "search_knowledge",
+      "search_places",
+      "create_reminder",
+      "create_daily_task"
+    ],
+    "cards": [
+      "emergency"
+    ],
+    "emergency": true
+  },
+  "pets": [
+    {
+      "name": "小维",
+      "species": "dog"
+    }
+  ]
+}

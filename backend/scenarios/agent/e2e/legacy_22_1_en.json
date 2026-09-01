@@ -1,0 +1,24 @@
+{
+  "id": "legacy_22_1_en",
+  "description": "Migrated legacy e2e case 22.1 (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "22.1",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "Delete all daily tasks"
+  ],
+  "expect": {
+    "tools": [
+      "manage_daily_task"
+    ]
+  },
+  "pets": [
+    {
+      "name": "Weiwei",
+      "species": "dog"
+    }
+  ]
+}

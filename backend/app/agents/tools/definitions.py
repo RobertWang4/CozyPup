@@ -1111,6 +1111,80 @@ def _inject_confirm_param(tool: dict, lang: str) -> None:
     return
 
 
+def _ensure_strict_schema(tool: dict) -> None:
+    """Mutate a tool definition so it passes DeepSeek strict-mode JSON Schema validation.
+
+    Rules applied:
+    - Every function gets "strict": true
+    - Every object-typed parameter block gets "additionalProperties": false
+      (except the "info" field in update_pet_profile, which is a free-form dict)
+    - Empty "required": [] arrays are removed
+    - Object blocks missing "properties" get "properties": {}
+    - Nested object properties and array-item objects are patched recursively
+    """
+    fn = tool.get("function", {})
+    if "strict" not in fn:
+        fn["strict"] = True
+
+    params = fn.get("parameters", {})
+    if not isinstance(params, dict):
+        return
+
+    _patch_object_schema(params, path="parameters")
+
+
+def _patch_object_schema(obj: dict, path: str = "") -> None:
+    """Recursively patch an object schema node for strict-mode compliance."""
+    if not isinstance(obj, dict) or obj.get("type") != "object":
+        return
+
+    # Ensure every object has a properties key
+    if "properties" not in obj:
+        obj["properties"] = {}
+
+    # Special case: update_pet_profile.info is intentionally open-ended
+    is_info_field = path.endswith(".properties.info")
+
+    # Only set additionalProperties if the schema author hasn't expressed intent
+    if "additionalProperties" not in obj:
+        obj["additionalProperties"] = True if is_info_field else False
+
+    # Remove vacuous "required": [] — it adds no value and can confuse validators
+    if "required" in obj and not obj["required"]:
+        del obj["required"]
+
+    # Recurse into property schemas
+    for key, prop in obj.get("properties", {}).items():
+        if not isinstance(prop, dict):
+            continue
+        if prop.get("type") == "object":
+            _patch_object_schema(prop, path=f"{path}.properties.{key}")
+        # Array items that are objects
+        items = prop.get("items")
+        if isinstance(items, dict):
+            if items.get("type") == "object":
+                _patch_object_schema(items, path=f"{path}.properties.{key}.items")
+            # If items is a schema object but not typed, still recurse if it looks like one
+            elif "properties" in items or "required" in items:
+                _patch_object_schema(items, path=f"{path}.properties.{key}.items")
+
+
+def _should_use_strict() -> bool:
+    """Return whether to inject strict-mode schema based on config.
+
+    If the user explicitly set STRICT_TOOLS env var, respect that.
+    Otherwise auto-detect from the model name and base URL.
+    """
+    from app.config import settings
+
+    if settings.strict_tools is not None:
+        return settings.strict_tools
+
+    model = (settings.model or "").lower()
+    base = (settings.model_api_base or "").lower()
+    return model.startswith("deepseek/") or "deepseek.com/beta" in base
+
+
 # Backward compatibility alias
 TOOL_DEFINITIONS = _BASE_TOOL_DEFINITIONS
 
@@ -1132,7 +1206,10 @@ def get_tool_definitions(lang: str = "zh") -> list[dict]:
             desc = t(key, lang)
             if desc != key:
                 fn["description"] = desc
+    use_strict = _should_use_strict()
     for tool in tools:
         _inject_confirm_param(tool, lang)
+        if use_strict:
+            _ensure_strict_schema(tool)
     _tool_defs_cache[lang] = tools
     return tools

@@ -1,0 +1,21 @@
+{
+  "id": "legacy_5_2_zh",
+  "description": "Migrated legacy e2e case 5.2 (zh).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "5.2",
+    "language": "zh"
+  },
+  "language": "zh",
+  "messages": [
+    "I just got a new puppy named Buddy"
+  ],
+  "expect": {
+    "tools": [
+      "create_pet"
+    ],
+    "cards": [
+      "confirm_action"
+    ]
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "id": "legacy_7_9_zh",
+  "description": "Migrated legacy e2e case 7.9 (zh).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "7.9",
+    "language": "zh"
+  },
+  "language": "zh",
+  "messages": [
+    "把那条记录的照片删掉"
+  ],
+  "expect": {
+    "tools": [
+      "remove_event_photo"
+    ]
+  },
+  "pets": [
+    {
+      "name": "小维",
+      "species": "dog"
+    }
+  ]
+}

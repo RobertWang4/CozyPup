@@ -1,0 +1,25 @@
+{
+  "id": "legacy_12_2_en",
+  "description": "Migrated legacy e2e case 12.2 (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "12.2",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "Weiwei has been poisoned and is dying!"
+  ],
+  "expect": {
+    "cards": [
+      "emergency"
+    ],
+    "emergency": true
+  },
+  "pets": [
+    {
+      "name": "Weiwei",
+      "species": "dog"
+    }
+  ]
+}

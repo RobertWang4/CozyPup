@@ -1,0 +1,32 @@
+{
+  "id": "legacy_27_seq_en",
+  "description": "Migrated legacy e2e case 27_seq (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "27_seq",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "Weiwei got vaccinated today",
+    "It cost 200",
+    "Remind me to get another one in three months",
+    "Change that record's title to 'Second vaccination'",
+    "Delete that reminder I just made",
+    "Also record this: Weiwei had a bath today"
+  ],
+  "expect": {
+    "tools": [
+      "create_calendar_event",
+      "update_calendar_event",
+      "create_reminder",
+      "delete_reminder"
+    ]
+  },
+  "pets": [
+    {
+      "name": "Weiwei",
+      "species": "dog"
+    }
+  ]
+}

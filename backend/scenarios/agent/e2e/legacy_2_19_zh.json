@@ -1,0 +1,28 @@
+{
+  "id": "legacy_2_19_zh",
+  "description": "Migrated legacy e2e case 2.19 (zh).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "2.19",
+    "language": "zh"
+  },
+  "language": "zh",
+  "messages": [
+    "下周二体检别忘了"
+  ],
+  "expect": {
+    "tools": [
+      "create_calendar_event",
+      "create_reminder"
+    ],
+    "cards": [
+      "record"
+    ]
+  },
+  "pets": [
+    {
+      "name": "小维",
+      "species": "dog"
+    }
+  ]
+}

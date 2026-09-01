@@ -1,0 +1,35 @@
+{
+  "id": "legacy_36_seq_en",
+  "description": "Migrated legacy e2e case 36_seq (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "36_seq",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "switch to English",
+    "Winnie ate dog food today",
+    "Delete that record",
+    "切换成中文",
+    "Weiwei went for a walk today",
+    "Delete this record"
+  ],
+  "expect": {
+    "tools": [
+      "set_language",
+      "create_calendar_event",
+      "delete_calendar_event"
+    ]
+  },
+  "pets": [
+    {
+      "name": "Weiwei",
+      "species": "dog"
+    },
+    {
+      "name": "Winnie",
+      "species": "dog"
+    }
+  ]
+}

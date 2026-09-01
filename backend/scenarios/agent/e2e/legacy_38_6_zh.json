@@ -1,0 +1,34 @@
+{
+  "id": "legacy_38_6_zh",
+  "description": "Migrated legacy e2e case 38.6 (zh).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "38.6",
+    "language": "zh"
+  },
+  "language": "zh",
+  "messages": [
+    "这条记录不对"
+  ],
+  "expect": {
+    "forbidden_tools": [
+      "create_calendar_event",
+      "update_calendar_event",
+      "delete_calendar_event",
+      "create_pet",
+      "update_pet_profile",
+      "delete_pet",
+      "create_reminder",
+      "update_reminder",
+      "delete_reminder",
+      "delete_all_reminders",
+      "create_daily_task",
+      "manage_daily_task",
+      "set_pet_avatar",
+      "upload_event_photo",
+      "remove_event_photo",
+      "add_event_location",
+      "trigger_emergency"
+    ]
+  }
+}

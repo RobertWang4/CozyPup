@@ -1,0 +1,23 @@
+{
+  "id": "update_pet_profile",
+  "description": "User provides new profile facts for an existing pet.",
+  "language": "en",
+  "pets": [{"name": "Max", "species": "dog"}],
+  "messages": ["Max weighs 22 kg and is allergic to chicken. Save that to his profile."],
+  "expect": {
+    "tools": ["update_pet_profile"],
+    "forbidden_tools": ["create_pet", "create_calendar_event", "trigger_emergency"],
+    "cards": ["pet_updated"],
+    "contains_any": ["saved", "updated", "profile", "saving"],
+    "side_effects": {
+      "pets": [
+        {
+          "name": "Max",
+          "species": "dog",
+          "weight": 22,
+          "profile_md_contains_any": ["chicken", "allergic"]
+        }
+      ]
+    }
+  }
+}

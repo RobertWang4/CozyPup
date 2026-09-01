@@ -1,0 +1,32 @@
+{
+  "id": "legacy_41_11_en",
+  "description": "Migrated legacy e2e case 41.11 (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "41.11",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "Huahua needs medicine too"
+  ],
+  "expect": {
+    "tools": [
+      "create_reminder"
+    ]
+  },
+  "pets": [
+    {
+      "name": "Huahua",
+      "species": "cat"
+    },
+    {
+      "name": "Weiwei",
+      "species": "dog"
+    },
+    {
+      "name": "Doudou",
+      "species": "dog"
+    }
+  ]
+}

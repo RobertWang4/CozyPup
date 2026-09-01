@@ -1,0 +1,32 @@
+{
+  "id": "legacy_41_12_en",
+  "description": "Migrated legacy e2e case 41.12 (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "41.12",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "Not for Huahua"
+  ],
+  "expect": {
+    "tools": [
+      "update_reminder"
+    ]
+  },
+  "pets": [
+    {
+      "name": "Huahua",
+      "species": "cat"
+    },
+    {
+      "name": "Weiwei",
+      "species": "dog"
+    },
+    {
+      "name": "Doudou",
+      "species": "dog"
+    }
+  ]
+}

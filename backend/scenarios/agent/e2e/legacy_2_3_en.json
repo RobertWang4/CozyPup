@@ -1,0 +1,27 @@
+{
+  "id": "legacy_2_3_en",
+  "description": "Migrated legacy e2e case 2.3 (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "2.3",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "Got vaccinated last Friday"
+  ],
+  "expect": {
+    "tools": [
+      "create_calendar_event"
+    ],
+    "cards": [
+      "record"
+    ]
+  },
+  "pets": [
+    {
+      "name": "Weiwei",
+      "species": "dog"
+    }
+  ]
+}

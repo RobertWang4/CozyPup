@@ -1,7 +1,7 @@
-"""search_knowledge tool — RAG retrieval for pet health Q&A.
+"""search_knowledge tool — MemWeaver retrieval for pet health Q&A.
 
-Delegates to `app.rag.retrieval.retrieve_knowledge`, which queries both
-the global KnowledgeArticle embeddings and the user's per-pet history.
+Delegates to `app.memory.retrieval.retrieve_memweaver_context`, which queries
+trusted knowledge nodes and the user's per-pet behavioral/cognitive memory.
 Builds a `references` card when any results have titles/urls so the iOS
 client can surface a "Sources" drawer.
 """
@@ -13,8 +13,8 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.agents.tools.registry import register_tool
+from app.memory.retrieval import retrieve_memweaver_context
 from app.models import Pet
-from app.rag.retrieval import retrieve_knowledge
 
 logger = logging.getLogger(__name__)
 
@@ -26,7 +26,7 @@ async def _resolve_species(
 ) -> str | None:
     """Derive species from the named pet, or from the user's single pet.
 
-    Ensures the RAG filter never runs unbounded when the LLM forgets to pass
+    Ensures the knowledge filter never runs unbounded when the LLM forgets to pass
     species. If the user has exactly one pet, we can safely default to it.
     """
     if pet_id:
@@ -63,7 +63,7 @@ async def search_knowledge(
         species = await _resolve_species(db, user_id, pet_id)
 
     try:
-        result = await retrieve_knowledge(
+        context = await retrieve_memweaver_context(
             query=query,
             db=db,
             user_id=user_id,
@@ -74,13 +74,32 @@ async def search_knowledge(
         logger.error("search_knowledge_error", extra={"error": str(exc)[:200]})
         return {"success": False, "error": "知识库检索失败，请稍后再试"}
 
-    has_results = bool(result["knowledge"] or result["history"])
+    knowledge = [
+        {
+            "title": item.title,
+            "content": item.content,
+            "url": item.url,
+            "distance": item.score,
+        }
+        for item in context.knowledge_snippets
+    ]
+    history = [
+        {
+            "date": item.date or "",
+            "content": item.content,
+            "event_id": item.entity_id,
+            "distance": item.score,
+        }
+        for item in context.behavioral_memories + context.cognitive_memories
+    ]
+
+    has_results = bool(knowledge or history)
 
     # Build references card if there are results with titles/urls
     card = None
     if has_results:
         items = []
-        for k in result["knowledge"]:
+        for k in knowledge:
             if k.get("title"):
                 items.append({
                     "title": k["title"],
@@ -91,7 +110,7 @@ async def search_knowledge(
                     # existing iOS clients ignore unknown keys.
                     "distance": k.get("distance"),
                 })
-        for h in result["history"]:
+        for h in history:
             if h.get("content"):
                 label = f"{h.get('date', '')} {h['content'][:30]}"
                 items.append({
@@ -104,8 +123,8 @@ async def search_knowledge(
 
     response = {
         "success": True,
-        "knowledge": result["knowledge"],
-        "history": result["history"],
+        "knowledge": knowledge,
+        "history": history,
     }
     if card:
         response["card"] = card

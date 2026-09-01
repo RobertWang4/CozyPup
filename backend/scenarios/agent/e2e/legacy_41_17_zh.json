@@ -1,0 +1,32 @@
+{
+  "id": "legacy_41_17_zh",
+  "description": "Migrated legacy e2e case 41.17 (zh).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "41.17",
+    "language": "zh"
+  },
+  "language": "zh",
+  "messages": [
+    "花花3岁了，英短蓝猫"
+  ],
+  "expect": {
+    "tools": [
+      "update_pet_profile"
+    ]
+  },
+  "pets": [
+    {
+      "name": "花花",
+      "species": "cat"
+    },
+    {
+      "name": "小维",
+      "species": "dog"
+    },
+    {
+      "name": "豆豆",
+      "species": "dog"
+    }
+  ]
+}

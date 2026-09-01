@@ -23,6 +23,7 @@ from app.agents.locale import t
 def build_system_prompt(
     pets: list | None = None,
     session_summary: dict | None = None,
+    memory_context: str | None = None,
     emergency_hint: str | None = None,
     preprocessor_hints: list[str] | None = None,
     today: str = "",
@@ -48,6 +49,9 @@ def build_system_prompt(
     # Today's date
     if today:
         parts.append(t("today_date", lang).format(today=today))
+
+    if memory_context:
+        parts.append(memory_context)
 
     # 3. Session summary (changes occasionally)
     if session_summary:

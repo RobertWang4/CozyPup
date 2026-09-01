@@ -1,0 +1,27 @@
+{
+  "id": "legacy_5_10_zh",
+  "description": "Migrated legacy e2e case 5.10 (zh).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "5.10",
+    "language": "zh"
+  },
+  "language": "zh",
+  "messages": [
+    "删掉花花"
+  ],
+  "expect": {
+    "tools": [
+      "delete_pet"
+    ],
+    "cards": [
+      "confirm_action"
+    ]
+  },
+  "pets": [
+    {
+      "name": "花花",
+      "species": "cat"
+    }
+  ]
+}

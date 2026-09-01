@@ -1,0 +1,24 @@
+{
+  "id": "legacy_8_5_en",
+  "description": "Migrated legacy e2e case 8.5 (en).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "8.5",
+    "language": "en"
+  },
+  "language": "en",
+  "messages": [
+    "What tasks do I have?"
+  ],
+  "expect": {
+    "tools": [
+      "list_daily_tasks"
+    ]
+  },
+  "pets": [
+    {
+      "name": "Weiwei",
+      "species": "dog"
+    }
+  ]
+}

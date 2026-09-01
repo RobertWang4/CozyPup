@@ -1,0 +1,29 @@
+{
+  "id": "legacy_28_seq_zh",
+  "description": "Migrated legacy e2e case 28_seq (zh).",
+  "source": {
+    "suite": "legacy_e2e",
+    "case_id": "28_seq",
+    "language": "zh"
+  },
+  "language": "zh",
+  "messages": [
+    "我养了一只新猫叫花花",
+    "她是英短蓝猫",
+    "母的，已经绝育了",
+    "体重4公斤，生日2023年6月",
+    "对鸡肉过敏",
+    "用这张当头像",
+    "帮我总结一下花花的档案",
+    "花花有什么记录吗"
+  ],
+  "expect": {
+    "tools": [
+      "create_pet",
+      "update_pet_profile",
+      "set_pet_avatar",
+      "summarize_pet_profile",
+      "query_calendar_events"
+    ]
+  }
+}

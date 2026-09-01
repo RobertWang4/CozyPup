@@ -170,7 +170,7 @@ def build_test_cases(lang: str) -> list[TestCase]:
         TestCase("20.4", "混合记录+提醒", m["20.4"][lang], needs_pet=True,
                  check=lambda r, c: (len(r.cards) >= 2, f"card_count={len(r.cards)}, types={[x.get('type') for x in r.cards]}")),
 
-        # === Section 21: Health Q&A (RAG) ===
+        # === Section 21: Health Q&A (MemWeaver) ===
         TestCase("21.1", "健康问答-呕吐", m["21.1"][lang], needs_pet=True,
                  check=lambda r, c: (
                      "search_knowledge" in _get_tools_called(r),
