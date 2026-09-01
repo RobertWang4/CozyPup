@@ -10,6 +10,7 @@ from typing import Sequence, Union
 from alembic import op
 import pgvector.sqlalchemy.vector
 import sqlalchemy as sa
+from sqlalchemy.dialects import postgresql
 
 
 # revision identifiers, used by Alembic.
@@ -22,10 +23,10 @@ depends_on: Union[str, Sequence[str], None] = None
 def upgrade() -> None:
     op.execute("CREATE EXTENSION IF NOT EXISTS vector")
 
-    memorynodetype = sa.Enum(
+    memorynodetype = postgresql.ENUM(
         "behavioral", "cognitive", "knowledge", name="memorynodetype", create_type=False
     )
-    memoryedgetype = sa.Enum(
+    memoryedgetype = postgresql.ENUM(
         "semantic", "temporal", "hierarchy", name="memoryedgetype", create_type=False
     )
     memorynodetype.create(op.get_bind(), checkfirst=True)
