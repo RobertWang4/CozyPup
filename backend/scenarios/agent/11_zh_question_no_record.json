@@ -1,0 +1,36 @@
+{
+  "id": "zh_question_no_record",
+  "description": "用户询问历史记录，应该查日历而不是新建记录。",
+  "language": "zh",
+  "pets": [
+    {
+      "name": "豆豆",
+      "species": "dog"
+    }
+  ],
+  "events": [
+    {
+      "pet_name": "豆豆",
+      "event_date": "yesterday",
+      "title": "呕吐",
+      "category": "abnormal",
+      "raw_text": "豆豆昨天吐了"
+    }
+  ],
+  "messages": [
+    "豆豆上次吐是什么时候？"
+  ],
+  "expect": {
+    "tools": [
+      "query_calendar_events"
+    ],
+    "forbidden_tools": [
+      "create_calendar_event",
+      "trigger_emergency"
+    ],
+    "judge": [
+      "回复说出了豆豆呕吐记录的日期（昨天）。",
+      "回复没有声称新建或保存了任何记录。"
+    ]
+  }
+}

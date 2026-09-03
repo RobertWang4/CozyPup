@@ -2,19 +2,38 @@
   "id": "create_reminder",
   "description": "User asks for a future reminder, so the agent should create a reminder-capable calendar entry.",
   "language": "en",
-  "pets": [{"name": "Max", "species": "dog"}],
-  "messages": ["Remind me tomorrow morning to give Max his flea prevention."],
+  "pets": [
+    {
+      "name": "Max",
+      "species": "dog"
+    }
+  ],
+  "messages": [
+    "Remind me tomorrow morning to give Max his flea prevention."
+  ],
   "expect": {
-    "tools": ["create_reminder"],
-    "forbidden_tools": ["trigger_emergency"],
-    "cards": ["record"],
-    "contains_any": ["reminder", "remind", "scheduled", "recorded", "setting"],
+    "tools_executed": [
+      "create_reminder"
+    ],
+    "forbidden_tools": [
+      "trigger_emergency"
+    ],
+    "cards": [
+      "record"
+    ],
+    "judge": [
+      "The reply confirms a reminder was set for tomorrow morning about Max's flea prevention."
+    ],
     "side_effects": {
       "events": [
         {
           "pet_name": "Max",
           "reminder_required": true,
-          "title_contains_any": ["flea", "prevention", "reminder"]
+          "title_contains_any": [
+            "flea",
+            "prevention",
+            "reminder"
+          ]
         }
       ]
     }

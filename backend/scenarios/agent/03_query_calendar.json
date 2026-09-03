@@ -2,11 +2,26 @@
   "id": "query_calendar",
   "description": "User asks about past records, so the agent should query events rather than create one.",
   "language": "en",
-  "pets": [{"name": "Max", "species": "dog"}],
-  "messages": ["What did I record for Max this week?"],
+  "pets": [
+    {
+      "name": "Max",
+      "species": "dog"
+    }
+  ],
+  "messages": [
+    "What did I record for Max this week?"
+  ],
   "expect": {
-    "tools": ["query_calendar_events"],
-    "forbidden_tools": ["create_calendar_event", "trigger_emergency"],
-    "contains_any": ["record", "found", "week", "nothing"]
+    "tools": [
+      "query_calendar_events"
+    ],
+    "forbidden_tools": [
+      "create_calendar_event",
+      "trigger_emergency"
+    ],
+    "judge": [
+      "The reply reports what records exist for Max this week, or clearly says there are none.",
+      "The reply does not claim to have created a new record."
+    ]
   }
 }

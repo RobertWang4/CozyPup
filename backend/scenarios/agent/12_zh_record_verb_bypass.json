@@ -1,0 +1,43 @@
+{
+  "id": "zh_record_verb_bypass",
+  "description": "显式记录动词应绕过确认卡，直接写入疫苗记录和花费。",
+  "language": "zh",
+  "pets": [
+    {
+      "name": "豆豆",
+      "species": "dog"
+    }
+  ],
+  "messages": [
+    "帮我记一下豆豆今天打了疫苗，花了200块"
+  ],
+  "expect": {
+    "tools_executed": [
+      "create_calendar_event"
+    ],
+    "cards": [
+      "record"
+    ],
+    "forbidden_cards": [
+      "confirm_action"
+    ],
+    "forbidden_tools": [
+      "trigger_emergency"
+    ],
+    "judge": [
+      "回复是中文，与疫苗记录已保存（或正在保存）一致，没有声称失败，也没有要求用户再确认。"
+    ],
+    "side_effects": {
+      "events": [
+        {
+          "pet_name": "豆豆",
+          "category": "medical",
+          "title_contains_any": [
+            "疫苗"
+          ],
+          "cost": 200
+        }
+      ]
+    }
+  }
+}

@@ -42,6 +42,16 @@ _STATUS_OVERRIDE = re.compile(
 )
 
 
+# Delete/remove phrases — "把X记录删掉" is about an existing record, not a new
+# event. Without this, "delete the vomiting record" was suggested as a 0.9
+# create_calendar_event whose title was the whole sentence.
+_DELETE_OVERRIDE = re.compile(
+    r"删掉|删除|删了|删一下|移除|去掉|撤销|取消.*记录"
+    r"|\b(?:delete|remove|erase|undo|clear)\b",
+    re.I,
+)
+
+
 def detect(
     message: str,
     pets: list,
@@ -54,7 +64,8 @@ def detect(
 
     is_status = bool(_STATUS_OVERRIDE.search(message))
     is_correction = bool(_CORRECTION_OVERRIDE.search(message))
-    if is_question or is_status or is_correction:
+    is_delete = bool(_DELETE_OVERRIDE.search(message))
+    if is_question or is_status or is_correction or is_delete:
         return actions
 
     matched_categories = []

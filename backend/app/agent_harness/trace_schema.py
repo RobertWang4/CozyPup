@@ -6,7 +6,7 @@ import json
 from dataclasses import asdict, dataclass, field
 from typing import Any
 
-from .client import ChatResult, get_tools_called
+from .client import ChatResult, get_tools_called, get_tools_executed
 
 
 @dataclass(frozen=True)
@@ -23,6 +23,7 @@ class TraceArtifact:
     total_completion_tokens: int
     total_tokens: int
     raw_trace: dict[str, Any] = field(default_factory=dict)
+    tools_executed: list[str] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -42,6 +43,7 @@ class TraceArtifact:
             total_completion_tokens=int(data.get("total_completion_tokens", 0)),
             total_tokens=int(data.get("total_tokens", 0)),
             raw_trace=dict(data.get("raw_trace", {})),
+            tools_executed=list(data.get("tools_executed", [])),
         )
 
     def to_json(self) -> str:
@@ -73,4 +75,5 @@ def normalize_trace_artifact(
         total_completion_tokens=completion,
         total_tokens=total,
         raw_trace=trace,
+        tools_executed=get_tools_executed(result),
     )

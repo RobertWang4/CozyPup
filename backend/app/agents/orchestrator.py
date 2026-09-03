@@ -367,13 +367,31 @@ _WRITE_CLAIM_EN = re.compile(
 )
 
 
+# Negation / passive context that turns a "recorded/deleted" hit into a
+# non-claim: "no events were recorded", "nothing was deleted", "haven't updated".
+_WRITE_NEGATION_EN = re.compile(
+    r"\b(?:no|not|nothing|never|none|haven'?t|hasn'?t|didn'?t|wasn'?t|weren'?t|isn'?t|aren'?t|"
+    r"couldn'?t|can'?t|won'?t|without)\b[^.!?\n]{0,40}$"
+    r"|\b(?:was|were|been|being|be)\s*$",
+    re.IGNORECASE,
+)
+_WRITE_NEGATION_ZH = re.compile(r"(?:没有?|未|不会|无法|没能|不能|并未)[^。！？\n]{0,12}$")
+
+
 def _text_claims_write(text: str, lang: str) -> bool:
     """True if the reply text claims a mutation that we should verify happened."""
     if not text:
         return False
-    if lang == "zh":
-        return bool(_WRITE_CLAIM_ZH.search(text))
-    return bool(_WRITE_CLAIM_EN.search(text))
+    pattern, negation = (
+        (_WRITE_CLAIM_ZH, _WRITE_NEGATION_ZH) if lang == "zh"
+        else (_WRITE_CLAIM_EN, _WRITE_NEGATION_EN)
+    )
+    for m in pattern.finditer(text):
+        prefix = text[max(0, m.start() - 60):m.start()]
+        if negation.search(prefix):
+            continue
+        return True
+    return False
 
 
 # User disagreement / pushback phrases. When the latest user message matches,
@@ -661,9 +679,12 @@ def _can_skip_round2(
     if not tool_names.issubset(SKIP_ROUND2_TOOLS):
         return False
 
-    # No errors — if any tool failed, LLM needs to see the error and retry/explain
+    # No errors — if any tool failed, LLM needs to see the error and retry/explain.
+    # No confirm-deferred tools either: the Round 1 text was written before the
+    # LLM knew a confirm card would be shown, so it can't tell the user to tap it
+    # and any promised follow-up ("then I'll give guidance") would be dropped.
     for name, tr in tool_results_map.items():
-        if tr.get("error"):
+        if tr.get("error") or tr.get("status") == "waiting_confirm":
             return False
 
     # No image injection (request_images needs LLM to interpret)

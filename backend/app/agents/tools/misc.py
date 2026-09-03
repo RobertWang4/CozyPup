@@ -266,7 +266,7 @@ async def get_directions_tool(
 
 
 @register_tool("introduce_product")
-async def introduce_product(arguments: dict, **_kwargs) -> dict:
+async def introduce_product(arguments: dict, db=None, user_id=None, **_kwargs) -> dict:
     """Return product capabilities for the LLM to introduce to the user."""
     return {
         "success": True,

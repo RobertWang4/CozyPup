@@ -58,7 +58,7 @@ def test_cli_run_can_export_jsonl(monkeypatch, tmp_path):
     export_path = tmp_path / "sft.jsonl"
 
     class FakeRunner:
-        def __init__(self, client):
+        def __init__(self, client, judge=True):
             pass
 
         async def run(self, scenario):

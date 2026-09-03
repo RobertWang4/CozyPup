@@ -1,0 +1,50 @@
+{
+  "id": "zh_delete_always_confirm",
+  "description": "删除永远需要确认；确认之后记录必须真的消失。",
+  "language": "zh",
+  "auto_confirm": true,
+  "pets": [
+    {
+      "name": "豆豆",
+      "species": "dog"
+    }
+  ],
+  "events": [
+    {
+      "pet_name": "豆豆",
+      "event_date": "today",
+      "title": "呕吐",
+      "category": "abnormal",
+      "raw_text": "豆豆今天吐了"
+    }
+  ],
+  "messages": [
+    "把豆豆今天的呕吐记录删掉"
+  ],
+  "expect": {
+    "tools": [
+      "delete_calendar_event"
+    ],
+    "cards": [
+      "confirm_action"
+    ],
+    "forbidden_tools": [
+      "trigger_emergency"
+    ],
+    "judge": [
+      "确认之前，回复没有声称记录已经删除完成，而是请用户确认。"
+    ],
+    "side_effects": {
+      "absent_events": [
+        {
+          "pet_name": "豆豆",
+          "category": "abnormal",
+          "title_contains_any": [
+            "呕吐",
+            "吐"
+          ]
+        }
+      ]
+    }
+  }
+}

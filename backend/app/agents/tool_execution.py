@@ -63,6 +63,12 @@ async def handle_tool_execution(
             "tool": fn_name,
             "error": str(exc)[:300],
         })
+        # Reset the shared session so the next tool call in this turn can
+        # still hit the DB instead of failing on the poisoned transaction.
+        try:
+            await context.db.rollback()
+        except Exception as rb_exc:
+            logger.warning("dispatch_tool_rollback_error", extra={"error": str(rb_exc)[:200]})
         return {"error": str(exc)[:200]}
 
     sync_memory(invocation, tool_result)

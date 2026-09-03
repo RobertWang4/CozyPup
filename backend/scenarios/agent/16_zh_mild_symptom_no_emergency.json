@@ -1,0 +1,25 @@
+{
+  "id": "zh_mild_symptom_no_emergency",
+  "description": "轻微症状咨询应给观察建议，不触发急救也不建记录。",
+  "language": "zh",
+  "pets": [
+    {
+      "name": "豆豆",
+      "species": "dog"
+    }
+  ],
+  "messages": [
+    "豆豆今天有点软便，但精神很好，要注意什么？"
+  ],
+  "expect": {
+    "forbidden_tools": [
+      "trigger_emergency",
+      "create_calendar_event"
+    ],
+    "emergency": false,
+    "judge": [
+      "回复用中文给出具体的观察和护理建议。",
+      "回复语气平稳，没有把轻微软便渲染成紧急情况。"
+    ]
+  }
+}

@@ -11,7 +11,7 @@ def test_builtin_agent_scenarios_load():
     scenario_dir = Path(__file__).parents[1] / "scenarios" / "agent"
     paths = sorted(scenario_dir.glob("*.json"))
 
-    assert len(paths) >= 10
+    assert len(paths) >= 18
     ids = set()
     for path in paths:
         scenario = load_scenario(path)
@@ -21,13 +21,48 @@ def test_builtin_agent_scenarios_load():
         ids.add(scenario.id)
 
 
+def test_builtin_agent_scenarios_include_new_zh_cases():
+    scenario_dir = Path(__file__).parents[1] / "scenarios" / "agent"
+    ids = {load_scenario(path).id for path in scenario_dir.glob("*.json")}
+
+    assert {
+        "zh_casual_chat_no_record",
+        "zh_question_no_record",
+        "zh_record_verb_bypass",
+        "zh_statement_needs_confirm",
+        "zh_delete_always_confirm",
+        "zh_update_weight_bypass",
+        "zh_mild_symptom_no_emergency",
+        "zh_pushback_after_query",
+    } <= ids
+
+
+def test_builtin_agent_scenario_expectations_are_well_formed():
+    scenario_dir = Path(__file__).parents[1] / "scenarios" / "agent"
+    for path in sorted(scenario_dir.glob("*.json")):
+        scenario = load_scenario(path)
+        expect = scenario.expect
+        # An executed tool is by definition also a called tool.
+        assert not set(expect.tools_executed) & set(expect.forbidden_tools)
+        assert not set(expect.cards) & set(expect.forbidden_cards)
+        assert all(rubric.strip() for rubric in expect.judge)
+        if expect.side_effects.absent_events:
+            assert scenario.events, f"{scenario.id}: absent_events needs a seeded event"
+
+
 def test_record_vomit_accepts_recording_opener():
     scenario_dir = Path(__file__).parents[1] / "scenarios" / "agent"
     scenario = load_scenario(scenario_dir / "02_record_vomit.json")
     result = ChatResult(
         text="Got it, recording that now...",
         cards=[{"type": "record"}],
-        trace={"steps": [{"step": "tool_dispatch", "data": {"tool": "create_calendar_event"}}]},
+        trace={"events": [{
+            "type": "run_completed",
+            "data": {
+                "tools_called": ["create_calendar_event"],
+                "tools_executed": ["create_calendar_event"],
+            },
+        }]},
     )
 
     grade = grade_result(scenario, result)

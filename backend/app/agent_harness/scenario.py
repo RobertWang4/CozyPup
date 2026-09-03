@@ -45,13 +45,17 @@ class PetSideEffect:
 class SideEffectExpectations:
     events: list[EventSideEffect] = field(default_factory=list)
     pets: list[PetSideEffect] = field(default_factory=list)
+    absent_events: list[EventSideEffect] = field(default_factory=list)
 
 
 @dataclass(frozen=True)
 class ExpectedOutcome:
     tools: list[str] = field(default_factory=list)
+    tools_executed: list[str] = field(default_factory=list)
     forbidden_tools: list[str] = field(default_factory=list)
     cards: list[str] = field(default_factory=list)
+    forbidden_cards: list[str] = field(default_factory=list)
+    judge: list[str] = field(default_factory=list)
     contains_any: list[str] = field(default_factory=list)
     contains_all: list[str] = field(default_factory=list)
     max_latency_ms: int | None = None
@@ -69,6 +73,17 @@ class HarnessScenario:
     pets: list[PetFixture] = field(default_factory=list)
     events: list[EventFixture] = field(default_factory=list)
     expect: ExpectedOutcome = field(default_factory=ExpectedOutcome)
+
+
+def _event_side_effect(item: dict) -> EventSideEffect:
+    return EventSideEffect(
+        pet_name=item.get("pet_name"),
+        category=item.get("category"),
+        title_contains_any=list(item.get("title_contains_any", [])),
+        title_contains_all=list(item.get("title_contains_all", [])),
+        reminder_required=item.get("reminder_required"),
+        cost=item.get("cost"),
+    )
 
 
 def load_scenario(path: str | Path) -> HarnessScenario:
@@ -97,23 +112,19 @@ def load_scenario(path: str | Path) -> HarnessScenario:
         ],
         expect=ExpectedOutcome(
             tools=list(expect.get("tools", [])),
+            tools_executed=list(expect.get("tools_executed", [])),
             forbidden_tools=list(expect.get("forbidden_tools", [])),
             cards=list(expect.get("cards", [])),
+            forbidden_cards=list(expect.get("forbidden_cards", [])),
+            judge=[str(item) for item in expect.get("judge", [])],
             contains_any=list(expect.get("contains_any", [])),
             contains_all=list(expect.get("contains_all", [])),
             max_latency_ms=expect.get("max_latency_ms"),
             emergency=expect.get("emergency"),
             side_effects=SideEffectExpectations(
-                events=[
-                    EventSideEffect(
-                        pet_name=item.get("pet_name"),
-                        category=item.get("category"),
-                        title_contains_any=list(item.get("title_contains_any", [])),
-                        title_contains_all=list(item.get("title_contains_all", [])),
-                        reminder_required=item.get("reminder_required"),
-                        cost=item.get("cost"),
-                    )
-                    for item in side_effects.get("events", [])
+                events=[_event_side_effect(item) for item in side_effects.get("events", [])],
+                absent_events=[
+                    _event_side_effect(item) for item in side_effects.get("absent_events", [])
                 ],
                 pets=[
                     PetSideEffect(

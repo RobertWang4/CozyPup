@@ -93,8 +93,27 @@ class ConfirmActionRequest(BaseModel):
     action_id: str                         # 待确认动作的唯一 ID
 
 
+def _user_today(tz_name: str | None, now: datetime | None = None) -> date:
+    """Today's date in the user's timezone (IANA name from X-Timezone header).
+
+    The server runs in UTC; a user in the Americas chatting in the evening is
+    still on "yesterday" by their clock. Falls back to UTC when the header is
+    missing or invalid.
+    """
+    from zoneinfo import ZoneInfo
+
+    current = now or datetime.now(timezone.utc)
+    if tz_name:
+        try:
+            return current.astimezone(ZoneInfo(tz_name)).date()
+        except Exception:
+            pass
+    return current.astimezone(timezone.utc).date()
+
+
 async def _get_or_create_session(
     db: AsyncSession, user_id: uuid.UUID, force_new: bool = False,
+    today: date | None = None,
 ) -> ChatSession:
     """获取或创建当日会话。
 
@@ -102,7 +121,7 @@ async def _get_or_create_session(
     force_new=True：强制新建一条今天的会话（iOS 用户 /clear 后的第一条消息会传这个），
       这样 _load_recent_messages 和 context_summary 都是空的，上下文从零开始。
     """
-    today = date.today()
+    today = today or date.today()
     if not force_new:
         result = await db.execute(
             select(ChatSession)
@@ -255,6 +274,7 @@ async def _event_generator(
     request: ChatRequest, user_id: uuid.UUID, db: AsyncSession,
     trace: TraceCollector = INACTIVE_TRACE,
     client_version: str | None = None,
+    tz_name: str | None = None,
 ):
     """SSE 事件生成器 — 整个聊天流程的主函数。
 
@@ -274,9 +294,10 @@ async def _event_generator(
 
     # ========== Phase 0: 会话初始化 ==========
 
-    # 1. 获取或创建当日会话
+    # 1. 获取或创建当日会话（"今天"按用户时区算，见 _user_today）
+    user_today = _user_today(tz_name)
     session = await _get_or_create_session(
-        db, user_id, force_new=bool(request.new_session),
+        db, user_id, force_new=bool(request.new_session), today=user_today,
     )
     session_id = str(session.id)
 
@@ -328,7 +349,7 @@ async def _event_generator(
     # Stage 2: 同步操作（纯 CPU，毫秒级，不需要 await）
     lang = request.language or detect_language(request.message)      # 检测语言（中/英）
     emergency_result = detect_emergency(request.message)              # 检测紧急关键词（如"中毒""抽搐"）
-    suggested_actions = pre_process(request.message, pets, lang=lang) # 预分析：从文本中提取可能的工具调用
+    suggested_actions = pre_process(request.message, pets, today=user_today, lang=lang) # 预分析：从文本中提取可能的工具调用
 
     trace.record("language_detect", {"language": lang})
     trace.record("emergency_detect", {
@@ -435,6 +456,7 @@ async def _event_generator(
         suggested_actions=suggested_actions,
         lang=lang,
         image_count=image_count,
+        today=user_today.isoformat(),
     )
     model = prompt_input.model
     today_str = prompt_input.today
@@ -686,7 +708,10 @@ async def chat(
     debug_on = raw_request.headers.get("X-Debug", "").lower() == "true"
     trace = TraceCollector(active=True) if debug_on else INACTIVE_TRACE
     client_version = raw_request.headers.get("X-Client-Version")
-    return EventSourceResponse(_event_generator(request, user_id, db, trace=trace, client_version=client_version))
+    tz_name = raw_request.headers.get("X-Timezone")
+    return EventSourceResponse(_event_generator(
+        request, user_id, db, trace=trace, client_version=client_version, tz_name=tz_name,
+    ))
 
 
 def _is_subscription_expired(user: User) -> bool:

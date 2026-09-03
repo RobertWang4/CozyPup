@@ -4,7 +4,7 @@ from datetime import date, timedelta
 import pytest
 
 from app.agent_harness.client import ChatResult
-from app.agent_harness.graders import grade_result
+from app.agent_harness.graders import grade_result, grade_side_effects
 from app.agent_harness.runner import ScenarioRunner
 from app.agent_harness.scenario import (
     EventSideEffect,
@@ -433,3 +433,93 @@ async def test_scenario_runner_grades_tools_across_multi_turn_scenario():
     run = await ScenarioRunner(FakeClient()).run(scenario)
 
     assert run.grade.passed is True
+
+
+def test_grade_result_uses_executed_tools_and_forbidden_cards():
+    scenario = HarnessScenario(
+        id="record",
+        description="",
+        messages=["记一下豆豆打了疫苗"],
+        expect=ExpectedOutcome(
+            tools_executed=["create_calendar_event"],
+            forbidden_cards=["confirm_action"],
+        ),
+    )
+    deferred = ChatResult(
+        text="请确认",
+        cards=[{"type": "confirm_action", "action_id": "a1"}],
+        trace={"events": [{
+            "type": "run_completed",
+            "data": {"tools_called": ["create_calendar_event"], "tools_executed": []},
+        }]},
+    )
+    executed = ChatResult(
+        text="已记录",
+        cards=[{"type": "record"}],
+        trace={"events": [{
+            "type": "run_completed",
+            "data": {
+                "tools_called": ["create_calendar_event"],
+                "tools_executed": ["create_calendar_event"],
+            },
+        }]},
+    )
+
+    deferred_grade = grade_result(scenario, deferred)
+    assert deferred_grade.passed is False
+    assert "tool not executed: create_calendar_event" in deferred_grade.reasons
+    assert "forbidden card returned: confirm_action" in deferred_grade.reasons
+
+    assert grade_result(scenario, executed).passed is True
+
+
+def test_grade_side_effects_flags_absent_event_that_still_exists():
+    scenario = HarnessScenario(
+        id="delete",
+        description="",
+        messages=["删掉"],
+        expect=ExpectedOutcome(
+            side_effects=SideEffectExpectations(
+                absent_events=[EventSideEffect(pet_name="豆豆", category="abnormal")],
+            ),
+        ),
+    )
+
+    still_there = grade_side_effects(
+        scenario,
+        events=[{"pet_name": "豆豆", "category": "abnormal", "title": "呕吐"}],
+    )
+    assert still_there and "unexpected event side effect" in still_there[0]
+
+    assert grade_side_effects(scenario, events=[]) == []
+
+
+@pytest.mark.asyncio
+async def test_scenario_runner_runs_judge_and_records_failures(monkeypatch):
+    class FakeClient:
+        email = "harness@example.com"
+
+        async def auth_dev(self, email=None):
+            pass
+
+        async def chat(self, message, language=None):
+            return ChatResult(text="已经删除了")
+
+    async def fake_judge(scenario, result):
+        return ["judge: rubric — the reply claims deletion is done"]
+
+    monkeypatch.setattr("app.agent_harness.runner.judge_result", fake_judge)
+
+    scenario = HarnessScenario(
+        id="judged",
+        description="",
+        messages=["删掉"],
+        expect=ExpectedOutcome(judge=["must not claim deletion is done"]),
+    )
+
+    run = await ScenarioRunner(FakeClient()).run(scenario)
+    assert run.grade.passed is False
+    assert run.grade.reasons == ["judge: rubric — the reply claims deletion is done"]
+
+    skipped = await ScenarioRunner(FakeClient(), judge=False).run(scenario)
+    assert skipped.grade.passed is True

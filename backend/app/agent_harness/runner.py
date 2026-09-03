@@ -7,6 +7,7 @@ from datetime import date, timedelta
 
 from .client import AgentHarnessClient, ChatResult
 from .graders import ScenarioGrade, grade_result, grade_side_effects
+from .judge import judge_result
 from .scenario import HarnessScenario
 from .trace_schema import TraceArtifact, normalize_trace_artifact
 
@@ -20,8 +21,9 @@ class ScenarioRun:
 
 
 class ScenarioRunner:
-    def __init__(self, client: AgentHarnessClient):
+    def __init__(self, client: AgentHarnessClient, *, judge: bool = True):
         self.client = client
+        self.judge = judge
 
     async def run(self, scenario: HarnessScenario) -> ScenarioRun:
         await self.client.auth_dev()
@@ -53,13 +55,17 @@ class ScenarioRunner:
             result = _combine_chat_results(results)
 
         grade = grade_result(scenario, result)
+        judge_reasons = []
+        if self.judge and scenario.expect.judge:
+            judge_reasons = await judge_result(scenario, result)
         confirm_reasons = await self._auto_confirm(scenario, result)
         side_effect_reasons = await self._grade_side_effects(scenario)
-        if confirm_reasons or side_effect_reasons:
+        extra_reasons = [*judge_reasons, *confirm_reasons, *side_effect_reasons]
+        if extra_reasons:
             grade = ScenarioGrade(
                 scenario_id=grade.scenario_id,
                 passed=False,
-                reasons=[*grade.reasons, *confirm_reasons, *side_effect_reasons],
+                reasons=[*grade.reasons, *extra_reasons],
             )
         artifact = normalize_trace_artifact(
             scenario_id=scenario.id,
@@ -97,7 +103,7 @@ class ScenarioRunner:
         expected = scenario.expect.side_effects
         events = None
         pets = None
-        if expected.events:
+        if expected.events or expected.absent_events:
             events = await self.client.get_events()
         if expected.pets:
             pets = await self.client.get_pets()

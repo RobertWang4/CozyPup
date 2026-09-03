@@ -66,7 +66,16 @@ async def build_memory_context(
             return await _retrieve()
     except TimeoutError:
         logger.info("memory_context_build_timeout", extra={"timeout_ms": timeout_ms})
-        return RetrievedContext()
     except Exception as exc:
         logger.warning("memory_context_build_error", extra={"error": str(exc)[:200]})
-        return RetrievedContext()
+
+    # The retrieval shares the request's AsyncSession. A cancelled/failed query
+    # leaves that session in an invalid transaction and every later tool call
+    # fails with "Can't reconnect until invalid transaction is rolled back".
+    rollback = getattr(db, "rollback", None)
+    if rollback is not None:
+        try:
+            await rollback()
+        except Exception as exc:
+            logger.warning("memory_context_rollback_error", extra={"error": str(exc)[:200]})
+    return RetrievedContext()

@@ -1,0 +1,24 @@
+{
+  "id": "zh_casual_chat_no_record",
+  "description": "闲聊分享日常，不应触发急救、建宠物或删除。",
+  "language": "zh",
+  "pets": [
+    {
+      "name": "豆豆",
+      "species": "dog"
+    }
+  ],
+  "messages": [
+    "今天带豆豆去公园玩了，它好开心"
+  ],
+  "expect": {
+    "forbidden_tools": [
+      "trigger_emergency",
+      "create_pet",
+      "delete_calendar_event"
+    ],
+    "judge": [
+      "回复是温暖自然的中文闲聊回应，没有把这条日常当成紧急情况。"
+    ]
+  }
+}

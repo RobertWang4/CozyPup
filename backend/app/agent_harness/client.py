@@ -17,6 +17,27 @@ import httpx
 TIMEOUT = 120.0
 
 
+def _local_tz_name() -> str:
+    """IANA name of the local zone (what iOS sends as X-Timezone)."""
+    try:
+        from datetime import datetime
+        tz = datetime.now().astimezone().tzinfo
+        key = getattr(tz, "key", None)
+        if key:
+            return key
+    except Exception:
+        pass
+    try:
+        from pathlib import Path
+        target = Path("/etc/localtime").resolve()
+        parts = target.parts
+        if "zoneinfo" in parts:
+            return "/".join(parts[parts.index("zoneinfo") + 1:])
+    except Exception:
+        pass
+    return "UTC"
+
+
 @dataclass
 class ChatResult:
     """Structured result from one chat SSE request."""
@@ -195,6 +216,9 @@ class AgentHarnessClient:
             req_headers = {**self.headers, "Accept": "text/event-stream"}
             if self.debug:
                 req_headers["X-Debug"] = "true"
+            # Seeded fixture dates use the local clock; tell the backend the
+            # same zone so its "today" matches (see chat._user_today).
+            req_headers["X-Timezone"] = _local_tz_name()
             async with self._client.stream(
                 "POST",
                 f"{self.api}/chat",
@@ -483,6 +507,28 @@ def get_tools_called(result: ChatResult) -> list[str]:
             for tool in tc:
                 add_tool(str(tool))
         add_tool(inner.get("tool") or inner.get("name"))
+    return tools
+
+
+def get_tools_executed(result: ChatResult) -> list[str]:
+    """Tools that actually ran and committed (``tools_executed`` in the trace).
+
+    Unlike ``get_tools_called`` this excludes calls deferred behind a confirm
+    card or rejected by validation.
+    """
+    if not result.trace:
+        return []
+
+    tools: list[str] = []
+    for entry in [*result.trace.get("events", []), *result.trace.get("steps", [])]:
+        if not isinstance(entry, dict):
+            continue
+        data = entry.get("data", {})
+        if not isinstance(data, dict):
+            continue
+        for tool in data.get("tools_executed") or []:
+            if str(tool) not in tools:
+                tools.append(str(tool))
     return tools
 
 

@@ -2,7 +2,9 @@
   "id": "basic_chat",
   "description": "A simple greeting should stay conversational and avoid tools.",
   "language": "en",
-  "messages": ["Hi CozyPup, what can you help me with?"],
+  "messages": [
+    "Hi CozyPup, what can you help me with?"
+  ],
   "expect": {
     "forbidden_tools": [
       "create_calendar_event",
@@ -12,6 +14,9 @@
       "delete_pet",
       "trigger_emergency"
     ],
-    "contains_any": ["help", "record", "pet"]
+    "judge": [
+      "The reply is a friendly English introduction explaining what the assistant can help with.",
+      "The reply does not claim to have recorded, saved or changed anything."
+    ]
   }
 }

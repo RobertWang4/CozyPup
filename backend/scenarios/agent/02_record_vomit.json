@@ -2,19 +2,38 @@
   "id": "record_vomit",
   "description": "User explicitly asks to record a vomiting event.",
   "language": "en",
-  "pets": [{"name": "Max", "species": "dog"}],
-  "messages": ["Record that Max vomited twice today."],
+  "pets": [
+    {
+      "name": "Max",
+      "species": "dog"
+    }
+  ],
+  "messages": [
+    "Record that Max vomited twice today."
+  ],
   "expect": {
-    "tools": ["create_calendar_event"],
-    "forbidden_tools": ["trigger_emergency"],
-    "cards": ["record"],
-    "contains_any": ["recorded", "recording", "saved", "noted"],
+    "tools_executed": [
+      "create_calendar_event"
+    ],
+    "forbidden_tools": [
+      "trigger_emergency"
+    ],
+    "cards": [
+      "record"
+    ],
+    "judge": [
+      "The reply confirms in English that the vomiting record was saved for Max."
+    ],
     "side_effects": {
       "events": [
         {
           "pet_name": "Max",
           "category": "abnormal",
-          "title_contains_any": ["vomit", "Vomiting", "吐"]
+          "title_contains_any": [
+            "vomit",
+            "Vomiting",
+            "吐"
+          ]
         }
       ]
     }

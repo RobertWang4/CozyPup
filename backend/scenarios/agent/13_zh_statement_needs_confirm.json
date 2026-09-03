@@ -1,0 +1,29 @@
+{
+  "id": "zh_statement_needs_confirm",
+  "description": "没有显式记录动词的陈述句应弹确认卡，不能直接声称已保存。",
+  "language": "zh",
+  "pets": [
+    {
+      "name": "豆豆",
+      "species": "dog"
+    }
+  ],
+  "messages": [
+    "豆豆今天吐了两次"
+  ],
+  "expect": {
+    "tools": [
+      "create_calendar_event"
+    ],
+    "cards": [
+      "confirm_action"
+    ],
+    "forbidden_tools": [
+      "trigger_emergency"
+    ],
+    "judge": [
+      "回复提示用户点击/确认卡片来保存这条记录。",
+      "回复没有声称记录已经保存成功。"
+    ]
+  }
+}

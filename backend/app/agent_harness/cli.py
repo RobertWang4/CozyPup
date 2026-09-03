@@ -12,7 +12,7 @@ import httpx
 from .artifacts import read_json, write_json
 from .client import AgentHarnessClient, ChatResult
 from .export import append_sft_jsonl, trace_to_sft_row
-from .report import build_eval_report
+from .report import build_eval_report, compare_reports
 from .render import render_result
 from .runner import ScenarioRunner
 from .scenario import load_scenario
@@ -161,17 +161,19 @@ def replay_cmd(trace_path: str):
 @click.option("--env", "env_name", type=click.Choice(["dev", "prod"]), default="dev", show_default=True)
 @click.option("--save-trace", default=None, help="Write normalized trace artifact JSON to this path.")
 @click.option("--export-jsonl", default=None, help="Append an SFT JSONL row for this run.")
+@click.option("--no-judge", is_flag=True, help="Skip LLM judge rubrics in expect.judge.")
 def run_cmd(
     scenario_path: str,
     base_url: str | None,
     env_name: str,
     save_trace: str | None,
     export_jsonl: str | None,
+    no_judge: bool,
 ):
     """Run one scenario JSON file and grade the final result."""
     resolved_base_url = _resolve_base_url(base_url, env_name)
     scenario = load_scenario(scenario_path)
-    run = asyncio.run(_run_scenario(scenario, resolved_base_url))
+    run = asyncio.run(_run_scenario(scenario, resolved_base_url, judge=not no_judge))
     if save_trace:
         write_json(save_trace, run.artifact.to_dict())
     if export_jsonl:
@@ -188,10 +190,10 @@ def run_cmd(
     click.echo(render_result(run.result, verbose=True))
 
 
-async def _run_scenario(scenario, base_url: str):
+async def _run_scenario(scenario, base_url: str, *, judge: bool = True):
     client = AgentHarnessClient(base_url, debug=True)
     try:
-        return await ScenarioRunner(client).run(scenario)
+        return await ScenarioRunner(client, judge=judge).run(scenario)
     finally:
         await client.close()
 
@@ -203,6 +205,9 @@ async def _run_scenario(scenario, base_url: str):
 @click.option("--report", "report_path", default=None, help="Write JSON eval report to this path.")
 @click.option("--trace-dir", default=None, help="Write one normalized trace JSON per scenario.")
 @click.option("--fail-fast", is_flag=True, help="Stop after the first failed scenario.")
+@click.option("--repeat", default=1, show_default=True, type=int, help="Run each scenario N times.")
+@click.option("--no-judge", is_flag=True, help="Skip LLM judge rubrics in expect.judge.")
+@click.option("--baseline", "baseline_path", default=None, help="Compare against a previous report JSON.")
 def eval_cmd(
     scenario_dir: str,
     base_url: str | None,
@@ -210,8 +215,13 @@ def eval_cmd(
     report_path: str | None,
     trace_dir: str | None,
     fail_fast: bool,
+    repeat: int,
+    no_judge: bool,
+    baseline_path: str | None,
 ):
     """Run every scenario JSON file in a directory."""
+    if repeat < 1:
+        raise click.BadParameter("--repeat must be >= 1")
     resolved_base_url = _resolve_base_url(base_url, env_name)
     scenario_paths = sorted(Path(scenario_dir).glob("*.json"))
     runs = asyncio.run(_run_scenarios(
@@ -219,17 +229,27 @@ def eval_cmd(
         resolved_base_url,
         trace_dir=trace_dir,
         fail_fast=fail_fast,
+        repeat=repeat,
+        judge=not no_judge,
     ))
     report = build_eval_report(runs)
+    if baseline_path:
+        report["regressions"] = compare_reports(read_json(baseline_path), report)
     if report_path:
         write_json(report_path, report)
 
-    click.echo(f"PASS RATE {report['passed']}/{report['total']} ({report['pass_rate']:.0%})")
+    click.echo(f"PASS RATE {report['passed']}/{report['total']} ({report['pass_all_rate']:.0%})")
+    click.echo(
+        f"RUN PASS RATE {report['pass_rate']:.0%} | PASS ALL RATE {report['pass_all_rate']:.0%}"
+    )
     for item in report["results"]:
         status = "PASS" if item["passed"] else "FAIL"
-        click.echo(f"{status} {item['scenario_id']}")
+        click.echo(f"{status} {item['scenario_id']} {item['passes']}/{item['total_runs']}")
         for reason in item["reasons"]:
             click.echo(f"- {reason}")
+
+    for warning in report.get("regressions", []):
+        click.echo(f"REGRESSION {warning}")
 
 
 async def _run_scenarios(
@@ -238,21 +258,31 @@ async def _run_scenarios(
     *,
     trace_dir: str | None = None,
     fail_fast: bool = False,
+    repeat: int = 1,
+    judge: bool = True,
 ):
     runs = []
     for path in scenario_paths:
-        client = AgentHarnessClient(base_url, debug=True)
-        try:
-            scenario = load_scenario(path)
-            run = await ScenarioRunner(client).run(scenario)
-            runs.append(run)
-            if trace_dir:
-                trace_path = Path(trace_dir) / f"{scenario.id}.trace.json"
-                write_json(trace_path, run.artifact.to_dict())
-            if fail_fast and not run.grade.passed:
-                break
-        finally:
-            await client.close()
+        scenario = load_scenario(path)
+        stop = False
+        for index in range(repeat):
+            # Fresh client per run so each repeat gets a new harness user and
+            # seeded pets/events never leak between repeats.
+            client = AgentHarnessClient(base_url, debug=True)
+            try:
+                run = await ScenarioRunner(client, judge=judge).run(scenario)
+                runs.append(run)
+                if trace_dir:
+                    suffix = "" if repeat == 1 else f".run{index}"
+                    trace_path = Path(trace_dir) / f"{scenario.id}{suffix}.trace.json"
+                    write_json(trace_path, run.artifact.to_dict())
+                if fail_fast and not run.grade.passed:
+                    stop = True
+                    break
+            finally:
+                await client.close()
+        if stop:
+            break
     return runs
 
 

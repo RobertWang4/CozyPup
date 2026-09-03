@@ -295,7 +295,7 @@ def test_cli_run_scenario_prints_grade(monkeypatch, tmp_path):
     }))
 
     class FakeRunner:
-        def __init__(self, client):
+        def __init__(self, client, judge=True):
             pass
 
         async def run(self, scenario):
@@ -353,12 +353,14 @@ def test_build_eval_report_counts_passes_and_failures():
     report = build_eval_report(runs)
 
     assert report["total"] == 2
-    assert report["schema_version"] == 1
+    assert report["schema_version"] == 2
     assert report["passed"] == 1
     assert report["failed"] == 1
     assert report["pass_rate"] == 0.5
+    assert report["pass_all_rate"] == 0.5
     assert report["results"][1]["reasons"] == ["missing tool: list_pets"]
     assert report["results"][1]["total_tokens"] == 7
+    assert report["results"][1]["runs"][0]["passed"] is False
 
 
 def test_cli_eval_scenario_dir_writes_report(monkeypatch, tmp_path):
@@ -379,7 +381,7 @@ def test_cli_eval_scenario_dir_writes_report(monkeypatch, tmp_path):
     report_path = tmp_path / "report.json"
 
     class FakeRunner:
-        def __init__(self, client):
+        def __init__(self, client, judge=True):
             pass
 
         async def run(self, scenario):
@@ -428,8 +430,8 @@ def test_cli_eval_scenario_dir_writes_report(monkeypatch, tmp_path):
 
     assert result.exit_code == 0
     assert "PASS RATE 1/2 (50%)" in result.output
-    assert "PASS a" in result.output
-    assert "FAIL b" in result.output
+    assert "PASS a 1/1" in result.output
+    assert "FAIL b 0/1" in result.output
     saved = json.loads(report_path.read_text())
     assert saved["total"] == 2
     assert saved["failed"] == 1
@@ -448,7 +450,7 @@ def test_cli_eval_can_write_per_scenario_traces(monkeypatch, tmp_path):
     trace_dir = tmp_path / "traces"
 
     class FakeRunner:
-        def __init__(self, client):
+        def __init__(self, client, judge=True):
             pass
 
         async def run(self, scenario):
@@ -510,7 +512,7 @@ def test_cli_eval_fail_fast_stops_after_first_failure(monkeypatch, tmp_path):
     seen = []
 
     class FakeRunner:
-        def __init__(self, client):
+        def __init__(self, client, judge=True):
             pass
 
         async def run(self, scenario):
@@ -558,4 +560,4 @@ def test_cli_eval_fail_fast_stops_after_first_failure(monkeypatch, tmp_path):
 
     assert result.exit_code == 0
     assert seen == ["a"]
-    assert "FAIL a" in result.output
+    assert "FAIL a 0/1" in result.output

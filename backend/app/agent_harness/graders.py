@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from .client import ChatResult, get_tools_called
+from .client import ChatResult, get_tools_called, get_tools_executed
 from .scenario import EventSideEffect, HarnessScenario, PetSideEffect
 
 
@@ -18,12 +18,17 @@ class ScenarioGrade:
 def grade_result(scenario: HarnessScenario, result: ChatResult) -> ScenarioGrade:
     reasons: list[str] = []
     tools = get_tools_called(result)
+    executed = get_tools_executed(result)
     card_types = [card.get("type") for card in result.cards]
     text = _gradeable_text(result)
 
     for tool in scenario.expect.tools:
         if tool not in tools:
             reasons.append(f"missing tool: {tool}")
+
+    for tool in scenario.expect.tools_executed:
+        if tool not in executed:
+            reasons.append(f"tool not executed: {tool}")
 
     for tool in scenario.expect.forbidden_tools:
         if tool in tools:
@@ -32,6 +37,10 @@ def grade_result(scenario: HarnessScenario, result: ChatResult) -> ScenarioGrade
     for card_type in scenario.expect.cards:
         if card_type not in card_types:
             reasons.append(f"missing card: {card_type}")
+
+    for card_type in scenario.expect.forbidden_cards:
+        if card_type in card_types:
+            reasons.append(f"forbidden card returned: {card_type}")
 
     if scenario.expect.contains_any and not any(item in text for item in scenario.expect.contains_any):
         reasons.append(f"missing any text: {scenario.expect.contains_any}")
@@ -71,6 +80,10 @@ def grade_side_effects(
     for expected in scenario.expect.side_effects.events:
         if not any(_event_matches(expected, event) for event in events):
             reasons.append(f"missing event side effect: {_describe_event_expectation(expected)}")
+
+    for expected in scenario.expect.side_effects.absent_events:
+        if any(_event_matches(expected, event) for event in events):
+            reasons.append(f"unexpected event side effect: {_describe_event_expectation(expected)}")
 
     for expected in scenario.expect.side_effects.pets:
         if not any(_pet_matches(expected, pet) for pet in pets):
