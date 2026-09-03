@@ -140,7 +140,7 @@ pytest tests/e2e/ -v --tb=short
 |---|-------|----------|------------|
 | 9.1 | "Are there any pet hospitals nearby?" (with location) | place_card 卡片 | `has_card("place_card")` or `has_card("map")` |
 | 9.2 | "Help me find the nearest dog park" (with location) | place_card 卡片 | Same as above |
-| 9.3 | search_places_text: "pet hospital Beijing" | Returns place list | Reply contains address info |
+| 9.3 | search_places (mode=text): "pet hospital Beijing" | Returns place list | Reply contains address info |
 | 9.4 | "How are the reviews for the first one?" (after 9.1) | place_detail 卡片 + 文字回复 | `has_card("place_detail")` |
 | 9.5 | "How do I get there?" (after 9.1) | directions 卡��� | `has_card("directions")` |
 
@@ -188,7 +188,7 @@ pytest tests/e2e/ -v --tb=short
 | # | Input | Expected | Validation |
 |---|-------|----------|------------|
 | 14.1 | "Weiwei is very afraid of thunder, timid personality" | Silently calls save_pet_profile_md, profile_md updated with personality info | `get_pets()` profile_md contains personality info |
-| 14.2 | "Help me summarize Weiwei's profile" | Calls summarize_pet_profile, returns complete profile document | `result.text` contains profile content |
+| 14.2 | "Help me summarize Weiwei's profile" | Calls save_pet_profile_md with show_card=true, returns complete profile document | `result.text` contains profile content |
 | 14.3 | After multi-turn conversation with new info, check profile_md | save_pet_profile_md silently called, doc contains history + new info | pet.profile_md contains all known info |
 
 ---
@@ -294,7 +294,6 @@ _DAILY_TASK_ACTIONS = {"update", "delete", "deactivate", "delete_all"}
 | `delete_pet` | 5 (5.x) | Covered |
 | `list_pets` | 5 (5.10) | Covered |
 | `save_pet_profile_md` | 14 (14.x) | Covered |
-| `summarize_pet_profile` | 14 (14.2) | Covered |
 | `set_pet_avatar` | 6 (6.x) | Covered |
 | `create_daily_task` | 7 (7.x) | Covered |
 | `manage_daily_task` | 7 (7.3) | Covered |
@@ -303,8 +302,7 @@ _DAILY_TASK_ACTIONS = {"update", "delete", "deactivate", "delete_all"}
 | `update_reminder` | 8 (8.5) | Covered |
 | `delete_reminder` | 8 (8.4) | Covered |
 | `delete_all_reminders` | 8 (8.6) | Covered |
-| `search_places` | 9 (9.x) | Covered |
-| `search_places_text` | 9 (9.3) | Covered |
+| `search_places` | 9 (9.x, 9.3) | Covered |
 | `get_place_details` | 9 (9.4) | Covered |
 | `get_directions` | 9 (9.5) | Covered |
 | `draft_email` | 10 (10.x) | Covered |

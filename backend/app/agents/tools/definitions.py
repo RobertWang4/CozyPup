@@ -265,9 +265,11 @@ _BASE_TOOL_DEFINITIONS = [
             "name": "save_pet_profile_md",
             "description": (
                 "保存/更新宠物的叙事性档案文档 (markdown)。\n"
-                "当从对话中了解到宠物新信息时静默调用 (性格/病史/日常习惯/偏好)。\n"
+                "当从对话中了解到宠物新信息时静默调用 (性格/病史/日常习惯/偏好)，show_card 传 false。\n"
+                "当用户主动要求总结/更新/整理宠物档案时，回顾所有已知信息和聊天历史，"
+                "生成完整详实的档案文档，show_card 传 true。\n"
                 "不要用于: 更新结构化字段如体重/生日 (用 update_pet_profile)。\n"
-                "必须传完整文档 (非 diff)，500 字以内，用 markdown 分节。\n"
+                "必须传完整文档 (非 diff)，用 markdown 分节。\n"
                 "用用户的语言撰写。"
             ),
             "parameters": {
@@ -281,38 +283,14 @@ _BASE_TOOL_DEFINITIONS = [
                         "type": "string",
                         "description": (
                             "The FULL markdown profile document. Include all previously known info "
-                            "plus new info. Sections: basics, personality, health, daily routine."
+                            "plus new info. Sections: basics, personality, health, daily routine, notes."
                         ),
                     },
-                },
-                "required": ["pet_id", "profile_md"],
-            },
-        },
-    },
-    {
-        "type": "function",
-        "function": {
-            "name": "summarize_pet_profile",
-            "description": (
-                "用户主动要求总结/更新宠物档案时调用。\n"
-                "回顾所有已知信息和聊天历史，生成完整的宠物档案文档。\n"
-                "仅在用户明确要求时调用 (帮我总结一下XX的信息/更新一下档案/整理一下宠物资料)。\n"
-                "必须传完整文档 (非 diff)，800 字以内，用 markdown 分节。\n"
-                "用用户的语言撰写，尽量丰富详实。"
-            ),
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "pet_id": {
-                        "type": "string",
-                        "description": "UUID of the pet.",
-                    },
-                    "profile_md": {
-                        "type": "string",
+                    "show_card": {
+                        "type": "boolean",
                         "description": (
-                            "The FULL markdown profile document. Summarize ALL known info about the pet "
-                            "from conversation history and existing profile. Sections: basics, personality, "
-                            "health, daily routine, notes. Be thorough and detailed."
+                            "Set true only when the user explicitly asked to summarize/update the "
+                            "profile — shows a profile card to the user. Default false."
                         ),
                     },
                 },
@@ -380,12 +358,14 @@ _BASE_TOOL_DEFINITIONS = [
         "function": {
             "name": "search_places",
             "description": (
-                "搜索附近的宠物相关地点 (宠物医院/宠物店/狗公园/美容店/24h急诊)。\n"
-                "【必须调用】当用户提到以下任何一种时，必须调用此工具:\n"
+                "搜索地点。\n"
+                "mode='nearby': 搜索用户当前位置附近的宠物相关地点 (宠物医院/宠物店/狗公园/美容店/24h急诊)。\n"
+                "mode='text': 按地址或地名搜索具体地点 (如 '302 Rideau St'、'朝阳公园')。\n"
+                "【必须调用】当用户提到以下任何一种时，必须调用此工具 (mode='nearby'):\n"
                 "- '附近''附近哪里有''帮我找''最近的' + 宠物医院/医院/宠物店/狗公园/公园/美容店\n"
                 "- 'nearby''find''closest''nearest' + vet/clinic/hospital/dog park/pet store/groomer\n"
                 "- 需要找宠物相关地点的任何表达\n"
-                "即使没有位置信息也要调用，系统会自动处理。\n"
+                "不传 mode 时: 有位置信息用 nearby，没有则用 text。\n"
                 "不要用于: 记录去过的地方 (用 create_calendar_event)。"
             ),
             "parameters": {
@@ -395,7 +375,15 @@ _BASE_TOOL_DEFINITIONS = [
                         "type": "string",
                         "description": (
                             "Search query for Google Places, e.g. 'veterinary clinic', "
-                            "'dog park', '24 hour emergency vet'."
+                            "'dog park', '24 hour emergency vet', or an address/place name."
+                        ),
+                    },
+                    "mode": {
+                        "type": "string",
+                        "enum": ["nearby", "text"],
+                        "description": (
+                            "'nearby' searches around the user's current location; 'text' searches "
+                            "by address or place name. Omit to let the system pick."
                         ),
                     },
                 },
@@ -827,28 +815,6 @@ _BASE_TOOL_DEFINITIONS = [
     {
         "type": "function",
         "function": {
-            "name": "search_places_text",
-            "description": (
-                "通过文字查询搜索具体地点（地址或地名）。\n"
-                "当用户说了一个具体地址时使用，如 '302 Rideau St' 或 '朝阳公园'。\n"
-                "返回前5个匹配结果。\n"
-                "不要用于: 搜索附近地点（用 search_places）。"
-            ),
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "query": {
-                        "type": "string",
-                        "description": "Address or place name to search for.",
-                    },
-                },
-                "required": ["query"],
-            },
-        },
-    },
-    {
-        "type": "function",
-        "function": {
             "name": "get_place_details",
             "description": (
                 "查询地点的详细信息（评论、营业时间、电话等）。\n"
@@ -1027,18 +993,23 @@ _BASE_TOOL_DEFINITIONS = [
     {
         "type": "function",
         "function": {
-            "name": "get_vaccine_schedule",
+            "name": "get_care_schedule",
             "description": (
-                "Get authoritative vaccination schedule (AAHA for dogs, AAFP for cats).\n"
-                "【必须调用】用户问疫苗时间/间隔/什么时候打/该打什么疫苗 → 必须调用这个而不是 search_knowledge。\n"
-                "Returns vaccine name, core vs non-core, age window, interval, and source citation.\n"
+                "Get authoritative vaccination (AAHA/AAFP) or deworming (CAPC) schedule.\n"
+                "kind='vaccine': 疫苗时间表 — 疫苗名称、核心/非核心、月龄窗口、间隔。\n"
+                "kind='deworming': 驱虫/寄生虫预防时间表 — 寄生虫类别、生命阶段、间隔。\n"
+                "【必须调用】用户问疫苗/驱虫的时间表/间隔/什么时候打/多久一次 → 必须调用这个而不是 search_knowledge。\n"
                 "返回结果包含 source_url / source_name，回复时必须引用。\n"
-                "【绝对不要用于剂量问题】此工具不返回剂量；剂量问题必须拒绝（请咨询兽医）。\n"
-                "species: 'dog' 或 'cat' only."
+                "【绝对不要用于剂量问题】此工具不返回剂量；剂量问题必须拒绝（请咨询兽医）。"
             ),
             "parameters": {
                 "type": "object",
                 "properties": {
+                    "kind": {
+                        "type": "string",
+                        "enum": ["vaccine", "deworming"],
+                        "description": "Which schedule to look up.",
+                    },
                     "species": {
                         "type": "string",
                         "enum": ["dog", "cat"],
@@ -1047,43 +1018,18 @@ _BASE_TOOL_DEFINITIONS = [
                     "age_weeks": {
                         "type": "integer",
                         "description": (
-                            "Optional pet age in weeks. If provided, results are filtered "
-                            "to entries relevant for that age (puppy/kitten series still "
+                            "Vaccine only. Optional pet age in weeks. If provided, results are "
+                            "filtered to entries relevant for that age (puppy/kitten series still "
                             "in window, plus open-ended adult boosters)."
                         ),
-                    },
-                },
-                "required": ["species"],
-            },
-        },
-    },
-    {
-        "type": "function",
-        "function": {
-            "name": "get_deworming_schedule",
-            "description": (
-                "Get authoritative deworming / parasite-prevention schedule (CAPC).\n"
-                "【必须调用】用户问驱虫/心丝虫/跳蚤/蜱虫预防的时间和频率 → 必须调用这个而不是 search_knowledge。\n"
-                "Returns parasite category, life stage, interval, and source citation (source_url / source_name).\n"
-                "回复时必须引用 source。\n"
-                "【绝对不要用于剂量问题】此工具不返回剂量。\n"
-                "species: 'dog' or 'cat'. life_stage: puppy_kitten / adult / pregnant / senior."
-            ),
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "species": {
-                        "type": "string",
-                        "enum": ["dog", "cat"],
-                        "description": "Pet species.",
                     },
                     "life_stage": {
                         "type": "string",
                         "enum": ["puppy_kitten", "adult", "pregnant", "senior"],
-                        "description": "Optional filter by life stage.",
+                        "description": "Deworming only. Optional filter by life stage.",
                     },
                 },
-                "required": ["species"],
+                "required": ["kind", "species"],
             },
         },
     },

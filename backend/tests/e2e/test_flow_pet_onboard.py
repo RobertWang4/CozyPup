@@ -96,8 +96,8 @@ async def test_28_pet_onboard_flow(e2e_debug):
     r = await e2e.chat(MSGS[6])  # "帮我总结一下花花的档案"
     assert r.error is None, f"28.7 chat error: {r.error}\n{r.dump()}"
     tools = get_tools_called(r)
-    assert "summarize_pet_profile" in tools, (
-        f"28.7 Expected summarize_pet_profile in tools_called={tools}.\n{r.dump()}"
+    assert "save_pet_profile_md" in tools, (
+        f"28.7 Expected save_pet_profile_md in tools_called={tools}.\n{r.dump()}"
     )
     text = r.text
     # Should mention key profile facts

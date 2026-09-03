@@ -1,4 +1,4 @@
-"""get_vaccine_schedule / get_deworming_schedule tools.
+"""get_care_schedule tool.
 
 Structured, deterministic lookups for vaccination and deworming SCHEDULES
 (timing + vaccine/parasite name + authoritative citation). Used in place
@@ -132,51 +132,32 @@ async def get_deworming_schedule(
 # ---- Tool registry wrappers -------------------------------------------------
 
 
-@register_tool("get_vaccine_schedule")
-async def _tool_get_vaccine_schedule(
+@register_tool("get_care_schedule")
+async def _tool_get_care_schedule(
     arguments: dict,
     db: AsyncSession,
     user_id: uuid.UUID,
 ) -> dict:
+    kind = arguments.get("kind", "")
     species = arguments.get("species", "")
-    age_weeks = arguments.get("age_weeks")
-    if age_weeks is not None:
-        try:
-            age_weeks = int(age_weeks)
-        except (TypeError, ValueError):
-            age_weeks = None
     try:
-        rows = await get_vaccine_schedule(species, age_weeks, db=db)
+        if kind == "deworming":
+            rows = await get_deworming_schedule(species, arguments.get("life_stage"), db=db)
+        else:
+            age_weeks = arguments.get("age_weeks")
+            if age_weeks is not None:
+                try:
+                    age_weeks = int(age_weeks)
+                except (TypeError, ValueError):
+                    age_weeks = None
+            rows = await get_vaccine_schedule(species, age_weeks, db=db)
     except Exception as exc:
-        logger.error("get_vaccine_schedule_error", extra={"error": str(exc)[:200]})
+        logger.error("get_care_schedule_error", extra={"kind": kind, "error": str(exc)[:200]})
         return {"success": False, "error": "Schedule lookup failed.", "results": []}
 
     return {
         "success": True,
-        "results": rows,
-        "disclaimer": (
-            "Timing guidance only; dosage and medical decisions require a "
-            "licensed veterinarian."
-        ),
-    }
-
-
-@register_tool("get_deworming_schedule")
-async def _tool_get_deworming_schedule(
-    arguments: dict,
-    db: AsyncSession,
-    user_id: uuid.UUID,
-) -> dict:
-    species = arguments.get("species", "")
-    life_stage = arguments.get("life_stage")
-    try:
-        rows = await get_deworming_schedule(species, life_stage, db=db)
-    except Exception as exc:
-        logger.error("get_deworming_schedule_error", extra={"error": str(exc)[:200]})
-        return {"success": False, "error": "Schedule lookup failed.", "results": []}
-
-    return {
-        "success": True,
+        "kind": kind,
         "results": rows,
         "disclaimer": (
             "Timing guidance only; dosage and medical decisions require a "

@@ -57,7 +57,6 @@ from app.agents.tools.pets import (
     list_pets,
     save_pet_profile_md,
     set_pet_avatar,
-    summarize_pet_profile,
     update_pet_profile,
     verify_pet_ownership,
 )
@@ -88,7 +87,6 @@ __all__ = [
     "create_pet",
     "update_pet_profile",
     "save_pet_profile_md",
-    "summarize_pet_profile",
     "list_pets",
     "delete_pet",
     "set_pet_avatar",

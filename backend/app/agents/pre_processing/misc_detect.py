@@ -1,7 +1,7 @@
 """Miscellaneous intent detection.
 
 Covers tools that don't fit the calendar/pet/reminder/task buckets:
-search_places, draft_email, summarize_pet_profile, set_pet_avatar,
+search_places, draft_email, save_pet_profile_md, set_pet_avatar,
 introduce_product, set_language. search_places and set_language are
 deliberately not gated by `is_question` — asking "where's the nearest
 vet?" still needs a real search, not a text guess.
@@ -88,8 +88,8 @@ def detect(
         resolved_pets = resolve_pets(message, pets)
         for pet_id, pet_name in resolved_pets:
             actions.append(SuggestedAction(
-                tool_name="summarize_pet_profile",
-                arguments={"pet_id": pet_id},
+                tool_name="save_pet_profile_md",
+                arguments={"pet_id": pet_id, "show_card": True},
                 confidence=0.85,
                 confirm_description=t("confirm_summarize_profile", lang).format(pet_name=pet_name),
             ))

@@ -473,33 +473,6 @@ async def save_pet_profile_md(
     profile_md = arguments.get("profile_md", "").strip()
     if not profile_md:
         return {"success": False, "error": "Empty profile_md"}
-    if len(profile_md) > 3000:
-        return {"success": False, "error": "profile_md too long (max 3000 chars)"}
-
-    result = await db.execute(
-        select(Pet).where(Pet.id == pet_id, Pet.user_id == user_id)
-    )
-    pet = result.scalar_one_or_none()
-    if not pet:
-        return {"success": False, "error": "Pet not found"}
-
-    pet.profile_md = profile_md
-    await db.flush()
-
-    return {"success": True, "pet_id": str(pet.id), "pet_name": pet.name}
-
-
-@register_tool("summarize_pet_profile")
-async def summarize_pet_profile(
-    arguments: dict,
-    db: AsyncSession,
-    user_id: uuid.UUID,
-) -> dict:
-    """User-triggered: summarize and update the pet's profile document."""
-    pet_id = uuid.UUID(arguments["pet_id"])
-    profile_md = arguments.get("profile_md", "").strip()
-    if not profile_md:
-        return {"success": False, "error": "Empty profile_md"}
     if len(profile_md) > 5000:
         return {"success": False, "error": "profile_md too long (max 5000 chars)"}
 
@@ -513,17 +486,13 @@ async def summarize_pet_profile(
     pet.profile_md = profile_md
     await db.flush()
 
-    card = {
-        "type": "profile_summarized",
-        "pet_name": pet.name,
-    }
-
-    return {
-        "success": True,
-        "pet_id": str(pet.id),
-        "pet_name": pet.name,
-        "card": card,
-    }
+    out = {"success": True, "pet_id": str(pet.id), "pet_name": pet.name}
+    if arguments.get("show_card"):
+        out["card"] = {
+            "type": "profile_summarized",
+            "pet_name": pet.name,
+        }
+    return out
 
 
 @register_tool("list_pets")

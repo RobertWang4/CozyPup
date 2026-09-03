@@ -37,7 +37,6 @@ MUTATING_TOOLS_WITH_VERB_BYPASS = {
     "draft_email",
     "set_language",
     "save_pet_profile_md",
-    "summarize_pet_profile",
     "add_event_location",
     "upload_event_photo",
 }
@@ -105,10 +104,9 @@ _VERB_BYPASS_RULES: dict[str, re.Pattern] = {
     ),
     "save_pet_profile_md": re.compile(
         r"保存.*档案|整理.*档案|更新.*档案|总结.*档案|档案.*(?:保存|整理|更新)|"
-        r"save.*profile|organize.*profile|update.*profile"
-    ),
-    "summarize_pet_profile": re.compile(
-        r"总结|整理|汇总|生成.*报告|summarize|summary|generate.*report"
+        r"总结|整理|汇总|生成.*报告|"
+        r"save.*profile|organize.*profile|update.*profile|"
+        r"summarize|summary|generate.*report"
     ),
     "add_event_location": re.compile(
         # Generic recording verbs count (usually chained with event creation),
@@ -186,7 +184,7 @@ NUDGE_TOOLS = {
 # NOT in this set (require LLM to interpret results):
 #   query_calendar_events, search_places, get_place_details, get_directions,
 #   trigger_emergency, search_knowledge, list_reminders, draft_email,
-#   summarize_pet_profile, list_pets
+#   list_pets
 # Also excluded: plan, request_images (need continued loop execution)
 SKIP_ROUND2_TOOLS = {
     "create_calendar_event",

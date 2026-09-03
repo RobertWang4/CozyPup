@@ -1,4 +1,4 @@
-"""Unit tests for get_vaccine_schedule / get_deworming_schedule.
+"""Unit tests for the schedule services and the get_care_schedule tool.
 
 Uses an in-memory SQLite database with the two schedule tables created
 manually (mirroring the Alembic migration). Seeds a few representative
@@ -15,8 +15,7 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 from app.agents.tools.schedule import (
-    _tool_get_deworming_schedule,
-    _tool_get_vaccine_schedule,
+    _tool_get_care_schedule,
     get_deworming_schedule,
     get_vaccine_schedule,
 )
@@ -183,8 +182,8 @@ async def test_get_deworming_schedule_life_stage_filter():
 async def test_tool_wrapper_vaccine():
     db, engine = await _make_db()
     try:
-        result = await _tool_get_vaccine_schedule(
-            {"species": "dog", "age_weeks": 10}, db, uuid.uuid4()
+        result = await _tool_get_care_schedule(
+            {"kind": "vaccine", "species": "dog", "age_weeks": 10}, db, uuid.uuid4()
         )
         assert result["success"] is True
         assert isinstance(result["results"], list)
@@ -199,8 +198,8 @@ async def test_tool_wrapper_vaccine():
 async def test_tool_wrapper_deworming():
     db, engine = await _make_db()
     try:
-        result = await _tool_get_deworming_schedule(
-            {"species": "dog", "life_stage": "puppy_kitten"}, db, uuid.uuid4()
+        result = await _tool_get_care_schedule(
+            {"kind": "deworming", "species": "dog", "life_stage": "puppy_kitten"}, db, uuid.uuid4()
         )
         assert result["success"] is True
         assert len(result["results"]) == 1
@@ -218,5 +217,4 @@ async def test_tool_registered():
     from app.agents.tools.registry import get_registered_tools
 
     reg = get_registered_tools()
-    assert "get_vaccine_schedule" in reg
-    assert "get_deworming_schedule" in reg
+    assert "get_care_schedule" in reg

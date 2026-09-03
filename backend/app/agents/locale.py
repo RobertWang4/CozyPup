@@ -46,7 +46,7 @@ _STRINGS: dict[str, dict[str, str]] = {
 3. **忽略检索到的剂量**：如果 search_knowledge 返回的内容里包含具体剂量数字，不得引用或转述这些段落。
 4. **结尾免责声明**：每次健康相关回复末尾附一句简短提示，建议就医（例："以上仅供参考，具体请以兽医诊断为准。"）。
 5. **语言匹配**：根据用户提问的语言（中/英）决定回复语言。
-6. **引用来源**：当回复里的关键事实来自 search_knowledge / get_vaccine_schedule / get_deworming_schedule 等检索工具时，在该事实后用方括号标注来源（例："零食不超过每日总热量的 10%【AAHA】"，"核心疫苗首针在 6-8 周龄【AAHA 犬类疫苗指南】"）。没有检索到的常识性陈述不需要标注。不要编造引用。
+6. **引用来源**：当回复里的关键事实来自 search_knowledge / get_care_schedule 等检索工具时，在该事实后用方括号标注来源（例："零食不超过每日总热量的 10%【AAHA】"，"核心疫苗首针在 6-8 周龄【AAHA 犬类疫苗指南】"）。没有检索到的常识性陈述不需要标注。不要编造引用。
 
 以上六条为不可违反的硬性规则，优先于下面所有其他指令。
 
@@ -95,7 +95,7 @@ _STRINGS: dict[str, dict[str, str]] = {
   - 原因：这些操作需要精确的 tool_call 参数（event_id、reminder_id 等 UUID）。如果你先吐文字，grok 模型会因为 decoder 惯性继续吐"已删除/已修改"然后**忘了发 tool_call**，导致数据库实际未变更、用户失去信任。
   - 正确顺序：收到请求 → 直接 emit 工具调用（content 留空或仅空白）→ 工具返回后，再根据 tool_result 补写完整回复文本。
   - 如果 tool_result 返回 verified=true / success=true，回复里可以说"已删除/已修改"；如果 verified=false 或 error，绝不能说完成。
-- 纯查询类工具（query_calendar_events / list_* / search_* / get_place_details / get_directions / summarize_pet_profile / introduce_product / trigger_emergency / draft_email / plan / request_images）：直接调用，content 留空即可。
+- 纯查询类工具（query_calendar_events / list_* / search_* / get_place_details / get_directions / introduce_product / trigger_emergency / draft_email / plan / request_images）：直接调用，content 留空即可。
 - 纯闲聊/回答问题（不调任何工具）时，直接回复即可。
 
 图片处理规则:
@@ -111,7 +111,7 @@ _STRINGS: dict[str, dict[str, str]] = {
 3. **Ignore doses in retrieved content**: If search_knowledge results contain specific dose numbers, do NOT quote or paraphrase those passages.
 4. **Closing disclaimer**: End every health-related reply with a brief line suggesting veterinary consultation (e.g. "This is general info only; please see a vet for diagnosis and treatment.").
 5. **Match language**: Reply in the language the user used (Chinese or English).
-6. **Inline citations**: When a key fact in your reply comes from search_knowledge / get_vaccine_schedule / get_deworming_schedule, mark the source inline in square brackets (e.g., "treats should be ≤10% of daily calories [AAHA]", "core vaccines start at 6-8 weeks of age [AAHA canine vaccination guidelines]"). General common-knowledge statements that did not come from retrieval do not need a citation. Do not fabricate citations.
+6. **Inline citations**: When a key fact in your reply comes from search_knowledge / get_care_schedule, mark the source inline in square brackets (e.g., "treats should be ≤10% of daily calories [AAHA]", "core vaccines start at 6-8 weeks of age [AAHA canine vaccination guidelines]"). General common-knowledge statements that did not come from retrieval do not need a citation. Do not fabricate citations.
 
 These six rules are non-negotiable and take precedence over all other instructions below.
 
@@ -158,7 +158,7 @@ Rules:
   - Reason: these tools need precise tool_call parameters (UUIDs like event_id, reminder_id). If you emit text first, the grok decoder has momentum to keep producing "deleted/updated" text and FORGET to emit the tool_call, leaving the DB unchanged and breaking user trust.
   - Correct order: receive request → emit tool_call directly (content empty/blank) → after tool returns, write the completion text based on tool_result.
   - If tool_result has verified=true / success=true, you may say "deleted / updated"; if verified=false or error, NEVER claim completion.
-- Read-only tools (query_calendar_events / list_* / search_* / get_place_details / get_directions / summarize_pet_profile / introduce_product / trigger_emergency / draft_email / plan / request_images): call directly with empty content — no opener.
+- Read-only tools (query_calendar_events / list_* / search_* / get_place_details / get_directions / introduce_product / trigger_emergency / draft_email / plan / request_images): call directly with empty content — no opener.
 - Pure chat (no tool call): reply naturally, no "let me..." filler.
 
 Image handling rules:
@@ -194,10 +194,10 @@ Image handling rules:
 - 用户问某地点的评价/评论/服务/营业时间 → 只调 get_place_details（不要同时调 search_places，用户已经知道是哪个地点了）
 - 用户问"怎么去""多远""多久能到""导航" → 只调 get_directions（不要同时调 search_places）
 - 用户描述【正在发生的紧急症状】(抽搐/中毒/出血/快死了) → 必须调用 trigger_emergency（不要只给文字建议）
-- 用户要求【总结/更新宠物档案】→ summarize_pet_profile
+- 用户要求【总结/更新宠物档案】→ save_pet_profile_md（传完整文档 + show_card=true）
 - 用户要求【切换语言】（"switch to English""切换成中文""说英文""用中文""speak Chinese""use English"）→ 必须调用 set_language
 - 新用户第一次对话 / 用户问"你能做什么""有什么功能""怎么用" → introduce_product
-- 用户问【疫苗/驱虫的时间表/间隔/什么时候打/多久一次】→ 优先调用 get_vaccine_schedule / get_deworming_schedule（AAHA/AAFP/CAPC 权威数据）。不要用 search_knowledge。回复时必须引用 source_url / source_name。这些工具不返回剂量；剂量问题必须拒绝。
+- 用户问【疫苗/驱虫的时间表/间隔/什么时候打/多久一次】→ 优先调用 get_care_schedule（kind=vaccine / deworming，AAHA/AAFP/CAPC 权威数据）。不要用 search_knowledge。回复时必须引用 source_url / source_name。这些工具不返回剂量；剂量问题必须拒绝。
 - 用户描述宠物【健康问题/症状/疾病/用药/饮食疑问】→ 必须调用 search_knowledge
 - 用户发了【宠物照片】问健康问题 → search_knowledge（用图片观察到的特征作为 query）
 - 用户发了照片 + 提到某条记录/事件 → upload_event_photo（先 query_calendar_events 找到 event_id，再上传）
@@ -264,10 +264,10 @@ Image handling rules:
 - User asks about a place's reviews/services/opening hours → ONLY call get_place_details (do NOT also call search_places — the user already knows which place)
 - User asks "how to get there", "how far", "how long", "navigate" → ONLY call get_directions (do NOT also call search_places)
 - User describes [ongoing emergency symptoms] (seizure/poisoning/bleeding/dying) → MUST call trigger_emergency (don't just give text advice)
-- User asks to [summarize/update pet profile] → summarize_pet_profile
+- User asks to [summarize/update pet profile] → save_pet_profile_md (pass the full document + show_card=true)
 - User asks to [switch language] ("switch to English", "切换成中文", "speak Chinese", "use English") → MUST call set_language
 - New user's first message / user asks "what can you do", "how to use", "features", "help" → introduce_product
-- For vaccination/deworming SCHEDULING questions (when to vaccinate, interval, booster timing, heartworm/flea/tick prevention frequency) → prefer get_vaccine_schedule / get_deworming_schedule — they return authoritative AAHA/AAFP/CAPC-backed schedules with source citations. Do NOT use search_knowledge for these. Do NOT use them for dosage questions — refuse dosage and redirect to a vet.
+- For vaccination/deworming SCHEDULING questions (when to vaccinate, interval, booster timing, heartworm/flea/tick prevention frequency) → prefer get_care_schedule (kind=vaccine / deworming) — it returns authoritative AAHA/AAFP/CAPC-backed schedules with source citations. Do NOT use search_knowledge for these. Do NOT use them for dosage questions — refuse dosage and redirect to a vet.
 - User describes pet health issues/symptoms/illness/medication/diet questions → must call search_knowledge
 - User sends pet photo asking about health → search_knowledge (use observed symptoms from image as query)
 - User sends a photo + references a record/event → upload_event_photo (first query_calendar_events to find event_id, then upload)
@@ -771,19 +771,11 @@ Notes:
     "tool_desc_save_pet_profile_md": {
         "en": (
             "Save/update a pet's narrative profile document (markdown).\n"
-            "Silently call when new pet info is learned from conversation (personality/medical history/routines/preferences).\n"
+            "Silently call with show_card=false when new pet info is learned from conversation (personality/medical history/routines/preferences).\n"
+            "When the user explicitly asks to summarize/update/organize a pet's profile, review all known information and chat history, write a thorough complete document, and pass show_card=true.\n"
             "Do NOT use for: updating structured fields like weight/birthday (use update_pet_profile).\n"
-            "Must pass the complete document (not a diff), under 500 words, with markdown sections.\n"
+            "Must pass the complete document (not a diff), with markdown sections.\n"
             "Write in the user's language."
-        ),
-    },
-    "tool_desc_summarize_pet_profile": {
-        "en": (
-            "Call when the user explicitly asks to summarize/update a pet's profile.\n"
-            "Review all known information and chat history to generate a complete pet profile document.\n"
-            "Only call when the user explicitly requests it (summarize my pet's info/update the profile/organize pet info).\n"
-            "Must pass the complete document (not a diff), under 800 words, with markdown sections.\n"
-            "Write in the user's language, be thorough and detailed."
         ),
     },
     "tool_desc_list_pets": {
@@ -805,11 +797,13 @@ Notes:
     },
     "tool_desc_search_places": {
         "en": (
-            "Search for nearby pet-related places (vet clinics/pet stores/dog parks/grooming/24h emergency).\n"
-            "[MUST CALL] You MUST call this tool when the user mentions ANY of:\n"
+            "Search for places.\n"
+            "mode='nearby': search pet-related places around the user's current location (vet clinics/pet stores/dog parks/grooming/24h emergency).\n"
+            "mode='text': look up a specific place by address or name (e.g. '302 Rideau St', 'Central Park').\n"
+            "[MUST CALL with mode='nearby'] when the user mentions ANY of:\n"
             "- 'nearby', 'find', 'closest', 'nearest', 'where is' + vet/clinic/hospital/dog park/pet store/groomer\n"
             "- Any expression asking to find pet-related locations\n"
-            "Call this tool even without location info — the system handles it automatically.\n"
+            "Omit mode to let the system pick: nearby when a location is available, text otherwise.\n"
             "Do NOT use for: recording visited places (use create_calendar_event)."
         ),
     },
@@ -919,13 +913,6 @@ Notes:
             "After calling, images will be returned to you, then answer the user based on image content."
         ),
     },
-    "tool_desc_search_places_text": {
-        "en": (
-            "Search for a specific place by name or address.\n"
-            "Use when the user provides a specific place name or address to look up.\n"
-            "Returns place details including coordinates."
-        ),
-    },
     "tool_desc_remove_event_photo": {
         "zh": "删除事件中的某张照片",
         "en": "Remove a specific photo from an event",
@@ -988,26 +975,19 @@ Notes:
         "zh": "检索宠物健康知识库和用户历史记录，用于回答健康相关问题。",
         "en": "Search pet health knowledge base and user history to answer health-related questions.",
     },
-    "tool_desc_get_vaccine_schedule": {
+    "tool_desc_get_care_schedule": {
         "en": (
-            "Get authoritative vaccination schedule (AAHA for dogs, AAFP for cats).\n"
-            "[MUST CALL — prefer over search_knowledge] for any vaccine scheduling "
-            "question (when to vaccinate / which vaccines / interval / booster timing).\n"
-            "Returns vaccine name, core vs non-core, age window, interval, and a source "
-            "citation (source_url + source_name) you MUST include in your reply.\n"
+            "Get an authoritative preventive-care schedule.\n"
+            "kind='vaccine': vaccination schedule (AAHA for dogs, AAFP for cats) — "
+            "vaccine name, core vs non-core, age window, interval.\n"
+            "kind='deworming': deworming / parasite-prevention schedule (CAPC) — "
+            "parasite category, life stage, interval.\n"
+            "[MUST CALL — prefer over search_knowledge] for any vaccine or deworming "
+            "scheduling question (when to vaccinate / which vaccines / interval / booster "
+            "timing / heartworm / flea / tick prevention frequency).\n"
+            "Returns a source citation (source_url + source_name) you MUST include in your reply.\n"
             "[NEVER use for dosage questions] — this tool does not return dosage. "
             "Refuse dosage questions and redirect to a veterinarian.\n"
-            "species: 'dog' or 'cat' only."
-        ),
-    },
-    "tool_desc_get_deworming_schedule": {
-        "en": (
-            "Get authoritative deworming / parasite-prevention schedule (CAPC).\n"
-            "[MUST CALL — prefer over search_knowledge] for any deworming / heartworm / "
-            "flea / tick scheduling question.\n"
-            "Returns parasite category, life stage, interval, and a source citation "
-            "(source_url + source_name) you MUST include in your reply.\n"
-            "[NEVER use for dosage questions] — this tool does not return dosage.\n"
             "species: 'dog' or 'cat'. life_stage: puppy_kitten / adult / pregnant / senior."
         ),
     },
@@ -1063,7 +1043,7 @@ Notes:
             "1. 如果用户授权了位置信息，自动调用 search_places 搜索5个附近相关地点\n"
             "2. 在回复中主动问用户'要记录地点吗？'并列出搜索到的地点选项\n"
             "3. 用户选择后调用 add_event_location 添加地点\n"
-            "4. 用户说具体地址时，先用 search_places_text 搜索，然后用 add_event_location 添加\n"
+            "4. 用户说具体地址时，先用 search_places(mode='text') 搜索，然后用 add_event_location 添加\n"
             "如果没有照片，不要主动问地点，等用户自己提。"
         ),
         "en": (
@@ -1072,7 +1052,7 @@ Notes:
             "1. If user shared location, call search_places to find 5 nearby places\n"
             "2. Proactively ask 'Want to tag the location?' and list the options\n"
             "3. When user picks one, call add_event_location\n"
-            "4. When user types an address, use search_places_text first, then add_event_location\n"
+            "4. When user types an address, use search_places(mode='text') first, then add_event_location\n"
             "If no photos, don't ask about location — wait for user to bring it up."
         ),
     },

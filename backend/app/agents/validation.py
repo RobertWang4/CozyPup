@@ -150,7 +150,11 @@ def _validate_sync_calendar(args: dict) -> list[str]:
 
 @_register("search_places")
 def _validate_search_places(args: dict) -> list[str]:
-    return _check_required(args, ["query"])
+    errors = _check_required(args, ["query"])
+    mode = args.get("mode")
+    if mode is not None and mode not in {"nearby", "text"}:
+        args.pop("mode")
+    return errors
 
 
 @_register("get_place_details")
@@ -227,15 +231,16 @@ def _validate_save_pet_profile_md(args: dict) -> list[str]:
     errors = _check_required(args, ["pet_id", "profile_md"])
     errors += _check_uuid(args, "pet_id")
     md = args.get("profile_md", "")
-    if isinstance(md, str) and len(md) > 3000:
-        errors.append(f"profile_md too long: {len(md)} chars (max 3000)")
+    if isinstance(md, str) and len(md) > 5000:
+        errors.append(f"profile_md too long: {len(md)} chars (max 5000)")
     return errors
 
 
-@_register("summarize_pet_profile")
-def _validate_summarize_pet_profile(args: dict) -> list[str]:
-    errors = _check_required(args, ["pet_id"])
-    errors += _check_uuid(args, "pet_id")
+@_register("get_care_schedule")
+def _validate_get_care_schedule(args: dict) -> list[str]:
+    errors = _check_required(args, ["kind", "species"])
+    errors += _check_enum(args, "kind", {"vaccine", "deworming"}, "schedule kind")
+    errors += _check_enum(args, "species", {"dog", "cat"}, "species")
     return errors
 
 

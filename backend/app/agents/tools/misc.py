@@ -23,25 +23,27 @@ async def search_places(
     location: dict | None = None,
     **_kwargs,
 ) -> dict:
-    """Search for nearby places via Google Places API."""
-    if not location or "lat" not in location or "lng" not in location:
-        return {
-            "success": False,
-            "error": "No location available. Ask the user to share their location.",
-        }
-
+    """Search places — nearby the user, or by address/place name."""
     from app.services.places import places_service  # lazy import
 
     query = arguments["query"]
-    places = await places_service.search_nearby(
-        lat=location["lat"], lng=location["lng"], query=query
-    )
+    has_location = bool(location and "lat" in location and "lng" in location)
+    mode = arguments.get("mode") or ("nearby" if has_location else "text")
+    if mode == "nearby" and not has_location:
+        mode = "text"
+
+    if mode == "nearby":
+        places = await places_service.search_nearby(
+            lat=location["lat"], lng=location["lng"], query=query
+        )
+    else:
+        places = await places_service.search_text(query=query)
 
     if not places:
         return {
             "success": True,
             "places": [],
-            "message": f"No results found for '{query}' nearby.",
+            "message": f"No results found for '{query}'.",
         }
 
     # Build enriched place list
@@ -60,22 +62,23 @@ async def search_places(
         for p in places
     ]
 
-    # Enrich top 5 with distance/duration
-    top_n = min(5, len(places_for_card))
-    direction_tasks = [
-        places_service.get_directions(
-            origin_lat=location["lat"],
-            origin_lng=location["lng"],
-            dest_lat=p["lat"],
-            dest_lng=p["lng"],
-        )
-        for p in places_for_card[:top_n]
-    ]
-    directions = await asyncio.gather(*direction_tasks, return_exceptions=True)
-    for i, d in enumerate(directions):
-        if isinstance(d, dict):
-            places_for_card[i]["distance"] = d.get("distance")
-            places_for_card[i]["duration"] = d.get("duration")
+    # Enrich top 5 with distance/duration (needs the user's location)
+    if has_location:
+        top_n = min(5, len(places_for_card))
+        direction_tasks = [
+            places_service.get_directions(
+                origin_lat=location["lat"],
+                origin_lng=location["lng"],
+                dest_lat=p["lat"],
+                dest_lng=p["lng"],
+            )
+            for p in places_for_card[:top_n]
+        ]
+        directions = await asyncio.gather(*direction_tasks, return_exceptions=True)
+        for i, d in enumerate(directions):
+            if isinstance(d, dict):
+                places_for_card[i]["distance"] = d.get("distance")
+                places_for_card[i]["duration"] = d.get("duration")
 
     card = {
         "type": "place_card",
@@ -97,6 +100,7 @@ async def search_places(
 
     return {
         "success": True,
+        "places": places_for_card,
         "places_count": len(places_for_card),
         "top_results": top_results,
         "card": card,
@@ -175,35 +179,6 @@ async def sync_calendar(
         "card": {
             "type": "calendar_sync",
         },
-    }
-
-
-@register_tool("search_places_text")
-async def search_places_text(
-    arguments: dict,
-    db: AsyncSession,
-    user_id: uuid.UUID,
-    **_kwargs,
-) -> dict:
-    """Search for a place by text query (address or name)."""
-    query = arguments.get("query", "")
-    if not query:
-        return {"success": False, "error": "No query provided."}
-
-    from app.services.places import places_service
-    places = await places_service.search_text(query=query)
-
-    if not places:
-        return {
-            "success": True,
-            "places": [],
-            "message": f"No results found for '{query}'.",
-        }
-
-    return {
-        "success": True,
-        "places": places,
-        "places_count": len(places),
     }
 
 
