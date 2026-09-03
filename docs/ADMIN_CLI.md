@@ -333,6 +333,8 @@ Initial flag inventory:
 - `auth_dev_enabled` (bool) — gates `POST /api/v1/auth/dev`. Default `true` in dev, should be explicitly set to `false` in prod.
 - `chat_rate_limit_per_hour` (int) — override the default 30/hr in the rate-limit middleware.
 - `broadcast_banner` (object) — iOS app reads this from `GET /api/v1/flags/public` and shows a banner.
+- `billing_enabled` (bool) — default `false` (app is free). When false the `/chat` subscription gate, the family-invite Duo check and `require_active_subscription` are bypassed, and `/subscription/status` always returns `active` + `is_duo`. The iOS side mirrors this with `AppConfig.billingEnabled`.
+- `daily_chat_cap` (int) — global cap on `POST /chat` per UTC day across all users (default 2000, `0` disables). Cost guard while the app is free; returns 429 once hit.
 
 #### `admin ops cache flush --key <k>`
 Stub. Logs the request and returns `{"stub": true}`. When Redis is added later the command already has the shape; no CLI change needed.

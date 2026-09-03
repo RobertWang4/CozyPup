@@ -47,7 +47,7 @@ from app.agents.trace_collector import TraceCollector, INACTIVE_TRACE    # Debug
 from app.agents.tools import execute_tool                                # 工具执行器（用于 confirm-action 直接执行）
 from app.auth import get_current_user_id                                 # JWT 认证依赖，提取 user_id
 from app.debug.correlation import get_correlation_id                      # 当前请求的 correlation ID
-from app.middleware.subscription import require_active_subscription      # 订阅状态检查
+from app.middleware.subscription import require_active_subscription, billing_enabled  # 订阅状态检查
 from app.database import get_db                                          # 数据库会话依赖
 from app.models import Chat, ChatSession, MessageRole, Pet, User         # SQLAlchemy 数据模型
 from datetime import datetime, timedelta, timezone                       # Used for trial expiry check
@@ -678,7 +678,7 @@ async def chat(
     # --- Subscription gate (only blocks /chat — other endpoints remain free) ---
     user_q = await db.execute(select(User).where(User.id == user_id))
     user = user_q.scalar_one_or_none()
-    if user is not None and _is_subscription_expired(user):
+    if billing_enabled() and user is not None and _is_subscription_expired(user):
         await db.commit()  # persist any status flip from trial→expired
         lang = (request.language or "zh").lower()
         return EventSourceResponse(_upgrade_prompt_generator(lang))

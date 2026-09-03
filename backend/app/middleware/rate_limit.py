@@ -9,6 +9,9 @@ from starlette.middleware.base import BaseHTTPMiddleware
 MAX_MESSAGES_PER_HOUR = 30
 MAX_MESSAGE_LENGTH = 2000
 WINDOW_SECONDS = 3600
+# Global cap on LLM chats per UTC day across all users — a cost guard while the
+# app is free. Override with the `daily_chat_cap` flag; 0 disables the cap.
+DAILY_CHAT_CAP = 2000
 
 
 class _UserBucket:
@@ -48,6 +51,33 @@ def clear(user_key: str | None) -> int:
     return 0
 
 
+_daily: dict[str, int] = {"day": "", "count": 0}
+
+
+def reset_daily_counter() -> None:
+    _daily["day"] = ""
+    _daily["count"] = 0
+
+
+def _daily_cap_reached() -> bool:
+    """Increment today's global counter; True if the cap is already hit."""
+    try:
+        from app.flags import get_int_flag
+        cap = get_int_flag("daily_chat_cap", default=DAILY_CHAT_CAP)
+    except Exception:
+        cap = DAILY_CHAT_CAP
+    if cap <= 0:
+        return False
+    today = time.strftime("%Y-%m-%d", time.gmtime())
+    if _daily["day"] != today:
+        _daily["day"] = today
+        _daily["count"] = 0
+    if _daily["count"] >= cap:
+        return True
+    _daily["count"] += 1
+    return False
+
+
 def current_limit_per_hour() -> int:
     """Read the chat_rate_limit_per_hour flag, falling back to the constant."""
     try:
@@ -85,6 +115,13 @@ class ChatRateLimitMiddleware(BaseHTTPMiddleware):
                     status_code=status.HTTP_429_TOO_MANY_REQUESTS,
                     detail="Rate limit exceeded",
                     headers={"Retry-After": str(bucket.retry_after())},
+                )
+
+            if _daily_cap_reached():
+                raise HTTPException(
+                    status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                    detail="Daily chat capacity reached, please try again tomorrow",
+                    headers={"Retry-After": "3600"},
                 )
 
         return await call_next(request)

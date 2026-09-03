@@ -9,6 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.auth import get_current_user_id
 from app.config import settings
 from app.database import get_db
+from app.middleware.subscription import billing_enabled
 from app.models import User, Chat, CalendarEvent, Reminder
 from app.schemas.subscription import (
     SubscriptionStatusResponse,
@@ -50,6 +51,16 @@ async def get_status(
 ):
     result = await db.execute(select(User).where(User.id == user_id))
     user = result.scalar_one()
+
+    if not billing_enabled():
+        # Free mode: everyone is a full (duo) member.
+        return SubscriptionStatusResponse(
+            status="active",
+            trial_days_left=None,
+            expires_at=None,
+            product_id=user.subscription_product_id,
+            is_duo=True,
+        )
 
     status, days_left = _compute_status(user)
 

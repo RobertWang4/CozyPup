@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.auth import get_current_user_id
 from app.config import settings
 from app.database import get_db
+from app.middleware.subscription import billing_enabled
 from app.models import User, FamilyInvite
 from app.schemas.family import (
     FamilyInviteRequest,
@@ -107,7 +108,7 @@ async def invite_partner(
     result = await db.execute(select(User).where(User.id == user_id))
     user = result.scalar_one()
 
-    if not _is_duo_product(user.subscription_product_id):
+    if billing_enabled() and not _is_duo_product(user.subscription_product_id):
         raise HTTPException(400, detail="Duo plan required to invite a partner")
 
     if user.family_role == "payer":

@@ -14,6 +14,16 @@ from app.database import Base, get_db
 from app.main import app
 from app.routers.subscription import _compute_status, TRIAL_DAYS
 from app.models import User
+from app import flags as _flags
+
+
+@pytest.fixture(autouse=True)
+def _billing_on():
+    """Existing tests exercise the paid gate, so force billing_enabled=True.
+    Tests for the free mode override it to False inside the test body."""
+    _flags._set_in_cache("billing_enabled", True)
+    yield
+    _flags._cache.pop("billing_enabled", None)
 
 
 def _fake_jws_payload(
@@ -491,5 +501,60 @@ class TestVerifyActivatesSubscription:
                 json={"message": "hello", "session_id": None},
             )
             assert "upgrade_prompt" not in chat_resp.text
+        finally:
+            app.dependency_overrides.clear()
+
+
+class TestBillingDisabled:
+    """billing_enabled=False (the default) turns the app fully free."""
+
+    @pytest.mark.asyncio
+    async def test_expired_user_is_not_gated_on_chat(self, _db):
+        _flags._set_in_cache("billing_enabled", False)
+        user = await _create_user(_db, status="expired")
+        client = _http_client(_db, user.id)
+        try:
+            response = client.post(
+                "/api/v1/chat",
+                json={"message": "hello", "session_id": None},
+            )
+            assert "upgrade_prompt" not in response.text
+        finally:
+            app.dependency_overrides.clear()
+
+    @pytest.mark.asyncio
+    async def test_status_reports_active_duo(self, _db):
+        _flags._set_in_cache("billing_enabled", False)
+        user = await _create_user(_db, status="expired")
+        client = _http_client(_db, user.id)
+        try:
+            response = client.get("/api/v1/subscription/status")
+            assert response.status_code == 200
+            body = response.json()
+            assert body["status"] == "active"
+            assert body["is_duo"] is True
+            assert body["trial_days_left"] is None
+        finally:
+            app.dependency_overrides.clear()
+
+    @pytest.mark.asyncio
+    async def test_family_invite_without_duo_product(self, _db):
+        _flags._set_in_cache("billing_enabled", False)
+        user = await _create_user(_db, status="active")
+        client = _http_client(_db, user.id)
+        try:
+            response = client.post("/api/v1/family/invite", json={})
+            assert response.status_code == 200, response.text
+            assert response.json()["status"] == "pending"
+        finally:
+            app.dependency_overrides.clear()
+
+    @pytest.mark.asyncio
+    async def test_family_invite_still_gated_when_billing_on(self, _db):
+        user = await _create_user(_db, status="active")
+        client = _http_client(_db, user.id)
+        try:
+            response = client.post("/api/v1/family/invite", json={})
+            assert response.status_code == 400
         finally:
             app.dependency_overrides.clear()
