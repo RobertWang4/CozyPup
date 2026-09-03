@@ -14,6 +14,34 @@ from .correlation import get_correlation_id, get_user_id
 
 _logger = logging.getLogger("cozypup.trace")
 
+# Cloud Logging caps a single entry at 256 KB; leave headroom for the envelope.
+TRACE_MAX_CHARS = 200_000
+
+
+def messages_for_trace(messages: list[dict], max_chars: int = TRACE_MAX_CHARS) -> list[dict] | dict:
+    """Return a loggable copy of the full LLM `messages` array.
+
+    Inline images (multimodal content parts) are replaced with a placeholder
+    so base64 blobs never reach the logs. If the result would still exceed
+    `max_chars`, a small truncation marker is returned instead.
+    """
+    out: list[dict] = []
+    for m in messages:
+        content = m.get("content")
+        if isinstance(content, list):
+            content = [
+                {"type": "image_url", "image_url": "<omitted>"}
+                if isinstance(part, dict) and part.get("type") == "image_url"
+                else part
+                for part in content
+            ]
+            m = {**m, "content": content}
+        out.append(m)
+    size = len(json.dumps(out, ensure_ascii=False, default=str))
+    if size > max_chars:
+        return {"_truncated": True, "_size": size, "message_count": len(messages)}
+    return out
+
 
 def trace_log(
     log_type: str,

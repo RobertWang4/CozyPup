@@ -92,3 +92,6 @@ docs/superpowers/
 .DS_Store
 backend/supabase/
 screenshots/
+
+# exported chat traces (scripts/export_traces.py)
+backend/traces/

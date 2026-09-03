@@ -723,7 +723,7 @@ async def run_orchestrator(
     Streams tokens via on_token and cards via on_card. The returned
     OrchestratorResult also contains the aggregate state.
     """
-    from app.debug.trace_logger import trace_log
+    from app.debug.trace_logger import trace_log, messages_for_trace
 
     lang = kwargs.pop("lang", "zh")
     result = OrchestratorResult()
@@ -822,6 +822,10 @@ async def run_orchestrator(
                 {"role": m["role"], "content": (m.get("content") or "")[:200]}
                 for m in messages[-3:]
             ],
+            # Full prompt (system + history + user) on round 0 so a trace can be
+            # replayed offline; later rounds only append tool results, which
+            # tool_result entries already carry in full.
+            **({"messages": messages_for_trace(messages)} if round_num == 0 else {}),
         })
 
         # Log LLM response

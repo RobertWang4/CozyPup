@@ -96,6 +96,14 @@ Full reference: [`docs/ADMIN_CLI.md`](docs/ADMIN_CLI.md) (also ships an `<!-- ai
 
 **Trace logging**: Always-on structured JSON logs at every pipeline step (chat_request → llm_request → llm_response → tool_call → tool_result → chat_response). Written to `cozypup.trace` logger → stdout → Cloud Logging. Each entry carries `correlation_id` and `user_id` from ContextVars. Admin routes additionally leave rows in `admin_audit_log` for every write.
 
+`llm_request` round 0 carries the full `messages` array (system prompt + history + user turn, images replaced by a placeholder) so any trace can be replayed offline. Cloud Logging keeps 30 days; the sink `cozypup-trace-sink` copies every `cozypup.trace` entry permanently to `gs://cozypup-traces`. To get per-session JSONL files for eval work:
+
+```bash
+cd backend
+python scripts/export_traces.py                          # gs://cozypup-traces → ./traces/<user_id>/<session_id>.jsonl
+python scripts/export_traces.py --source logging --since 30d   # straight from Cloud Logging (pre-sink data)
+```
+
 ## Architecture
 
 ### Backend (FastAPI)
