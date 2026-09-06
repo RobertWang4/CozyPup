@@ -20,30 +20,54 @@ from app.memory.context_builder import build_memory_context
 from app.routers.chat import _user_today
 
 
-# 1. memory timeout must roll back the shared session ------------------------
+# 1. memory retrieval must never touch the request session --------------------
+#
+# 2026-09-06: the earlier fix rolled back the shared session on timeout. A
+# rollback expires every loaded ORM object, so building the system prompt
+# right after it raised MissingGreenlet on `pet.name`. Retrieval now runs on
+# its own session; the request session is neither used nor rolled back.
+
+class _FakeSessionFactory:
+    def __init__(self):
+        self.sessions = []
+
+    def __call__(self):
+        session = AsyncMock()
+        self.sessions.append(session)
+        return session
+
 
 @pytest.mark.asyncio
-async def test_memory_timeout_rolls_back_session():
+async def test_memory_timeout_leaves_request_session_alone():
     db = AsyncMock()
+    factory = _FakeSessionFactory()
+    seen = []
 
     async def slow_retrieve(**kwargs):
+        seen.append(kwargs["db"])
         await asyncio.sleep(1)
 
     await build_memory_context(
         message="hi", db=db, user_id="u", retrieve=slow_retrieve, timeout_ms=10,
+        session_factory=factory,
     )
-    db.rollback.assert_awaited_once()
+    db.rollback.assert_not_awaited()
+    assert seen and seen[0] is not db
+    assert seen[0] is factory.sessions[0].__aenter__.return_value
 
 
 @pytest.mark.asyncio
-async def test_memory_error_rolls_back_session():
+async def test_memory_error_leaves_request_session_alone():
     db = AsyncMock()
 
     async def bad_retrieve(**kwargs):
         raise RuntimeError("boom")
 
-    await build_memory_context(message="hi", db=db, user_id="u", retrieve=bad_retrieve)
-    db.rollback.assert_awaited_once()
+    await build_memory_context(
+        message="hi", db=db, user_id="u", retrieve=bad_retrieve,
+        session_factory=_FakeSessionFactory(),
+    )
+    db.rollback.assert_not_awaited()
 
 
 @pytest.mark.asyncio

@@ -43,21 +43,31 @@ async def build_memory_context(
     include_knowledge: bool = True,
     retrieve: RetrieveFn = retrieve_memweaver_context,
     timeout_ms: int | None = 250,
+    session_factory: Callable[[], Any] | None = None,
 ) -> RetrievedContext:
     if not message.strip() or db is None or user_id is None:
         return RetrievedContext()
 
     pet_id, species = _single_pet_hint(pets)
 
+    # Retrieval runs on its OWN session, never the request's. A timeout cancels
+    # the query mid-flight; rolling back the shared session to recover would
+    # expire every ORM object already loaded for the turn (pets, chat session),
+    # and the next attribute access outside greenlet context raised
+    # MissingGreenlet — every new user's first message failed this way.
+    if session_factory is None:
+        from app.database import async_session as session_factory
+
     async def _retrieve() -> RetrievedContext:
-        return await retrieve(
-            query=message,
-            db=db,
-            user_id=user_id,
-            pet_id=pet_id,
-            species=species,
-            include_knowledge=include_knowledge,
-        )
+        async with session_factory() as own_db:
+            return await retrieve(
+                query=message,
+                db=own_db,
+                user_id=user_id,
+                pet_id=pet_id,
+                species=species,
+                include_knowledge=include_knowledge,
+            )
 
     try:
         if timeout_ms is None:
@@ -68,14 +78,4 @@ async def build_memory_context(
         logger.info("memory_context_build_timeout", extra={"timeout_ms": timeout_ms})
     except Exception as exc:
         logger.warning("memory_context_build_error", extra={"error": str(exc)[:200]})
-
-    # The retrieval shares the request's AsyncSession. A cancelled/failed query
-    # leaves that session in an invalid transaction and every later tool call
-    # fails with "Can't reconnect until invalid transaction is rolled back".
-    rollback = getattr(db, "rollback", None)
-    if rollback is not None:
-        try:
-            await rollback()
-        except Exception as exc:
-            logger.warning("memory_context_rollback_error", extra={"error": str(exc)[:200]})
     return RetrievedContext()
