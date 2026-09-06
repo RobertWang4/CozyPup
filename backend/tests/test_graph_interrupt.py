@@ -333,3 +333,13 @@ def test_checkpoint_freshness_window():
     )
     assert not _checkpoint_is_fresh(SimpleNamespace(created_at=None))
     assert not _checkpoint_is_fresh(SimpleNamespace(created_at="not-a-date"))
+
+
+def test_make_pool_constructs_without_connecting():
+    # psycopg's default min_size (4) exceeds our max_size (3); the pool must
+    # be constructible with open=False — this caught a startup failure on the
+    # real DB that mocked tests missed.
+    from app.agents.checkpointer import make_pool
+
+    pool = make_pool()
+    assert pool.min_size == 1 and pool.max_size == 3

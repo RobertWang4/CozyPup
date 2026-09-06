@@ -73,6 +73,24 @@ def _psycopg_dsn() -> str:
     return url
 
 
+def make_pool():
+    """Unopened `AsyncConnectionPool` for the checkpointer.
+
+    Supabase session pooler on 5432: connections are scarce (hence a 1..3
+    pool — psycopg's default min_size of 4 would exceed max_size) but
+    prepared statements are fine.
+    """
+    from psycopg_pool import AsyncConnectionPool
+
+    return AsyncConnectionPool(
+        conninfo=_psycopg_dsn(),
+        min_size=1,
+        max_size=3,
+        open=False,
+        kwargs={"autocommit": True, "prepare_threshold": 0},
+    )
+
+
 async def setup_checkpointer() -> None:
     """Open the pool and create the checkpoint tables. Never raises."""
     global _saver, _pool
@@ -80,16 +98,8 @@ async def setup_checkpointer() -> None:
         return
     try:
         from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
-        from psycopg_pool import AsyncConnectionPool
 
-        # Supabase session pooler on 5432: connections are scarce (hence
-        # max_size=3) but prepared statements are fine.
-        pool = AsyncConnectionPool(
-            conninfo=_psycopg_dsn(),
-            max_size=3,
-            open=False,
-            kwargs={"autocommit": True, "prepare_threshold": 0},
-        )
+        pool = make_pool()
         await pool.open(wait=True, timeout=10)
         saver = AsyncPostgresSaver(pool, serde=RedactingSerializer())
         await saver.setup()
