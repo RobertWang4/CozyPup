@@ -6,18 +6,29 @@ call the orchestrator's existing helpers rather than reimplementing them:
     prepare   → seed messages + pushback preamble
     model     → micro_compact + vision switch + _stream_completion
     tools     → dispatch_tool per tool_call (+ image injection, skip_round2);
-                calls needing user confirmation are deferred, not executed
+                calls needing user confirmation are deferred, not executed —
+                they get a `waiting_confirm` tool message so the next model
+                round can use the other tools' results and tell the user to
+                tap the card
     confirm   → interrupt() on one deferred call; on resume execute it
     review    → plan nag → write-claim nag → nudge
     finalize  → text assembly, fabrication guard, empty-reply fallback
+
+The confirm gate fires at the END of the turn, never mid-round: a deferred
+call forces one more model round (exactly like the old loop's
+`_can_skip_round2 == False` path), and only where the turn would otherwise
+finalize does the graph interrupt. So SSE order is tokens/thinking/other
+cards … then the confirm card last, and `finalize` runs exactly once per
+turn — after the resume.
 
 Edges (MAX_ROUNDS is checked on both back-edges, round increments in `model`):
 
     START → prepare → model
     model → tools (tool_calls) | review (no tool_calls)
-    tools → confirm (deferred) | finalize (skip_round2 or round cap) | model
+    tools → model | confirm (deferred + round cap)
+          | finalize (skip_round2 or round cap, no deferred)
+    review → model (retry, round cap) | confirm (deferred) | finalize
     confirm → confirm (more deferred) | model (tool errored) | finalize
-    review → model (retry, round cap) | finalize
     finalize → END
 
 Streaming: token / thinking / card events are pushed from inside the nodes via
@@ -396,8 +407,11 @@ async def tools_node(state: AgentState, config: RunnableConfig) -> dict:
 
         # Confirm gate: park the call for the `confirm` node instead of
         # executing it (or, for update_pet_profile, park the locked-field
-        # re-run). The tool message is appended by `confirm` once the user
-        # has answered, so nothing here has to be undone on resume.
+        # re-run). The card is emitted by `confirm` at the end of the turn;
+        # here the call only gets the same `waiting_confirm` tool message the
+        # old loop appended, so the next model round sees a response for every
+        # tool_call_id (the LLM API rejects the request otherwise) and knows
+        # to tell the user to tap the card instead of claiming a write.
         confirm_card = tool_result.get("_confirm_card")
         if confirm_card is not None:
             deferred.append({
@@ -407,6 +421,17 @@ async def tools_node(state: AgentState, config: RunnableConfig) -> dict:
                 "tool_call_id": tc["id"],
             })
             result.confirm_cards.append(confirm_card)
+            _append({
+                "role": "tool",
+                "tool_call_id": tc["id"],
+                "content": json.dumps({
+                    "status": "waiting_confirm",
+                    "executed": False,
+                    "db_changed": False,
+                    "instruction_for_assistant": t("confirm_pending", lang),
+                    "description": confirm_card.get("message", ""),
+                }, ensure_ascii=False),
+            })
             continue
 
         # Strip internal markers (keys starting with _) before serialising
@@ -435,7 +460,12 @@ async def tools_node(state: AgentState, config: RunnableConfig) -> dict:
     # --- Skip Round 2: if all tools are simple CRUD and succeeded,
     # use the LLM's Round 1 streaming text as the final response.
     # This saves ~8000 prompt tokens per skipped round. ---
-    skip = _can_skip_round2(tool_calls, tool_results_map, result, round_text)
+    # A deferred call always forces one more model round, so skip_round2 is
+    # not consulted at all in that case.
+    skip = (
+        False if deferred
+        else _can_skip_round2(tool_calls, tool_results_map, result, round_text)
+    )
     if skip:
         trace.record("skip_round2", {
             "round": round_num,
@@ -455,7 +485,9 @@ async def tools_node(state: AgentState, config: RunnableConfig) -> dict:
         "tools_executed": result.tools_executed,
         "plan_steps": result.plan_steps,
         "skip_round2": skip,
-        "deferred_confirms": deferred,
+        # No reducer on this key (confirm pops from the front), so carry over
+        # anything a previous round parked.
+        "deferred_confirms": list(state.get("deferred_confirms") or []) + deferred,
     }
 
 
@@ -520,19 +552,37 @@ async def confirm_node(state: AgentState, config: RunnableConfig) -> dict:
             "arguments_keys": list(entry["arguments"].keys()),
         })
 
-    serializable = {k: v for k, v in tool_result.items() if not k.startswith("_")}
+    # `tools` already answered this tool_call_id with `waiting_confirm`, so a
+    # second tool message would duplicate it. The normal path never calls the
+    # model again, so it appends nothing; only the error path (which routes
+    # back to `model` once) leaves a plain user-role note explaining what
+    # happened.
+    errored = bool(tool_result.get("error"))
+    new_messages: list[dict] = []
+    if errored:
+        serializable = {k: v for k, v in tool_result.items() if not k.startswith("_")}
+        payload = json.dumps(serializable, ensure_ascii=False, default=str)
+        desc = entry["card"].get("message", "") or entry["tool_name"]
+        if state["lang"] == "zh":
+            note = (
+                f"用户已点击确认，但操作「{desc}」执行失败：{payload}。"
+                "请如实告诉用户没有成功，不要说「已完成」。"
+            )
+        else:
+            note = (
+                f'The user confirmed, but the action "{desc}" failed: {payload}. '
+                "Tell the user honestly that it did not go through — do not say it succeeded."
+            )
+        new_messages.append({"role": "user", "content": note})
+
     return {
-        "messages": [{
-            "role": "tool",
-            "tool_call_id": entry["tool_call_id"],
-            "content": json.dumps(serializable, ensure_ascii=False, default=str),
-        }],
+        "messages": new_messages,
         "deferred_confirms": rest,
         "cards": result.cards,
         "tools_called": result.tools_called,
         "tools_executed": result.tools_executed,
         "resumed": True,
-        "confirm_error": bool(tool_result.get("error")),
+        "confirm_error": errored,
         "confirm_success": bool(tool_result.get("success", not tool_result.get("error"))),
         "confirm_reentrant": reentrant,
     }
@@ -720,9 +770,13 @@ def _after_model(state: AgentState) -> str:
 
 
 def _after_tools(state: AgentState) -> str:
+    at_cap = state["round"] >= MAX_ROUNDS
     if state.get("deferred_confirms"):
-        return "confirm"
-    if state.get("skip_round2") or state["round"] >= MAX_ROUNDS:
+        # Deferred calls always buy one more model round (the old loop's
+        # `_can_skip_round2 == False` path) so the LLM can use the other
+        # tools' results; the card is shown at the end of the turn.
+        return "confirm" if at_cap else "model"
+    if state.get("skip_round2") or at_cap:
         return "finalize"
     return "model"
 
@@ -741,6 +795,11 @@ def _after_confirm(state: AgentState) -> str:
 def _after_review(state: AgentState) -> str:
     if state.get("retry") and state["round"] < MAX_ROUNDS:
         return "model"
+    # The turn is otherwise over — show the confirm card(s) now, so the user
+    # gets the model's text first and the card last. `finalize` runs after
+    # the resume, exactly once per turn.
+    if state.get("deferred_confirms"):
+        return "confirm"
     return "finalize"
 
 
@@ -758,7 +817,7 @@ def build_graph(checkpointer=None):
     builder.add_conditional_edges("model", _after_model, ["tools", "review"])
     builder.add_conditional_edges("tools", _after_tools, ["confirm", "model", "finalize"])
     builder.add_conditional_edges("confirm", _after_confirm, ["confirm", "model", "finalize"])
-    builder.add_conditional_edges("review", _after_review, ["model", "finalize"])
+    builder.add_conditional_edges("review", _after_review, ["model", "confirm", "finalize"])
     builder.add_edge("finalize", END)
     return builder.compile(checkpointer=checkpointer)
 
@@ -924,12 +983,12 @@ async def stream_agent(
             yield ("sse", chunk)
         else:
             _accumulate(acc, chunk)
-            # The confirm node paused: `finalize` will not run this turn, so
-            # settle the reply text here. The old loop fed the LLM a
-            # `waiting_confirm` tool result and let it say "tap the card";
-            # that round is gone (interrupt stops the graph), so if the model
-            # said nothing before the tool call, send a fixed prompt instead —
-            # deterministic, and it can't fabricate "已记录".
+            # The confirm node paused: `finalize` only runs after the resume,
+            # so settle the reply text here. The extra model round (fed the
+            # `waiting_confirm` tool result, as in the old loop) normally
+            # produces the "tap the card" line itself; the fixed prompt below
+            # is just a safety net for a turn where the model said nothing at
+            # all — deterministic, and it can't fabricate "已记录".
             interrupt_cards = _interrupt_cards(chunk)
             if interrupt_cards:
                 text = "".join(acc["text_parts"]).strip()
