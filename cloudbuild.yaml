@@ -30,33 +30,21 @@ steps:
       - 'push'
       - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_CLF_IMAGE}:$COMMIT_SHA'
 
-  # Deploy to Cloud Run: backend (ingress) + clf sidecar on localhost:8081.
-  # Existing env vars / secrets on the backend container are preserved by `deploy`.
+  # Deploy to Cloud Run: backend (ingress, port 8080) + clf sidecar on localhost:8081.
+  # The live spec is exported, patched (nano/serve/patch_service.py) and replaced, so every
+  # env var / secret stays exactly as deployed. `gcloud run deploy --container` cannot be used:
+  # the original container is unnamed and the flag adds a second ingress container instead.
   # Routing stays on keywords until the `emergency_clf_mode` flag is moved off `shadow`.
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-    entrypoint: gcloud
+    entrypoint: bash
     args:
-      - 'run'
-      - 'deploy'
-      - '${_SERVICE}'
-      - '--region=${_REGION}'
-      - '--platform=managed'
-      - '--allow-unauthenticated'
-      - '--timeout=120'
-      - '--min-instances=0'
-      - '--max-instances=3'
-      - '--container=backend'
-      - '--image=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_IMAGE}:$COMMIT_SHA'
-      - '--port=8000'
-      - '--memory=512Mi'
-      - '--cpu=1'
-      - '--update-env-vars=EMERGENCY_CLF_URL=http://127.0.0.1:8081'
-      - '--depends-on=clf'
-      - '--container=clf'
-      - '--image=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_CLF_IMAGE}:$COMMIT_SHA'
-      - '--memory=1Gi'
-      - '--cpu=1'
-      - '--startup-probe=httpGet.path=/health,httpGet.port=8081,initialDelaySeconds=2,periodSeconds=2,failureThreshold=60'
+      - '-ec'
+      - |
+        gcloud run services describe ${_SERVICE} --region=${_REGION} --format=json > /workspace/svc.json
+        python3 backend/nano/serve/patch_service.py /workspace/svc.json \
+          ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_IMAGE}:$COMMIT_SHA \
+          ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_CLF_IMAGE}:$COMMIT_SHA > /workspace/svc-new.json
+        gcloud run services replace /workspace/svc-new.json --region=${_REGION}
 
 substitutions:
   _REGION: northamerica-northeast1
