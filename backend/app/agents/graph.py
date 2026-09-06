@@ -91,9 +91,8 @@ class AgentState(TypedDict, total=False):
     # Request context (read-only)
     lang: str
     today: str
-    pets: list | None
+    pets: list[dict] | None
     location: dict | None
-    images: list[str] | None
     image_urls: list[str] | None
     recent_image_urls: list[str] | None
     suggested_actions: list
@@ -132,6 +131,23 @@ def _latest_user_has_images(messages: list[dict]) -> bool:
                 )
             return False
     return False
+
+
+def _pet_to_dict(pet: Any) -> dict:
+    """Flatten an ORM Pet into the plain dict the graph carries in state.
+
+    Downstream of the graph only `id` / `name` / `species` are read
+    (tool_guards, describe_tool_call, lookup_event_info) — the system prompt
+    is still built from the ORM objects before the graph starts.
+    """
+    if isinstance(pet, dict):
+        return pet
+    species = getattr(pet, "species", None)
+    return {
+        "id": str(getattr(pet, "id", "")),
+        "name": getattr(pet, "name", "") or "",
+        "species": str(getattr(species, "value", species) or ""),
+    }
 
 
 def _round_result(state: AgentState) -> OrchestratorResult:
@@ -310,7 +326,7 @@ async def tools_node(state: AgentState, config: RunnableConfig) -> dict:
 
         tool_result = await dispatch_tool(
             tc, cfg["db"], cfg["user_id"], cfg["session_id"], result, _emit_card, lang,
-            pets=state.get("pets"), images=state.get("images"),
+            pets=state.get("pets"), images=cfg.get("images"),
             image_urls=state.get("image_urls"),
             recent_image_urls=state.get("recent_image_urls"),
             location=state.get("location"), _messages=history,
@@ -669,9 +685,8 @@ async def stream_agent(
         "response_text": "",
         "lang": lang,
         "today": today,
-        "pets": pets,
+        "pets": [_pet_to_dict(p) for p in pets] if pets else pets,
         "location": location,
-        "images": images,
         "image_urls": image_urls,
         "recent_image_urls": recent_image_urls,
         "suggested_actions": suggested_actions or [],
@@ -684,6 +699,10 @@ async def stream_agent(
             "trace": trace,
             "model": use_model,
             "vision_model": settings.vision_model or use_model,
+            # Per-request, read-only, and large — kept out of the state so a
+            # checkpoint never stores raw base64. (The multimodal user message
+            # `_inject_images` appends still carries the bytes; see Phase 2b.)
+            "images": images,
         },
         "recursion_limit": 4 * MAX_ROUNDS + 10,
     }
