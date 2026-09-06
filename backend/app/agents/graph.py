@@ -67,7 +67,7 @@ class AgentState(TypedDict, total=False):
     # Conversation
     system_prompt: str
     context_messages: list[dict]
-    messages: list[dict]          # full list, mutated + returned by the nodes
+    messages: Annotated[list[dict], add]   # append-only; nodes return their delta
     round: int
     # Last round's model output (consumed by tools / review)
     round_text: str
@@ -187,12 +187,17 @@ async def model_node(state: AgentState, config: RunnableConfig) -> dict:
     trace = cfg["trace"]
     lang = state["lang"]
     use_model = cfg["model"]
-    messages = state["messages"]
     round_num = state["round"]
 
     # Compress older tool_result payloads to save prompt tokens — keep
-    # only the most recent round's full results.
+    # only the most recent round's full results. `messages` in state is
+    # append-only, so compaction runs on a local copy; the bytes the LLM
+    # sees are identical to compacting in place, because micro_compact
+    # re-derives each summary from the original content and skips anything
+    # already under 200 chars.
+    messages = state["messages"]
     if round_num > 0:
+        messages = [dict(m) for m in messages]
         micro_compact(messages)
 
     # Switch to vision model when images are in the last user message
@@ -248,7 +253,6 @@ async def model_node(state: AgentState, config: RunnableConfig) -> dict:
     })
 
     return {
-        "messages": messages,
         "round": round_num + 1,
         "round_text": round_text,
         "tool_calls": tool_calls,
@@ -263,18 +267,25 @@ async def tools_node(state: AgentState, config: RunnableConfig) -> dict:
     cfg = config["configurable"]
     trace = cfg["trace"]
     lang = state["lang"]
-    messages = state["messages"]
     round_text = state["round_text"]
     tool_calls = state["tool_calls"]
     round_num = state["round"] - 1     # `model` already advanced the counter
     result = _round_result(state)
 
-    assistant_msg = {
+    # `history` is the live view tools read (`_messages`); `new_messages`
+    # is the delta the reducer concatenates onto state.
+    history = list(state["messages"])
+    new_messages: list[dict] = []
+
+    def _append(msg: dict) -> None:
+        history.append(msg)
+        new_messages.append(msg)
+
+    _append({
         "role": "assistant",
         "content": round_text or None,
         "tool_calls": tool_calls,
-    }
-    messages.append(assistant_msg)
+    })
 
     # If introduce_product is among the tool calls, skip all other tools
     # (LLM sometimes incorrectly records events when user is just asking about features)
@@ -302,7 +313,7 @@ async def tools_node(state: AgentState, config: RunnableConfig) -> dict:
             pets=state.get("pets"), images=state.get("images"),
             image_urls=state.get("image_urls"),
             recent_image_urls=state.get("recent_image_urls"),
-            location=state.get("location"), _messages=messages,
+            location=state.get("location"), _messages=history,
         )
 
         tool_results_map[tc_name] = tool_result
@@ -340,7 +351,7 @@ async def tools_node(state: AgentState, config: RunnableConfig) -> dict:
         # Strip internal markers (keys starting with _) before serialising
         # back to the LLM — those are private to the orchestrator.
         serializable = {k: v for k, v in tool_result.items() if not k.startswith("_")}
-        messages.append({
+        _append({
             "role": "tool",
             "tool_call_id": tc["id"],
             "content": json.dumps(serializable, ensure_ascii=False, default=str),
@@ -358,7 +369,7 @@ async def tools_node(state: AgentState, config: RunnableConfig) -> dict:
                     "type": "image_url",
                     "image_url": {"url": f"data:image/jpeg;base64,{img_b64}"},
                 })
-            messages.append({"role": "user", "content": image_content})
+            _append({"role": "user", "content": image_content})
 
     # --- Skip Round 2: if all tools are simple CRUD and succeeded,
     # use the LLM's Round 1 streaming text as the final response.
@@ -375,7 +386,7 @@ async def tools_node(state: AgentState, config: RunnableConfig) -> dict:
         })
 
     return {
-        "messages": messages,
+        "messages": new_messages,
         "text_parts": [round_text],
         "cards": result.cards,
         "confirm_cards": result.confirm_cards,
@@ -390,9 +401,9 @@ def review_node(state: AgentState, config: RunnableConfig) -> dict:
     """No tool_calls this round — decide: plan nag → write-claim nag → nudge → exit."""
     trace = config["configurable"]["trace"]
     lang = state["lang"]
-    messages = state["messages"]
     round_text = state["round_text"]
     round_num = state["round"] - 1
+    new_messages: list[dict] = []
     tools_called = state.get("tools_called") or set()
     plan_steps = state.get("plan_steps") or []
 
@@ -417,15 +428,15 @@ def review_node(state: AgentState, config: RunnableConfig) -> dict:
             # Preserve last round's text so the nag message reads
             # naturally in the conversation history the LLM sees.
             if round_text:
-                messages.append({"role": "assistant", "content": round_text})
+                new_messages.append({"role": "assistant", "content": round_text})
             step_list = "\n".join(f"- [{s['id']}] {s['action']} → {s['tool']}" for s in missing_steps)
             if lang == "zh":
                 nag = f"你的 plan 还有未完成的步骤:\n{step_list}\n请立即调用对应的工具完成这些步骤。"
             else:
                 nag = f"Your plan has unfinished steps:\n{step_list}\nPlease call the corresponding tools now."
-            messages.append({"role": "user", "content": nag})
+            new_messages.append({"role": "user", "content": nag})
             return {
-                "messages": messages,
+                "messages": new_messages,
                 "text_parts": [round_text],
                 "plan_nag_used": True,
                 "retry": True,
@@ -448,11 +459,11 @@ def review_node(state: AgentState, config: RunnableConfig) -> dict:
                 "round": round_num,
                 "tools_called": list(tools_called),
             })
-            _inject_write_claim_nag(messages, round_text, lang)
+            _inject_write_claim_nag(new_messages, round_text, lang)
             # Drop the fabricated text (never enters text_parts) so the final
             # response reflects the real (next-round) outcome.
             return {
-                "messages": messages,
+                "messages": new_messages,
                 "write_claim_nag_used": True,
                 "retry": True,
             }
@@ -471,9 +482,9 @@ def review_node(state: AgentState, config: RunnableConfig) -> dict:
                 "round": round_num,
                 "missed_tools": [a.tool_name for a in missed],
             })
-            _inject_nudge(messages, round_text, missed, lang)
+            _inject_nudge(new_messages, round_text, missed, lang)
             return {
-                "messages": messages,
+                "messages": new_messages,
                 "text_parts": [round_text],
                 "nudge_used": True,
                 "retry": True,
