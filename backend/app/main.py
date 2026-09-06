@@ -104,6 +104,19 @@ async def _fix_avatar_urls():
 
 
 @app.on_event("startup")
+async def _open_checkpointer():
+    """Postgres checkpointer for the agent graph's confirm interrupts."""
+    from app.agents.checkpointer import setup_checkpointer
+    await setup_checkpointer()
+
+
+@app.on_event("shutdown")
+async def _close_checkpointer():
+    from app.agents.checkpointer import close_checkpointer
+    await close_checkpointer()
+
+
+@app.on_event("startup")
 async def _start_flag_refresher():
     import asyncio
     from app.flags import run_refresher

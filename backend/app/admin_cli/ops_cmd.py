@@ -1,4 +1,4 @@
-"""`admin ops ratelimit / session / flags / cache` commands."""
+"""`admin ops ratelimit / session / flags / cache / checkpoints` commands."""
 from __future__ import annotations
 
 import json
@@ -189,3 +189,33 @@ def cache_flush_cmd(key, reason, env, as_json):
         emit_json(envelope.data, audit_id=envelope.audit_id, env=envelope.env)
     else:
         emit_table("Cache flush (stub)", [("key", key), ("audit_id", envelope.audit_id)])
+
+
+@ops_group.group("checkpoints")
+def _ckpt_group():
+    """Agent-graph checkpoint maintenance."""
+    pass
+
+
+@_ckpt_group.command("prune")
+@click.option("--before", required=True, help="e.g. 7d")
+@click.option("--reason", required=True)
+@click.option("--yes", is_flag=True, help="Skip confirmation")
+@click.option("--env", type=click.Choice(["prod", "dev"]), default=None)
+@click.option("--json", "as_json", is_flag=True)
+def ckpt_prune_cmd(before, reason, yes, env, as_json):
+    if not yes:
+        click.confirm(f"Really prune checkpoint threads older than {before}?", abort=True)
+    c = _client(env)
+    try:
+        envelope = c.post("/admin/ops/checkpoints/prune", {"reason": reason, "before": before})
+    except AdminClientError as e:
+        die(str(e))
+    if as_json:
+        emit_json(envelope.data, audit_id=envelope.audit_id, env=envelope.env)
+    else:
+        emit_table("Pruned", [
+            ("threads_deleted", envelope.data.get("deleted")),
+            ("before", envelope.data.get("before")),
+            ("audit_id", envelope.audit_id),
+        ])

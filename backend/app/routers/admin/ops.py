@@ -1,4 +1,5 @@
-"""Admin ops routes: ratelimit clear, session revoke, feature flags, cache flush."""
+"""Admin ops routes: ratelimit clear, session revoke, feature flags, cache flush,
+checkpoint prune."""
 from __future__ import annotations
 
 import uuid
@@ -48,6 +49,11 @@ class _SessionRevokeBody(BaseModel):
 class _CacheFlushBody(BaseModel):
     reason: str
     key: str
+
+
+class _CheckpointPruneBody(BaseModel):
+    reason: str
+    before: str  # e.g. "7d"
 
 
 @ops_router.post("/ratelimit/clear")
@@ -160,3 +166,22 @@ async def cache_flush(
     db: AsyncSession = Depends(get_db),
 ):
     return {"key": body.key, "stub": True, "notes": "no named cache layer wired yet"}
+
+
+@ops_router.post("/checkpoints/prune")
+@audit_write(action="ops.checkpoints.prune", target_type="checkpoints")
+async def checkpoints_prune(
+    body: _CheckpointPruneBody,
+    ctx: AdminContext = Depends(require_admin),
+    db: AsyncSession = Depends(get_db),
+):
+    """Drop agent-graph checkpoint threads whose last write predates the cutoff."""
+    from app.agents.checkpointer import prune_checkpoints
+    from .observability import _since_to_timedelta
+
+    older_than = _since_to_timedelta(body.before)
+    try:
+        deleted = await prune_checkpoints(older_than)
+    except RuntimeError as exc:
+        raise HTTPException(status_code=503, detail=str(exc))
+    return {"deleted": deleted, "before": body.before}
