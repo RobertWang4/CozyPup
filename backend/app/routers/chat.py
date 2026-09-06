@@ -619,7 +619,7 @@ async def _event_generator(
         session_id=session_id,
         lang=lang,
         tools_called=result.tools_called,
-        keyword_emergency=bool(keyword_result.detected),
+        keyword_emergency=bool(emergency_result.detected),
         client_version=client_version,
     )
 
