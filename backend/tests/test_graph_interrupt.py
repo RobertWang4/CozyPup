@@ -165,7 +165,7 @@ async def test_sse_event_order_across_confirm(monkeypatch):
     monkeypatch.setattr(graph_mod, "dispatch_tool", _dispatch)
 
     graph = build_graph(InMemorySaver())
-    sse = []
+    sse, result = [], None
     async for kind, payload in stream_agent(
         graph=graph, system_prompt="SYS",
         context_messages=[{"role": "user", "content": "删掉洗澡"}],
@@ -173,11 +173,18 @@ async def test_sse_event_order_across_confirm(monkeypatch):
     ):
         if kind == "sse":
             sse.append(payload)
+        else:
+            result = payload
 
-    assert [(e["event"], e["data"].get("type") or e["data"].get("tool")) for e in sse] == [
+    # The model said nothing before the tool call and the interrupt stops the
+    # graph before any further LLM round, so a fixed "tap the card" line is
+    # streamed ahead of the card and becomes the saved reply text.
+    assert [(e["event"], e["data"].get("type") or e["data"].get("tool") or e["data"].get("text")) for e in sse] == [
         ("thinking", "delete_calendar_event"),
+        ("token", "请在上方卡片点「确认」，我再帮你执行～"),
         ("card", "confirm_action"),
     ]
+    assert result.response_text == "请在上方卡片点「确认」，我再帮你执行～"
 
     async def _exec(invocation, context, **kwargs):
         card = {"type": "record_deleted"}
@@ -343,3 +350,27 @@ def test_make_pool_constructs_without_connecting():
 
     pool = make_pool()
     assert pool.min_size == 1 and pool.max_size == 3
+
+
+@pytest.mark.asyncio
+async def test_interrupt_keeps_model_text_when_present(monkeypatch):
+    """If the model spoke before the confirmable call, no synthetic prompt is added."""
+    monkeypatch.setattr(graph_mod, "_stream_completion", _fake_stream([("好的，这就帮你删～", [
+        _tc("delete_calendar_event", {"event_id": "e1"}, 0),
+    ])]))
+    monkeypatch.setattr(
+        graph_mod, "dispatch_tool", _counting_dispatch({}, confirm_tools=("delete_calendar_event",)),
+    )
+    graph = build_graph(InMemorySaver())
+    sse, result = [], None
+    async for kind, payload in stream_agent(
+        graph=graph, system_prompt="SYS",
+        context_messages=[{"role": "user", "content": "删掉洗澡"}],
+        db=None, user_id="u1", session_id="s1", thread_id="u1:corr-text",
+    ):
+        if kind == "sse":
+            sse.append(payload)
+        else:
+            result = payload
+    assert [e["event"] for e in sse] == ["token", "card"]
+    assert result.response_text == "好的，这就帮你删～"

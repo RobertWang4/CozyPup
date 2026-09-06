@@ -663,6 +663,10 @@ Notes:
         "zh": "已发送确认卡片给用户，等待用户确认后执行。",
         "en": "Confirm card sent to user, waiting for user confirmation before executing.",
     },
+    "confirm_card_prompt": {
+        "zh": "请在上方卡片点「确认」，我再帮你执行～",
+        "en": "Tap Confirm on the card above and I'll take care of it.",
+    },
 
     "confirm_record_for_pet": {
         "zh": "为{pet_name}记录 {category}（{date}）",

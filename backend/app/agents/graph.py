@@ -800,7 +800,7 @@ def _interrupt_cards(chunk: Any) -> list[dict]:
 
 # `updates` chunks carry per-node deltas, so the accumulator has to re-apply
 # the same reducers AgentState declares.
-_ACC_ADD = ("cards", "confirm_cards", "prompt_tokens", "completion_tokens")
+_ACC_ADD = ("cards", "confirm_cards", "prompt_tokens", "completion_tokens", "text_parts")
 _ACC_UNION = ("tools_called", "tools_executed")
 _ACC_LAST = ("plan_steps", "response_text")
 
@@ -914,6 +914,7 @@ async def stream_agent(
         "plan_steps": [],
         "prompt_tokens": 0,
         "completion_tokens": 0,
+        "text_parts": [],
         "response_text": "",
     }
     async for mode, chunk in (graph or get_graph()).astream(
@@ -922,11 +923,22 @@ async def stream_agent(
         if mode == "custom":
             yield ("sse", chunk)
         else:
-            # The confirm node paused: surface its card exactly as `on_card`
-            # would have, then let the stream end normally.
-            for card in _interrupt_cards(chunk):
-                yield ("sse", {"event": "card", "data": card})
             _accumulate(acc, chunk)
+            # The confirm node paused: `finalize` will not run this turn, so
+            # settle the reply text here. The old loop fed the LLM a
+            # `waiting_confirm` tool result and let it say "tap the card";
+            # that round is gone (interrupt stops the graph), so if the model
+            # said nothing before the tool call, send a fixed prompt instead —
+            # deterministic, and it can't fabricate "已记录".
+            interrupt_cards = _interrupt_cards(chunk)
+            if interrupt_cards:
+                text = "".join(acc["text_parts"]).strip()
+                if not text:
+                    text = t("confirm_card_prompt", lang)
+                    yield ("sse", {"event": "token", "data": {"text": text}})
+                acc["response_text"] = text
+            for card in interrupt_cards:
+                yield ("sse", {"event": "card", "data": card})
 
     result = OrchestratorResult(
         response_text=acc["response_text"],
