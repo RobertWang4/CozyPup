@@ -40,14 +40,13 @@ from app.agents.emergency_router import classify_emergency, render_for_user  # �
 from app.agents.engine import AgentEngine, AgentRunInput
 from app.agents.locale import detect_language                            # 语言检测（中/英）
 from app.agents.orchestrator import OrchestratorResult                   # 统一 Agent Loop
-from app.agents.pending_actions import pop_action                        # 待确认动作的存取（用于 confirm-action）
 from app.agents.post_processor import execute_suggested_actions           # 后处理：最终兜底执行
 from app.agents.pre_processing import pre_process                        # 预处理：从用户消息中预分析可能的工具调用
 from app.agents.trace_collector import TraceCollector, INACTIVE_TRACE    # Debug trace 收集器
-from app.agents.tools import execute_tool                                # 工具执行器（用于 confirm-action 直接执行）
 from app.auth import get_current_user_id                                 # JWT 认证依赖，提取 user_id
 from app.debug.correlation import get_correlation_id                      # 当前请求的 correlation ID
 from app.middleware.subscription import require_active_subscription, billing_enabled  # 订阅状态检查
+from app.config import settings                                           # 模型名等运行配置
 from app.database import get_db                                          # 数据库会话依赖
 from app.models import Chat, ChatSession, MessageRole, Pet, User         # SQLAlchemy 数据模型
 from datetime import datetime, timedelta, timezone                       # Used for trial expiry check
@@ -620,7 +619,7 @@ async def _event_generator(
         session_id=session_id,
         lang=lang,
         tools_called=result.tools_called,
-        keyword_emergency=bool(emergency_result.detected),
+        keyword_emergency=bool(keyword_result.detected),
         client_version=client_version,
     )
 
@@ -741,59 +740,94 @@ async def confirm_action(
     使用场景：LLM 返回了一个需要用户确认的动作（如删除宠物、修改记录），
     前端显示 ConfirmActionCard，用户点击"确认"后调用此端点。
 
-    关键设计：不涉及 LLM — 直接从数据库中取出预存的工具名和参数，执行即可。
-    这样既快速又确定性，不会出现 LLM 二次理解偏差。
+    实现：action_id 就是那一轮 graph 的 thread_id。这里用
+    `Command(resume=True)` 从 checkpoint 恢复被 interrupt 挂起的 confirm
+    节点，工具在图内执行；正常情况下直接进 finalize，不再调 LLM。
+    响应形态与旧版一致：{success, card, message}。
     """
-    # 从 pending_actions 表中取出并删除该动作（pop 语义，防止重复执行）
-    action = await pop_action(db, request.action_id, str(user_id))
-    if not action:
+    from langgraph.types import Command
+    from app.agents.checkpointer import get_checkpointer
+    from app.agents.graph import get_graph
+
+    saver = get_checkpointer()
+    if saver is None:
+        raise HTTPException(status_code=503, detail="Confirmations are temporarily unavailable")
+
+    thread_id = request.action_id or ""
+    if not thread_id.startswith(f"{user_id}:"):
         raise HTTPException(status_code=404, detail="Action not found or expired")
 
+    graph = get_graph(saver)
+    config = {
+        "configurable": {
+            "thread_id": thread_id,
+            "db": db,
+            "user_id": user_id,
+            "trace": INACTIVE_TRACE,
+            "model": settings.model,
+            "vision_model": settings.vision_model or settings.model,
+            "images": None,
+        },
+    }
+    snapshot = await graph.aget_state(config)
+    values = getattr(snapshot, "values", None) or {}
+    deferred = values.get("deferred_confirms") or []
+    if not deferred or not _checkpoint_is_fresh(snapshot):
+        raise HTTPException(status_code=404, detail="Action not found or expired")
+
+    description = deferred[0]["card"].get("message", "")
+    config["configurable"]["session_id"] = values.get("session_id") or ""
+
+    cards: list[dict] = []
+    node_update: dict = {}
     try:
-        # 直接执行工具（绕过 LLM，使用预存的参数）
-        # User already tapped confirm — force-lock any lockable fields so
-        # update_pet_profile doesn't loop back into another confirm card.
-        args = dict(action.arguments)
-        if action.tool_name == "update_pet_profile":
-            args.setdefault("_force_lock", True)
-        result = await execute_tool(
-            action.tool_name, args, db, user_id,
-        )
-        await db.commit()
+        async for mode, chunk in graph.astream(
+            Command(resume=True), config, stream_mode=["custom", "updates"]
+        ):
+            if mode == "custom":
+                if chunk.get("event") == "card":
+                    cards.append(chunk["data"])
+            elif isinstance(chunk, dict) and isinstance(chunk.get("confirm"), dict):
+                node_update = chunk["confirm"]
     except Exception as exc:
         logger.error("confirm_action_error", extra={
-            "action_id": str(action.id),
-            "tool": action.tool_name,
+            "action_id": thread_id,
+            "tool": deferred[0].get("tool_name"),
             "error": str(exc)[:200],
         })
         raise HTTPException(status_code=500, detail=str(exc))
 
-    # 防御：确认后工具不应再返回 needs_confirm — 出现就是 bug（例如忘了注入
-    # _force_lock 导致 update_pet_profile 又回到确认分支）。打错误日志而不是
-    # 静默返回"成功"欺骗前端。
-    if result.get("needs_confirm"):
-        logger.error("confirm_action_reentrant_needs_confirm", extra={
-            "action_id": str(action.id),
-            "tool": action.tool_name,
-            "arguments_keys": list(action.arguments.keys()),
-        })
+    if node_update.get("confirm_reentrant"):
         raise HTTPException(
             status_code=500,
             detail="Tool returned needs_confirm after confirmation — pipeline bug",
         )
 
-    # 将确认执行的结果保存为助手消息（这样用户回看历史时能看到）
-    session_id = action.session_id
-    card = result.get("card")
-    cards_json = json.dumps([card]) if card else None
-    await _save_message(
-        db, session_id, user_id, MessageRole.assistant,
-        action.description,
-        cards_json,
-    )
+    card = cards[0] if cards else None
+    session_id = config["configurable"]["session_id"]
+    if session_id:
+        await _save_message(
+            db, uuid.UUID(str(session_id)), user_id, MessageRole.assistant,
+            description,
+            json.dumps([card]) if card else None,
+        )
 
     return {
-        "success": result.get("success", True),
+        "success": bool(node_update.get("confirm_success", True)),
         "card": card,
-        "message": action.description,
+        "message": description,
     }
+
+
+def _checkpoint_is_fresh(snapshot, max_age: timedelta = timedelta(hours=1)) -> bool:
+    """Interrupts older than an hour are stale — same window the old pending-actions table had."""
+    created_at = getattr(snapshot, "created_at", None)
+    if not created_at:
+        return False
+    try:
+        ts = datetime.fromisoformat(str(created_at).replace("Z", "+00:00"))
+    except ValueError:
+        return False
+    if ts.tzinfo is None:
+        ts = ts.replace(tzinfo=timezone.utc)
+    return datetime.now(timezone.utc) - ts <= max_age
