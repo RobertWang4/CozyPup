@@ -11,6 +11,7 @@ import time
 from dataclasses import dataclass, field
 from typing import Any, AsyncIterator, Awaitable, Callable
 
+from app.agents.checkpointer import get_checkpointer
 from app.agents.constants import maybe_await
 from app.agents.graph import get_graph, stream_agent
 from app.agents.orchestrator import run_orchestrator
@@ -32,8 +33,11 @@ class AgentRunInput:
 
 
 class AgentEngine:
-    def __init__(self):
-        self.graph = get_graph()
+    def __init__(self, checkpointer=None):
+        # No checkpointer configured (tests, harness, or a failed Postgres
+        # setup) → `get_graph` falls back to an in-process saver so the graph
+        # still runs; only cross-request resume is unavailable.
+        self.graph = get_graph(checkpointer or get_checkpointer())
 
     async def astream(
         self,

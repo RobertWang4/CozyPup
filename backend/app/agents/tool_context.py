@@ -20,3 +20,4 @@ class ToolDispatchContext:
     recent_image_urls: list[str] | None = None
     location: dict[str, Any] | None = None
     messages: list[dict[str, Any]] = field(default_factory=list)
+    confirm_action_id: str = ""   # graph thread id, stamped onto confirm cards

@@ -7,7 +7,6 @@ from collections.abc import Awaitable, Callable
 from typing import Any
 
 from app.agents.constants import maybe_await
-from app.agents.pending_actions import store_action
 from app.agents.tool_context import ToolDispatchContext
 from app.agents.tool_invocation import ToolInvocation
 from app.agents.tool_memory import sync_tool_memory
@@ -19,7 +18,6 @@ logger = logging.getLogger(__name__)
 
 ValidateFn = Callable[[str, dict], list[str]]
 ExecuteFn = Callable[..., Awaitable[dict[str, Any]]]
-StoreActionFn = Callable[..., Awaitable[str]]
 MemorySyncFn = Callable[[ToolInvocation, dict[str, Any]], None]
 
 
@@ -29,7 +27,6 @@ async def handle_tool_execution(
     *,
     validate: ValidateFn = validate_tool_args,
     execute: ExecuteFn = execute_tool,
-    store_pending_action: StoreActionFn = store_action,
     sync_memory: MemorySyncFn = sync_tool_memory,
 ) -> dict[str, Any]:
     """Validate, execute, commit, sync memory, and emit post-execution cards."""
@@ -73,23 +70,18 @@ async def handle_tool_execution(
 
     sync_memory(invocation, tool_result)
 
+    # The tool itself asked for confirmation (update_pet_profile's lockable
+    # fields). Hand the card + the deferred call back to the graph's confirm
+    # node under private keys; nothing is emitted or stored here.
     if tool_result.get("needs_confirm") and context.session_id:
-        confirm_tool = tool_result.get("confirm_tool", fn_name)
-        confirm_args = tool_result.get("confirm_arguments", fn_args)
         confirm_desc = tool_result.get("confirm_description", f"确认执行 {fn_name}")
-        action_id = await store_pending_action(
-            db=context.db,
-            user_id=str(context.user_id),
-            session_id=str(context.session_id),
-            tool_name=confirm_tool,
-            arguments=confirm_args,
-            description=confirm_desc,
-        )
-        card = {"type": "confirm_action", "action_id": action_id, "message": confirm_desc}
-        if context.result is not None:
-            context.result.confirm_cards.append(card)
-        if context.on_card:
-            await maybe_await(context.on_card, card)
+        tool_result["_confirm_card"] = {
+            "type": "confirm_action",
+            "action_id": context.confirm_action_id,
+            "message": confirm_desc,
+        }
+        tool_result["_confirm_tool"] = tool_result.get("confirm_tool", fn_name)
+        tool_result["_confirm_arguments"] = tool_result.get("confirm_arguments", fn_args)
         return tool_result
 
     card = tool_result.get("card")

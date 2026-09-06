@@ -5,7 +5,9 @@ call the orchestrator's existing helpers rather than reimplementing them:
 
     prepare   → seed messages + pushback preamble
     model     → micro_compact + vision switch + _stream_completion
-    tools     → dispatch_tool per tool_call (+ image injection, skip_round2)
+    tools     → dispatch_tool per tool_call (+ image injection, skip_round2);
+                calls needing user confirmation are deferred, not executed
+    confirm   → interrupt() on one deferred call; on resume execute it
     review    → plan nag → write-claim nag → nudge
     finalize  → text assembly, fabrication guard, empty-reply fallback
 
@@ -13,7 +15,8 @@ Edges (MAX_ROUNDS is checked on both back-edges, round increments in `model`):
 
     START → prepare → model
     model → tools (tool_calls) | review (no tool_calls)
-    tools → finalize (skip_round2 or round cap) | model
+    tools → confirm (deferred) | finalize (skip_round2 or round cap) | model
+    confirm → confirm (more deferred) | model (tool errored) | finalize
     review → model (retry, round cap) | finalize
     finalize → END
 
@@ -30,12 +33,15 @@ from __future__ import annotations
 import json
 import logging
 import re
+import uuid
 from operator import add
 from typing import Annotated, Any, AsyncIterator, TypedDict
 
 from langchain_core.runnables import RunnableConfig
+from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.config import get_stream_writer
 from langgraph.graph import END, START, StateGraph
+from langgraph.types import interrupt
 
 from app.agents.locale import t
 from app.agents.micro_compact import micro_compact
@@ -53,7 +59,11 @@ from app.agents.orchestrator import (
     _WRITE_TOOLS,
     dispatch_tool,
 )
+from app.agents.tool_context import ToolDispatchContext
+from app.agents.tool_execution import handle_tool_execution
+from app.agents.tool_invocation import ToolInvocation
 from app.agents.trace_collector import INACTIVE_TRACE
+from app.debug.correlation import get_correlation_id
 from app.config import settings
 
 logger = logging.getLogger(__name__)
@@ -79,6 +89,12 @@ class AgentState(TypedDict, total=False):
     plan_steps: list[dict]
     retry: bool
     skip_round2: bool
+    # Confirm gate: calls parked for `interrupt()`, consumed one at a time
+    deferred_confirms: list[dict]
+    resumed: bool
+    confirm_error: bool
+    confirm_success: bool
+    confirm_reentrant: bool
     # Results
     text_parts: Annotated[list[str], add]
     cards: Annotated[list[dict], add]
@@ -90,6 +106,7 @@ class AgentState(TypedDict, total=False):
     response_text: str
     # Request context (read-only)
     lang: str
+    session_id: str
     today: str
     pets: list[dict] | None
     location: dict | None
@@ -321,6 +338,7 @@ async def tools_node(state: AgentState, config: RunnableConfig) -> dict:
         tool_calls = [tc for tc in tool_calls if tc["function"]["name"] == "introduce_product"]
 
     tool_results_map = {}  # tc_name → tool_result for skip_round2 check
+    deferred: list[dict] = []
     for tc in tool_calls:
         tc_name = tc["function"]["name"]
         tc_args_str = tc["function"]["arguments"]
@@ -341,6 +359,7 @@ async def tools_node(state: AgentState, config: RunnableConfig) -> dict:
             image_urls=state.get("image_urls"),
             recent_image_urls=state.get("recent_image_urls"),
             location=state.get("location"), _messages=history,
+            confirm_action_id=cfg.get("thread_id", ""),
         )
 
         tool_results_map[tc_name] = tool_result
@@ -374,6 +393,21 @@ async def tools_node(state: AgentState, config: RunnableConfig) -> dict:
             "error": tool_result.get("error"),
             "result_keys": list(tool_result.keys()),
         })
+
+        # Confirm gate: park the call for the `confirm` node instead of
+        # executing it (or, for update_pet_profile, park the locked-field
+        # re-run). The tool message is appended by `confirm` once the user
+        # has answered, so nothing here has to be undone on resume.
+        confirm_card = tool_result.get("_confirm_card")
+        if confirm_card is not None:
+            deferred.append({
+                "card": confirm_card,
+                "tool_name": tool_result.get("_confirm_tool", tc_name),
+                "arguments": tool_result.get("_confirm_arguments", json.loads(tc_args_str or "{}")),
+                "tool_call_id": tc["id"],
+            })
+            result.confirm_cards.append(confirm_card)
+            continue
 
         # Strip internal markers (keys starting with _) before serialising
         # back to the LLM — those are private to the orchestrator.
@@ -421,6 +455,86 @@ async def tools_node(state: AgentState, config: RunnableConfig) -> dict:
         "tools_executed": result.tools_executed,
         "plan_steps": result.plan_steps,
         "skip_round2": skip,
+        "deferred_confirms": deferred,
+    }
+
+
+async def confirm_node(state: AgentState, config: RunnableConfig) -> dict:
+    """Pause on one deferred tool call until the user answers the card.
+
+    LangGraph re-runs this node from the top when the run is resumed, so
+    everything above `interrupt()` must stay side-effect free — it is: the
+    card was already built (and checkpointed) by `tools`. Everything below
+    runs exactly once, on the resume pass.
+    """
+    cfg = config["configurable"]
+    trace = cfg["trace"]
+    deferred = list(state.get("deferred_confirms") or [])
+    entry, rest = deferred[0], deferred[1:]
+
+    trace.record("interrupt", {
+        "tool": entry["tool_name"],
+        "action_id": entry["card"].get("action_id", ""),
+    })
+    approved = interrupt(entry["card"])
+
+    # --- resume path only ---
+    trace.record("resume", {"tool": entry["tool_name"], "approved": approved is True})
+
+    result = _round_result(state)
+    if approved is not True:
+        tool_result = {"status": "cancelled", "executed": False}
+    else:
+        args = dict(entry["arguments"])
+        # The user already tapped confirm — force-lock the lockable fields so
+        # update_pet_profile doesn't bounce back into another confirm card.
+        if entry["tool_name"] == "update_pet_profile":
+            args.setdefault("_force_lock", True)
+        result.tools_called.add(entry["tool_name"])
+        tool_result = await handle_tool_execution(
+            ToolInvocation(id=entry["tool_call_id"], name=entry["tool_name"], arguments=args),
+            ToolDispatchContext(
+                db=cfg["db"],
+                user_id=cfg["user_id"],
+                session_id=cfg["session_id"],
+                result=result,
+                on_card=_emit_card,
+                lang=state["lang"],
+                pets=state.get("pets"),
+                images=cfg.get("images"),
+                image_urls=state.get("image_urls"),
+                recent_image_urls=state.get("recent_image_urls"),
+                location=state.get("location"),
+                confirm_action_id=entry["card"].get("action_id", ""),
+            ),
+        )
+
+    # Defensive: after a confirmed run the tool must not ask again (a missing
+    # _force_lock would loop update_pet_profile back into a card). Surface it
+    # instead of telling the client "success".
+    reentrant = bool(tool_result.get("needs_confirm"))
+    if reentrant:
+        logger.error("confirm_action_reentrant_needs_confirm", extra={
+            "action_id": entry["card"].get("action_id", ""),
+            "tool": entry["tool_name"],
+            "arguments_keys": list(entry["arguments"].keys()),
+        })
+
+    serializable = {k: v for k, v in tool_result.items() if not k.startswith("_")}
+    return {
+        "messages": [{
+            "role": "tool",
+            "tool_call_id": entry["tool_call_id"],
+            "content": json.dumps(serializable, ensure_ascii=False, default=str),
+        }],
+        "deferred_confirms": rest,
+        "cards": result.cards,
+        "tools_called": result.tools_called,
+        "tools_executed": result.tools_executed,
+        "resumed": True,
+        "confirm_error": bool(tool_result.get("error")),
+        "confirm_success": bool(tool_result.get("success", not tool_result.get("error"))),
+        "confirm_reentrant": reentrant,
     }
 
 
@@ -606,9 +720,22 @@ def _after_model(state: AgentState) -> str:
 
 
 def _after_tools(state: AgentState) -> str:
+    if state.get("deferred_confirms"):
+        return "confirm"
     if state.get("skip_round2") or state["round"] >= MAX_ROUNDS:
         return "finalize"
     return "model"
+
+
+def _after_confirm(state: AgentState) -> str:
+    if state.get("deferred_confirms"):
+        return "confirm"
+    # Straight to finalize: the user already saw the card and only gets the
+    # executed tool's card back, so a second model round buys nothing. The
+    # one exception is a failure the user needs explained.
+    if state.get("confirm_error") and state["round"] < MAX_ROUNDS:
+        return "model"
+    return "finalize"
 
 
 def _after_review(state: AgentState) -> str:
@@ -617,37 +744,59 @@ def _after_review(state: AgentState) -> str:
     return "finalize"
 
 
-def build_graph():
+def build_graph(checkpointer=None):
     builder = StateGraph(AgentState)
     builder.add_node("prepare", prepare_node)
     builder.add_node("model", model_node)
     builder.add_node("tools", tools_node)
+    builder.add_node("confirm", confirm_node)
     builder.add_node("review", review_node)
     builder.add_node("finalize", finalize_node)
 
     builder.add_edge(START, "prepare")
     builder.add_edge("prepare", "model")
     builder.add_conditional_edges("model", _after_model, ["tools", "review"])
-    builder.add_conditional_edges("tools", _after_tools, ["model", "finalize"])
+    builder.add_conditional_edges("tools", _after_tools, ["confirm", "model", "finalize"])
+    builder.add_conditional_edges("confirm", _after_confirm, ["confirm", "model", "finalize"])
     builder.add_conditional_edges("review", _after_review, ["model", "finalize"])
     builder.add_edge("finalize", END)
-    return builder.compile()
+    return builder.compile(checkpointer=checkpointer)
 
 
-_GRAPH = None
+# `interrupt()` needs a checkpointer; when Postgres isn't configured (tests,
+# harness, or a failed setup) an in-process saver keeps the graph runnable.
+FALLBACK_CHECKPOINTER = InMemorySaver()
+
+_GRAPHS: dict[int, Any] = {}
 
 
-def get_graph():
-    """Process-wide compiled graph (compilation is pure, so one is enough)."""
-    global _GRAPH
-    if _GRAPH is None:
-        _GRAPH = build_graph()
-    return _GRAPH
+def get_graph(checkpointer=None):
+    """Compiled graph for this checkpointer (compilation is pure, so cache)."""
+    saver = checkpointer or FALLBACK_CHECKPOINTER
+    key = id(saver)
+    if key not in _GRAPHS:
+        _GRAPHS[key] = build_graph(saver)
+    return _GRAPHS[key]
 
 
 # ---------------------------------------------------------------------------
 # stream_agent — entry point: yields ("sse", event) then ("result", result)
 # ---------------------------------------------------------------------------
+
+def new_thread_id(user_id) -> str:
+    """One checkpoint thread per chat turn: `"<user_id>:<correlation_id>"`."""
+    return f"{user_id}:{get_correlation_id() or uuid.uuid4().hex}"
+
+
+def _interrupt_cards(chunk: Any) -> list[dict]:
+    """Confirm cards carried by an `updates` chunk's `__interrupt__` entry."""
+    if not isinstance(chunk, dict):
+        return []
+    return [
+        i.value for i in chunk.get("__interrupt__", ())
+        if isinstance(getattr(i, "value", None), dict)
+    ]
+
 
 # `updates` chunks carry per-node deltas, so the accumulator has to re-apply
 # the same reducers AgentState declares.
@@ -690,6 +839,7 @@ async def stream_agent(
     suggested_actions: list | None = None,
     trace=INACTIVE_TRACE,
     graph=None,
+    thread_id: str | None = None,
     images: list[str] | None = None,
     image_urls: list[str] | None = None,
     recent_image_urls: list[str] | None = None,
@@ -699,8 +849,13 @@ async def stream_agent(
     """Run the agent graph, yielding ("sse", {event, data}) as they happen.
 
     The last item is always ("result", OrchestratorResult).
+
+    One turn = one checkpoint thread, `"<user_id>:<correlation_id>"`. The
+    confirm card carries it as `action_id`, and `/chat/confirm-action` resumes
+    the run from it.
     """
     use_model = model or settings.model
+    thread_id = thread_id or new_thread_id(user_id)
     initial: AgentState = {
         "system_prompt": system_prompt,
         "context_messages": context_messages,
@@ -714,6 +869,9 @@ async def stream_agent(
         "plan_steps": [],
         "retry": False,
         "skip_round2": False,
+        "deferred_confirms": [],
+        "resumed": False,
+        "confirm_error": False,
         "text_parts": [],
         "cards": [],
         "confirm_cards": [],
@@ -723,6 +881,7 @@ async def stream_agent(
         "completion_tokens": 0,
         "response_text": "",
         "lang": lang,
+        "session_id": str(session_id) if session_id else "",
         "today": today,
         "pets": [_pet_to_dict(p) for p in pets] if pets else pets,
         "location": location,
@@ -732,6 +891,7 @@ async def stream_agent(
     }
     config = {
         "configurable": {
+            "thread_id": thread_id,
             "db": db,
             "user_id": user_id,
             "session_id": session_id,
@@ -762,6 +922,10 @@ async def stream_agent(
         if mode == "custom":
             yield ("sse", chunk)
         else:
+            # The confirm node paused: surface its card exactly as `on_card`
+            # would have, then let the stream end normally.
+            for card in _interrupt_cards(chunk):
+                yield ("sse", {"event": "card", "data": card})
             _accumulate(acc, chunk)
 
     result = OrchestratorResult(

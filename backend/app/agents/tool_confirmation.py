@@ -5,11 +5,19 @@ from __future__ import annotations
 from typing import Any
 
 from app.agents.confirm_cards import confirm_card_details
-from app.agents.constants import maybe_await, needs_confirm
+from app.agents.constants import needs_confirm
 from app.agents.locale import t
-from app.agents.pending_actions import store_action
 from app.agents.tool_context import ToolDispatchContext
 from app.agents.tool_invocation import ToolInvocation
+
+WAITING_CONFIRM_INSTRUCTION = (
+    "⚠️ 此操作【尚未执行】。系统已向用户弹出确认卡片，用户必须点击才会真正执行。"
+    "你【绝对不能】告诉用户'已删除/已修改/已更新'——数据库完全没变。"
+    "正确回复应该是：'已准备好，请在卡片上点击确认～'（用用户语言）。"
+    "⚠️ THIS ACTION HAS NOT EXECUTED. A confirmation card was shown; the user must tap it. "
+    "DO NOT say 'deleted/updated/saved' — the DB is unchanged. "
+    "Say something like: 'Ready — please tap confirm on the card.'"
+)
 
 
 def _last_user_text(messages: list[dict[str, Any]]) -> str:
@@ -180,11 +188,17 @@ async def lookup_event_info(db, user_id, event_id_raw, pets: list | None = None)
     }
 
 
-async def handle_tool_confirmation(
+async def build_confirm_card(
     invocation: ToolInvocation,
     context: ToolDispatchContext,
+    action_id: str,
 ) -> dict[str, Any] | None:
-    """Return a waiting-confirm result if this invocation needs confirmation."""
+    """Return the `confirm_action` card for this call, or None if no confirm.
+
+    Pure apart from one read-only `lookup_event_info` query, so the graph's
+    confirm node can rebuild the identical card when LangGraph re-runs it
+    after a resume.
+    """
     if not context.session_id:
         return None
 
@@ -212,40 +226,9 @@ async def handle_tool_confirmation(
         event_info=event_info,
         image_urls=effective_urls,
     )
-    stored_args = dict(fn_args)
-    if effective_urls and fn_name == "create_calendar_event":
-        stored_args["_image_urls"] = list(effective_urls)
-
-    action_id = await store_action(
-        db=context.db,
-        user_id=str(context.user_id),
-        session_id=str(context.session_id),
-        tool_name=fn_name,
-        arguments=stored_args,
-        description=desc,
-    )
-    card = {
+    return {
         "type": "confirm_action",
         "action_id": action_id,
         "message": desc,
         **confirm_card_details(fn_name, fn_args, context.lang),
-    }
-    if context.result is not None:
-        context.result.confirm_cards.append(card)
-    if context.on_card:
-        await maybe_await(context.on_card, card)
-
-    return {
-        "status": "waiting_confirm",
-        "executed": False,
-        "db_changed": False,
-        "instruction_for_assistant": (
-            "⚠️ 此操作【尚未执行】。系统已向用户弹出确认卡片，用户必须点击才会真正执行。"
-            "你【绝对不能】告诉用户'已删除/已修改/已更新'——数据库完全没变。"
-            "正确回复应该是：'已准备好，请在卡片上点击确认～'（用用户语言）。"
-            "⚠️ THIS ACTION HAS NOT EXECUTED. A confirmation card was shown; the user must tap it. "
-            "DO NOT say 'deleted/updated/saved' — the DB is unchanged. "
-            "Say something like: 'Ready — please tap confirm on the card.'"
-        ),
-        "description": desc,
     }

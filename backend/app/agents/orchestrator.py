@@ -36,9 +36,11 @@ import litellm
 from app.agents import llm_extra_kwargs
 from app.agents.constants import SKIP_ROUND2_TOOLS, maybe_await
 from app.agents.control_tools import handle_control_tool
-from app.agents.pending_actions import store_action
 from app.agents.pre_processing.types import SuggestedAction
-from app.agents.tool_confirmation import handle_tool_confirmation
+from app.agents.tool_confirmation import (
+    WAITING_CONFIRM_INSTRUCTION,
+    build_confirm_card,
+)
 from app.agents.tool_context import ToolDispatchContext
 from app.agents.tool_execution import handle_tool_execution
 from app.agents.tool_guards import apply_tool_guards
@@ -134,8 +136,8 @@ async def dispatch_tool(
     Always returns a dict (never None, never raises to the caller).
     - Validation failure → {"error": "..."} — LLM sees the error next round
       and self-corrects without any extra prompt engineering.
-    - Confirm gate hit → {"status": "waiting_confirm", "message": "..."}
-      — a confirm card is emitted and the tool is stored in pending_actions.
+    - Confirm gate hit → {"status": "waiting_confirm", ..., "_confirm_card": {...}}
+      — the caller (the graph's confirm node) interrupts on that card.
     - Normal execution → the handler's result dict (may contain `card`).
 
     Side effects:
@@ -166,6 +168,7 @@ async def dispatch_tool(
         recent_image_urls=recent_image_urls,
         location=kwargs.get("location"),
         messages=kwargs.get("_messages", []),
+        confirm_action_id=kwargs.get("confirm_action_id", ""),
     )
 
     guard_result = apply_tool_guards(invocation, context)
@@ -180,16 +183,24 @@ async def dispatch_tool(
     if control_result is not None:
         return control_result
 
-    confirmation_result = await handle_tool_confirmation(invocation, context)
-    if confirmation_result is not None:
-        return confirmation_result
+    confirm_card = await build_confirm_card(
+        invocation, context, action_id=kwargs.get("confirm_action_id", ""),
+    )
+    if confirm_card is not None:
+        return {
+            "status": "waiting_confirm",
+            "executed": False,
+            "db_changed": False,
+            "instruction_for_assistant": WAITING_CONFIRM_INSTRUCTION,
+            "description": confirm_card["message"],
+            "_confirm_card": confirm_card,
+        }
 
     return await handle_tool_execution(
         invocation,
         context,
         validate=validate_tool_args,
         execute=execute_tool,
-        store_pending_action=store_action,
     )
 
 
