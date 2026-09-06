@@ -105,7 +105,7 @@ def test_chat_route_uses_agent_engine_entrypoint():
     source = Path("app/routers/chat.py").read_text()
 
     assert "from app.agents.engine import AgentEngine, AgentRunInput" in source
-    assert "await AgentEngine().run(" in source
+    assert "AgentEngine().astream(" in source
     assert "await run_orchestrator(" not in source
 
 

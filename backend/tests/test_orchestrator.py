@@ -342,3 +342,41 @@ async def test_nudge_triggers_when_tools_missed():
     assert call_count == 3
     assert len(result.cards) == 1
     assert "search_places" in result.tools_called
+
+
+@pytest.mark.asyncio
+async def test_graph_streams_sse_events_in_order():
+    """stream_agent emits thinking → card → next-round tokens, then the result."""
+    from app.agents.graph import stream_agent
+
+    tool_args = {"pet_id": "abc", "event_date": "2026-03-24", "title": "吃狗粮", "category": "diet"}
+    round1 = _make_stream_chunks(tool_calls=[{"name": "create_calendar_event", "args": tool_args}])
+    round2 = _make_stream_chunks(content="已记录")
+
+    call_count = 0
+    async def mock_completion(**kwargs):
+        nonlocal call_count
+        call_count += 1
+        return MockAsyncIterator(round1 if call_count == 1 else round2)
+
+    mock_execute = AsyncMock(return_value={"success": True, "card": {"type": "record"}})
+
+    seen = []
+    result = None
+    with patch("app.agents.orchestrator.litellm.acompletion", new_callable=AsyncMock, side_effect=mock_completion), \
+         patch("app.agents.orchestrator.validate_tool_args", return_value=[]), \
+         patch("app.agents.orchestrator.execute_tool", mock_execute):
+        async for kind, payload in stream_agent(
+            system_prompt="test",
+            context_messages=[{"role": "user", "content": "三妹吃了狗粮"}],
+            db=AsyncMock(), user_id="user-1",
+        ):
+            if kind == "result":
+                result = payload
+            else:
+                seen.append(payload["event"])
+
+    assert seen[0] == "thinking"
+    assert seen.index("card") < seen.index("token")
+    assert result.response_text == "已记录"
+    assert result.cards[0]["type"] == "record"
