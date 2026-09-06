@@ -1,17 +1,18 @@
 """Reusable agent engine adapter.
 
-The first engine version intentionally wraps the existing orchestrator instead
-of moving the full loop. That gives the HTTP route, CLI harness, and evals a
-stable run API while production behavior stays anchored in the proven path.
+Holds the compiled LangGraph agent graph (`agents/graph.py`). The HTTP route
+consumes `astream` and forwards the graph's custom stream straight to SSE;
+`run` is the callback-based variant kept for the CLI harness and evals.
 """
 
 from __future__ import annotations
 
 import time
 from dataclasses import dataclass, field
-from typing import Awaitable, Callable
+from typing import Any, AsyncIterator, Awaitable, Callable
 
 from app.agents.constants import maybe_await
+from app.agents.graph import get_graph, stream_agent
 from app.agents.orchestrator import run_orchestrator
 from app.agents.runtime import AgentEvent, AgentRunResult
 
@@ -31,6 +32,32 @@ class AgentRunInput:
 
 
 class AgentEngine:
+    def __init__(self):
+        self.graph = get_graph()
+
+    async def astream(
+        self,
+        run_input: AgentRunInput,
+        **kwargs,
+    ) -> AsyncIterator[tuple[str, Any]]:
+        """Stream one run: ("sse", {event, data}) items, then ("result", res)."""
+        async for item in stream_agent(
+            graph=self.graph,
+            system_prompt=run_input.system_prompt,
+            context_messages=run_input.messages or [
+                {"role": "user", "content": run_input.message}
+            ],
+            model=run_input.model,
+            db=run_input.db,
+            user_id=run_input.user_id,
+            session_id=run_input.session_id,
+            lang=run_input.language,
+            location=run_input.location,
+            image_urls=run_input.image_urls,
+            **kwargs,
+        ):
+            yield item
+
     async def run(
         self,
         run_input: AgentRunInput,

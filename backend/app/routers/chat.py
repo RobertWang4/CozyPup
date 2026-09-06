@@ -249,11 +249,6 @@ async def _save_message(
     return msg
 
 
-# 哨兵对象，用于标记 SSE 流结束。用 object() 而不是 None，
-# 因为 None 可能是合法的队列值，而 object() 实例是全局唯一的。
-_SENTINEL = object()
-
-
 def _months_since(d: date | None) -> int | None:
     """Return the number of whole months between d and today."""
     if d is None:
@@ -473,85 +468,10 @@ async def _event_generator(
         # 异步回填图片 URL 到之前保存的用户消息
         _track_task(_backfill_image_urls(session.id, user_id, saved_image_urls))
 
-    # ========== Phase 3: 运行 Orchestrator（核心 LLM 调用 + 工具执行） ==========
+    # ========== Phase 3: 运行 Agent Graph（核心 LLM 调用 + 工具执行） ==========
 
-    # 使用 asyncio.Queue 将 orchestrator 的输出（token、card）桥接到 SSE generator。
-    # 这样 orchestrator 可以在一个独立的 Task 中运行，产生的事件通过队列传递给 SSE 流。
-    queue: asyncio.Queue = asyncio.Queue()
-
-    async def on_token(text):
-        """LLM 每生成一个 token 就调用这个回调，推入队列。"""
-        await queue.put({"event": "token", "data": json.dumps({"text": text})})
-
-    async def on_card(card_data):
-        """工具执行完成后生成的卡片（记录卡片、地图卡片等）推入队列。"""
-        card_type = card_data.get("type", "unknown")
-        logger.info("card_event_queued", extra={"card_type": card_type})
-        # 紧急卡片用专门的 SSE event type，iOS 端会特殊处理（红色横幅 + 紧急电话）
-        sse_event = "emergency" if card_type == "emergency" else "card"
-        await queue.put({"event": sse_event, "data": json.dumps(card_data)})
-
-    async def on_thinking(text: str, tool_name: str):
-        """Server-generated status string, shown as gray italic bubble on iOS.
-        Fired the moment the LLM's tool name is identified in the stream, so
-        the user sees activity without the LLM emitting opener text (which
-        caused decoder-drift fabrication on grok-4-1-fast)."""
-        await queue.put({
-            "event": "thinking",
-            "data": json.dumps({"text": text, "tool": tool_name}, ensure_ascii=False),
-        })
-
-    async def _run_orchestrator_to_queue():
-        """在独立 Task 中运行 orchestrator，结果通过队列传递。
-
-        orchestrator 内部流程：
-        1. 调用 LLM（流式），同时通过 on_token 回调输出 token
-        2. 如果 LLM 返回了 function call → 执行对应工具 → 通过 on_card 回调输出卡片
-        3. 如果需要多轮工具调用，会循环执行（orchestrator loop）
-        4. 最终返回 OrchestratorResult（包含完整回复文本和所有卡片）
-        """
-        try:
-            result = await AgentEngine().run(
-                AgentRunInput(
-                    message=request.message,
-                    messages=messages,        # 历史消息 + 当前用户消息
-                    system_prompt=system_prompt,
-                    model=model,              # 根据是否紧急选择的模型
-                    db=db,
-                    user_id=user_id,
-                    session_id=session.id,
-                    location=request.location,
-                    language=lang,
-                    image_urls=saved_image_urls or [],
-                ),
-                on_token=on_token,           # token 流式回调
-                on_card=on_card,             # 卡片回调
-                on_thinking=on_thinking,     # 思考气泡（工具名字幕）
-                today=today_str,
-                suggested_actions=suggested_actions,  # 预分析的工具调用（用于 nudge）
-                images=request.images,       # 原始 base64 图片（用于图片分析工具）
-                recent_image_urls=recent_image_urls,  # 历史消息中的图片 URL（回退用）
-                pets=pets,                   # 宠物列表（用于 confirm 描述）
-                trace=trace,                 # Debug trace 收集器
-            )
-            await queue.put(("_result", result))  # 用元组包装结果，和普通 SSE 事件区分
-        except Exception as e:
-            # orchestrator 异常时，给用户返回错误消息而不是让 SSE 流断开
-            logger.error("orchestrator_error", extra={
-                "error_type": type(e).__name__,
-                "error_message": str(e)[:500],
-            })
-            error_text = f"Sorry, I'm having trouble right now. Please try again. (Error: {type(e).__name__})"
-            await queue.put({"event": "token", "data": json.dumps({"text": error_text})})
-            await queue.put(("_result", OrchestratorResult(response_text=error_text)))
-        finally:
-            await queue.put(_SENTINEL)  # 发送哨兵信号，通知消费循环结束
-
-    # 启动 orchestrator Task（在后台运行，不阻塞 generator）
-    task = asyncio.create_task(_run_orchestrator_to_queue())
-
-    # 并行启动 profile extractor：用另一个 LLM 调用从用户消息中提取宠物档案信息
-    # 这个调用和主 orchestrator 完全并行，不影响响应速度
+    # 先起 profile extractor：用另一个 LLM 调用从用户消息中提取宠物档案信息，
+    # 和下面的 graph 消费循环完全并行，不影响响应速度。
     async def _run_profile_extractor_llm():
         """从用户消息中提取宠物档案相关信息（品种、年龄、体重等）。
 
@@ -567,19 +487,54 @@ async def _event_generator(
 
     extractor_task = asyncio.create_task(_run_profile_extractor_llm())
 
-    # 消费队列：从队列中取出事件，yield 给 SSE 流
-    # 遇到 _SENTINEL 时退出循环，遇到 _result 元组时保存结果
+    # graph 的节点通过 get_stream_writer 推事件（token / thinking / card），
+    # 这里按原来的序列化方式转成 SSE 直接 yield；最后一项是 OrchestratorResult。
     result = None
-    while True:
-        item = await queue.get()
-        if item is _SENTINEL:
-            break                          # orchestrator 完成，退出循环
-        if isinstance(item, tuple) and item[0] == "_result":
-            result = item[1]               # 保存 OrchestratorResult，不 yield
-            continue
-        yield item                         # yield SSE 事件给前端
-
-    await task  # 确保 Task 完全结束（异常也会在这里抛出）
+    try:
+        async for kind, payload in AgentEngine().astream(
+            AgentRunInput(
+                message=request.message,
+                messages=messages,        # 历史消息 + 当前用户消息
+                system_prompt=system_prompt,
+                model=model,              # 根据是否紧急选择的模型
+                db=db,
+                user_id=user_id,
+                session_id=session.id,
+                location=request.location,
+                language=lang,
+                image_urls=saved_image_urls or [],
+            ),
+            today=today_str,
+            suggested_actions=suggested_actions,  # 预分析的工具调用（用于 nudge）
+            images=request.images,       # 原始 base64 图片（用于图片分析工具）
+            recent_image_urls=recent_image_urls,  # 历史消息中的图片 URL（回退用）
+            pets=pets,                   # 宠物列表（用于 confirm 描述）
+            trace=trace,                 # Debug trace 收集器
+        ):
+            if kind == "result":
+                result = payload
+                continue
+            event, data = payload["event"], payload["data"]
+            if event == "card":
+                card_type = data.get("type", "unknown")
+                logger.info("card_event_queued", extra={"card_type": card_type})
+                # 紧急卡片用专门的 SSE event type，iOS 端会特殊处理（红色横幅 + 紧急电话）
+                sse_event = "emergency" if card_type == "emergency" else "card"
+                yield {"event": sse_event, "data": json.dumps(data)}
+            elif event == "thinking":
+                # 服务端生成的状态字幕，iOS 显示为灰色斜体气泡
+                yield {"event": "thinking", "data": json.dumps(data, ensure_ascii=False)}
+            else:
+                yield {"event": event, "data": json.dumps(data)}
+    except Exception as e:
+        # graph 异常时，给用户返回错误消息而不是让 SSE 流断开
+        logger.error("orchestrator_error", extra={
+            "error_type": type(e).__name__,
+            "error_message": str(e)[:500],
+        })
+        error_text = f"Sorry, I'm having trouble right now. Please try again. (Error: {type(e).__name__})"
+        yield {"event": "token", "data": json.dumps({"text": error_text})}
+        result = OrchestratorResult(response_text=error_text)
 
     # ========== Phase 4: 后处理 ==========
 

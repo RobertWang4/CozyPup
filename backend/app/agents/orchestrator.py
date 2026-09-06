@@ -36,8 +36,6 @@ import litellm
 from app.agents import llm_extra_kwargs
 from app.agents.constants import SKIP_ROUND2_TOOLS, maybe_await
 from app.agents.control_tools import handle_control_tool
-from app.agents.locale import t
-from app.agents.micro_compact import micro_compact
 from app.agents.pending_actions import store_action
 from app.agents.pre_processing.types import SuggestedAction
 from app.agents.tool_confirmation import handle_tool_confirmation
@@ -48,7 +46,6 @@ from app.agents.tool_invocation import parse_tool_invocation
 from app.agents.tools import execute_tool, get_tool_definitions
 from app.agents.trace_collector import TraceCollector, INACTIVE_TRACE
 from app.agents.validation import validate_tool_args
-from app.config import settings
 
 logger = logging.getLogger(__name__)
 
@@ -722,393 +719,43 @@ async def run_orchestrator(
     trace: TraceCollector = INACTIVE_TRACE,
     **kwargs,
 ) -> OrchestratorResult:
-    """Run the unified agent loop until exhaustion or MAX_ROUNDS.
+    """Callback-based wrapper around the LangGraph agent loop.
 
-    Handles every chat scenario in one loop:
-      - Pure chat: LLM emits text without tool_calls → exit immediately.
-      - Single/multi tool: LLM emits tool_calls → dispatch each → feed
-        results back → loop until LLM stops calling tools.
-      - Image analysis: request_images injects base64 images via a special
-        user message in the next round.
-      - Nudge: if LLM skipped a NUDGE_TOOLS call that pre-processing was
-        confident about, retry once with an explicit instruction.
-      - Plan nag: if plan() was called but some planned tools never fired,
-        nag the LLM to finish them.
-
-    Streams tokens via on_token and cards via on_card. The returned
-    OrchestratorResult also contains the aggregate state.
+    The loop itself lives in `agents/graph.py`; this shim keeps the old
+    callback signature for the CLI harness, evals and unit tests. The HTTP
+    route consumes `graph.stream_agent` directly.
     """
-    from app.debug.trace_logger import trace_log, messages_for_trace
+    from app.agents.graph import stream_agent
 
     lang = kwargs.pop("lang", "zh")
     result = OrchestratorResult()
-    use_model = model or settings.model
-    vision_model = settings.vision_model or use_model
-    result.model_used = use_model
 
-    # Seed the message list with system prompt + recent history
-    messages = [{"role": "system", "content": system_prompt}]
-    messages.extend(context_messages)
-
-    # Pushback defense: if the user's latest turn disputes a prior completion
-    # claim, inject a high-priority system note so the LLM ignores its own
-    # fabricated chat history and re-verifies against the DB.
-    latest_user_text = ""
-    for m in reversed(context_messages):
-        if m.get("role") == "user":
-            c = m.get("content")
-            if isinstance(c, str):
-                latest_user_text = c
-            elif isinstance(c, list):
-                latest_user_text = " ".join(
-                    part.get("text", "") for part in c if isinstance(part, dict)
-                )
-            break
-    if _detect_pushback(latest_user_text, lang):
-        _inject_pushback_preamble(messages, lang)
-        logger.info("pushback_preamble_injected", extra={
-            "user_text_sample": latest_user_text[:120],
-        })
-
-    def _latest_user_has_images() -> bool:
-        """True if the last user message contains image_url content parts."""
-        for m in reversed(messages):
-            if m.get("role") == "user":
-                content = m.get("content")
-                if isinstance(content, list):
-                    return any(
-                        part.get("type") == "image_url"
-                        for part in content
-                        if isinstance(part, dict)
-                    )
-                return False
-        return False
-
-    text_parts: list[str] = []
-    nudge_used = False
-    plan_nag_used = False
-    write_claim_nag_used = False
-
-    # Extract dispatch_tool kwargs up front so they're not forwarded to the LLM
-    images = kwargs.pop("images", None)
-    image_urls = kwargs.pop("image_urls", None)
-    recent_image_urls = kwargs.pop("recent_image_urls", None)  # photos from prior messages
-    location = kwargs.pop("location", None)
-    pets = kwargs.pop("pets", None)
-
-    for round_num in range(MAX_ROUNDS):
-        # Compress older tool_result payloads to save prompt tokens — keep
-        # only the most recent round's full results.
-        if round_num > 0:
-            micro_compact(messages)
-
-        # Switch to vision model when images are in the last user message
-        is_vision = _latest_user_has_images()
-        round_model = vision_model if is_vision else use_model
-
-        trace.record_event("model_started", {
-            "round": round_num,
-            "model": round_model,
-            "is_vision": is_vision,
-        })
-
-        # Stream the LLM response
-        round_text, tool_calls, usage = await _stream_completion(
-            messages, round_model, on_token, on_thinking=on_thinking, lang=lang,
-            trace=trace, round_num=round_num, is_vision=is_vision,
-        )
-
-        # Accumulate token usage
-        result.total_prompt_tokens += usage.get("prompt_tokens", 0)
-        result.total_completion_tokens += usage.get("completion_tokens", 0)
-        trace.record_event("model_completed", {
-            "round": round_num,
-            "model": round_model,
-            "tool_calls": [tc["function"]["name"] for tc in tool_calls],
-            "prompt_tokens": usage.get("prompt_tokens", 0),
-            "completion_tokens": usage.get("completion_tokens", 0),
-        })
-
-        # Log LLM request
-        trace_log("llm_request", round=round_num, data={
-            "model": use_model,
-            "message_count": len(messages),
-            "messages_preview": [
-                {"role": m["role"], "content": (m.get("content") or "")[:200]}
-                for m in messages[-3:]
-            ],
-            # Full prompt (system + history + user) on round 0 so a trace can be
-            # replayed offline; later rounds only append tool results, which
-            # tool_result entries already carry in full.
-            **({"messages": messages_for_trace(messages)} if round_num == 0 else {}),
-        })
-
-        # Log LLM response
-        trace_log("llm_response", round=round_num, data={
-            "model": use_model,
-            "text_length": len(round_text),
-            "text_preview": round_text[:300] if round_text else "",
-            "content": round_text or "",     # NEW — full content for admin trace
-            "tool_calls": [
-                {"name": tc["function"]["name"], "arguments": tc["function"]["arguments"]}
-                for tc in tool_calls
-            ] if tool_calls else [],
-            "prompt_tokens": usage.get("prompt_tokens"),
-            "completion_tokens": usage.get("completion_tokens"),
-            "total_tokens": (usage.get("prompt_tokens") or 0) + (usage.get("completion_tokens") or 0),
-        })
-
-        # No tool_calls this round — decide: plan nag → nudge → exit
-        if not tool_calls:
-            text_parts.append(round_text)
-
-            # Plan nag: if plan() declared steps but the LLM stopped before
-            # executing all of them, inject a nag message and retry once.
-            if not plan_nag_used and result.plan_steps:
-                planned_tools = {s["tool"] for s in result.plan_steps}
-                # Exclude plan itself when checking what still needs to run
-                executed_tools = result.tools_called - {"plan"}
-                missing_tools = planned_tools - executed_tools
-                if missing_tools:
-                    plan_nag_used = True
-                    missing_steps = [s for s in result.plan_steps if s["tool"] in missing_tools]
-                    trace.record("plan_nag_triggered", {
-                        "round": round_num,
-                        "missing_tools": list(missing_tools),
-                        "missing_steps": missing_steps,
-                    })
-                    logger.info("plan_nag_triggered", extra={
-                        "round": round_num,
-                        "missing_tools": list(missing_tools),
-                    })
-                    # Preserve last round's text so the nag message reads
-                    # naturally in the conversation history the LLM sees.
-                    if round_text:
-                        messages.append({"role": "assistant", "content": round_text})
-                    step_list = "\n".join(f"- [{s['id']}] {s['action']} → {s['tool']}" for s in missing_steps)
-                    if lang == "zh":
-                        nag = f"你的 plan 还有未完成的步骤:\n{step_list}\n请立即调用对应的工具完成这些步骤。"
-                    else:
-                        nag = f"Your plan has unfinished steps:\n{step_list}\nPlease call the corresponding tools now."
-                    messages.append({"role": "user", "content": nag})
-                    continue
-
-            # Write-claim guard: LLM's final text claims a write happened
-            # (已更新/已删除/updated/deleted) but no write tool ACTUALLY executed
-            # this whole run (only queries, or everything was deferred behind
-            # confirm cards, or tools errored). Force one more round.
-            if not write_claim_nag_used:
-                has_write = bool(result.tools_executed & _WRITE_TOOLS)
-                accumulated_text = "".join(text_parts)
-                if not has_write and _text_claims_write(accumulated_text, lang):
-                    write_claim_nag_used = True
-                    trace.record("write_claim_nag_triggered", {
-                        "round": round_num,
-                        "tools_called": list(result.tools_called),
-                        "text_sample": accumulated_text[-200:],
-                    })
-                    logger.warning("write_claim_nag_triggered", extra={
-                        "round": round_num,
-                        "tools_called": list(result.tools_called),
-                    })
-                    _inject_write_claim_nag(messages, round_text, lang)
-                    # Clear the fabricated text from text_parts so the final
-                    # response reflects the real (next-round) outcome.
-                    text_parts.pop()
-                    continue
-
-            # Nudge: only fire when the LLM called zero tools. If it called
-            # *some* tool (even a different one than suggested) it's clearly
-            # working — don't second-guess it.
-            if not nudge_used and not result.tools_called and suggested_actions:
-                missed = _find_missed_tools(suggested_actions, result.tools_called)
-                if missed:
-                    nudge_used = True
-                    trace.record("nudge_triggered", {
-                        "round": round_num,
-                        "missed_tools": [a.tool_name for a in missed],
-                    })
-                    logger.info("nudge_triggered", extra={
-                        "round": round_num,
-                        "missed_tools": [a.tool_name for a in missed],
-                    })
-                    _inject_nudge(messages, round_text, missed, lang)
-                    continue
-
-            break  # Normal exit — no tools, no pending plan, no nudge
-
-        # Tool calls present: append assistant turn and dispatch each tool
-        text_parts.append(round_text)
-
-        assistant_msg = {
-            "role": "assistant",
-            "content": round_text or None,
-            "tool_calls": tool_calls,
-        }
-        messages.append(assistant_msg)
-
-        # If introduce_product is among the tool calls, skip all other tools
-        # (LLM sometimes incorrectly records events when user is just asking about features)
-        tool_names_in_round = {tc["function"]["name"] for tc in tool_calls}
-        if "introduce_product" in tool_names_in_round and len(tool_calls) > 1:
-            tool_calls = [tc for tc in tool_calls if tc["function"]["name"] == "introduce_product"]
-
-        tool_results_map = {}  # tc_name → tool_result for skip_round2 check
-        for tc in tool_calls:
-            tc_name = tc["function"]["name"]
-            tc_args_str = tc["function"]["arguments"]
-
-            trace_log("tool_call", round=round_num, data={
-                "tool_name": tc_name,
-                "arguments": tc_args_str,
-            })
-            trace.record_event("tool_call_started", {
-                "round": round_num,
-                "tool": tc_name,
-                "args": tc_args_str,
-            })
-
-            tool_result = await dispatch_tool(
-                tc, db, user_id, session_id, result, on_card, lang,
-                pets=pets, images=images, image_urls=image_urls,
-                recent_image_urls=recent_image_urls,
-                location=location, _messages=messages,
-            )
-
-            tool_results_map[tc_name] = tool_result
-
-            _serialized_result = {k: v for k, v in tool_result.items() if not k.startswith("_")}
-            # Size guard per spec §5.3: cap each trace entry at 64 KB.
-            _payload = json.dumps(_serialized_result, ensure_ascii=False, default=str)
-            if len(_payload) > 64_000:
-                _serialized_result = {"_truncated": True, "_size": len(_payload), "keys": list(_serialized_result.keys())}
-
-            trace_log("tool_result", round=round_num, data={
-                "tool_name": tc_name,
-                "success": tool_result.get("success"),
-                "error": tool_result.get("error"),
-                "result_keys": list(tool_result.keys()),
-                "result": _serialized_result,     # NEW — full value with card
-            })
-
-            trace.record("tool_dispatch", {
-                "round": round_num,
-                "tool": tc["function"]["name"],
-                "args": tc["function"]["arguments"],
-                "result_keys": list(tool_result.keys()),
-                "success": tool_result.get("success"),
-                "error": tool_result.get("error"),
-            })
-            trace.record_event("tool_call_completed", {
-                "round": round_num,
-                "tool": tc_name,
-                "success": tool_result.get("success"),
-                "error": tool_result.get("error"),
-                "result_keys": list(tool_result.keys()),
-            })
-
-            # Strip internal markers (keys starting with _) before serialising
-            # back to the LLM — those are private to the orchestrator.
-            serializable = {k: v for k, v in tool_result.items() if not k.startswith("_")}
-            messages.append({
-                "role": "tool",
-                "tool_call_id": tc["id"],
-                "content": json.dumps(serializable, ensure_ascii=False, default=str),
-            })
-
-            # request_images sentinel — wrap base64 payloads in an OpenAI-
-            # style multimodal user message so the LLM actually sees them
-            # on the next round.
-            if "_inject_images" in tool_result:
-                image_content = [
-                    {"type": "text", "text": "这是用户附带的图片，请仔细查看后回答：" if lang == "zh" else "Here are the user's images:"}
-                ]
-                for img_b64 in tool_result["_inject_images"]:
-                    image_content.append({
-                        "type": "image_url",
-                        "image_url": {"url": f"data:image/jpeg;base64,{img_b64}"},
-                    })
-                messages.append({"role": "user", "content": image_content})
-
-        # --- Skip Round 2: if all tools are simple CRUD and succeeded,
-        # use the LLM's Round 1 streaming text as the final response.
-        # This saves ~8000 prompt tokens per skipped round. ---
-        if _can_skip_round2(tool_calls, tool_results_map, result, round_text):
-            trace.record("skip_round2", {
-                "round": round_num,
-                "tools": list(tool_names_in_round),
-            })
-            logger.info("skip_round2", extra={
-                "round": round_num,
-                "tools": list(tool_names_in_round),
-            })
-            break
-
-    # Ensure response_text is non-empty unless the only output is a confirm
-    # card (in which case the card itself is the "reply"). This guarantees
-    # the user never sees a blank bubble.
-    import re as _re
-    raw_text = "".join(text_parts)
-    # Strip leaked XML/HTML tags from LLM output (grok sometimes outputs <parameter> or <xai:function_call>)
-    result.response_text = _re.sub(r"</?(?:parameter|xai:function_call|function_call)[^>]*>", "", raw_text).strip()
-
-    # Final fabrication guard: if the LLM's response claims a write ("已删除
-    # /updated") but no write tool actually executed AND no confirm card is
-    # pending (the card itself would signal "pending" correctly), replace the
-    # fabricated text with an honest failure message and emit a warning card.
-    # This is Level 2 "UI truth" — users should never see a lie.
-    has_real_write = bool(result.tools_executed & _WRITE_TOOLS)
-    has_pending_confirm = bool(result.confirm_cards)
-    if (
-        not has_real_write
-        and not has_pending_confirm
-        and _text_claims_write(result.response_text, lang)
+    async for kind, payload in stream_agent(
+        system_prompt=system_prompt,
+        context_messages=context_messages,
+        model=model,
+        db=db,
+        user_id=user_id,
+        session_id=session_id,
+        lang=lang,
+        today=today,
+        suggested_actions=suggested_actions,
+        trace=trace,
+        images=kwargs.pop("images", None),
+        image_urls=kwargs.pop("image_urls", None),
+        recent_image_urls=kwargs.pop("recent_image_urls", None),
+        location=kwargs.pop("location", None),
+        pets=kwargs.pop("pets", None),
     ):
-        logger.warning("fabrication_blocked", extra={
-            "tools_called": list(result.tools_called),
-            "tools_executed": list(result.tools_executed),
-            "text_sample": result.response_text[:200],
-        })
-        trace.record("fabrication_blocked", {
-            "tools_called": list(result.tools_called),
-            "tools_executed": list(result.tools_executed),
-            "text_sample": result.response_text[:200],
-        })
-        if lang == "zh":
-            honest = (
-                "抱歉，这条操作我没能成功执行 😔\n"
-                "请再说一次您的请求，或者在日历/档案里手动操作。"
-            )
-            warn_message = "操作未能完成，数据库未变更"
-        else:
-            honest = (
-                "Sorry — I couldn't actually execute that action 😔\n"
-                "Please try saying it again, or do it manually in the calendar / profile."
-            )
-            warn_message = "Action did not complete — database unchanged"
-        result.response_text = honest
-        warning_card = {
-            "type": "warning",
-            "severity": "error",
-            "message": warn_message,
-        }
-        result.cards.append(warning_card)
-        if on_card:
-            await maybe_await(on_card, warning_card)
-
-    if not result.response_text.strip() and not result.confirm_cards and not result.cards:
-        fallback = t("fallback_error", lang)
-        result.response_text = fallback
-        if on_token:
-            await maybe_await(on_token, fallback)
-
-    trace.record_event("run_completed", {
-        "tools_called": sorted(result.tools_called),
-        "tools_executed": sorted(result.tools_executed),
-        "cards_count": len(result.cards),
-        "confirm_cards_count": len(result.confirm_cards),
-        "prompt_tokens": result.total_prompt_tokens,
-        "completion_tokens": result.total_completion_tokens,
-    })
+        if kind == "result":
+            result = payload
+            continue
+        event, data = payload["event"], payload["data"]
+        if event == "token" and on_token:
+            await maybe_await(on_token, data["text"])
+        elif event == "thinking" and on_thinking:
+            await maybe_await(on_thinking, data["text"], data["tool"])
+        elif event == "card" and on_card:
+            await maybe_await(on_card, data)
 
     return result
