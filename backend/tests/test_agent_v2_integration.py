@@ -32,6 +32,7 @@ def _make_stream_chunks(content=None, tool_calls=None):
         for char in content:
             chunk = MagicMock()
             chunk.choices = [MagicMock()]
+            chunk.usage = None
             chunk.choices[0].delta = MagicMock()
             chunk.choices[0].delta.content = char
             chunk.choices[0].delta.tool_calls = None
@@ -40,6 +41,7 @@ def _make_stream_chunks(content=None, tool_calls=None):
         for i, tc in enumerate(tool_calls):
             chunk = MagicMock()
             chunk.choices = [MagicMock()]
+            chunk.usage = None
             chunk.choices[0].delta = MagicMock()
             chunk.choices[0].delta.content = None
             tc_delta = MagicMock()
@@ -411,8 +413,6 @@ async def test_confirm_flow_delete_pet():
         new_callable=AsyncMock,
         return_value=MockAsyncIterator(chunks),
     ), patch("app.agents.orchestrator.validate_tool_args", return_value=[]), patch(
-        "app.agents.tool_confirmation.store_action", new_callable=AsyncMock, return_value="action-456"
-    ), patch(
         "app.agents.orchestrator.execute_tool", mock_execute
     ):
         result = await run_orchestrator(
@@ -427,7 +427,10 @@ async def test_confirm_flow_delete_pet():
 
     assert len(result.confirm_cards) == 1
     assert result.confirm_cards[0]["type"] == "confirm_action"
-    assert result.confirm_cards[0]["action_id"] == "action-456"
+    # action_id is the graph thread id ("<user_id>:<correlation_id>") the
+    # confirm endpoint resumes from.
+    assert result.confirm_cards[0]["action_id"].startswith("user-1:")
+    assert cards == result.confirm_cards      # emitted once, via the interrupt
     mock_execute.assert_not_called()
 
 

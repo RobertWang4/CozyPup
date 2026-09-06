@@ -7,6 +7,7 @@ types — the values still round-trip as JSON text, which is enough for the
 assertions those tests make.
 """
 
+import pytest
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.ext.compiler import compiles
 
@@ -27,3 +28,18 @@ if Vector is not None:
     def _compile_vector_sqlite(element, compiler, **kw):  # pragma: no cover
         # SQLite fixtures don't exercise vector ops; storing as blob is fine.
         return "BLOB"
+
+
+@pytest.fixture(autouse=True)
+def _fresh_correlation_id():
+    """Give every test its own correlation id.
+
+    The agent graph derives its checkpoint thread id from it
+    (`"<user_id>:<correlation_id>"`), and the ContextVar otherwise leaks
+    between tests — two tests sharing a thread would resume each other's
+    checkpoint.
+    """
+    from app.debug.correlation import generate_correlation_id, set_correlation_id
+
+    set_correlation_id(generate_correlation_id())
+    yield

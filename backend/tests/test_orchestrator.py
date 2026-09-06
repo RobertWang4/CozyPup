@@ -13,6 +13,7 @@ def _make_stream_chunks(content=None, tool_calls=None):
         for char in content:
             chunk = MagicMock()
             chunk.choices = [MagicMock()]
+            chunk.usage = None
             chunk.choices[0].delta = MagicMock()
             chunk.choices[0].delta.content = char
             chunk.choices[0].delta.tool_calls = None
@@ -23,6 +24,7 @@ def _make_stream_chunks(content=None, tool_calls=None):
             # Name chunk
             chunk = MagicMock()
             chunk.choices = [MagicMock()]
+            chunk.usage = None
             chunk.choices[0].delta = MagicMock()
             chunk.choices[0].delta.content = None
             tc_delta = MagicMock()
@@ -214,8 +216,7 @@ async def test_confirm_gate_single():
         cards.append(c)
 
     with patch("app.agents.orchestrator.litellm.acompletion", new_callable=AsyncMock, return_value=MockAsyncIterator(chunks)), \
-         patch("app.agents.orchestrator.validate_tool_args", return_value=[]), \
-         patch("app.agents.tool_confirmation.store_action", new_callable=AsyncMock, return_value="action-123"):
+         patch("app.agents.orchestrator.validate_tool_args", return_value=[]):
         result = await run_orchestrator(
             message="删除三妹",
             system_prompt="test",
@@ -252,7 +253,7 @@ async def test_create_pet_confirm_card_includes_tool_fields():
     async def capture_card(card):
         cards.append(card)
 
-    with patch("app.agents.tool_confirmation.store_action", new_callable=AsyncMock, return_value="action-123"):
+    if True:
         tool_result = await dispatch_tool(
             tool_call,
             AsyncMock(),
@@ -262,13 +263,17 @@ async def test_create_pet_confirm_card_includes_tool_fields():
             capture_card,
             "zh",
             _messages=[{"role": "user", "content": "我有一只公的可卡布叫维尼"}],
+            confirm_action_id="user-1:corr-1",
         )
 
     assert tool_result["status"] == "waiting_confirm"
-    assert cards == result.confirm_cards
-    assert result.confirm_cards[0]["title"] == "新增宠物确认"
-    assert result.confirm_cards[0]["action_kind"] == "create_pet"
-    assert result.confirm_cards[0]["fields"] == [
+    # dispatch_tool only prepares the card — the graph's confirm node emits it.
+    assert cards == []
+    card = tool_result["_confirm_card"]
+    assert card["action_id"] == "user-1:corr-1"
+    assert card["title"] == "新增宠物确认"
+    assert card["action_kind"] == "create_pet"
+    assert card["fields"] == [
         {"label": "名字", "value": "维尼"},
         {"label": "性别", "value": "公"},
         {"label": "品种", "value": "可卡布"},

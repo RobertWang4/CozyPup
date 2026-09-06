@@ -1,27 +1,20 @@
 from types import SimpleNamespace
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock
 
 import pytest
 
-from app.agents.tool_confirmation import handle_tool_confirmation
+from app.agents.tool_confirmation import build_confirm_card
 from app.agents.tool_context import ToolDispatchContext
 from app.agents.tool_invocation import ToolInvocation
 
 
 @pytest.mark.asyncio
-async def test_create_pet_confirmation_stores_action_and_emits_card():
-    result = SimpleNamespace(confirm_cards=[])
-    emitted_cards = []
-
-    async def on_card(card):
-        emitted_cards.append(card)
-
+async def test_create_pet_confirmation_builds_card_with_thread_action_id():
     context = ToolDispatchContext(
         db=AsyncMock(),
         user_id="user-1",
         session_id="session-1",
-        result=result,
-        on_card=on_card,
+        result=SimpleNamespace(confirm_cards=[]),
         lang="zh",
         messages=[{"role": "user", "content": "我有一只公的可卡布叫维尼"}],
     )
@@ -36,25 +29,13 @@ async def test_create_pet_confirmation_stores_action_and_emits_card():
         },
     )
 
-    with patch("app.agents.tool_confirmation.store_action", new_callable=AsyncMock, return_value="action-123") as store:
-        output = await handle_tool_confirmation(invocation, context)
+    card = await build_confirm_card(invocation, context, action_id="user-1:corr-1")
 
-    assert output["status"] == "waiting_confirm"
-    assert output["executed"] is False
-    assert output["db_changed"] is False
-    assert output["description"]
-    store.assert_awaited_once_with(
-        db=context.db,
-        user_id="user-1",
-        session_id="session-1",
-        tool_name="create_pet",
-        arguments=invocation.arguments,
-        description=output["description"],
-    )
-    assert emitted_cards == result.confirm_cards
-    assert result.confirm_cards[0]["action_id"] == "action-123"
-    assert result.confirm_cards[0]["title"] == "新增宠物确认"
-    assert result.confirm_cards[0]["fields"] == [
+    assert card["type"] == "confirm_action"
+    assert card["action_id"] == "user-1:corr-1"
+    assert card["message"]
+    assert card["title"] == "新增宠物确认"
+    assert card["fields"] == [
         {"label": "名字", "value": "维尼"},
         {"label": "性别", "value": "公"},
         {"label": "品种", "value": "可卡布"},
@@ -62,13 +43,14 @@ async def test_create_pet_confirmation_stores_action_and_emits_card():
 
 
 @pytest.mark.asyncio
-async def test_calendar_event_confirmation_persists_image_urls():
-    result = SimpleNamespace(confirm_cards=[])
+async def test_build_confirm_card_has_no_side_effects():
+    """The confirm node re-runs from the top on resume — this must stay pure."""
     context = ToolDispatchContext(
         db=AsyncMock(),
         user_id="user-1",
         session_id="session-1",
-        result=result,
+        result=SimpleNamespace(confirm_cards=[]),
+        on_card=AsyncMock(),
         lang="zh",
         image_urls=["/api/v1/calendar/photos/photo.jpg"],
         messages=[{"role": "user", "content": "维尼看起来不错"}],
@@ -84,12 +66,12 @@ async def test_calendar_event_confirmation_persists_image_urls():
         },
     )
 
-    with patch("app.agents.tool_confirmation.store_action", new_callable=AsyncMock, return_value="action-123") as store:
-        output = await handle_tool_confirmation(invocation, context)
+    first = await build_confirm_card(invocation, context, action_id="t1")
+    second = await build_confirm_card(invocation, context, action_id="t1")
 
-    assert output["status"] == "waiting_confirm"
-    stored_args = store.await_args.kwargs["arguments"]
-    assert stored_args["_image_urls"] == ["/api/v1/calendar/photos/photo.jpg"]
+    assert first == second
+    assert context.result.confirm_cards == []
+    context.on_card.assert_not_awaited()
     assert "_image_urls" not in invocation.arguments
 
 
@@ -100,9 +82,10 @@ async def test_explicit_action_verb_skips_confirmation():
         messages=[{"role": "user", "content": "新增宠物维尼"}],
     )
 
-    output = await handle_tool_confirmation(
+    card = await build_confirm_card(
         ToolInvocation(id="call-1", name="create_pet", arguments={"name": "维尼"}),
         context,
+        action_id="t1",
     )
 
-    assert output is None
+    assert card is None

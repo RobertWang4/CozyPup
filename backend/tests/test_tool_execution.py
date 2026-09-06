@@ -90,7 +90,7 @@ async def test_handler_exception_returns_truncated_error():
 
 
 @pytest.mark.asyncio
-async def test_partial_confirm_stores_action_and_emits_confirm_card():
+async def test_partial_confirm_hands_the_card_back_to_the_graph():
     db = AsyncMock()
     tool_result = {
         "success": True,
@@ -99,7 +99,6 @@ async def test_partial_confirm_stores_action_and_emits_confirm_card():
         "confirm_arguments": {"pet_id": "pet-1"},
         "confirm_description": "确认修改",
     }
-    store_action = AsyncMock(return_value="action-1")
     emitted_cards = []
 
     async def on_card(card):
@@ -111,6 +110,7 @@ async def test_partial_confirm_stores_action_and_emits_confirm_card():
         session_id="session-1",
         result=SimpleNamespace(tools_executed=set(), cards=[], confirm_cards=[]),
         on_card=on_card,
+        confirm_action_id="user-1:corr-1",
     )
 
     result = await handle_tool_execution(
@@ -118,19 +118,16 @@ async def test_partial_confirm_stores_action_and_emits_confirm_card():
         context,
         validate=lambda name, args: [],
         execute=AsyncMock(return_value=tool_result),
-        store_pending_action=store_action,
     )
 
-    assert result == tool_result
-    store_action.assert_awaited_once_with(
-        db=db,
-        user_id="user-1",
-        session_id="session-1",
-        tool_name="update_pet_profile",
-        arguments={"pet_id": "pet-1"},
-        description="确认修改",
-    )
-    assert context.result.confirm_cards == [
-        {"type": "confirm_action", "action_id": "action-1", "message": "确认修改"}
-    ]
-    assert emitted_cards == context.result.confirm_cards
+    # The card is returned, not emitted: the graph's confirm node owns both
+    # the interrupt and the emission, so a resume can't double-fire it.
+    assert result["_confirm_card"] == {
+        "type": "confirm_action",
+        "action_id": "user-1:corr-1",
+        "message": "确认修改",
+    }
+    assert result["_confirm_tool"] == "update_pet_profile"
+    assert result["_confirm_arguments"] == {"pet_id": "pet-1"}
+    assert context.result.confirm_cards == []
+    assert emitted_cards == []
