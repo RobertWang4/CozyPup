@@ -95,7 +95,7 @@ class AgentState(TypedDict, total=False):
     location: dict | None
     image_urls: list[str] | None
     recent_image_urls: list[str] | None
-    suggested_actions: list
+    suggested_actions: list[dict]
 
 
 # ---------------------------------------------------------------------------
@@ -147,6 +147,17 @@ def _pet_to_dict(pet: Any) -> dict:
         "id": str(getattr(pet, "id", "")),
         "name": getattr(pet, "name", "") or "",
         "species": str(getattr(species, "value", species) or ""),
+    }
+
+
+def _action_to_dict(action: Any) -> dict:
+    """Flatten a SuggestedAction into the plain dict `review` reads."""
+    if isinstance(action, dict):
+        return action
+    return {
+        "tool_name": action.tool_name,
+        "arguments": action.arguments,
+        "confidence": action.confidence,
     }
 
 
@@ -492,11 +503,11 @@ def review_node(state: AgentState, config: RunnableConfig) -> dict:
         if missed:
             trace.record("nudge_triggered", {
                 "round": round_num,
-                "missed_tools": [a.tool_name for a in missed],
+                "missed_tools": [a["tool_name"] for a in missed],
             })
             logger.info("nudge_triggered", extra={
                 "round": round_num,
-                "missed_tools": [a.tool_name for a in missed],
+                "missed_tools": [a["tool_name"] for a in missed],
             })
             _inject_nudge(new_messages, round_text, missed, lang)
             return {
@@ -638,6 +649,34 @@ def get_graph():
 # stream_agent — entry point: yields ("sse", event) then ("result", result)
 # ---------------------------------------------------------------------------
 
+# `updates` chunks carry per-node deltas, so the accumulator has to re-apply
+# the same reducers AgentState declares.
+_ACC_ADD = ("cards", "confirm_cards", "prompt_tokens", "completion_tokens")
+_ACC_UNION = ("tools_called", "tools_executed")
+_ACC_LAST = ("plan_steps", "response_text")
+
+
+def _accumulate(acc: dict, chunk: dict) -> None:
+    """Fold one `updates` chunk into `acc`.
+
+    Non-node entries (e.g. `__interrupt__`) carry a non-dict payload and are
+    skipped rather than crashing the run.
+    """
+    if not isinstance(chunk, dict):
+        return
+    for update in chunk.values():
+        if not isinstance(update, dict):
+            continue
+        for key in _ACC_ADD:
+            if key in update:
+                acc[key] = acc[key] + update[key]
+        for key in _ACC_UNION:
+            if key in update:
+                acc[key] = acc[key] | set(update[key])
+        for key in _ACC_LAST:
+            if key in update:
+                acc[key] = update[key]
+
 async def stream_agent(
     *,
     system_prompt: str,
@@ -689,7 +728,7 @@ async def stream_agent(
         "location": location,
         "image_urls": image_urls,
         "recent_image_urls": recent_image_urls,
-        "suggested_actions": suggested_actions or [],
+        "suggested_actions": [_action_to_dict(a) for a in (suggested_actions or [])],
     }
     config = {
         "configurable": {
@@ -707,24 +746,33 @@ async def stream_agent(
         "recursion_limit": 4 * MAX_ROUNDS + 10,
     }
 
-    final_state: dict = {}
+    acc = {
+        "cards": [],
+        "confirm_cards": [],
+        "tools_called": set(),
+        "tools_executed": set(),
+        "plan_steps": [],
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "response_text": "",
+    }
     async for mode, chunk in (graph or get_graph()).astream(
-        initial, config, stream_mode=["custom", "values"]
+        initial, config, stream_mode=["custom", "updates"]
     ):
         if mode == "custom":
             yield ("sse", chunk)
         else:
-            final_state = chunk
+            _accumulate(acc, chunk)
 
     result = OrchestratorResult(
-        response_text=final_state.get("response_text", ""),
-        cards=list(final_state.get("cards") or []),
-        confirm_cards=list(final_state.get("confirm_cards") or []),
-        tools_called=set(final_state.get("tools_called") or set()),
-        tools_executed=set(final_state.get("tools_executed") or set()),
-        plan_steps=list(final_state.get("plan_steps") or []),
-        total_prompt_tokens=final_state.get("prompt_tokens", 0),
-        total_completion_tokens=final_state.get("completion_tokens", 0),
+        response_text=acc["response_text"],
+        cards=acc["cards"],
+        confirm_cards=acc["confirm_cards"],
+        tools_called=acc["tools_called"],
+        tools_executed=acc["tools_executed"],
+        plan_steps=acc["plan_steps"],
+        total_prompt_tokens=acc["prompt_tokens"],
+        total_completion_tokens=acc["completion_tokens"],
         model_used=use_model,
     )
     yield ("result", result)

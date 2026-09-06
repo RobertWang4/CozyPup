@@ -198,9 +198,9 @@ async def dispatch_tool(
 # ---------------------------------------------------------------------------
 
 def _find_missed_tools(
-    suggested_actions: list[SuggestedAction],
+    suggested_actions: list[dict],
     tools_called: set[str],
-) -> list[SuggestedAction]:
+) -> list[dict]:
     """Return high-confidence suggestions the LLM didn't call.
 
     Only tools in NUDGE_TOOLS are ever forced (search_places,
@@ -210,16 +210,16 @@ def _find_missed_tools(
     from app.agents.constants import NUDGE_TOOLS
     return [
         a for a in suggested_actions
-        if a.confidence >= NUDGE_CONFIDENCE
-        and a.tool_name not in tools_called
-        and a.tool_name in NUDGE_TOOLS
+        if a["confidence"] >= NUDGE_CONFIDENCE
+        and a["tool_name"] not in tools_called
+        and a["tool_name"] in NUDGE_TOOLS
     ]
 
 
 def _inject_nudge(
     messages: list[dict],
     last_text: str,
-    missed: list[SuggestedAction],
+    missed: list[dict],
     lang: str,
 ) -> None:
     """Inject a nudge message so the LLM calls the missed tool next round."""
@@ -230,7 +230,7 @@ def _inject_nudge(
 
     hints = []
     for a in missed:
-        hints.append(f"- {a.tool_name}({json.dumps(a.arguments, ensure_ascii=False)})")
+        hints.append(f"- {a['tool_name']}({json.dumps(a['arguments'], ensure_ascii=False)})")
 
     if lang == "zh":
         nudge_text = (

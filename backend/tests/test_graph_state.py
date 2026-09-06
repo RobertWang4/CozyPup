@@ -49,6 +49,8 @@ def _fake_dispatch(results):
         out = copy.deepcopy(results.get(name, {"success": True}))
         if out.get("success"):
             result.tools_executed.add(name)
+        if isinstance(out.get("card"), dict):
+            result.cards.append(out["card"])
         if name == "plan":
             result.plan_steps = json.loads(tool_call["function"]["arguments"])["steps"]
         return out
@@ -239,3 +241,62 @@ async def test_prompt_pushback_preamble(monkeypatch):
         pass
     assert [m["role"] for m in seen[0]] == ["system", "user", "system"]
     assert seen[0][2]["content"].startswith("⚠️【系统强制指令")
+# ---------------------------------------------------------------------------
+# 2. Serializability
+# ---------------------------------------------------------------------------
+
+@pytest.mark.asyncio
+async def test_updates_are_checkpointable(monkeypatch):
+    from langgraph.checkpoint.serde.jsonplus import JsonPlusSerializer
+
+    call = _tc("create_calendar_event", {"pet_id": "p1", "title": "吃狗粮"})
+    seen, updates, result = await _run(
+        monkeypatch,
+        [("", [call]), ("已记录", [])],
+        {"create_calendar_event": {"success": True, "card": {"type": "record"}}},
+        pets=[{"id": "p1", "name": "小黑", "species": "dog"}],
+        location={"lat": 1.0, "lng": 2.0},
+        images=["QUJD"],
+    )
+    assert updates, "expected `updates` chunks"
+
+    serde = JsonPlusSerializer()
+    accumulated: dict = {}
+    for chunk in updates:
+        serde.dumps_typed(chunk)
+        for node_update in chunk.values():
+            if isinstance(node_update, dict):
+                accumulated.update(node_update)
+    serde.dumps_typed(accumulated)
+
+    # No base64 leaked into state (it lives in config["configurable"]).
+    assert "images" not in accumulated
+    assert result.cards == [{"type": "record"}]
+
+
+@pytest.mark.asyncio
+async def test_non_node_update_chunks_are_ignored(monkeypatch):
+    """An `__interrupt__` chunk must not crash the accumulator (Phase 2b)."""
+    stream, _ = _fake_stream([("你好", [])])
+    monkeypatch.setattr(graph_mod, "_stream_completion", stream)
+    real_astream = graph_mod.get_graph().astream
+
+    async def spy_astream(initial, config, **kw):
+        yield "updates", {"__interrupt__": ("not-a-dict",)}
+        async for item in real_astream(initial, config, **kw):
+            yield item
+
+    class _G:
+        astream = staticmethod(spy_astream)
+
+    result = None
+    async for kind, payload in stream_agent(
+        graph=_G(),
+        system_prompt="SYS",
+        context_messages=[USER],
+        db=None,
+        user_id="u1",
+    ):
+        if kind == "result":
+            result = payload
+    assert result.response_text == "你好"
