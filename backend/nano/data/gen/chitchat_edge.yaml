@@ -1,0 +1,1749 @@
+- msg: 你好呀
+  label: false
+  tags: [chitchat]
+  why: 打招呼
+
+- msg: 早
+  label: false
+  tags: [chitchat, edge]
+  why: 打招呼
+
+- msg: hi
+  label: false
+  tags: [chitchat, en, edge]
+  why: 打招呼
+
+- msg: 拜拜咯
+  label: false
+  tags: [chitchat]
+  why: 告别
+
+- msg: 早上好呀 今天天气不错
+  label: false
+  tags: [chitchat, voice]
+  why: 打招呼
+
+- msg: 嗨 在吗
+  label: false
+  tags: [chitchat, voice]
+  why: 打招呼
+
+- msg: thanks a lot
+  label: false
+  tags: [chitchat, en]
+  why: 道谢
+
+- msg: 谢啦 帮大忙了
+  label: false
+  tags: [chitchat, voice]
+  why: 道谢
+
+- msg: 晚安啦
+  label: false
+  tags: [chitchat]
+  why: 告别
+
+- msg: bye bye see you
+  label: false
+  tags: [chitchat, en]
+  why: 告别
+
+- msg: 嗯 那先这样啦 拜
+  label: false
+  tags: [chitchat, voice]
+  why: 告别
+
+- msg: 下午好 刚睡醒
+  label: false
+  tags: [chitchat, voice]
+  why: 打招呼
+
+- msg: ok 拜了
+  label: false
+  tags: [chitchat, multi]
+  why: 告别
+
+- msg: 老铁 在不在
+  label: false
+  tags: [chitchat, voice]
+  why: 打招呼
+
+- msg: good morning
+  label: false
+  tags: [chitchat, en]
+  why: 打招呼
+
+- msg: 辛苦啦 谢谢你
+  label: false
+  tags: [chitchat]
+  why: 道谢
+
+- msg: 那就先聊到这 晚安
+  label: false
+  tags: [chitchat, voice]
+  why: 告别
+
+- msg: 我先去忙了 拜拜
+  label: false
+  tags: [chitchat, voice]
+  why: 告别
+
+- msg: thank you so much really
+  label: false
+  tags: [chitchat, en]
+  why: 道谢
+
+- msg: 呀 是你呀
+  label: false
+  tags: [chitchat, edge]
+  why: 打招呼
+
+- msg: "88"
+  label: false
+  tags: [chitchat, edge]
+  why: 网络用语再见
+
+- msg: 你好机器人
+  label: false
+  tags: [chitchat]
+  why: 打招呼
+
+- msg: 感恩感恩
+  label: false
+  tags: [chitchat]
+  why: 道谢
+
+- msg: see ya
+  label: false
+  tags: [chitchat, en, edge]
+  why: 告别
+
+- msg: 呃 你好 那个
+  label: false
+  tags: [chitchat, voice, edge]
+  why: 打招呼碎片
+
+- msg: 今天特别乖 一天没闯祸
+  label: false
+  tags: [chitchat, voice]
+  why: 夸宠物
+
+- msg: 豆豆学会握手了 太聪明了
+  label: false
+  tags: [chitchat, voice]
+  why: 秀技能
+
+- msg: 看他睡觉的样子 太治愈了
+  label: false
+  tags: [chitchat, voice]
+  why: 秀萌照
+
+- msg: 团子今天没拆家 给它记一功
+  label: false
+  tags: [chitchat, voice]
+  why: 夸宠物
+
+- msg: my dog just learned to sit omg so proud
+  label: false
+  tags: [chitchat, en]
+  why: 秀技能
+
+- msg: 花花第一次自己上厕所 感动哭了
+  label: false
+  tags: [chitchat, voice]
+  why: 夸宠物
+
+- msg: 球球今天见到陌生人没叫 进步了
+  label: false
+  tags: [chitchat, voice]
+  why: 夸宠物
+
+- msg: Luna is so smart she opened the door herself
+  label: false
+  tags: [chitchat, en]
+  why: 秀聪明
+
+- msg: 旺财今天特别粘人 一直跟着我
+  label: false
+  tags: [chitchat, voice]
+  why: 夸宠物
+
+- msg: 小维会自己按铃铛要出去了 好聪明
+  label: false
+  tags: [chitchat, voice]
+  why: 秀技能
+
+- msg: 咪咪今天洗澡特别乖 没挣扎
+  label: false
+  tags: [chitchat, voice]
+  why: 夸宠物
+
+- msg: 我家兔子会自己回笼子了 感觉它懂我说话
+  label: false
+  tags: [chitchat, voice]
+  why: 夸宠物
+
+- msg: 那个 豆豆今天 就是 特别懂事 自己把玩具收起来了
+  label: false
+  tags: [chitchat, voice]
+  why: 夸宠物
+
+- msg: 我家狗现在能听懂坐下和握手了 太骄傲了
+  label: false
+  tags: [chitchat, voice]
+  why: 秀技能
+
+- msg: 龟龟今天爬到石头上晒太阳 好慢好可爱
+  label: false
+  tags: [chitchat, voice]
+  why: 秀萌
+
+- msg: 团子居然会装可怜要零食了 演技绝了
+  label: false
+  tags: [chitchat, voice]
+  why: 秀萌
+
+- msg: 我家鸟今天学会说你好了 惊到我了
+  label: false
+  tags: [chitchat, voice]
+  why: 秀技能
+
+- msg: 花花今天很给面子 客人来了没乱叫
+  label: false
+  tags: [chitchat, voice]
+  why: 夸宠物
+
+- msg: max did a full spin for a treat today so proud
+  label: false
+  tags: [chitchat, en]
+  why: 秀技能
+
+- msg: 今天遛球球它一路都在闻花 特别放松
+  label: false
+  tags: [chitchat, voice]
+  why: 分享日常
+
+- msg: 仓鼠今天把瓜子都藏脸颊里了 鼓鼓的好可爱
+  label: false
+  tags: [chitchat, voice]
+  why: 秀萌
+
+- msg: he gave me a high five today im melting
+  label: false
+  tags: [chitchat, en]
+  why: 秀技能
+
+- msg: 维尼今天第一次主动亲我 好感动
+  label: false
+  tags: [chitchat, voice]
+  why: 秀萌
+
+- msg: 又拆家了 拖鞋咬烂了第三双
+  label: false
+  tags: [chitchat, voice]
+  why: 吐槽
+
+- msg: 又偷吃了 桌上的鸡胸肉不见了
+  label: false
+  tags: [chitchat, voice]
+  why: 吐槽
+
+- msg: 咬拖鞋咬得停不下来 什么招都试过了
+  label: false
+  tags: [chitchat, voice]
+  why: 吐槽
+
+- msg: 一点都不听话 叫它坐下它跟没听见一样
+  label: false
+  tags: [chitchat, voice]
+  why: 吐槽
+
+- msg: 团子把沙发角都抓烂了 心疼我的沙发
+  label: false
+  tags: [chitchat, voice]
+  why: 吐槽
+
+- msg: my dog destroyed another pillow im so done
+  label: false
+  tags: [chitchat, en]
+  why: 吐槽
+
+- msg: 豆豆今天把垃圾桶翻了个底朝天
+  label: false
+  tags: [chitchat, voice]
+  why: 吐槽
+
+- msg: 猫主子半夜三点非要玩 人都要疯了
+  label: false
+  tags: [chitchat, voice]
+  why: 吐槽
+
+- msg: he chewed through my charger cable again ugh
+  label: false
+  tags: [chitchat, en]
+  why: 吐槽
+
+- msg: 球球今天在客厅尿了 洗地毯洗到崩溃
+  label: false
+  tags: [chitchat, voice]
+  why: 吐槽
+
+- msg: 那个 维尼 就是 又把我鞋咬穿了 气死我了
+  label: false
+  tags: [chitchat, voice, edge]
+  why: 吐槽
+
+- msg: 旺财一天到晚叫个不停 邻居都来投诉了
+  label: false
+  tags: [chitchat, voice]
+  why: 吐槽
+
+- msg: 咪咪把我新买的窗帘当猫爬架 全抓花了
+  label: false
+  tags: [chitchat, voice]
+  why: 吐槽
+
+- msg: honestly this dog has zero chill at 3am every night
+  label: false
+  tags: [chitchat, en]
+  why: 吐槽
+
+- msg: 小维今天把植物全刨出来了 土撒了一地
+  label: false
+  tags: [chitchat, voice]
+  why: 吐槽
+
+- msg: Max keeps stealing socks and hiding them somewhere
+  label: false
+  tags: [chitchat, en]
+  why: 吐槽
+
+- msg: 豆豆最近特别叛逆 叫它过来它扭头就跑
+  label: false
+  tags: [chitchat, voice]
+  why: 吐槽
+
+- msg: 猫又在半夜嚎 楼下邻居肯定又要发消息了
+  label: false
+  tags: [chitchat, voice]
+  why: 吐槽
+
+- msg: my cat knocked three cups off the counter tonight
+  label: false
+  tags: [chitchat, en]
+  why: 吐槽
+
+- msg: 花花今天把我口红咬出来玩 满地都是
+  label: false
+  tags: [chitchat, voice]
+  why: 吐槽
+
+- msg: 咪咪现在只要一开门就往外冲 拦都拦不住
+  label: false
+  tags: [chitchat, voice]
+  why: 吐槽
+
+- msg: 那个 就是 家里的狗 又拆了个纸箱子 到处都是纸屑
+  label: false
+  tags: [chitchat, voice]
+  why: 吐槽
+
+- msg: 今天好累啊
+  label: false
+  tags: [chitchat, voice]
+  why: 情绪
+
+- msg: 他陪着我好多了 这段时间多亏有它
+  label: false
+  tags: [chitchat, voice]
+  why: 情绪
+
+- msg: 想他了 已经走了半年了
+  label: false
+  tags: [chitchat, voice, gray]
+  why: 宠物去世的思念
+
+- msg: 要出差不放心它 谁来喂它啊
+  label: false
+  tags: [chitchat, voice]
+  why: 情绪担忧
+
+- msg: 今天心情特别差 就它在旁边陪着我
+  label: false
+  tags: [chitchat, voice]
+  why: 情绪
+
+- msg: i miss him so much its been a year already
+  label: false
+  tags: [chitchat, en, gray]
+  why: 思念去世宠物
+
+- msg: 工作压力好大 回家看它一眼就好了很多
+  label: false
+  tags: [chitchat, voice]
+  why: 情绪
+
+- msg: 今天特别孤单 就它一直趴我腿上
+  label: false
+  tags: [chitchat, voice]
+  why: 情绪
+
+- msg: i feel so drained today work was brutal
+  label: false
+  tags: [chitchat, en]
+  why: 情绪
+
+- msg: 团子走了以后家里空落落的
+  label: false
+  tags: [chitchat, gray]
+  why: 宠物去世
+
+- msg: 那个 就是 最近压力太大了 睡不着觉
+  label: false
+  tags: [chitchat, voice]
+  why: 情绪
+
+- msg: he passed away last month i still cant believe it
+  label: false
+  tags: [chitchat, en, gray]
+  why: 宠物去世
+
+- msg: 想它了 尤其是晚上一个人的时候
+  label: false
+  tags: [chitchat, gray]
+  why: 思念
+
+- msg: honestly having him around helped me get through a lot
+  label: false
+  tags: [chitchat, en]
+  why: 情绪
+
+- msg: 最近状态好差 一点动力都没有
+  label: false
+  tags: [chitchat, voice]
+  why: 情绪
+
+- msg: 要出远门了 心里总是七上八下的
+  label: false
+  tags: [chitchat, voice]
+  why: 情绪担忧
+
+- msg: im exhausted but seeing him wag his tail makes it better
+  label: false
+  tags: [chitchat, en]
+  why: 情绪
+
+- msg: 好想它啊 已经三年了 还是会梦到它
+  label: false
+  tags: [chitchat, gray]
+  why: 思念去世宠物
+
+- msg: 今天真的太累了 加班到十点
+  label: false
+  tags: [chitchat, voice]
+  why: 情绪
+
+- msg: 有它在身边 感觉一切都值得
+  label: false
+  tags: [chitchat, voice]
+  why: 情绪
+
+- msg: 1+1等于几
+  label: false
+  tags: [chitchat, other, edge]
+  why: 测试机器人
+
+- msg: 你几岁了
+  label: false
+  tags: [chitchat, other]
+  why: 测试机器人
+
+- msg: are you a real person
+  label: false
+  tags: [chitchat, other, en]
+  why: 测试机器人
+
+- msg: 你是ai还是真人
+  label: false
+  tags: [chitchat, other]
+  why: 测试机器人
+
+- msg: 你能通过图灵测试吗
+  label: false
+  tags: [chitchat, other]
+  why: 测试机器人
+
+- msg: 你会不会骗人啊
+  label: false
+  tags: [chitchat, other]
+  why: 测试机器人
+
+- msg: 2乘以8是多少
+  label: false
+  tags: [chitchat, other, edge]
+  why: 测试机器人
+
+- msg: tell me a joke
+  label: false
+  tags: [chitchat, other, en]
+  why: 测试机器人
+
+- msg: 你叫什么名字
+  label: false
+  tags: [chitchat, other]
+  why: 测试机器人
+
+- msg: 你有感情吗
+  label: false
+  tags: [chitchat, other]
+  why: 测试机器人
+
+- msg: 你是不是一直在监听我说话
+  label: false
+  tags: [chitchat, other]
+  why: 测试机器人
+
+- msg: 说一下今天日期
+  label: false
+  tags: [chitchat, other]
+  why: 测试机器人
+
+- msg: can you pass the turing test
+  label: false
+  tags: [chitchat, other, en]
+  why: 测试机器人
+
+- msg: 你能记住我说的话吗
+  label: false
+  tags: [chitchat, other]
+  why: 测试机器人
+
+- msg: 你睡觉吗
+  label: false
+  tags: [chitchat, other, edge]
+  why: 测试机器人
+
+- msg: are you chatgpt
+  label: false
+  tags: [chitchat, other, en]
+  why: 测试机器人
+
+- msg: 你会做梦吗
+  label: false
+  tags: [chitchat, other]
+  why: 测试机器人
+
+- msg: 说个绕口令
+  label: false
+  tags: [chitchat, other]
+  why: 测试机器人
+
+- msg: do you have feelings
+  label: false
+  tags: [chitchat, other, en]
+  why: 测试机器人
+
+- msg: 100除以4等于多少
+  label: false
+  tags: [chitchat, other, edge]
+  why: 测试机器人
+
+- msg: 随便说句话我看看
+  label: false
+  tags: [chitchat, other]
+  why: 测试机器人
+
+- msg: are you always listening
+  label: false
+  tags: [chitchat, other, en]
+  why: 测试机器人
+
+- msg: 你能唱歌吗
+  label: false
+  tags: [chitchat, other]
+  why: 测试机器人
+
+- msg: 今天天气怎么样
+  label: false
+  tags: [chitchat, other]
+  why: 无关话题
+
+- msg: 帮我写作业
+  label: false
+  tags: [chitchat, other]
+  why: 无关话题
+
+- msg: 今天股票怎么样
+  label: false
+  tags: [chitchat, other]
+  why: 无关话题
+
+- msg: what movie should i watch tonight
+  label: false
+  tags: [chitchat, other, en]
+  why: 无关话题
+
+- msg: 帮我算一下这个月的房租
+  label: false
+  tags: [chitchat, other]
+  why: 无关话题
+
+- msg: 今天出去要不要带伞
+  label: false
+  tags: [chitchat, other]
+  why: 无关话题
+
+- msg: can you help me write my essay
+  label: false
+  tags: [chitchat, other, en]
+  why: 无关话题
+
+- msg: 帮我订个机票
+  label: false
+  tags: [chitchat, other]
+  why: 无关话题
+
+- msg: how is the weather today
+  label: false
+  tags: [chitchat, other, en]
+  why: 无关话题
+
+- msg: 帮我翻译一下这句英文
+  label: false
+  tags: [chitchat, other]
+  why: 无关话题
+
+- msg: 特斯拉股价今天涨了吗
+  label: false
+  tags: [chitchat, other]
+  why: 无关话题
+
+- msg: recommend me a good book
+  label: false
+  tags: [chitchat, other, en]
+  why: 无关话题
+
+- msg: 帮我写一封请假邮件
+  label: false
+  tags: [chitchat, other]
+  why: 无关话题
+
+- msg: 明天有没有雨
+  label: false
+  tags: [chitchat, other]
+  why: 无关话题
+
+- msg: what time zone is tokyo in
+  label: false
+  tags: [chitchat, other, en]
+  why: 无关话题
+
+- msg: 那个 就是 帮我看看今天有什么新闻
+  label: false
+  tags: [chitchat, other, voice]
+  why: 无关话题
+
+- msg: 帮我算一下退休金怎么算
+  label: false
+  tags: [chitchat, other]
+  why: 无关话题
+
+- msg: can you fix my code its throwing an error
+  label: false
+  tags: [chitchat, other, en]
+  why: 无关话题
+
+- msg: 世界杯什么时候开始
+  label: false
+  tags: [chitchat, other]
+  why: 无关话题
+
+- msg: 帮我想个公司起名
+  label: false
+  tags: [chitchat, other]
+  why: 无关话题
+
+- msg: 今天适合洗车吗
+  label: false
+  tags: [chitchat, other]
+  why: 无关话题
+
+- msg: whats a good recipe for dinner tonight
+  label: false
+  tags: [chitchat, other, en]
+  why: 无关话题
+
+- msg: 帮我查一下明天几点日出
+  label: false
+  tags: [chitchat, other]
+  why: 无关话题
+
+- msg: 附近哪里有健身房
+  label: false
+  tags: [chitchat, other, places]
+  why: 无关话题
+
+- msg: help me plan a trip to japan
+  label: false
+  tags: [chitchat, other, en]
+  why: 无关话题
+
+- msg: 我想报个瑜伽课 有推荐吗
+  label: false
+  tags: [chitchat, other]
+  why: 无关话题
+
+- msg: 帮我看看这道数学题怎么做
+  label: false
+  tags: [chitchat, other]
+  why: 无关话题
+
+- msg: is it going to rain tomorrow
+  label: false
+  tags: [chitchat, other, en]
+  why: 无关话题
+
+- msg: 帮我写个辞职信
+  label: false
+  tags: [chitchat, other]
+  why: 无关话题
+
+- msg: whats the exchange rate for usd today
+  label: false
+  tags: [chitchat, other, en]
+  why: 无关话题
+
+- msg: 有什么好听的歌推荐
+  label: false
+  tags: [chitchat, other]
+  why: 无关话题
+
+- msg: 帮我算个个税
+  label: false
+  tags: [chitchat, other]
+  why: 无关话题
+
+- msg: 那个 呃 就是 问一下明天天气冷不冷
+  label: false
+  tags: [chitchat, other, voice, edge]
+  why: 无关话题碎片
+
+- msg: whats a good gift for my mom's birthday
+  label: false
+  tags: [chitchat, other, en]
+  why: 无关话题
+
+- msg: 我头疼
+  label: false
+  tags: [chitchat, other, edge]
+  why: 人类医疗
+
+- msg: 我妈血压高
+  label: false
+  tags: [chitchat, other, edge]
+  why: 人类医疗
+
+- msg: 我今天肚子有点疼
+  label: false
+  tags: [chitchat, other, edge]
+  why: 人类医疗
+
+- msg: 我最近失眠特别严重
+  label: false
+  tags: [chitchat, other, edge]
+  why: 人类医疗
+
+- msg: i have a really bad headache today
+  label: false
+  tags: [chitchat, other, en, edge]
+  why: 人类医疗
+
+- msg: 我嗓子疼 是不是感冒了
+  label: false
+  tags: [chitchat, other, edge]
+  why: 人类医疗
+
+- msg: 我老婆最近腰疼得厉害
+  label: false
+  tags: [chitchat, other, edge]
+  why: 人类医疗
+
+- msg: my knee has been sore since yesterday
+  label: false
+  tags: [chitchat, other, en, edge]
+  why: 人类医疗
+
+- msg: 我今天有点发烧 头晕
+  label: false
+  tags: [chitchat, other, edge]
+  why: 人类医疗
+
+- msg: 我孩子昨晚咳嗽了一夜
+  label: false
+  tags: [chitchat, other, edge]
+  why: 人类医疗
+
+- msg: i think i pulled a muscle at the gym
+  label: false
+  tags: [chitchat, other, en, edge]
+  why: 人类医疗
+
+- msg: my throat is killing me today
+  label: false
+  tags: [chitchat, other, en, edge]
+  why: 人类医疗
+
+- msg: 我这两天一直咳嗽
+  label: false
+  tags: [chitchat, other, edge]
+  why: 人类医疗
+
+- msg: 我爸昨天量血压有点高
+  label: false
+  tags: [chitchat, other, edge]
+  why: 人类医疗
+
+- msg: i have a fever and feel dizzy
+  label: false
+  tags: [chitchat, other, en, edge]
+  why: 人类医疗
+
+- msg: 我最近牙疼得睡不着
+  label: false
+  tags: [chitchat, other, edge]
+  why: 人类医疗
+
+- msg: 我肩膀最近老是酸痛
+  label: false
+  tags: [chitchat, other, edge]
+  why: 人类医疗
+
+- msg: 😂😂😂
+  label: false
+  tags: [edge]
+  why: 纯emoji
+
+- msg: 🐶❤️
+  label: false
+  tags: [edge]
+  why: 纯emoji
+
+- msg: 啊
+  label: false
+  tags: [edge]
+  why: 单个字
+
+- msg: 嗯
+  label: false
+  tags: [edge]
+  why: 单个字
+
+- msg: 哦
+  label: false
+  tags: [edge]
+  why: 单个字
+
+- msg: "6"
+  label: false
+  tags: [edge]
+  why: 数字
+
+- msg: "123"
+  label: false
+  tags: [edge]
+  why: 数字
+
+- msg: "666"
+  label: false
+  tags: [edge]
+  why: 数字
+
+- msg: asdkfjalksd
+  label: false
+  tags: [edge]
+  why: 乱码
+
+- msg: jkljkljkl
+  label: false
+  tags: [edge]
+  why: 乱码
+
+- msg: 啊啊啊啊啊啊
+  label: false
+  tags: [edge]
+  why: 重复字
+
+- msg: 呵呵呵呵呵
+  label: false
+  tags: [edge]
+  why: 重复字
+
+- msg: 哈哈哈哈哈哈哈哈
+  label: false
+  tags: [edge]
+  why: 重复字
+
+- msg: "https://www.baidu.com"
+  label: false
+  tags: [edge]
+  why: 网址
+
+- msg: 呃 那个 就是
+  label: false
+  tags: [edge, voice]
+  why: 语音识别碎片
+
+- msg: 那个 呃
+  label: false
+  tags: [edge, voice]
+  why: 语音识别碎片
+
+- msg: 就是说 呃 那个 嗯
+  label: false
+  tags: [edge, voice]
+  why: 语音识别碎片
+
+- msg: 本文转自公众号 未经授权禁止转载 更多精彩内容请关注我们
+  label: false
+  tags: [edge]
+  why: 粘贴网页文字
+
+- msg: 点击下方链接了解更多详情 立即购买享受八折优惠
+  label: false
+  tags: [edge]
+  why: 粘贴广告文字
+
+- msg: 根据国家统计局最新数据显示今年经济增速为百分之五
+  label: false
+  tags: [edge]
+  why: 粘贴新闻文字
+
+- msg: um uh so
+  label: false
+  tags: [edge, en, voice]
+  why: 语音碎片
+
+- msg: like uh yeah
+  label: false
+  tags: [edge, en, voice]
+  why: 语音碎片
+
+- msg: "?"
+  label: false
+  tags: [edge]
+  why: 单符号
+
+- msg: "..."
+  label: false
+  tags: [edge]
+  why: 单符号
+
+- msg: 嗯嗯嗯
+  label: false
+  tags: [edge]
+  why: 重复字
+
+- msg: k
+  label: false
+  tags: [edge, en]
+  why: 单字符
+
+- msg: "555"
+  label: false
+  tags: [edge]
+  why: 数字
+
+- msg: qwerty
+  label: false
+  tags: [edge, en]
+  why: 乱码
+
+- msg: 啊这
+  label: false
+  tags: [edge]
+  why: 网络用语碎片
+
+- msg: 蚌埠住了
+  label: false
+  tags: [edge]
+  why: 网络用语
+
+- msg: nm3f0a9sdf
+  label: false
+  tags: [edge]
+  why: 乱码
+
+- msg: 什么
+  label: false
+  tags: [edge]
+  why: 短回应
+
+- msg: 额
+  label: false
+  tags: [edge]
+  why: 语气词碎片
+
+- msg: 那个
+  label: false
+  tags: [edge, voice]
+  why: 语音碎片
+
+- msg: 就是
+  label: false
+  tags: [edge, voice]
+  why: 语音碎片
+
+- msg: 然后呢
+  label: false
+  tags: [edge, voice]
+  why: 语音碎片
+
+- msg: 🐱🐱🐱
+  label: false
+  tags: [edge]
+  why: 纯emoji
+
+- msg: 😭😭
+  label: false
+  tags: [edge]
+  why: 纯emoji
+
+- msg: 👍
+  label: false
+  tags: [edge]
+  why: 纯emoji
+
+- msg: hahahaha
+  label: false
+  tags: [edge, en]
+  why: 重复字
+
+- msg: nooooo
+  label: false
+  tags: [edge, en]
+  why: 重复字
+
+- msg: "12345678"
+  label: false
+  tags: [edge]
+  why: 数字
+
+- msg: "0"
+  label: false
+  tags: [edge]
+  why: 数字
+
+- msg: 测试
+  label: false
+  tags: [edge]
+  why: 测试消息
+
+- msg: test
+  label: false
+  tags: [edge, en]
+  why: 测试消息
+
+- msg: test123
+  label: false
+  tags: [edge, en]
+  why: 测试消息
+
+- msg: 呀
+  label: false
+  tags: [edge]
+  why: 单字
+
+- msg: 哎呀
+  label: false
+  tags: [edge]
+  why: 语气词
+
+- msg: 唉
+  label: false
+  tags: [edge]
+  why: 语气词
+
+- msg: 阿巴阿巴
+  label: false
+  tags: [edge]
+  why: 网络用语
+
+- msg: sdlkfj sldkfj lksjdf
+  label: false
+  tags: [edge, en]
+  why: 乱码
+
+- msg: 家人们谁懂啊
+  label: false
+  tags: [edge]
+  why: 网络碎片
+
+- msg: 绝了
+  label: false
+  tags: [edge]
+  why: 网络碎片
+
+- msg: 破防了
+  label: false
+  tags: [edge]
+  why: 网络碎片
+
+- msg: 啊对对对
+  label: false
+  tags: [edge]
+  why: 短回应
+
+- msg: 对
+  label: false
+  tags: [confirm, edge]
+  why: 确认
+
+- msg: 不是这个
+  label: false
+  tags: [correction, edge]
+  why: 纠正
+
+- msg: 删了
+  label: false
+  tags: [delete, edge]
+  why: 删除
+
+- msg: 换个说法
+  label: false
+  tags: [correction, edge]
+  why: 纠正
+
+- msg: 算了
+  label: false
+  tags: [edge]
+  why: 短回应
+
+- msg: 没事了
+  label: false
+  tags: [edge]
+  why: 短回应
+
+- msg: haha nvm
+  label: false
+  tags: [edge, en]
+  why: 短回应
+
+- msg: "111111"
+  label: false
+  tags: [edge]
+  why: 数字重复
+
+- msg: mmmmm
+  label: false
+  tags: [edge, en]
+  why: 重复字
+
+- msg: 😅😅😅
+  label: false
+  tags: [edge]
+  why: 纯emoji
+
+- msg: 🐕💕🏠
+  label: false
+  tags: [edge]
+  why: 纯emoji
+
+- msg: 转发一下 领取限时优惠券 数量有限先到先得
+  label: false
+  tags: [edge]
+  why: 粘贴网页文字
+
+- msg: 以下为广告内容 本产品不能替代药品使用请谨慎购买
+  label: false
+  tags: [edge]
+  why: 粘贴广告
+
+- msg: whats this
+  label: false
+  tags: [edge, en]
+  why: 短回应
+
+- msg: idk
+  label: false
+  tags: [edge, en]
+  why: 短回应
+
+- msg: lol
+  label: false
+  tags: [edge, en]
+  why: 短回应
+
+- msg: 呃呃呃
+  label: false
+  tags: [edge, voice]
+  why: 语气词重复
+
+- msg: 豆豆today很乖
+  label: false
+  tags: [chitchat, multi]
+  why: 中英混合
+
+- msg: 我家狗today特别活泼
+  label: false
+  tags: [chitchat, multi]
+  why: 中英混合
+
+- msg: 咪咪 so cute today
+  label: false
+  tags: [chitchat, multi]
+  why: 中英混合
+
+- msg: 团子刚才在play with the ball
+  label: false
+  tags: [chitchat, multi]
+  why: 中英混合
+
+- msg: 今天walk了很久 好累
+  label: false
+  tags: [chitchat, multi]
+  why: 中英混合
+
+- msg: Luna今天eat了好多
+  label: false
+  tags: [chitchat, multi]
+  why: 中英混合
+
+- msg: 我的狗really需要洗澡了
+  label: false
+  tags: [chitchat, multi]
+  why: 中英混合
+
+- msg: 维尼今天super乖
+  label: false
+  tags: [chitchat, multi]
+  why: 中英混合
+
+- msg: 球球 keeps barking at nothing
+  label: false
+  tags: [chitchat, multi]
+  why: 中英混合
+
+- msg: 旺财今天jump了好高
+  label: false
+  tags: [chitchat, multi]
+  why: 中英混合
+
+- msg: Whiskers今天有点tired
+  label: false
+  tags: [chitchat, multi]
+  why: 中英混合
+
+- msg: 小维 is like the best dog ever
+  label: false
+  tags: [chitchat, multi]
+  why: 中英混合
+
+- msg: Mochi今天 acted so weird lol
+  label: false
+  tags: [chitchat, multi]
+  why: 中英混合
+
+- msg: 团子today又拆家了 真是服了
+  label: false
+  tags: [chitchat, multi]
+  why: 中英混合
+
+- msg: 豆豆 basically翻箱倒柜找零食
+  label: false
+  tags: [chitchat, multi]
+  why: 中英混合
+
+- msg: 花花今天很quiet 有点奇怪
+  label: false
+  tags: [chitchat, multi]
+  why: 中英混合
+
+- msg: 咪咪actually学会开门了
+  label: false
+  tags: [chitchat, multi]
+  why: 中英混合
+
+- msg: 好无聊
+  label: false
+  tags: [chitchat, edge]
+  why: 无宠物主语
+
+- msg: im so bored right now
+  label: false
+  tags: [chitchat, en, edge]
+  why: 无宠物主语
+
+- msg: 有人吗
+  label: false
+  tags: [chitchat, edge]
+  why: 无宠物主语
+
+- msg: 你在忙吗
+  label: false
+  tags: [chitchat, edge]
+  why: 无宠物主语
+
+- msg: 心情不好想找人说说话
+  label: false
+  tags: [chitchat, edge]
+  why: 无宠物主语
+
+- msg: anyone there
+  label: false
+  tags: [chitchat, en, edge]
+  why: 无宠物主语
+
+- msg: just feeling kinda lost today
+  label: false
+  tags: [chitchat, en, edge]
+  why: 无宠物主语
+
+- msg: 无聊死了
+  label: false
+  tags: [chitchat, edge]
+  why: 无宠物主语
+
+- msg: 今天真闲
+  label: false
+  tags: [chitchat, edge]
+  why: 无宠物主语
+
+- msg: are you there
+  label: false
+  tags: [chitchat, en, edge]
+  why: 无宠物主语
+
+- msg: 好想找人聊天
+  label: false
+  tags: [chitchat, edge]
+  why: 无宠物主语
+
+- msg: 那个 呃 没事 就是想说说话
+  label: false
+  tags: [chitchat, voice, edge]
+  why: 无宠物主语碎片
+
+- msg: 帮我推荐个适合下饭的剧
+  label: false
+  tags: [chitchat, other]
+  why: 无关话题
+
+- msg: 明天穿什么衣服合适
+  label: false
+  tags: [chitchat, other]
+  why: 无关话题
+
+- msg: whats a fun weekend activity in the city
+  label: false
+  tags: [chitchat, other, en]
+  why: 无关话题
+
+- msg: 帮我看看这个咖啡机怎么用
+  label: false
+  tags: [chitchat, other]
+  why: 无关话题
+
+- msg: can you help me pick a laptop
+  label: false
+  tags: [chitchat, other, en]
+  why: 无关话题
+
+- msg: 今天要不要加班
+  label: false
+  tags: [chitchat, other]
+  why: 无关话题
+
+- msg: 这个月账单怎么这么多
+  label: false
+  tags: [chitchat, other]
+  why: 无关话题
+
+- msg: any tips for better sleep
+  label: false
+  tags: [chitchat, other, en]
+  why: 无关话题
+
+- msg: 帮我看看这个合同条款
+  label: false
+  tags: [chitchat, other]
+  why: 无关话题
+
+- msg: he did the funniest thing today chasing his tail
+  label: false
+  tags: [chitchat, en]
+  why: 秀萌
+
+- msg: 小维今天特别粘人 一直蹭我
+  label: false
+  tags: [chitchat, voice]
+  why: 夸宠物
+
+- msg: 花花现在会自己关灯了 神奇
+  label: false
+  tags: [chitchat, voice]
+  why: 秀技能
+
+- msg: my hamster stuffed both cheeks its hilarious
+  label: false
+  tags: [chitchat, en]
+  why: 秀萌
+
+- msg: he ripped up the couch cushion while i was out
+  label: false
+  tags: [chitchat, en]
+  why: 吐槽
+
+- msg: 咪咪今天又打翻花盆了
+  label: false
+  tags: [chitchat, voice]
+  why: 吐槽
+
+- msg: 龟龟今天一直躲在壳里不出来 有点担心它心情不好
+  label: false
+  tags: [chitchat, voice]
+  why: 情绪担忧
+
+- msg: missing my old cat so much today
+  label: false
+  tags: [chitchat, en, gray]
+  why: 思念去世宠物
+
+- msg: 今天真的挺难过的 就它一直陪着
+  label: false
+  tags: [chitchat, voice]
+  why: 情绪
+
+- msg: do robots dream
+  label: false
+  tags: [chitchat, other, en]
+  why: 测试机器人
+
+- msg: 你会不会有一天取代人类
+  label: false
+  tags: [chitchat, other]
+  why: 测试机器人
+
+- msg: 帮我算一下从这里到机场要多久
+  label: false
+  tags: [chitchat, other]
+  why: 无关话题
+
+- msg: whats the best pizza place near me
+  label: false
+  tags: [chitchat, other, places, en]
+  why: 无关话题
+
+- msg: 我姐最近血脂有点高
+  label: false
+  tags: [chitchat, other, edge]
+  why: 人类医疗
+
+- msg: my mom's blood pressure has been high lately
+  label: false
+  tags: [chitchat, other, en, edge]
+  why: 人类医疗
+
+- msg: 🤔🤔🤔
+  label: false
+  tags: [edge]
+  why: 纯emoji
+
+- msg: hhhhhh
+  label: false
+  tags: [edge, en]
+  why: 重复字
+
+- msg: 团子today有点sleepy
+  label: false
+  tags: [chitchat, multi]
+  why: 中英混合
+
+- msg: 好烦啊 什么都不想做
+  label: false
+  tags: [chitchat, edge]
+  why: 无宠物主语
+
+- msg: nothing much just checking in
+  label: false
+  tags: [chitchat, en, edge]
+  why: 无宠物主语
+
+- msg: 今天特别开心 因为它冲我摇尾巴了
+  label: false
+  tags: [chitchat, voice]
+  why: 情绪
+
+- msg: 谢谢你陪我聊天
+  label: false
+  tags: [chitchat]
+  why: 道谢
+
+- msg: appreciate you
+  label: false
+  tags: [chitchat, en]
+  why: 道谢
+
+- msg: 晚点聊 我去遛狗了
+  label: false
+  tags: [chitchat, voice]
+  why: 告别
+
+- msg: 我要走了 拜拜咯
+  label: false
+  tags: [chitchat, voice]
+  why: 告别
+
+- msg: 咪咪把纸巾扯得满屋子都是
+  label: false
+  tags: [chitchat, voice]
+  why: 吐槽
+
+- msg: 花花咬了一整卷厕纸
+  label: false
+  tags: [chitchat, voice]
+  why: 吐槽
+
+- msg: 团子最近总跟我对着干
+  label: false
+  tags: [chitchat, voice]
+  why: 吐槽
+
+- msg: whats 7 times 8
+  label: false
+  tags: [chitchat, other, en, edge]
+  why: 测试机器人
+
+- msg: 你能陪我聊天吗
+  label: false
+  tags: [chitchat, other]
+  why: 测试机器人
+
+- msg: 今天温度多少度
+  label: false
+  tags: [chitchat, other]
+  why: 无关话题
+
+- msg: 帮我列个购物清单
+  label: false
+  tags: [chitchat, other]
+  why: 无关话题
+
+- msg: 我腰这两天特别酸
+  label: false
+  tags: [chitchat, other, edge]
+  why: 人类医疗
+
+- msg: 呜呜呜呜
+  label: false
+  tags: [edge]
+  why: 重复字
+
+- msg: sooo tired
+  label: false
+  tags: [edge, en]
+  why: 短碎片
+
+- msg: 那种 呃 就是那种感觉
+  label: false
+  tags: [edge, voice]
+  why: 语音碎片
+
+- msg: 咪咪today特别needy
+  label: false
+  tags: [chitchat, multi]
+  why: 中英混合
+
+- msg: 谁在啊
+  label: false
+  tags: [chitchat, edge]
+  why: 无宠物主语
+
+- msg: hey anyone around
+  label: false
+  tags: [chitchat, en, edge]
+  why: 无宠物主语
+
+- msg: he sat still for nail trimming today unbelievable
+  label: false
+  tags: [chitchat, en]
+  why: 夸宠物
+
+- msg: 花花咬断了我的耳机线
+  label: false
+  tags: [chitchat, voice]
+  why: 吐槽
+
+- msg: 龟龟走丢在客厅里找了半天 真是让人哭笑不得
+  label: false
+  tags: [chitchat, voice]
+  why: 吐槽
+
+- msg: leaving for a business trip and worried sick about him
+  label: false
+  tags: [chitchat, en]
+  why: 情绪担忧
+
+- msg: 帮我查下这个词英文怎么说
+  label: false
+  tags: [chitchat, other]
+  why: 无关话题
+
+- msg: 我最近老是心悸
+  label: false
+  tags: [chitchat, other, edge]
+  why: 人类医疗
+
+- msg: ive been having chest tightness lately not sure why
+  label: false
+  tags: [chitchat, other, en, edge]
+  why: 人类医疗
+
+- msg: 空空空
+  label: false
+  tags: [edge]
+  why: 重复字
+
+- msg: idkkk
+  label: false
+  tags: [edge, en]
+  why: 短碎片
+
+- msg: 那个啥 就是 忘了要说啥了
+  label: false
+  tags: [edge, voice]
+  why: 语音碎片
+
+- msg: Mochi today又粘人了
+  label: false
+  tags: [chitchat, multi]
+  why: 中英混合
+
+- msg: 今天啥都不想干 就想躺着
+  label: false
+  tags: [chitchat, edge]
+  why: 无宠物主语
+
+- msg: 旺财今天叼着球在门口等我下班 好感动
+  label: false
+  tags: [chitchat, voice]
+  why: 秀萌
+
+- msg: 维尼把我的耳机当玩具啃了
+  label: false
+  tags: [chitchat, voice]
+  why: 吐槽
+
+- msg: 感觉最近特别emo 幸好有它
+  label: false
+  tags: [chitchat, multi]
+  why: 情绪中英混合
+
+- msg: work trip tomorrow and im already anxious about leaving her alone
+  label: false
+  tags: [chitchat, en]
+  why: 情绪担忧
+
+- msg: 你是被谁训练出来的
+  label: false
+  tags: [chitchat, other]
+  why: 测试机器人
+
+- msg: 帮我查一下附近有没有停车场
+  label: false
+  tags: [chitchat, other, places]
+  why: 无关话题
+
+- msg: 我最近老是耳鸣
+  label: false
+  tags: [chitchat, other, edge]
+  why: 人类医疗
+
+- msg: ive had a stiff neck for three days now
+  label: false
+  tags: [chitchat, other, en, edge]
+  why: 人类医疗
+
+- msg: 呀呀呀
+  label: false
+  tags: [edge]
+  why: 重复字
+
+- msg: brb
+  label: false
+  tags: [edge, en]
+  why: 短回应
+
+- msg: 呃 我想说 那个 算了没事
+  label: false
+  tags: [edge, voice]
+  why: 语音碎片
+
+- msg: 球球today好粘人啊
+  label: false
+  tags: [chitchat, multi]
+  why: 中英混合
+
+- msg: 无聊到爆
+  label: false
+  tags: [chitchat, edge]
+  why: 无宠物主语
+
+- msg: 早安
+  label: false
+  tags: [chitchat]
+  why: 打招呼
+
+- msg: good night
+  label: false
+  tags: [chitchat, en]
+  why: 告别
+
+- msg: 太感谢了 帮了我大忙
+  label: false
+  tags: [chitchat]
+  why: 道谢
+
+- msg: 花花今天第一次学会等待指令才吃饭
+  label: false
+  tags: [chitchat, voice]
+  why: 秀技能
+
+- msg: he waited for the release command before eating today
+  label: false
+  tags: [chitchat, en]
+  why: 秀技能
+
+- msg: 团子今天把我新买的绿植啃秃了
+  label: false
+  tags: [chitchat, voice]
+  why: 吐槽
+
+- msg: 今天特别丧 摸摸它才觉得好一点
+  label: false
+  tags: [chitchat, voice]
+  why: 情绪
+
+- msg: 你能骗过人类吗
+  label: false
+  tags: [chitchat, other]
+  why: 测试机器人
+
+- msg: 帮我算下今天到现在过了多少小时
+  label: false
+  tags: [chitchat, other, edge]
+  why: 无关话题
+
+- msg: honestly just need a distraction right now
+  label: false
+  tags: [chitchat, en, edge]
+  why: 无宠物主语
+
+- msg: 咪咪今天today特别乖巧
+  label: false
+  tags: [chitchat, multi]
+  why: 中英混合
+
+- msg: 那个啊 就是 我随便说说
+  label: false
+  tags: [edge, voice]
+  why: 语音碎片

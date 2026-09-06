@@ -1,0 +1,1201 @@
+- msg: 今天遛了豆豆回来给咪咪洗了澡然后晚上吃了两罐
+  label: false
+  tags: [record, multi, voice]
+  why: 多宠物日常记录
+- msg: 帮我记一下昨天打了疫苗然后提醒我下个月驱虫
+  label: false
+  tags: [record, reminder, multi, voice]
+  why: 记录加提醒
+- msg: 那个我家狗就是今天早上吐了一次然后中午就好了吃饭也正常就是想问一下要不要紧
+  label: false
+  tags: [mild, question, voice]
+  why: 单次呕吐已恢复
+- msg: 今天带团子去打了疫苗回来路上又顺便驱了虫 晚上称了下体重
+  label: false
+  tags: [record, multi, voice]
+  why: 多项日常记录
+- msg: 早上遛了旺财 中午喂了新买的粮 它好像有点挑食就吃了几口
+  label: false
+  tags: [record, mild, voice]
+  why: 日常加轻微挑食
+- msg: 咪咪今天理了毛 剪了指甲 洗了澡 折腾一下午它挺乖的
+  label: false
+  tags: [record, multi, voice]
+  why: 多项护理记录
+- msg: 维尼和小维今天都体检了 维尼没事 小维说牙齿有点结石要洗牙
+  label: false
+  tags: [record, multi, voice]
+  why: 多宠物体检结果
+- msg: 花花今天吃了猫条 喝了点水 晚上还跟球球玩了半天特别开心
+  label: false
+  tags: [record, chitchat, voice]
+  why: 日常玩耍记录
+- msg: 早上给壮壮驱虫了 顺便把老白的疫苗也预约了下周三
+  label: false
+  tags: [record, reminder, multi, voice]
+  why: 多宠物驱虫疫苗安排
+- msg: 那个 帮我记一下 毛毛今天称重了 十二斤 然后乐乐八斤
+  label: false
+  tags: [record, multi, voice]
+  why: 多宠物称重
+- msg: 小黑今天换了新粮 布丁还在吃旧的 都吃得挺好没啥问题
+  label: false
+  tags: [record, voice]
+  why: 换粮日常
+- msg: 奥利奥早上打疫苗了 糖糖下周打 都是例行的没啥事
+  label: false
+  tags: [record, reminder, multi, voice]
+  why: 疫苗安排
+- msg: 阿福今天去公园跑了一下午 大黄在家睡了一天 挺有意思的对比
+  label: false
+  tags: [chitchat, record, voice]
+  why: 日常对比
+- msg: Coco和Bella今天都洗澡了 Coco还剪了指甲 挺配合的
+  label: false
+  tags: [record, en, multi, voice]
+  why: 多宠物护理
+- msg: Charlie今天吃了两顿饭 Rocky只吃了一顿有点没胃口
+  label: false
+  tags: [record, mild, en, voice]
+  why: 食欲略降
+- msg: 那个就是 我家两只猫今天都体重称了 一只六斤一只七斤 正常吗
+  label: false
+  tags: [record, question, multi, voice]
+  why: 常规称重询问
+- msg: 今天带球球和旺财一起遛了 球球跑得比较慢有点懒
+  label: false
+  tags: [record, chitchat, voice]
+  why: 遛狗日常
+- msg: 豆豆早上打了个喷嚏 咪咪今天理毛掉了不少毛 都是老问题了
+  label: false
+  tags: [mild, record, multi, voice]
+  why: 轻微日常症状
+- msg: 帮我记一下维尼今天体检正常 血常规和肝肾功能都没问题
+  label: false
+  tags: [record, voice]
+  why: 体检正常记录
+- msg: 团子今天去洗澡顺便剪了毛 花花在家等着挺焦虑的一直叫
+  label: false
+  tags: [record, chitchat, voice]
+  why: 洗澡加行为描述
+- msg: 那个 我家两只狗 一只驱虫了 一只还没 记一下提醒我下周补上
+  label: false
+  tags: [record, reminder, multi, voice]
+  why: 驱虫提醒
+- msg: 小维今天吃了半罐猫条 维尼吃了一整罐 胃口都挺好
+  label: false
+  tags: [record, voice]
+  why: 食欲记录
+- msg: 早上遛狗回来给壮壮擦了脚 顺便给它剪了指甲
+  label: false
+  tags: [record, voice]
+  why: 日常护理
+- msg: 老白今天打喷嚏了几次 毛毛倒是没事 就是想问一下老白是不是感冒了
+  label: false
+  tags: [mild, question, multi, voice]
+  why: 轻微症状询问
+- msg: 乐乐今天称重十斤二两 比上个月重了一点点 正常吗
+  label: false
+  tags: [record, question, voice]
+  why: 体重询问
+- msg: 帮我把小黑的生日改一下 顺便记一下它今天去打疫苗了
+  label: false
+  tags: [profile, record, voice]
+  why: 改档案加记录
+- msg: 布丁今天软便了一次 精神挺好该吃吃该玩玩 需要注意什么吗
+  label: false
+  tags: [mild, question, voice]
+  why: 单次软便询问
+- msg: 奥利奥和糖糖今天都换粮了 糖糖吃得比较慢有点挑
+  label: false
+  tags: [record, mild, multi, voice]
+  why: 换粮加轻微挑食
+- msg: 那个 阿福今天洗完澡打了个喷嚏 是不是没吹干着凉了
+  label: false
+  tags: [mild, question, voice]
+  why: 洗澡后轻微症状
+- msg: 大黄今天去体检了 医生说牙结石有点多建议洗牙 其他都正常
+  label: false
+  tags: [record, voice]
+  why: 体检结果
+- msg: my two cats got groomed today one hated it the other was chill lol
+  label: false
+  tags: [record, chitchat, multi, en, voice]
+  why: 多宠物护理
+- msg: took max for his shots today and luna gets hers next week just fyi
+  label: false
+  tags: [record, reminder, multi, en, voice]
+  why: 多宠物疫苗
+- msg: mochi threw up once this morning but seems totally fine now is that ok
+  label: false
+  tags: [mild, question, en, voice]
+  why: 单次呕吐已恢复
+- msg: whiskers had a bath today and charlie got his nails clipped busy day lol
+  label: false
+  tags: [record, chitchat, multi, en, voice]
+  why: 多宠物护理
+- msg: bella ate all her food but rocky barely touched his kinda weird right
+  label: false
+  tags: [mild, question, en, voice]
+  why: 食欲差异询问
+- msg: 那个我家猫今天早上打喷嚏 下午又挠了半天耳朵 会不会是耳螨啊
+  label: false
+  tags: [mild, question, voice]
+  why: 轻微症状询问
+- msg: 咪咪今天体重量了下五斤半 比上次轻了一点点 需要担心吗
+  label: false
+  tags: [record, question, voice]
+  why: 体重轻微变化
+- msg: 豆豆今天遛了两次 中午还睡了个长觉 晚上精神特别好
+  label: false
+  tags: [record, chitchat, voice]
+  why: 日常活动
+- msg: 团子今天吃了新买的猫粮 拉的便便有点软 是不是换粮太快了
+  label: false
+  tags: [mild, question, voice]
+  why: 换粮引起软便
+- msg: 维尼今天打完疫苗有点没精神 睡了一下午 这个正常吗
+  label: false
+  tags: [mild, question, voice]
+  why: 疫苗后轻微嗜睡
+- msg: 帮我记一下花花球球今天都称重了 都在正常范围
+  label: false
+  tags: [record, multi, voice]
+  why: 多宠物称重
+- msg: 旺财今天去公园玩了好久 回来喝水特别多 是不是玩太累了
+  label: false
+  tags: [mild, question, voice]
+  why: 运动后喝水多询问
+- msg: 那个就是 小维今天挠痒挠得有点多 是不是长跳蚤了
+  label: false
+  tags: [mild, question, voice]
+  why: 轻微挠痒询问
+- msg: 壮壮今天吃饭吃得慢 玩具也不太爱理 是不是不舒服
+  label: false
+  tags: [mild, question, voice]
+  why: 食欲略降询问
+- msg: 老白今天去看医生复查了一下上次的皮肤病 医生说好多了
+  label: false
+  tags: [record, voice]
+  why: 复查记录
+- msg: 毛毛今天打了个喷嚏 眼屎也多了点 帮我记一下顺便问下要紧吗
+  label: false
+  tags: [mild, record, question, voice]
+  why: 轻微症状加记录
+- msg: 乐乐和小黑今天都梳毛了 掉毛季节毛真是多得离谱
+  label: false
+  tags: [record, chitchat, multi, voice]
+  why: 日常护理吐槽
+- msg: 布丁今天有点软便 但是精神很好还追着球球跑 应该没事吧
+  label: false
+  tags: [mild, question, voice]
+  why: 软便精神好
+- msg: 奥利奥今天体检说心脏有点小杂音 医生说先观察不用太担心
+  label: false
+  tags: [record, voice]
+  why: 观察类体检结果
+- msg: 糖糖今天喝水特别多 是不是天热了 需要注意什么吗
+  label: false
+  tags: [mild, question, voice]
+  why: 喝水多询问
+- msg: 阿福今天洗澡的时候一直叫 洗完之后还挺开心的跑来跑去
+  label: false
+  tags: [chitchat, voice]
+  why: 日常趣事
+- msg: 大黄今天驱虫了 顺便把疫苗本拍照存了一下
+  label: false
+  tags: [record, voice]
+  why: 驱虫记录
+- msg: 帮我记一下Coco今天洗牙了 医生说牙结石清干净了
+  label: false
+  tags: [record, en, voice]
+  why: 洗牙记录
+- msg: Bella今天精神不太好 就睡觉 吃饭还是正常的 要紧吗
+  label: false
+  tags: [mild, question, en, voice]
+  why: 轻微精神差
+- msg: Rocky今天散步的时候有点跛 休息一下就好了 需要看医生吗
+  label: false
+  tags: [mild, question, en, voice]
+  why: 轻微跛行询问
+- msg: 那个 我家两只兔子今天都称重了 一只两斤一只两斤半
+  label: false
+  tags: [record, multi, voice]
+  why: 兔子称重
+- msg: 我家仓鼠今天喂了新的瓜子粮 吃得挺欢的 顺便清了笼子
+  label: false
+  tags: [record, chitchat, voice]
+  why: 仓鼠日常
+- msg: 我家的龟今天晒了半天太阳 喂了点小鱼干 挺精神的
+  label: false
+  tags: [record, chitchat, voice]
+  why: 龟日常
+- msg: 我家鸟今天叫得特别欢 喂了新的鸟食它很喜欢
+  label: false
+  tags: [record, chitchat, voice]
+  why: 鸟日常
+- msg: 团子今天去打疫苗顺便问了下医生驱虫周期是多久
+  label: false
+  tags: [record, question, voice]
+  why: 疫苗加驱虫咨询
+- msg: 那个我家猫和狗今天都打疫苗了 狗打完没事猫打完有点蔫
+  label: false
+  tags: [record, mild, multi, voice]
+  why: 疫苗后轻微反应
+- msg: 小维今天称重四公斤 上次是三点九 涨得有点快正常吗
+  label: false
+  tags: [record, question, voice]
+  why: 体重增长询问
+- msg: 咪咪今天挠了下耳朵 甩了甩头 帮我看看是不是耳朵有问题
+  label: false
+  tags: [mild, question, voice]
+  why: 轻微耳部症状
+- msg: 豆豆今天吃了新买的鸡肉干 拉的便便颜色深了点 正常吗
+  label: false
+  tags: [mild, question, voice]
+  why: 便便颜色询问
+- msg: 帮我记一下花花今天体检结果都正常 医生说很健康
+  label: false
+  tags: [record, voice]
+  why: 体检正常
+- msg: 那个就是 维尼今天打了个哈欠打了好几次 是不是没睡好
+  label: false
+  tags: [mild, question, voice]
+  why: 打哈欠询问
+- msg: 旺财今天遛的时候闻到别的狗就特别兴奋 拉都拉不住
+  label: false
+  tags: [chitchat, voice]
+  why: 行为吐槽
+- msg: 老白和毛毛今天都换了新猫砂 老白不太适应一直扒拉
+  label: false
+  tags: [record, chitchat, multi, voice]
+  why: 换猫砂日常
+- msg: 那个 我家狗今天吐了一次然后又吃了点草 这正常吗
+  label: false
+  tags: [mild, question, voice]
+  why: 单次呕吐加吃草
+- msg: 团子今天打了个喷嚏 然后又蹭了蹭鼻子 感觉像感冒了
+  label: false
+  tags: [mild, question, voice]
+  why: 轻微感冒样症状
+- msg: 乐乐今天称重的时候有点抗拒 挣扎了半天才量到
+  label: false
+  tags: [record, chitchat, voice]
+  why: 称重趣事
+- msg: 壮壮今天吃了半根火腿肠 是我不小心掉的 它自己捡的
+  label: false
+  tags: [chitchat, voice]
+  why: 轻微误食日常
+- msg: 那个我家猫今天打完疫苗后食欲有点低 睡了挺久 需要观察吗
+  label: false
+  tags: [mild, question, voice]
+  why: 疫苗后轻微反应
+- msg: 小黑今天玩球玩得特别欢 玩到自己都喘了 歇了一会就好了
+  label: false
+  tags: [chitchat, voice]
+  why: 运动后正常喘息
+- msg: 布丁今天梳毛梳出来一大团 猫毛球会不会堵住肠胃
+  label: false
+  tags: [question, mild, voice]
+  why: 毛球咨询
+- msg: 帮我记一下奥利奥今天去医院打了狂犬疫苗 顺便剪了指甲
+  label: false
+  tags: [record, multi, voice]
+  why: 疫苗加护理记录
+- msg: 糖糖今天喷嚏打了两三次 眼睛也有点湿湿的 是过敏吗
+  label: false
+  tags: [mild, question, voice]
+  why: 轻微过敏样症状
+- msg: 阿福今天称重了十五公斤 感觉是不是有点胖了
+  label: false
+  tags: [record, question, voice]
+  why: 体重询问
+- msg: 大黄今天遛狗回来脚有点脏 洗了个脚顺便剪了指甲
+  label: false
+  tags: [record, voice]
+  why: 护理记录
+- msg: 那个 就是 我家两只猫今天都体检了 结果都还没出来
+  label: false
+  tags: [record, multi, voice]
+  why: 体检等待结果
+- msg: Coco今天散步回来一直舔爪子 是不是踩到什么东西了
+  label: false
+  tags: [mild, question, en, voice]
+  why: 轻微行为询问
+- msg: Luna今天吃了新猫粮拉肚子拉了一次 精神还是很好
+  label: false
+  tags: [mild, voice]
+  why: 单次拉肚子精神好
+- msg: my dog got groomed today and my cat just watched the whole time judging him
+  label: false
+  tags: [chitchat, multi, en, voice]
+  why: 日常趣事
+- msg: gave whiskers his deworming pill today he hated it but took it eventually
+  label: false
+  tags: [record, chitchat, en, voice]
+  why: 驱虫记录
+- msg: charlie sneezed a few times today probably just dust in the yard right
+  label: false
+  tags: [mild, question, en, voice]
+  why: 轻微打喷嚏询问
+- msg: 那个我家狗今天吃饭吃得挺快 喝水也挺多 就是想记一下
+  label: false
+  tags: [record, voice]
+  why: 日常记录
+- msg: 咪咪今天理毛理得特别认真 掉了好多毛在沙发上
+  label: false
+  tags: [chitchat, voice]
+  why: 日常吐槽
+- msg: 维尼今天去打疫苗 医生顺便看了下体重说偏瘦一点点
+  label: false
+  tags: [record, voice]
+  why: 疫苗加体重反馈
+- msg: 豆豆今天遛完狗回来一直喘 歇了会就正常了 是不是天太热
+  label: false
+  tags: [mild, question, voice]
+  why: 运动后正常喘息
+- msg: 团子和花花今天都称重了 团子五斤三两 花花四斤八两
+  label: false
+  tags: [record, multi, voice]
+  why: 多宠物称重
+- msg: 那个就是 我家猫今天挠了下笼子挺兴奋的 想问问驱虫周期
+  label: false
+  tags: [chitchat, question, voice]
+  why: 驱虫周期咨询
+- msg: 旺财今天吃了新买的狗粮 便便正常 挺爱吃的
+  label: false
+  tags: [record, voice]
+  why: 换粮反馈
+- msg: 老白今天打喷嚏打了一次 就没别的事了 精神也挺好
+  label: false
+  tags: [mild, voice]
+  why: 单次打喷嚏
+- msg: 毛毛今天称重了八斤 上次体检说要控制饮食 现在感觉瘦了点
+  label: false
+  tags: [record, chitchat, voice]
+  why: 体重变化日常
+- msg: 乐乐今天洗完澡吹毛的时候一直叫 洗澡真是它的天敌
+  label: false
+  tags: [chitchat, voice]
+  why: 日常趣事
+- msg: 小黑今天去公园玩了 回来吃了一大碗饭 精神特别好
+  label: false
+  tags: [chitchat, voice]
+  why: 日常记录
+- msg: 布丁今天打了个哈欠伸了个懒腰 然后就睡了一下午
+  label: false
+  tags: [chitchat, voice]
+  why: 日常趣事
+- msg: 帮我记一下奥利奥糖糖今天都驱虫了 顺便称了体重
+  label: false
+  tags: [record, multi, voice]
+  why: 多宠物驱虫记录
+- msg: 阿福今天遛狗的时候闻到花特别兴奋 跑来跑去的
+  label: false
+  tags: [chitchat, voice]
+  why: 日常趣事
+- msg: 大黄今天体检说牙齿有点黄 医生建议刷牙 其他都正常
+  label: false
+  tags: [record, voice]
+  why: 体检结果
+- msg: 那个 就是 我家兔子今天称重了 两斤三两 感觉还挺健康的
+  label: false
+  tags: [record, voice]
+  why: 兔子称重
+- msg: Bella and Charlie both had their nails trimmed today Bella was calmer
+  label: false
+  tags: [record, multi, en, voice]
+  why: 多宠物护理
+- msg: Rocky ate a bit slower today but finished his whole bowl eventually
+  label: false
+  tags: [mild, voice, en]
+  why: 轻微食欲变化
+- msg: Mochi got his vaccine today and slept most of the afternoon after
+  label: false
+  tags: [record, mild, en, voice]
+  why: 疫苗后轻微嗜睡
+- msg: took luna and max to the park today they ran around for like two hours
+  label: false
+  tags: [chitchat, multi, en, voice]
+  why: 日常记录
+- msg: 那个 我家猫今天挠了挠耳朵 甩了甩头 会不会是耳螨啊需要滴药吗
+  label: false
+  tags: [mild, question, voice]
+  why: 轻微耳部症状询问
+- msg: 咪咪今天称重五斤一两 比上次重了点 是不是该控制下猫粮量
+  label: false
+  tags: [record, question, voice]
+  why: 体重管理询问
+- msg: 维尼今天遛完之后一直舔嘴 是不是渴了 还是有别的问题
+  label: false
+  tags: [mild, question, voice]
+  why: 轻微行为询问
+- msg: 豆豆今天洗澡的时候特别配合 洗完还抖了一身水到处都是
+  label: false
+  tags: [chitchat, voice]
+  why: 日常趣事
+- msg: 团子今天喝水好像比平时多了一点 天气热是不是正常的
+  label: false
+  tags: [mild, question, voice]
+  why: 喝水多询问
+- msg: 花花今天体检血常规正常 就是体重偏轻医生建议加餐
+  label: false
+  tags: [record, voice]
+  why: 体检建议
+- msg: 帮我记一下今天带球球去打了狂犬疫苗 下次是明年
+  label: false
+  tags: [record, reminder, voice]
+  why: 疫苗记录加周期
+- msg: 旺财今天吃饭吃得特别快 然后打了个嗝 是不是吃太急了
+  label: false
+  tags: [mild, question, voice]
+  why: 打嗝询问
+- msg: 那个就是 老白今天精神特别好 一直在家跑来跑去玩玩具
+  label: false
+  tags: [chitchat, voice]
+  why: 日常记录
+- msg: 毛毛今天称重的时候不太配合 挣扎了好久才量准
+  label: false
+  tags: [record, chitchat, voice]
+  why: 称重趣事
+- msg: 乐乐今天梳毛梳出好多死毛 掉毛季节真的太夸张了
+  label: false
+  tags: [chitchat, voice]
+  why: 日常吐槽
+- msg: 小黑今天打了个喷嚏 眼睛也有点红 是不是过敏了
+  label: false
+  tags: [mild, question, voice]
+  why: 轻微过敏症状
+- msg: 布丁今天软便了 但是精神还是很好 我记一下明天观察
+  label: false
+  tags: [mild, record, voice]
+  why: 软便观察记录
+- msg: 奥利奥今天体重称了六斤 医生说标准 挺开心的
+  label: false
+  tags: [record, chitchat, voice]
+  why: 体重正常反馈
+- msg: 糖糖今天打疫苗回来有点没精神 睡了一下午 明天应该就好了
+  label: false
+  tags: [mild, voice]
+  why: 疫苗后轻微反应
+- msg: 阿福今天遛狗回来吐了一口草 应该是吃草吐出来的没啥事
+  label: false
+  tags: [mild, voice]
+  why: 吃草呕吐
+- msg: 大黄今天称重的时候一直不老实 最后还是量到了十八公斤
+  label: false
+  tags: [record, chitchat, voice]
+  why: 称重趣事
+- msg: 那个 帮我记一下 我家两只猫今天都吃了新的化毛膏
+  label: false
+  tags: [record, multi, voice]
+  why: 化毛膏记录
+- msg: Coco今天散步的时候踩到石头跛了两步 后来就正常了
+  label: false
+  tags: [mild, en, voice]
+  why: 短暂跛行
+- msg: Luna threw up her breakfast once but ate lunch fine no big deal right
+  label: false
+  tags: [mild, question, en, voice]
+  why: 单次呕吐已恢复
+- msg: Whiskers scratched at his ear a bit today gonna keep an eye on it
+  label: false
+  tags: [mild, voice, en]
+  why: 轻微挠耳
+- msg: Bella pooped a little soft today but she's playing normally so idk
+  label: false
+  tags: [mild, en, voice]
+  why: 软便精神好
+- msg: 那个我家狗今天遛的时候拉了一次软便 后来又正常了
+  label: false
+  tags: [mild, voice]
+  why: 单次软便
+- msg: 咪咪今天挑食了 只吃了几口猫条 别的都不碰 是不是不新鲜
+  label: false
+  tags: [mild, question, voice]
+  why: 食欲略降询问
+- msg: 维尼和小维今天都驱虫了 顺便把疫苗本拍照存档
+  label: false
+  tags: [record, multi, voice]
+  why: 多宠物驱虫记录
+- msg: 豆豆今天称重的时候特别配合 一下就量好了 十二公斤
+  label: false
+  tags: [record, voice]
+  why: 称重记录
+- msg: 团子今天打了两个喷嚏 精神状态还挺好的没别的症状
+  label: false
+  tags: [mild, voice]
+  why: 轻微打喷嚏
+- msg: 花花今天喝水好像多了 是不是猫粮太咸了 需要换粮吗
+  label: false
+  tags: [mild, question, voice]
+  why: 喝水多询问
+- msg: 帮我记一下球球今天体检说耳朵有点脏 建议清理一下
+  label: false
+  tags: [record, voice]
+  why: 体检建议记录
+- msg: 那个就是 旺财今天遛狗回来一直挠痒 是不是长虫了要驱虫吗
+  label: false
+  tags: [mild, question, voice]
+  why: 挠痒驱虫询问
+- msg: 老白今天称重了七斤半 比上次瘦了点 是不是最近吃得少
+  label: false
+  tags: [record, question, voice]
+  why: 体重下降询问
+- msg: 毛毛今天打疫苗顺便问了下医生它的品种容易得什么病
+  label: false
+  tags: [record, question, knowledge, voice]
+  why: 疫苗加知识咨询
+- msg: 乐乐今天吃了新玩具啃的碎屑 有点担心会不会消化不良
+  label: false
+  tags: [mild, question, voice]
+  why: 轻微担忧咨询
+- msg: 小黑今天体检说体重正常 就是有点牙结石建议定期刷牙
+  label: false
+  tags: [record, voice]
+  why: 体检建议
+- msg: 布丁今天挠耳朵挠得有点频繁 是不是该滴点洗耳液了
+  label: false
+  tags: [mild, question, voice]
+  why: 挠耳询问
+- msg: 那个 帮我把奥利奥的照片换一下 顺便记一下今天称重六斤二两
+  label: false
+  tags: [profile, record, voice]
+  why: 改头像加记录
+- msg: 糖糖今天打了个哈欠 伸了个懒腰 然后就趴在窗台晒太阳
+  label: false
+  tags: [chitchat, voice]
+  why: 日常趣事
+- msg: 阿福今天遛狗回来喝了好多水 是不是运动量太大了
+  label: false
+  tags: [mild, question, voice]
+  why: 运动后喝水多
+- msg: 大黄今天吃饭吃得特别快 打了个嗝 休息一下就好了
+  label: false
+  tags: [mild, voice]
+  why: 打嗝日常
+- msg: 那个就是 我家猫今天称重了 五斤六两 感觉正常范围内
+  label: false
+  tags: [record, voice]
+  why: 体重记录
+- msg: Charlie had a bit of a runny nose today probably just allergies
+  label: false
+  tags: [mild, en, voice]
+  why: 轻微流鼻涕
+- msg: Rocky's weight today was 30 pounds up a bit from last month is that ok
+  label: false
+  tags: [record, question, en, voice]
+  why: 体重增长询问
+- msg: Mochi sneezed like three times in a row this morning kinda funny
+  label: false
+  tags: [mild, chitchat, en, voice]
+  why: 轻微打喷嚏
+- msg: took bella to the vet for her checkup everything looked fine just a bit of tartar
+  label: false
+  tags: [record, en, voice]
+  why: 体检结果
+- msg: 那个我家狗今天遛完之后有点跛 走一走就好了 应该没事吧
+  label: false
+  tags: [mild, question, voice]
+  why: 短暂跛行询问
+- msg: 咪咪今天理毛的时候咳了一声 是不是毛球卡到了 要吃化毛膏吗
+  label: false
+  tags: [mild, question, voice]
+  why: 轻微咳嗽询问
+- msg: 维尼今天称重四斤九两 上个月是四斤七两 涨得挺正常的
+  label: false
+  tags: [record, voice]
+  why: 体重正常增长
+- msg: 豆豆今天打完疫苗在诊所观察了半小时 医生说没事就回家了
+  label: false
+  tags: [record, voice]
+  why: 疫苗后观察记录
+- msg: 团子今天喝了好多水 拉的尿也多 是不是天气热的关系
+  label: false
+  tags: [mild, question, voice]
+  why: 饮水尿量询问
+- msg: 花花球球今天都去公园玩了 花花跑得比球球快多了
+  label: false
+  tags: [chitchat, multi, voice]
+  why: 日常趣事
+- msg: 帮我记一下旺财今天驱虫了 顺便问下多久驱一次比较好
+  label: false
+  tags: [record, question, voice]
+  why: 驱虫记录加咨询
+- msg: 那个就是 老白今天挠了下沙发 指甲有点长了该剪了
+  label: false
+  tags: [chitchat, voice]
+  why: 日常观察
+- msg: 毛毛今天吃饭吃得挺香 喝水也正常 就是想记一下今天的状态
+  label: false
+  tags: [record, voice]
+  why: 日常状态记录
+- msg: 乐乐今天称重的时候一直挣扎 最后还是量到了九斤
+  label: false
+  tags: [record, chitchat, voice]
+  why: 称重趣事
+- msg: 小黑今天打喷嚏打了几次 眼睛也有点湿 会不会是感冒了
+  label: false
+  tags: [mild, question, voice]
+  why: 轻微感冒样症状
+- msg: 布丁今天软便了一次 我记一下 明天如果还这样再去看医生
+  label: false
+  tags: [mild, record, voice]
+  why: 软便观察计划
+- msg: 那个我家两只狗今天都遛了 一只跑得欢一只有点懒懒的
+  label: false
+  tags: [chitchat, multi, voice]
+  why: 日常对比
+- msg: 奥利奥今天体检肝肾功能都正常 医生说很健康继续保持
+  label: false
+  tags: [record, voice]
+  why: 体检正常
+- msg: 糖糖今天打疫苗有点疼叫了一声 打完就没事了照常玩
+  label: false
+  tags: [record, chitchat, voice]
+  why: 疫苗日常反应
+- msg: 阿福今天称重十六公斤 医生说需要控制下体重 要不要换粮
+  label: false
+  tags: [record, question, voice]
+  why: 体重控制咨询
+- msg: 大黄今天挠痒挠得有点多 是不是该洗澡了 顺便驱个虫
+  label: false
+  tags: [mild, record, voice]
+  why: 挠痒加驱虫计划
+- msg: 那个就是 我家猫今天理毛掉了好多毛 是不是换季了
+  label: false
+  tags: [chitchat, question, voice]
+  why: 换季掉毛咨询
+- msg: Coco's appetite was a bit low today only ate half her usual amount
+  label: false
+  tags: [mild, en, voice]
+  why: 食欲略降
+- msg: Luna and Max both got weighed today Luna is 12 pounds Max is 20
+  label: false
+  tags: [record, multi, en, voice]
+  why: 多宠物称重
+- msg: Whiskers hiccuped a bunch after eating fast today kinda funny to watch
+  label: false
+  tags: [mild, chitchat, en, voice]
+  why: 打嗝日常
+- msg: Bella's poop was a little loose today but otherwise she's her normal self
+  label: false
+  tags: [mild, en, voice]
+  why: 软便精神好
+- msg: my dog and cat both got their nails done today the cat was not happy about it
+  label: false
+  tags: [record, chitchat, multi, en, voice]
+  why: 多宠物护理趣事
+- msg: 那个 我家狗今天去公园玩得挺开心的 跑了好几圈 回来吃饭特别香
+  label: false
+  tags: [chitchat, voice]
+  why: 一天故事
+- msg: 今天带咪咪去朋友家串门 它一直躲在沙发底下不出来 挺胆小的
+  label: false
+  tags: [chitchat, voice]
+  why: 一天故事
+- msg: 维尼今天在阳台上晒了一下午太阳 睡得特别香 特别可爱
+  label: false
+  tags: [chitchat, voice]
+  why: 一天故事
+- msg: 早上带豆豆遛弯遇到个大狗 它吓得躲我身后 挺搞笑的
+  label: false
+  tags: [chitchat, voice]
+  why: 一天故事
+- msg: 团子今天拆家了 把纸巾抽了满地都是 挺闹心又挺好笑的
+  label: false
+  tags: [chitchat, voice]
+  why: 一天故事
+- msg: 花花今天第一次见到镜子里的自己 炸毛炸了半天 太逗了
+  label: false
+  tags: [chitchat, voice]
+  why: 一天故事
+- msg: 球球今天学会了新指令握手 教了好久终于学会了特开心
+  label: false
+  tags: [chitchat, voice]
+  why: 一天故事
+- msg: 旺财今天在小区里追了只蝴蝶追了半天 也没追上 挺可爱的
+  label: false
+  tags: [chitchat, voice]
+  why: 一天故事
+- msg: 老白今天窝在我怀里睡了两个小时 一动都不想动 好治愈
+  label: false
+  tags: [chitchat, voice]
+  why: 一天故事
+- msg: 毛毛今天跟邻居家的猫隔着窗户对视了好久 谁也不让谁
+  label: false
+  tags: [chitchat, voice]
+  why: 一天故事
+- msg: 乐乐今天下雨天不肯出门遛 在家憋了一天挺无聊的
+  label: false
+  tags: [chitchat, voice]
+  why: 一天故事
+- msg: 小黑今天第一次坐电梯 特别紧张 全程都在发抖 好心疼
+  label: false
+  tags: [chitchat, voice]
+  why: 一天故事
+- msg: 布丁今天趴在键盘上不肯走 我打字都打不了 特别粘人
+  label: false
+  tags: [chitchat, voice]
+  why: 一天故事
+- msg: 奥利奥今天跟着我在厨房转来转去 一直等我掉吃的
+  label: false
+  tags: [chitchat, voice]
+  why: 一天故事
+- msg: 糖糖今天在花园里挖了个大坑 全身都是泥 洗了好久才干净
+  label: false
+  tags: [chitchat, voice]
+  why: 一天故事
+- msg: 阿福今天遇到雷阵雨 吓得躲进衣柜里 好久才敢出来
+  label: false
+  tags: [chitchat, voice]
+  why: 一天故事
+- msg: 大黄今天陪我散步散了一个小时 很乖一直跟在旁边
+  label: false
+  tags: [chitchat, voice]
+  why: 一天故事
+- msg: 那个 我家猫今天第一次尝试爬猫爬架 爬到一半就不敢下来了
+  label: false
+  tags: [chitchat, voice]
+  why: 一天故事
+- msg: 维尼今天特别粘人 一直跟在我脚边 走哪跟哪
+  label: false
+  tags: [chitchat, voice]
+  why: 一天故事
+- msg: 豆豆今天在公园交到了新朋友 一只金毛 两个玩了一下午
+  label: false
+  tags: [chitchat, voice]
+  why: 一天故事
+- msg: 咪咪今天把我新买的毛线团玩得到处都是 家里跟战场一样
+  label: false
+  tags: [chitchat, voice]
+  why: 一天故事
+- msg: 团子今天睡觉打呼噜特别大声 把我笑醒了
+  label: false
+  tags: [chitchat, voice]
+  why: 一天故事
+- msg: 花花今天第一次出门 全程都趴在包里不敢探头 挺害羞的
+  label: false
+  tags: [chitchat, voice]
+  why: 一天故事
+- msg: 球球今天在草地上打滚打了好久 浑身都是草屑
+  label: false
+  tags: [chitchat, voice]
+  why: 一天故事
+- msg: 旺财今天看到快递员就一直叫 平时也是这样 挺护家的
+  label: false
+  tags: [chitchat, voice]
+  why: 一天故事
+- msg: 老白今天窝在纸箱里不肯出来 明明有猫窝不睡非睡箱子
+  label: false
+  tags: [chitchat, voice]
+  why: 一天故事
+- msg: 毛毛今天跟我抢薯片吃 虽然我没给它 它自己努力够
+  label: false
+  tags: [chitchat, voice]
+  why: 一天故事
+- msg: 乐乐今天在沙发上找了个新角度睡觉 姿势特别奇怪但很萌
+  label: false
+  tags: [chitchat, voice]
+  why: 一天故事
+- msg: 小黑今天跟着我去超市门口等我 一直很有耐心地趴着
+  label: false
+  tags: [chitchat, voice]
+  why: 一天故事
+- msg: 布丁今天不知道为啥一直追自己尾巴转圈 转了好几分钟
+  label: false
+  tags: [chitchat, voice]
+  why: 一天故事
+- msg: 奥利奥今天第一次见到吸尘器 吓得炸毛跑进了衣柜
+  label: false
+  tags: [chitchat, voice]
+  why: 一天故事
+- msg: 糖糖今天在院子里挖到一只青蛙 追着玩了半天没抓到
+  label: false
+  tags: [chitchat, voice]
+  why: 一天故事
+- msg: my cat discovered the water fountain today and now she won't stop playing in it
+  label: false
+  tags: [chitchat, en, voice]
+  why: 一天故事
+- msg: took my dog to the beach for the first time today he was so scared of the waves lol
+  label: false
+  tags: [chitchat, en, voice]
+  why: 一天故事
+- msg: my two dogs had a whole zoomies session in the yard today it was hilarious
+  label: false
+  tags: [chitchat, multi, en, voice]
+  why: 一天故事
+- msg: bella learned to sit today after like a week of trying so proud of her
+  label: false
+  tags: [chitchat, en, voice]
+  why: 一天故事
+- msg: charlie stole a sock again and paraded it around the house like a trophy
+  label: false
+  tags: [chitchat, en, voice]
+  why: 一天故事
+- msg: 今天带团子去朋友家玩 它跟朋友家的猫处得还挺好的没打架
+  label: false
+  tags: [chitchat, voice]
+  why: 一天故事
+- msg: 那个我家狗今天在公园遇到下雨 淋了一身湿 回来给它吹干了
+  label: false
+  tags: [chitchat, voice]
+  why: 一天故事
+- msg: 维尼今天特别兴奋 追着激光笔跑了半天 累得直接躺地上
+  label: false
+  tags: [chitchat, voice]
+  why: 一天故事
+- msg: 豆豆今天早上不太想起床 我拽了半天才拽起来去遛弯
+  label: false
+  tags: [chitchat, voice]
+  why: 一天故事
+- msg: 咪咪今天在窗边看鸟看了一整个下午 尾巴一直在抖
+  label: false
+  tags: [chitchat, voice]
+  why: 一天故事
+- msg: 那个 就是 我家狗今天在小区里被别的狗欺负了一下 吓到了
+  label: false
+  tags: [chitchat, voice]
+  why: 一天故事
+- msg: 花花今天第一次尝试新玩具 逗猫棒 玩得停不下来
+  label: false
+  tags: [chitchat, voice]
+  why: 一天故事
+- msg: 球球今天陪我加班 一直趴在电脑旁边睡觉 特别乖
+  label: false
+  tags: [chitchat, voice]
+  why: 一天故事
+- msg: 旺财今天在公园里滚了一身泥 洗澡洗了半天才干净
+  label: false
+  tags: [record, chitchat, voice]
+  why: 一天故事
+- msg: 老白今天跟我抢枕头睡 半夜把我挤到床边上去了
+  label: false
+  tags: [chitchat, voice]
+  why: 一天故事
+- msg: 毛毛今天第一次坐车去外面 全程都很紧张一直叫
+  label: false
+  tags: [chitchat, voice]
+  why: 一天故事
+- msg: 那个就是 我家猫今天把窗帘当成了新玩具 抓得到处是洞
+  label: false
+  tags: [chitchat, voice]
+  why: 一天故事
+- msg: 乐乐今天特别活泼 满屋子跑来跑去 精力旺盛得很
+  label: false
+  tags: [chitchat, voice]
+  why: 一天故事
+- msg: 小黑今天陪邻居家小孩玩了一下午 特别温顺没咬人
+  label: false
+  tags: [chitchat, voice]
+  why: 一天故事
+- msg: 布丁今天蹭我裤脚一直要抱抱 抱了半小时才满足
+  label: false
+  tags: [chitchat, voice]
+  why: 一天故事
+- msg: 那个 帮我记一下豆豆今天遛了两次 然后咪咪今天也洗了澡 顺便问下咪咪最近打喷嚏正常吗
+  label: false
+  tags: [record, mild, question, multi, voice]
+  why: 多项记录加询问
+- msg: 团子今天去打疫苗顺便驱虫了 回来吃了顿饭 精神也挺好 就是有点犯困睡了一下午
+  label: false
+  tags: [record, mild, voice]
+  why: 疫苗驱虫加轻微嗜睡
+- msg: 那个我家两只猫今天都体检了 一只说牙齿要洗 一只说体重偏胖建议控制饮食
+  label: false
+  tags: [record, multi, voice]
+  why: 多宠物体检结果
+- msg: 豆豆今天遛完狗回来吃了饭喝了水 然后打了个哈欠就去睡觉了 挺正常的一天
+  label: false
+  tags: [record, chitchat, voice]
+  why: 一天故事
+- msg: 咪咪今天挠了挠耳朵 甩了甩头 然后又去理毛了 感觉没啥大事就是有点烦躁
+  label: false
+  tags: [mild, voice]
+  why: 轻微行为
+- msg: 那个就是 维尼今天称重体检都做了 结果都挺好 就是牙有点结石 顺便问一下多久洗一次牙合适
+  label: false
+  tags: [record, question, voice]
+  why: 体检加咨询
+- msg: 我家狗今天早上遛弯的时候拉了一次软便 后来中午又拉了一次正常的 精神一直很好 想问问需要吃药吗
+  label: false
+  tags: [mild, question, voice]
+  why: 软便询问
+- msg: 那个 花花今天洗完澡吹毛的时候一直叫唤 洗完之后又变得特别粘人 一直蹭我
+  label: false
+  tags: [chitchat, voice]
+  why: 一天故事
+- msg: 帮我记一下球球和旺财今天都去打疫苗了 球球打完没事 旺财打完哼哼唧唧的 是不是有点疼
+  label: false
+  tags: [record, mild, multi, voice]
+  why: 多宠物疫苗记录
+- msg: 老白今天称重喝水吃饭都记了一下 体重正常 喝水好像比平时多一点点 天热应该没事吧
+  label: false
+  tags: [record, mild, question, voice]
+  why: 多项记录加询问
+- msg: my cat and dog both had checkups today the vet said everything looked fine except my cat needs a dental cleaning soon
+  label: false
+  tags: [record, multi, en, voice]
+  why: 多宠物体检结果
+- msg: took bella for her deworming today and also weighed her she's at 25 pounds now up a little
+  label: false
+  tags: [record, en, voice]
+  why: 驱虫加称重
+- msg: rocky sneezed a couple times today and seemed a bit sleepy after his walk probably just tired
+  label: false
+  tags: [mild, en, voice]
+  why: 轻微症状
+- msg: mochi threw up once after eating too fast today then acted totally normal the rest of the day
+  label: false
+  tags: [mild, voice, en]
+  why: 单次呕吐已恢复
+- msg: luna and charlie both got their nails trimmed and had a bath today they smell so good now lol
+  label: false
+  tags: [record, chitchat, multi, en, voice]
+  why: 多宠物护理
+- msg: 那个我家狗今天去公园玩了一下午 回来精神特别好 就是喝水有点多 应该是渴了吧不是啥大事
+  label: false
+  tags: [chitchat, mild, voice]
+  why: 一天故事加轻微观察
+- msg: 团子今天在家拆家把沙发抓破了个洞 我心疼死了 不过它没受伤挺开心的
+  label: false
+  tags: [chitchat, voice]
+  why: 一天故事
+- msg: 帮我记一下今天壮壮驱虫了 顺便体重称了一下 十九公斤 感觉有点重了要不要控制饮食
+  label: false
+  tags: [record, question, voice]
+  why: 驱虫称重加咨询
+- msg: 那个就是 我家猫今天体检说肾功能指标有点偏高一点点 医生说先观察三个月复查
+  label: false
+  tags: [record, voice]
+  why: 观察类体检结果
+- msg: 咪咪今天早上打了个喷嚏 中午挠了挠耳朵 晚上又蹭鼻子 是不是感冒了需要吃药吗
+  label: false
+  tags: [mild, question, voice]
+  why: 多个轻微症状
+- msg: 那个 帮我记一下 我家两只狗今天都遛了 一只跑了三公里一只只走了一公里比较懒
+  label: false
+  tags: [record, chitchat, multi, voice]
+  why: 多宠物运动记录
+- msg: 大黄今天去洗澡剪指甲顺便驱虫了 洗完之后特别精神一直在家里跑
+  label: false
+  tags: [record, chitchat, voice]
+  why: 多项护理记录
+- msg: 老白毛毛今天都称重了 老白八斤毛毛六斤 都在正常范围没啥问题
+  label: false
+  tags: [record, multi, voice]
+  why: 多宠物称重
+- msg: 那个就是 我家兔子今天称重了顺便喂了新的干草 吃得还挺开心的
+  label: false
+  tags: [record, chitchat, voice]
+  why: 兔子日常
+- msg: 布丁今天打疫苗回来有点没精神 睡了很久 我记一下明天观察一下如果还这样就去医院
+  label: false
+  tags: [record, mild, voice]
+  why: 疫苗后观察计划
+- msg: 奥利奥糖糖今天都体检了 结果都挺好 就是奥利奥体重偏轻一点点医生建议加餐
+  label: false
+  tags: [record, multi, voice]
+  why: 多宠物体检结果
+- msg: 那个 我家猫今天挑食了一天 只吃了几口猫条 别的都不理 是不是猫粮不新鲜了
+  label: false
+  tags: [mild, question, voice]
+  why: 食欲略降询问
+- msg: 帮我记一下今天带豆豆咪咪一起去体检了 豆豆都正常 咪咪牙结石有点多
+  label: false
+  tags: [record, multi, voice]
+  why: 多宠物体检结果
+- msg: 阿福今天遛狗回来喝水特别多 又尿了好几次 是不是天太热了中暑了
+  label: false
+  tags: [mild, question, voice]
+  why: 喝水多需鉴别
+- msg: 今天带豆豆去公园玩了挺开心的回来吃了饭然后就突然倒地上抽起来了现在还在抽怎么办
+  label: true
+  tags: [neuro, seizure, voice, panic]
+  why: 突然抽搐持续中
+- msg: 早上还好好的中午吃了点东西然后就开始吐现在吐的全是血趴着不动了
+  label: true
+  tags: [bleeding, gdv, voice, panic]
+  why: 吐血加瘫软不动
+- msg: he was fine this morning went for a walk then came back and his belly got really big and hard and he keeps retching but nothing comes out
+  label: true
+  tags: [gdv, en, voice]
+  why: 腹胀干呕典型胃扭转
+- msg: 那个今天带团子去打了疫苗回来路上还挺正常的 结果到家没多久就开始一直吐口水然后嘴巴张得老大喘不上气
+  label: true
+  tags: [breathing, voice, panic]
+  why: 张口呼吸喘不上气
+- msg: 今天早上遛完狗就一直挺乖的 中午吃了点饭 结果下午睡着睡着突然就叫不醒了怎么推都没反应
+  label: true
+  tags: [neuro, voice, panic]
+  why: 昏迷叫不醒
+- msg: 今天带咪咪出去玩了一整天回来给它洗了个澡 洗完之后没多久突然就倒地上了四肢一直在抽搐
+  label: true
+  tags: [neuro, seizure, voice]
+  why: 倒地抽搐
+- msg: went to the vet this morning for a routine checkup everything was fine came home ate dinner and now he's collapsed on the floor and won't get up
+  label: true
+  tags: [neuro, en, voice]
+  why: 突然倒地不起
+- msg: 那个就是 今天带旺财遛了两次 第二次遛完回来发现它牙龈看着特别白 平时不这样 精神也很差
+  label: true
+  tags: [shock, voice]
+  why: 牙龈发白加精神差
+- msg: 早上还挺正常的吃了早饭 结果不知道怎么回事下午打扫的时候发现地上有巧克力包装纸 它把整袋巧克力都吃了
+  label: true
+  tags: [toxin, voice, panic]
+  why: 大量误食巧克力
+- msg: 今天带小维去朋友家玩 朋友家有百合花 回来发现它一直流口水精神特别差 趴着不动也不理人
+  label: true
+  tags: [toxin, voice]
+  why: 猫接触百合中毒
+- msg: 今天带壮壮出去遛弯 路上被一辆闯红灯的车撞到了 现在一直在流血站不起来
+  label: true
+  tags: [trauma, bleeding, voice, panic]
+  why: 车祸出血站不起来
+- msg: this morning we went to the park had a great time came home for lunch and after that he just laid down and started shaking all over and won't stop
+  label: true
+  tags: [seizure, en, voice]
+  why: 全身持续抽搐
+- msg: 那个 今天早上给花花喂了猫粮 中午看它没什么精神 到了晚上发现它一直在挠脸 嘴巴肿得老大呼吸也不太顺畅
+  label: true
+  tags: [breathing, voice]
+  why: 面部肿胀呼吸不畅
+- msg: 今天带球球去公园玩水 回来之后一直在发抖 摸它身上特别烫 走两步就晃一下站不稳
+  label: true
+  tags: [heat, voice]
+  why: 中暑瘫软站不稳
+- msg: 早上出门前给它拿了一片我自己吃的降压药放桌上 回来发现药不见了 它一直在旁边打转看着有点不对劲
+  label: true
+  tags: [toxin, voice]
+  why: 人用药疑似误食
+- msg: today we drove to grandmas house he seemed a little off during the ride and now hes drooling a ton and his gums look pale white
+  label: true
+  tags: [shock, en, voice]
+  why: 牙龈发白流涎
+- msg: 那个就是 今天老白在阳台上晒太阳晒了一下午 傍晚喂食的时候发现它蹲在猫砂盆里一直用力尿不出来还一直叫
+  label: true
+  tags: [urinary, voice]
+  why: 公猫尿不出典型
+- msg: 今天毛毛在家里玩得挺开心 晚上给它喂了点零食 结果没多久发现它一直干呕肚子鼓得特别大摸着硬邦邦的
+  label: true
+  tags: [gdv, voice]
+  why: 腹胀硬干呕
+- msg: 早上带乐乐去公园散步一切正常 回来吃了午饭睡了一觉 醒来之后发现它一条腿好像不太敢用力 走路一瘸一拐还哀叫两声
+  label: false
+  tags: [mild, gray, voice]
+  why: 单腿跛行非致命
+- msg: we took him to daycare today he had so much fun playing with other dogs but when we picked him up his mouth was bleeding a lot and wont stop
+  label: true
+  tags: [bleeding, en, voice]
+  why: 出血不止
+- msg: 那个 小黑今天一整天都挺乖的 就是傍晚出去遛弯的时候突然一头栽倒在地上 眼睛往上翻怎么叫都没反应
+  label: true
+  tags: [neuro, voice, panic]
+  why: 倒地眼球上翻无反应
+- msg: 今天布丁在家自己玩逗猫棒玩得挺开心 后来我去做饭 回来发现它趴在地上呼吸特别急促 嘴巴微张舌头颜色不太对
+  label: true
+  tags: [breathing, voice]
+  why: 呼吸急促舌色异常
+- msg: 早上带奥利奥出去玩了会 中午它自己在院子里转悠 后来发现它嘴里叼着颗葡萄 好像已经吃了好几颗了
+  label: true
+  tags: [toxin, voice]
+  why: 大量葡萄误食
+- msg: my dog got into the garage this afternoon while i was cleaning and i just noticed he chewed through a bottle of antifreeze and theres some spilled and he already licked it
+  label: true
+  tags: [toxin, en, voice]
+  why: 防冻液误食
+- msg: 那个就是 今天糖糖跟着我去逛超市外面等着 回来之后没多久突然就开始一直咳嗽然后卡在那不动了嘴巴一直开着喘
+  label: true
+  tags: [breathing, voice]
+  why: 呼吸困难持续
+- msg: 今天阿福在院子里挖坑玩了半天 挖着挖着突然叫了一声 我过去一看它眼睛旁边好像被蚊子咬了鼓了个小包
+  label: false
+  tags: [mild, gray, voice]
+  why: 眼周小肿包非致命
+- msg: 早上大黄跟我去菜市场溜达了一圈 回来吃了饭 下午睡午觉的时候我听到奇怪的声音过去看它四肢在僵直的抽
+  label: true
+  tags: [seizure, voice]
+  why: 睡眠中抽搐
+- msg: took my cat to a friends house today for a playdate everything was normal until she suddenly went limp and wont respond when i call her name
+  label: true
+  tags: [neuro, en, voice]
+  why: 瘫软无反应
+- msg: 那个 今天带Coco去公园玩飞盘玩得特别开心 回家路上突然就开始一瘸一拐的 抬起一条腿不敢落地 而且牙龈看着发白
+  label: true
+  tags: [shock, trauma, voice]
+  why: 跛行加牙龈发白
+- msg: 早上喂了Bella早饭 它吃得挺欢 中午我在收拾房间的时候发现地上一堆老鼠药的包装 它好像啃了
+  label: true
+  tags: [toxin, voice]
+  why: 鼠药误食
+- msg: we had a nice walk this morning and he ate his lunch just fine but this evening he suddenly started gagging over and over and his stomach looks swollen
+  label: true
+  tags: [gdv, en, voice]
+  why: 腹胀干呕
+- msg: 那个就是 今天早上遛完狗回来一切正常 晚上散步的时候路过马路突然被一辆车撞飞了 现在躺地上起不来一直呜咽
+  label: true
+  tags: [trauma, voice, panic]
+  why: 车祸受伤起不来
+- msg: 今天维尼在家睡了一整天 晚上起来吃饭 吃到一半突然停下来 然后开始全身僵硬抖动嘴角有白沫
+  label: true
+  tags: [seizure, voice]
+  why: 进食中突发抽搐
+- msg: 早上带Max去朋友家玩 玩得挺开心跟朋友家的狗打闹了一下午 结果回家路上发现它一条后腿一直流血止不住
+  label: true
+  tags: [bleeding, trauma, en, voice]
+  why: 咬伤出血不止
+- msg: 那个 今天Luna在厨房转悠的时候 我把巧克力蛋糕放在桌上一下没看住 回来发现整块都被她吃了 现在她一直吐还站不稳
+  label: true
+  tags: [toxin, voice, en]
+  why: 大量误食加呕吐站不稳
+- msg: 今天早上给花花喂了早饭 挺正常 下午它在窗边晒太阳的时候突然摔下来了 之后一条腿就抬不起来了走路很怪
+  label: true
+  tags: [trauma, voice]
+  why: 高坠后肢体异常
+- msg: my friends dog just got hit by a car right outside her house she doesnt know what to do and hes bleeding a lot right now
+  label: true
+  tags: [other_owner, trauma, bleeding, en, panic]
+  why: 他人宠物正在求助
+- msg: 那个我朋友家猫刚才误食了百合花花粉现在一直吐口水她慌得不行问我怎么办
+  label: true
+  tags: [other_owner, toxin, voice, panic]
+  why: 他人宠物正在求助
+- msg: 今天旺财在家玩球玩得可开心了 结果晚饭后突然肚子胀得跟气球一样硬邦邦的 一直想吐又吐不出来 走路都摇摇晃晃
+  label: true
+  tags: [gdv, voice]
+  why: 腹胀干呕摇晃
+- msg: took him to the groomer this morning he looked great after came home ate normally and then out of nowhere he collapsed and is barely breathing
+  label: true
+  tags: [neuro, breathing, en, voice]
+  why: 倒地呼吸微弱
+- msg: 那个就是 今天早上小维还在阳台晒太阳好好的 中午喂食发现它一直趴着不肯动 摸肚子发现硬得跟石头一样还一直干呕
+  label: true
+  tags: [gdv, voice]
+  why: 腹部硬干呕
+- msg: 今天早上带毛毛去公园玩了两个小时 特别开心 傍晚回家吃饭的时候突然一口没咽下去就倒地上抽搐了
+  label: true
+  tags: [seizure, voice]
+  why: 进食后突发抽搐
+
+- msg: 那个 就是 我家两只兔子今天都梳毛了 顺便看了下牙齿有点长了要不要磨牙
+  label: false
+  tags: [record, question, multi, voice]
+  why: 兔子日常加询问
+- msg: 帮我记一下今天壮壮阿福都去打疫苗了 壮壮打完没事 阿福打完睡了一下午
+  label: false
+  tags: [record, mild, multi, voice]
+  why: 多宠物疫苗记录
+- msg: little bit of a ramble but max and bella both got their checkups today max is all good bella needs a dental
+  label: false
+  tags: [record, multi, en, voice]
+  why: 多宠物体检结果
+- msg: 那个我家猫今天挠了挠沙发 指甲有点长 顺便记一下明天带去剪指甲
+  label: false
+  tags: [record, chitchat, voice]
+  why: 日常护理计划
+- msg: 今天团子花花都在家玩了一天 团子把猫抓板抓坏了 花花在旁边看热闹
+  label: false
+  tags: [chitchat, multi, voice]
+  why: 一天故事

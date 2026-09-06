@@ -1,0 +1,1200 @@
+- msg: 新养了只柯基叫团子 公的三个月
+  label: false
+  tags: [profile, voice]
+  why: 建档新宠物
+- msg: 我有两只猫 一只叫米米一只叫球球
+  label: false
+  tags: [profile, multi, voice]
+  why: 建档多宠
+- msg: 昨天捡了只流浪猫 想给他建个档案
+  label: false
+  tags: [profile, voice]
+  why: 建档流浪猫
+- msg: adopted a senior beagle last week need to set up his profile
+  label: false
+  tags: [profile, en, voice]
+  why: 建档老年犬
+- msg: 帮我建个档 狗狗叫旺财 公的 两岁多
+  label: false
+  tags: [profile, voice]
+  why: 建档
+- msg: 刚领养了只兔子 叫小灰 母的
+  label: false
+  tags: [profile, voice]
+  why: 建档兔子
+- msg: 我家新来了只仓鼠 帮忙记一下
+  label: false
+  tags: [profile, voice]
+  why: 建档仓鼠
+- msg: got a new corgi puppy his name is mochi he's like 3 months
+  label: false
+  tags: [profile, en, voice]
+  why: 建档新宠物
+- msg: 那个 我上周捡了只小奶猫 现在还没档案 帮我弄一下
+  label: false
+  tags: [profile, voice]
+  why: 建档流浪猫
+- msg: 加一只宠物 猫咪 叫豆豆 三个月大母的
+  label: false
+  tags: [profile, voice]
+  why: 建档
+- msg: 我养了两只狗 一只叫max一只叫luna 都是母的
+  label: false
+  tags: [profile, multi, en, voice]
+  why: 建档多宠
+- msg: 帮我把我家的乌龟也建个档
+  label: false
+  tags: [profile, voice]
+  why: 建档乌龟
+- msg: 新养了只鹦鹉叫皮皮
+  label: false
+  tags: [profile, voice]
+  why: 建档鸟类
+- msg: i just adopted a stray cat from the street she's really skinny
+  label: false
+  tags: [profile, en, voice]
+  why: 建档流浪猫
+- msg: 团子是我家新养的柯基 帮我建个档案吧
+  label: false
+  tags: [profile, voice]
+  why: 建档新宠物
+- msg: 我捡了只流浪狗 好像被遗弃的 想记录一下
+  label: false
+  tags: [profile, voice]
+  why: 建档流浪狗
+- msg: 家里添了个新成员 一只小猫 三个月不到
+  label: false
+  tags: [profile, voice]
+  why: 建档新宠物
+- msg: setting up a profile for my new hamster
+  label: false
+  tags: [profile, en, voice]
+  why: 建档仓鼠
+- msg: 我家俩猫咪 一只三花一只橘猫 都还没建档
+  label: false
+  tags: [profile, multi, voice]
+  why: 建档多宠
+- msg: 收养了一只老年比格 十岁了 想建个档案
+  label: false
+  tags: [profile, voice]
+  why: 建档老年犬
+- msg: 改一下维尼的生日 三月五号
+  label: false
+  tags: [profile, voice]
+  why: 改档案生日
+- msg: 豆豆性别我填错了 应该是母的
+  label: false
+  tags: [profile, voice]
+  why: 改档案性别
+- msg: 把团子的品种改成柯基
+  label: false
+  tags: [profile, voice]
+  why: 改档案品种
+- msg: 帮我更新一下体重 现在12斤了
+  label: false
+  tags: [profile, voice]
+  why: 改档案体重
+- msg: 米米做了绝育 帮我改一下状态
+  label: false
+  tags: [profile, voice]
+  why: 改档案绝育
+- msg: 豆豆对鸡肉过敏 记一下
+  label: false
+  tags: [profile, voice]
+  why: 改档案过敏
+- msg: 维尼有癫痫史 之前发作过一次 现在记录一下档案
+  label: false
+  tags: [profile, keyword_trap, voice]
+  why: 改档案病史
+- msg: 帮忙把芯片号加进去 156239847
+  label: false
+  tags: [profile, voice]
+  why: 改档案芯片
+- msg: 疫苗打了 帮我补录一下史料
+  label: false
+  tags: [profile, voice]
+  why: 改档案疫苗史
+- msg: change luna's birthday to june 2nd
+  label: false
+  tags: [profile, en, voice]
+  why: 改档案生日
+- msg: 那个 团子的品种我当时填错了 其实是柴犬
+  label: false
+  tags: [profile, voice]
+  why: 改档案品种
+- msg: 花花体重掉了 帮我更新下档案
+  label: false
+  tags: [profile, voice]
+  why: 改档案体重
+- msg: 我家狗以前中过毒 想记进病史里
+  label: false
+  tags: [profile, keyword_trap, voice]
+  why: 改档案病史
+- msg: 球球有心脏病 医生说要长期吃药 帮我加到档案
+  label: false
+  tags: [profile, keyword_trap, voice]
+  why: 改档案病史
+- msg: my dog max is allergic to chicken can you add that to his profile
+  label: false
+  tags: [profile, en, voice]
+  why: 改档案过敏
+- msg: 帮我把小维的绝育状态改成已绝育
+  label: false
+  tags: [profile, voice]
+  why: 改档案绝育
+- msg: 豆豆的品种填错了 不是拉布拉多是金毛
+  label: false
+  tags: [profile, voice]
+  why: 改档案品种
+- msg: 帮我改一下 那个 咪咪的性别 之前填反了
+  label: false
+  tags: [profile, voice]
+  why: 改档案性别
+- msg: 更新一下维尼的疫苗记录 上个月打的狂犬
+  label: false
+  tags: [profile, voice]
+  why: 改档案疫苗史
+- msg: 团子对海鲜过敏 之前吃虾起了疹子 加进去
+  label: false
+  tags: [profile, voice]
+  why: 改档案过敏
+- msg: 帮我把体重改成8.5公斤
+  label: false
+  tags: [profile, voice]
+  why: 改档案体重
+- msg: 芯片号打错了 帮我重新填一下
+  label: false
+  tags: [profile, voice]
+  why: 改档案芯片
+- msg: update mochi's weight to 15 pounds
+  label: false
+  tags: [profile, en, voice]
+  why: 改档案体重
+- msg: 花花以前抽搐过一次 医生说是低血糖 帮我加病史
+  label: false
+  tags: [profile, keyword_trap, voice]
+  why: 改档案病史
+- msg: 帮我改一下维尼生日 其实是二月不是三月
+  label: false
+  tags: [profile, voice]
+  why: 改档案生日
+- msg: 我家猫已经绝育了 更新一下状态
+  label: false
+  tags: [profile, voice]
+  why: 改档案绝育
+- msg: 换头像 用这张照片
+  label: false
+  tags: [profile, voice]
+  why: 换头像
+- msg: 帮我把维尼的头像换成刚拍的这张
+  label: false
+  tags: [profile, voice]
+  why: 换头像
+- msg: change my dog's avatar to this photo
+  label: false
+  tags: [profile, en, voice]
+  why: 换头像
+- msg: 团子的照片太丑了 换一张
+  label: false
+  tags: [profile, voice]
+  why: 换头像
+- msg: 用这张给豆豆当头像
+  label: false
+  tags: [profile, voice]
+  why: 换头像
+- msg: 帮我总结一下维尼的情况
+  label: false
+  tags: [profile, question, voice]
+  why: 总结档案
+- msg: 生成一份健康报告
+  label: false
+  tags: [profile, question, voice]
+  why: 总结档案
+- msg: 导出维尼的档案给医生看
+  label: false
+  tags: [profile, question, voice]
+  why: 总结档案导出
+- msg: can you summarize luna's health for me
+  label: false
+  tags: [profile, question, en, voice]
+  why: 总结档案
+- msg: 帮我把团子的病历整理一下 要带医生看病
+  label: false
+  tags: [profile, question, voice]
+  why: 总结档案导出
+- msg: 给我一份豆豆最近的健康总结
+  label: false
+  tags: [profile, question, voice]
+  why: 总结档案
+- msg: 生成个报告 我要带米米去新医生那看诊
+  label: false
+  tags: [profile, question, voice]
+  why: 总结档案导出
+- msg: generate a health report for max i need to show the vet
+  label: false
+  tags: [profile, question, en, voice]
+  why: 总结档案导出
+- msg: 豆豆多大了
+  label: false
+  tags: [profile, question, voice]
+  why: 查档案年龄
+- msg: 他什么品种
+  label: false
+  tags: [profile, question, voice]
+  why: 查档案品种
+- msg: 维尼体重多少
+  label: false
+  tags: [profile, question, voice]
+  why: 查档案体重
+- msg: how old is my dog again
+  label: false
+  tags: [profile, question, en, voice]
+  why: 查档案年龄
+- msg: 团子生日是哪天来着
+  label: false
+  tags: [profile, question, voice]
+  why: 查档案生日
+- msg: 咪咪打过什么疫苗
+  label: false
+  tags: [profile, question, voice]
+  why: 查档案疫苗
+- msg: 我家猫芯片号是多少
+  label: false
+  tags: [profile, question, voice]
+  why: 查档案芯片
+- msg: what breed is luna
+  label: false
+  tags: [profile, question, en, voice]
+  why: 查档案品种
+- msg: 花花是公的还是母的来着
+  label: false
+  tags: [profile, question, voice]
+  why: 查档案性别
+- msg: 豆豆绝育了没
+  label: false
+  tags: [profile, question, voice]
+  why: 查档案绝育
+- msg: 删掉花花
+  label: false
+  tags: [profile, delete, gray, voice]
+  why: 删除档案
+- msg: 花花去年走了 帮我把档案删了
+  label: false
+  tags: [profile, delete, chitchat, voice]
+  why: 宠物离世删档
+- msg: 把球球从app里删了 送人了
+  label: false
+  tags: [profile, delete, voice]
+  why: 宠物送养删档
+- msg: please remove whiskers from the app he passed away
+  label: false
+  tags: [profile, delete, en, voice]
+  why: 宠物离世删档
+- msg: 咪咪不在我这养了 帮我删掉他的资料
+  label: false
+  tags: [profile, delete, voice]
+  why: 宠物送养删档
+- msg: 把这只设成默认
+  label: false
+  tags: [profile, managed, voice]
+  why: 多宠设默认
+- msg: 分不清哪只是哪只 帮我看看头像
+  label: false
+  tags: [profile, managed, voice]
+  why: 多宠家庭管理
+- msg: 把团子设成主页默认显示的那只
+  label: false
+  tags: [profile, managed, voice]
+  why: 多宠设默认
+- msg: set max as my default pet
+  label: false
+  tags: [profile, managed, en, voice]
+  why: 多宠设默认
+- msg: 我有仨猫 老是搞混 能不能把名字都标清楚点
+  label: false
+  tags: [profile, managed, multi, voice]
+  why: 多宠家庭管理
+- msg: 新养了只柯基叫团子公的三个月大
+  label: false
+  tags: [profile, voice, typo]
+  why: 建档新宠物
+- msg: 那个 我 呃 昨天领养了只猫 想弄个档案
+  label: false
+  tags: [profile, voice]
+  why: 建档流浪猫
+- msg: 我家两只猫都还没弄档案呢 一只叫豆豆一只叫球球
+  label: false
+  tags: [profile, multi, voice]
+  why: 建档多宠
+- msg: adopted a senior dog yesterday he's like 8 years old need his profile set up
+  label: false
+  tags: [profile, en, voice]
+  why: 建档老年犬
+- msg: 帮我建档 猫 三个月 母 叫小七
+  label: false
+  tags: [profile, voice]
+  why: 建档
+- msg: 我领养了只流浪猫 瘦得不行 帮我记一下
+  label: false
+  tags: [profile, voice]
+  why: 建档流浪猫
+- msg: 家里来了只新狗 柯基 男孩子
+  label: false
+  tags: [profile, voice]
+  why: 建档新宠物
+- msg: 帮我把小龟也建个档案吧
+  label: false
+  tags: [profile, voice]
+  why: 建档乌龟
+- msg: my two cats need profiles one is called mochi the other luna
+  label: false
+  tags: [profile, multi, en, voice]
+  why: 建档多宠
+- msg: 新添了只鸟 虎皮鹦鹉 帮我记一下
+  label: false
+  tags: [profile, voice]
+  why: 建档鸟类
+- msg: 团子改成两个月大不是三个月
+  label: false
+  tags: [profile, voice]
+  why: 改档案年龄
+- msg: 帮我把维尼性别改一下 之前弄反了 其实是公的
+  label: false
+  tags: [profile, voice]
+  why: 改档案性别
+- msg: 品种填错了帮我改成金毛寻回犬
+  label: false
+  tags: [profile, voice]
+  why: 改档案品种
+- msg: 豆豆最近瘦了 更新下体重档案
+  label: false
+  tags: [profile, voice]
+  why: 改档案体重
+- msg: 米米绝育手术做完了 状态改一下
+  label: false
+  tags: [profile, voice]
+  why: 改档案绝育
+- msg: 团子对牛肉过敏 上次吃了拉肚子 记进去
+  label: false
+  tags: [profile, voice]
+  why: 改档案过敏
+- msg: 花花以前中过毒 那次是误食了老鼠药 想记到病史里
+  label: false
+  tags: [profile, keyword_trap, voice]
+  why: 改档案病史
+- msg: 加一下芯片号 是985141000123456
+  label: false
+  tags: [profile, voice]
+  why: 改档案芯片
+- msg: 补一下疫苗记录 六月份打的四联
+  label: false
+  tags: [profile, voice]
+  why: 改档案疫苗史
+- msg: can you update my cat's birthday to april 10th
+  label: false
+  tags: [profile, en, voice]
+  why: 改档案生日
+- msg: 那个 咪咪的品种 呃 我记错了 应该是英短
+  label: false
+  tags: [profile, voice]
+  why: 改档案品种
+- msg: 球球体重涨了 帮我改一下记录
+  label: false
+  tags: [profile, voice]
+  why: 改档案体重
+- msg: 我家狗有癫痫史 想加到档案的病史里备着
+  label: false
+  tags: [profile, keyword_trap, voice]
+  why: 改档案病史
+- msg: my dog has a history of seizures can you note that in his profile
+  label: false
+  tags: [profile, keyword_trap, en, voice]
+  why: 改档案病史
+- msg: 帮我改一下生日 团子其实是一月生的
+  label: false
+  tags: [profile, voice]
+  why: 改档案生日
+- msg: 我家猫绝育做完了 帮我更新状态
+  label: false
+  tags: [profile, voice]
+  why: 改档案绝育
+- msg: 换头像用刚拍的这张
+  label: false
+  tags: [profile, voice]
+  why: 换头像
+- msg: 帮我把豆豆的照片换掉 这张更好看
+  label: false
+  tags: [profile, voice]
+  why: 换头像
+- msg: use this pic as luna's new avatar
+  label: false
+  tags: [profile, en, voice]
+  why: 换头像
+- msg: 团子头像模糊了 换一张清楚的
+  label: false
+  tags: [profile, voice]
+  why: 换头像
+- msg: 用这张换一下咪咪的头像照片
+  label: false
+  tags: [profile, voice]
+  why: 换头像
+- msg: 帮我总结一下豆豆最近的健康状况
+  label: false
+  tags: [profile, question, voice]
+  why: 总结档案
+- msg: 生成一份团子的健康报告给我
+  label: false
+  tags: [profile, question, voice]
+  why: 总结档案
+- msg: 我要带维尼去新医院 导出一份档案给医生看
+  label: false
+  tags: [profile, question, voice]
+  why: 总结档案导出
+- msg: can you give me a summary of mochi's condition
+  label: false
+  tags: [profile, question, en, voice]
+  why: 总结档案
+- msg: 帮我整理一份花花的病历打印出来
+  label: false
+  tags: [profile, question, voice]
+  why: 总结档案导出
+- msg: 给我一份球球最近的体检和疫苗汇总
+  label: false
+  tags: [profile, question, voice]
+  why: 总结档案
+- msg: 生成个报告 带咪咪去复查用
+  label: false
+  tags: [profile, question, voice]
+  why: 总结档案导出
+- msg: export a health summary for max i'm switching vets
+  label: false
+  tags: [profile, question, en, voice]
+  why: 总结档案导出
+- msg: 团子多大了呀
+  label: false
+  tags: [profile, question, voice]
+  why: 查档案年龄
+- msg: 豆豆是什么品种来着
+  label: false
+  tags: [profile, question, voice]
+  why: 查档案品种
+- msg: 咪咪体重多少来着
+  label: false
+  tags: [profile, question, voice]
+  why: 查档案体重
+- msg: what's my cat's age again
+  label: false
+  tags: [profile, question, en, voice]
+  why: 查档案年龄
+- msg: 花花生日是几号
+  label: false
+  tags: [profile, question, voice]
+  why: 查档案生日
+- msg: 维尼打过哪些疫苗
+  label: false
+  tags: [profile, question, voice]
+  why: 查档案疫苗
+- msg: 球球芯片号是多少来着
+  label: false
+  tags: [profile, question, voice]
+  why: 查档案芯片
+- msg: what breed is my dog
+  label: false
+  tags: [profile, question, en, voice]
+  why: 查档案品种
+- msg: 团子公的母的来着
+  label: false
+  tags: [profile, question, voice]
+  why: 查档案性别
+- msg: 豆豆做绝育了吗
+  label: false
+  tags: [profile, question, voice]
+  why: 查档案绝育
+- msg: 帮我删掉花花的档案 送人了
+  label: false
+  tags: [profile, delete, voice]
+  why: 宠物送养删档
+- msg: 咪咪走了 上个月的事 把档案删了吧
+  label: false
+  tags: [profile, delete, chitchat, voice]
+  why: 宠物离世删档
+- msg: 把球球从我账号里删掉 已经不养了
+  label: false
+  tags: [profile, delete, voice]
+  why: 宠物送养删档
+- msg: my hamster passed away can you delete his profile
+  label: false
+  tags: [profile, delete, en, voice]
+  why: 宠物离世删档
+- msg: 团子送给我朋友养了 帮我把资料删了
+  label: false
+  tags: [profile, delete, voice]
+  why: 宠物送养删档
+- msg: 把维尼设成默认宠物
+  label: false
+  tags: [profile, managed, voice]
+  why: 多宠设默认
+- msg: 老是分不清豆豆和球球 名字标清楚点
+  label: false
+  tags: [profile, managed, multi, voice]
+  why: 多宠家庭管理
+- msg: 把咪咪调成主页第一个显示的
+  label: false
+  tags: [profile, managed, voice]
+  why: 多宠设默认
+- msg: switch the default pet to luna
+  label: false
+  tags: [profile, managed, en, voice]
+  why: 多宠设默认
+- msg: 家里四只猫 总记混 能不能帮我理一下
+  label: false
+  tags: [profile, managed, multi, voice]
+  why: 多宠家庭管理
+- msg: 团子 三个月大的柯基 公的 帮我建个档
+  label: false
+  tags: [profile, voice]
+  why: 建档新宠物
+- msg: 呃 我家 就是 新来了只猫 想建档案
+  label: false
+  tags: [profile, voice]
+  why: 建档新宠物
+- msg: 昨天在小区门口捡了只小猫崽 好瘦 想记一下他的信息
+  label: false
+  tags: [profile, voice]
+  why: 建档流浪猫
+- msg: got a senior beagle from the shelter yesterday he's about 8
+  label: false
+  tags: [profile, en, voice]
+  why: 建档老年犬
+- msg: 帮我把家里两只猫都建档 一只三花一只橘猫
+  label: false
+  tags: [profile, multi, voice]
+  why: 建档多宠
+- msg: 领养了只流浪狗 好像被丢弃的 记一下
+  label: false
+  tags: [profile, voice]
+  why: 建档流浪狗
+- msg: 新添了只乌龟 巴西龟 帮我建档
+  label: false
+  tags: [profile, voice]
+  why: 建档乌龟
+- msg: adopted two cats this week need profiles for both
+  label: false
+  tags: [profile, multi, en, voice]
+  why: 建档多宠
+- msg: 家里新来了只鹦鹉 叫小蓝
+  label: false
+  tags: [profile, voice]
+  why: 建档鸟类
+- msg: 捡到只小仓鼠 帮我建个档吧
+  label: false
+  tags: [profile, voice]
+  why: 建档仓鼠
+- msg: 团子生日填错了 帮我改成五月
+  label: false
+  tags: [profile, voice]
+  why: 改档案生日
+- msg: 花花性别弄反了 应该是公的
+  label: false
+  tags: [profile, voice]
+  why: 改档案性别
+- msg: 米米品种改一下 是布偶不是英短
+  label: false
+  tags: [profile, voice]
+  why: 改档案品种
+- msg: 豆豆体重记录改下 最近瘦了
+  label: false
+  tags: [profile, voice]
+  why: 改档案体重
+- msg: 咪咪绝育做了 帮我更新状态吧
+  label: false
+  tags: [profile, voice]
+  why: 改档案绝育
+- msg: 团子对虾过敏 上次吃了浑身红疹 记进去
+  label: false
+  tags: [profile, voice]
+  why: 改档案过敏
+- msg: 维尼有癫痫史 好几年前的事了 加到档案病史里
+  label: false
+  tags: [profile, keyword_trap, voice]
+  why: 改档案病史
+- msg: 芯片号补一下 985165432109876
+  label: false
+  tags: [profile, voice]
+  why: 改档案芯片
+- msg: 帮我补一下疫苗史 上个月打的六联苗
+  label: false
+  tags: [profile, voice]
+  why: 改档案疫苗史
+- msg: update max's birthday to september instead
+  label: false
+  tags: [profile, en, voice]
+  why: 改档案生日
+- msg: 那个 球球 呃 体重改一下 又胖了点
+  label: false
+  tags: [profile, voice]
+  why: 改档案体重
+- msg: 我家猫以前中过毒 吃了百合花瓣那次 记到病史
+  label: false
+  tags: [profile, keyword_trap, voice]
+  why: 改档案病史
+- msg: my cat has epilepsy she's been stable on medication for a year now add it to her profile
+  label: false
+  tags: [profile, keyword_trap, en, voice]
+  why: 改档案病史
+- msg: 帮我改下花花 其实已经绝育过了
+  label: false
+  tags: [profile, voice]
+  why: 改档案绝育
+- msg: 换头像 这张新拍的更好看
+  label: false
+  tags: [profile, voice]
+  why: 换头像
+- msg: 帮我把咪咪头像换成这张
+  label: false
+  tags: [profile, voice]
+  why: 换头像
+- msg: swap luna's avatar for this new picture
+  label: false
+  tags: [profile, en, voice]
+  why: 换头像
+- msg: 团子头像太老了 换个新的
+  label: false
+  tags: [profile, voice]
+  why: 换头像
+- msg: 用这张给球球当头像吧
+  label: false
+  tags: [profile, voice]
+  why: 换头像
+- msg: 帮我总结一下咪咪最近状况
+  label: false
+  tags: [profile, question, voice]
+  why: 总结档案
+- msg: 生成份维尼的健康报告
+  label: false
+  tags: [profile, question, voice]
+  why: 总结档案
+- msg: 要看新医生了 导出团子的档案资料给我
+  label: false
+  tags: [profile, question, voice]
+  why: 总结档案导出
+- msg: can you summarize max's overall health for me
+  label: false
+  tags: [profile, question, en, voice]
+  why: 总结档案
+- msg: 帮我把豆豆的病历整理成文档发我
+  label: false
+  tags: [profile, question, voice]
+  why: 总结档案导出
+- msg: 给我份花花最近的体检和用药汇总
+  label: false
+  tags: [profile, question, voice]
+  why: 总结档案
+- msg: 生成个报告 咪咪明天要复查
+  label: false
+  tags: [profile, question, voice]
+  why: 总结档案导出
+- msg: export mochi's health records for the new vet
+  label: false
+  tags: [profile, question, en, voice]
+  why: 总结档案导出
+- msg: 团子多大来着
+  label: false
+  tags: [profile, question, voice]
+  why: 查档案年龄
+- msg: 维尼是啥品种
+  label: false
+  tags: [profile, question, voice]
+  why: 查档案品种
+- msg: 球球体重多少来着
+  label: false
+  tags: [profile, question, voice]
+  why: 查档案体重
+- msg: how old is my cat now
+  label: false
+  tags: [profile, question, en, voice]
+  why: 查档案年龄
+- msg: 米米生日哪天来着
+  label: false
+  tags: [profile, question, voice]
+  why: 查档案生日
+- msg: 豆豆打过哪些针
+  label: false
+  tags: [profile, question, voice]
+  why: 查档案疫苗
+- msg: 咪咪芯片号多少
+  label: false
+  tags: [profile, question, voice]
+  why: 查档案芯片
+- msg: what breed is luna again
+  label: false
+  tags: [profile, question, en, voice]
+  why: 查档案品种
+- msg: 花花是公是母
+  label: false
+  tags: [profile, question, voice]
+  why: 查档案性别
+- msg: 团子做绝育没
+  label: false
+  tags: [profile, question, voice]
+  why: 查档案绝育
+- msg: 帮我删掉咪咪的档案 换主人养了
+  label: false
+  tags: [profile, delete, voice]
+  why: 宠物送养删档
+- msg: 球球前段时间走了 想把资料删了
+  label: false
+  tags: [profile, delete, chitchat, voice]
+  why: 宠物离世删档
+- msg: 把维尼从app删除 已经不在我这了
+  label: false
+  tags: [profile, delete, voice]
+  why: 宠物送养删档
+- msg: my turtle passed away can you remove his profile
+  label: false
+  tags: [profile, delete, en, voice]
+  why: 宠物离世删档
+- msg: 团子送给邻居养了 帮我把档案删掉
+  label: false
+  tags: [profile, delete, voice]
+  why: 宠物送养删档
+- msg: 把花花设成默认宠物吧
+  label: false
+  tags: [profile, managed, voice]
+  why: 多宠设默认
+- msg: 家里五只猫 老是分不清谁是谁
+  label: false
+  tags: [profile, managed, multi, voice]
+  why: 多宠家庭管理
+- msg: 把咪咪调成主页第一个
+  label: false
+  tags: [profile, managed, voice]
+  why: 多宠设默认
+- msg: set max as the default profile on the app
+  label: false
+  tags: [profile, managed, en, voice]
+  why: 多宠设默认
+- msg: 我家两只兔子毛色一样 分不清哪只是哪只
+  label: false
+  tags: [profile, managed, multi, voice]
+  why: 多宠家庭管理
+- msg: 团子 男孩子 三个月 柯基犬 帮我建档
+  label: false
+  tags: [profile, voice]
+  why: 建档新宠物
+- msg: 呃那个 昨天领养了只老猫 想建个档案
+  label: false
+  tags: [profile, voice]
+  why: 建档流浪猫
+- msg: 路边捡的流浪猫 现在还没档案 帮我建一下
+  label: false
+  tags: [profile, voice]
+  why: 建档流浪猫
+- msg: adopted an elderly beagle mix she's around 10 need a profile
+  label: false
+  tags: [profile, en, voice]
+  why: 建档老年犬
+- msg: 帮我把家里两只猫一起建档 三花和橘猫
+  label: false
+  tags: [profile, multi, voice]
+  why: 建档多宠
+- msg: 捡了只被遗弃的小狗 想给他弄个档案
+  label: false
+  tags: [profile, voice]
+  why: 建档流浪狗
+- msg: 家里养了只巴西龟 帮我建下档案
+  label: false
+  tags: [profile, voice]
+  why: 建档乌龟
+- msg: got two new kittens this week can you set up both profiles
+  label: false
+  tags: [profile, multi, en, voice]
+  why: 建档多宠
+- msg: 新来了只文鸟 叫小白
+  label: false
+  tags: [profile, voice]
+  why: 建档鸟类
+- msg: 捡到一只小仓鼠 帮我记一下档案信息
+  label: false
+  tags: [profile, voice]
+  why: 建档仓鼠
+- msg: 团子体重记录改一下 又轻了点
+  label: false
+  tags: [profile, voice]
+  why: 改档案体重
+- msg: 豆豆的疫苗记录漏了一条 帮我补上
+  label: false
+  tags: [profile, voice]
+  why: 改档案疫苗史
+- msg: 米米对花生过敏 上次误食起了疹子 记进档案
+  label: false
+  tags: [profile, voice]
+  why: 改档案过敏
+- msg: 我家狗曾经心脏病发作过 医生一直在管理 帮我加进病史
+  label: false
+  tags: [profile, keyword_trap, voice]
+  why: 改档案病史
+- msg: 芯片号忘记填了 补一下 985187654321098
+  label: false
+  tags: [profile, voice]
+  why: 改档案芯片
+- msg: change mochi's breed it's actually a mixed breed not purebred
+  label: false
+  tags: [profile, en, voice]
+  why: 改档案品种
+- msg: 帮我把咪咪的性别改一下 之前录错了
+  label: false
+  tags: [profile, voice]
+  why: 改档案性别
+- msg: 花花生日改成十月
+  label: false
+  tags: [profile, voice]
+  why: 改档案生日
+- msg: 球球绝育状态改一下 已经做完了
+  label: false
+  tags: [profile, voice]
+  why: 改档案绝育
+- msg: 我家猫之前中过毒 误食了不知名植物 记到病史里
+  label: false
+  tags: [profile, keyword_trap, voice]
+  why: 改档案病史
+- msg: 我朋友送了我一只小猫 帮我建个档案
+  label: false
+  tags: [profile, voice]
+  why: 建档新宠物
+- msg: 呃 家里 就是 又添了只狗 帮我弄个档案呗
+  label: false
+  tags: [profile, voice]
+  why: 建档新宠物
+- msg: 昨天在河边捡到只小狗 瑟瑟发抖的 想给他记个档
+  label: false
+  tags: [profile, voice]
+  why: 建档流浪狗
+- msg: my roommate's cat is basically mine now can you set up a profile for her
+  label: false
+  tags: [profile, en, voice]
+  why: 建档新宠物
+- msg: 家里三只猫两只狗 都还没建档 一个个来
+  label: false
+  tags: [profile, multi, voice]
+  why: 建档多宠
+- msg: 领养了只年纪大的柴犬 十二岁了 帮忙建档
+  label: false
+  tags: [profile, voice]
+  why: 建档老年犬
+- msg: 新养了只荷兰猪 帮我建个档案
+  label: false
+  tags: [profile, voice]
+  why: 建档仓鼠
+- msg: just rescued a stray kitten she was hiding under my car
+  label: false
+  tags: [profile, en, voice]
+  why: 建档流浪猫
+- msg: 帮我把家里那只金渐层也建个档案
+  label: false
+  tags: [profile, voice]
+  why: 建档新宠物
+- msg: 新来了只画眉鸟 帮我记一下
+  label: false
+  tags: [profile, voice]
+  why: 建档鸟类
+- msg: 团子的芯片号我填错了 帮我重新弄一下
+  label: false
+  tags: [profile, voice]
+  why: 改档案芯片
+- msg: 豆豆生日其实是农历的 帮我换算改一下
+  label: false
+  tags: [profile, voice]
+  why: 改档案生日
+- msg: 咪咪对海鲜和牛奶都过敏 帮我都记上
+  label: false
+  tags: [profile, voice]
+  why: 改档案过敏
+- msg: 维尼之前有过敏史 具体是对青霉素过敏 记一下
+  label: false
+  tags: [profile, keyword_trap, voice]
+  why: 改档案病史
+- msg: 团子上周打了狂犬疫苗 帮我补录一下
+  label: false
+  tags: [profile, voice]
+  why: 改档案疫苗史
+- msg: my dog's chip number is wrong in the app can you fix it
+  label: false
+  tags: [profile, en, voice]
+  why: 改档案芯片
+- msg: 花花体重一直在掉 帮我把最新的记上去
+  label: false
+  tags: [profile, voice]
+  why: 改档案体重
+- msg: 球球品种其实是混血 一半柯基一半柴犬 改一下
+  label: false
+  tags: [profile, voice]
+  why: 改档案品种
+- msg: 咪咪绝育了 上周做的手术 更新一下档案
+  label: false
+  tags: [profile, voice]
+  why: 改档案绝育
+- msg: 我家猫以前发过一次高烧 惊厥了一下 帮我记进病史
+  label: false
+  tags: [profile, keyword_trap, voice]
+  why: 改档案病史
+- msg: max's birthday is wrong it should be in october
+  label: false
+  tags: [profile, en, voice]
+  why: 改档案生日
+- msg: 那个 团子 呃 性别我一直填错了 是母的
+  label: false
+  tags: [profile, voice]
+  why: 改档案性别
+- msg: 豆豆对尘螨过敏 皮肤科医生诊断的 记一下档案
+  label: false
+  tags: [profile, voice]
+  why: 改档案过敏
+- msg: 咪咪之前中过毒 吃了发霉的东西 那次事 记到病史
+  label: false
+  tags: [profile, keyword_trap, voice]
+  why: 改档案病史
+- msg: my cat had a seizure disorder years ago it's fully managed now can you log it
+  label: false
+  tags: [profile, keyword_trap, en, voice]
+  why: 改档案病史
+- msg: 帮我把维尼绝育状态改一下 之前没做现在做了
+  label: false
+  tags: [profile, voice]
+  why: 改档案绝育
+- msg: 换头像 用刚才拍的合照裁一下
+  label: false
+  tags: [profile, voice]
+  why: 换头像
+- msg: 帮我把球球的照片换掉 换成这张躺着的
+  label: false
+  tags: [profile, voice]
+  why: 换头像
+- msg: this photo is way cuter use it for luna's profile pic
+  label: false
+  tags: [profile, en, voice]
+  why: 换头像
+- msg: 花花头像太糊了 帮我重新传一张
+  label: false
+  tags: [profile, voice]
+  why: 换头像
+- msg: 用这张给团子换个新头像吧
+  label: false
+  tags: [profile, voice]
+  why: 换头像
+- msg: 帮我总结一下球球最近的用药和体重变化
+  label: false
+  tags: [profile, question, voice]
+  why: 总结档案
+- msg: 生成一份豆豆的完整健康档案
+  label: false
+  tags: [profile, question, voice]
+  why: 总结档案
+- msg: 出国要带咪咪 帮我导出他的疫苗和健康记录
+  label: false
+  tags: [profile, question, voice]
+  why: 总结档案导出
+- msg: can you pull together a full health report for mochi
+  label: false
+  tags: [profile, question, en, voice]
+  why: 总结档案
+- msg: 帮我把团子的档案打印成文档
+  label: false
+  tags: [profile, question, voice]
+  why: 总结档案导出
+- msg: 给我一份维尼近半年的体检总结
+  label: false
+  tags: [profile, question, voice]
+  why: 总结档案
+- msg: 生成个报告 花花要办托运需要
+  label: false
+  tags: [profile, question, voice]
+  why: 总结档案导出
+- msg: i need to export luna's records for boarding
+  label: false
+  tags: [profile, question, en, voice]
+  why: 总结档案导出
+- msg: 咪咪现在几岁了
+  label: false
+  tags: [profile, question, voice]
+  why: 查档案年龄
+- msg: 花花是什么品种的猫
+  label: false
+  tags: [profile, question, voice]
+  why: 查档案品种
+- msg: 团子现在多重
+  label: false
+  tags: [profile, question, voice]
+  why: 查档案体重
+- msg: what's max's age these days
+  label: false
+  tags: [profile, question, en, voice]
+  why: 查档案年龄
+- msg: 豆豆是几月出生的
+  label: false
+  tags: [profile, question, voice]
+  why: 查档案生日
+- msg: 咪咪最近一次打疫苗是啥时候
+  label: false
+  tags: [profile, question, voice]
+  why: 查档案疫苗
+- msg: 维尼芯片号码是啥来着
+  label: false
+  tags: [profile, question, voice]
+  why: 查档案芯片
+- msg: what kind of dog is mochi exactly
+  label: false
+  tags: [profile, question, en, voice]
+  why: 查档案品种
+- msg: 球球到底是公的还是母的
+  label: false
+  tags: [profile, question, voice]
+  why: 查档案性别
+- msg: 花花绝育了没有啊
+  label: false
+  tags: [profile, question, voice]
+  why: 查档案绝育
+- msg: 帮我删了团子档案 送去乡下老家了
+  label: false
+  tags: [profile, delete, voice]
+  why: 宠物送养删档
+- msg: 维尼两周前走了 一直没删档案 现在删掉吧
+  label: false
+  tags: [profile, delete, chitchat, voice]
+  why: 宠物离世删档
+- msg: 咪咪不养了 转手给别人了 帮我把资料删掉
+  label: false
+  tags: [profile, delete, voice]
+  why: 宠物送养删档
+- msg: our rabbit died this morning could you take down his profile
+  label: false
+  tags: [profile, delete, en, voice]
+  why: 宠物离世删档
+- msg: 豆豆过户给我表姐了 帮我把档案删了
+  label: false
+  tags: [profile, delete, voice]
+  why: 宠物送养删档
+- msg: 把球球设成打开app默认看到的那只
+  label: false
+  tags: [profile, managed, voice]
+  why: 多宠设默认
+- msg: 家里六只猫 名字都记混了 能不能理一下
+  label: false
+  tags: [profile, managed, multi, voice]
+  why: 多宠家庭管理
+- msg: 把团子调成主页第一个显示
+  label: false
+  tags: [profile, managed, voice]
+  why: 多宠设默认
+- msg: can you make mochi show up first on the home screen
+  label: false
+  tags: [profile, managed, en, voice]
+  why: 多宠设默认
+- msg: 我家两只狗都是黑色的 分不清哪只是哪只
+  label: false
+  tags: [profile, managed, multi, voice]
+  why: 多宠家庭管理
+- msg: 帮我把维尼设成常用宠物
+  label: false
+  tags: [profile, managed, voice]
+  why: 多宠设默认
+- msg: 家里猫太多了 老是点错档案
+  label: false
+  tags: [profile, managed, multi, voice]
+  why: 多宠家庭管理
+- msg: switch default pet to max please
+  label: false
+  tags: [profile, managed, en, voice]
+  why: 多宠设默认
+- msg: 我家两只兔子长得一模一样 求分辨
+  label: false
+  tags: [profile, managed, multi, voice]
+  why: 多宠家庭管理
+- msg: 帮我把咪咪设成首页默认那只
+  label: false
+  tags: [profile, managed, voice]
+  why: 多宠设默认
+- msg: 收养了一只被遗弃的老猫 十三岁了 想建档
+  label: false
+  tags: [profile, voice]
+  why: 建档老年犬
+- msg: 昨天在小巷里捡到只受伤的流浪猫 先建个档案
+  label: false
+  tags: [profile, voice]
+  why: 建档流浪猫
+- msg: got a new bunny yesterday she's called snowball
+  label: false
+  tags: [profile, en, voice]
+  why: 建档兔子
+- msg: 家里三只猫全部都要建档 一个个来吧
+  label: false
+  tags: [profile, multi, voice]
+  why: 建档多宠
+- msg: 领养了只流浪狗 好像是被抛弃的老年犬
+  label: false
+  tags: [profile, voice]
+  why: 建档流浪狗
+- msg: 新养了只巴哥犬 三个月大 男孩
+  label: false
+  tags: [profile, voice]
+  why: 建档新宠物
+- msg: adopted a bunny from a shelter need her profile set up
+  label: false
+  tags: [profile, en, voice]
+  why: 建档兔子
+- msg: 新来了只锦鲤 帮我建下档案
+  label: false
+  tags: [profile, voice]
+  why: 建档
+- msg: 团子疫苗史全都没录 帮我一次性补齐
+  label: false
+  tags: [profile, voice]
+  why: 改档案疫苗史
+- msg: 豆豆生日改一下 弄错年份了
+  label: false
+  tags: [profile, voice]
+  why: 改档案生日
+- msg: 米米对牛肉和鱼都过敏 之前没记全 补一下
+  label: false
+  tags: [profile, voice]
+  why: 改档案过敏
+- msg: 我家狗小时候中过毒 吃了不明药丸那次 记进病史里
+  label: false
+  tags: [profile, keyword_trap, voice]
+  why: 改档案病史
+- msg: 花花芯片号补充一下 985199988877766
+  label: false
+  tags: [profile, voice]
+  why: 改档案芯片
+- msg: update luna's breed she's actually a ragdoll not persian
+  label: false
+  tags: [profile, en, voice]
+  why: 改档案品种
+- msg: 帮我把团子性别改一下 之前弄错了是公的
+  label: false
+  tags: [profile, voice]
+  why: 改档案性别
+- msg: 咪咪生日改成十二月
+  label: false
+  tags: [profile, voice]
+  why: 改档案生日
+- msg: 维尼绝育状态更新 上周做的手术
+  label: false
+  tags: [profile, voice]
+  why: 改档案绝育
+- msg: 我家猫以前中过毒 误食了杀虫剂那次 记到病史
+  label: false
+  tags: [profile, keyword_trap, voice]
+  why: 改档案病史
+- msg: 换个新头像 这张最近拍的可爱
+  label: false
+  tags: [profile, voice]
+  why: 换头像
+- msg: use this cute one as max's profile picture
+  label: false
+  tags: [profile, en, voice]
+  why: 换头像
+- msg: 帮我总结一下花花目前的整体状况
+  label: false
+  tags: [profile, question, voice]
+  why: 总结档案

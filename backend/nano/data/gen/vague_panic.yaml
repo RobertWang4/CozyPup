@@ -1,0 +1,1249 @@
+- msg: 他不对劲 一直嚎 肚子硬 我好慌
+  label: true
+  tags: [gdv, panic, voice]
+  why: 腹胀嚎叫
+
+- msg: 救命 我家猫 那个 不动了 还有气
+  label: true
+  tags: [neuro, panic, voice, edge]
+  why: 不动但有气
+
+- msg: 怎么办怎么办 他倒了
+  label: true
+  tags: [neuro, panic, voice, edge]
+  why: 倒地不起
+
+- msg: quick something's wrong with max he can't stand
+  label: true
+  tags: [neuro, panic, en]
+  why: 站不起来
+
+- msg: 完了完了 豆豆躺那不动 叫也不理我
+  label: true
+  tags: [neuro, panic, voice]
+  why: 叫不醒
+
+- msg: 那个 团子 呃 肚子鼓鼓的 硬硬的 一直想吐吐不出来
+  label: true
+  tags: [gdv, panic, voice]
+  why: 腹胀干呕
+
+- msg: 咪咪叫得好凄惨 一直蹲那 尿盆里啥也没有
+  label: true
+  tags: [urinary, panic, voice]
+  why: 排尿困难
+
+- msg: 快看看 旺财嘴巴里那个颜色 白白的 不太对
+  label: true
+  tags: [shock, panic, voice]
+  why: 牙龈发白
+
+- msg: my cat is just lying there and won't move at all not even when i pick him up
+  label: true
+  tags: [neuro, panic, en]
+  why: 极度虚弱不动
+
+- msg: 花花今天特别怪 身体一直抖 眼睛好像往上翻 吓死我了
+  label: true
+  tags: [neuro, panic, voice]
+  why: 描述抽搐
+
+- msg: 救命啊 球球从楼上摔下来了 现在一动不动
+  label: true
+  tags: [trauma, panic, voice]
+  why: 高坠不动
+
+- msg: luna just got hit by a car she's making weird noises help
+  label: true
+  tags: [trauma, panic, en]
+  why: 车祸后异常
+
+- msg: 呃 维尼今天一直躺着 叫他也没反应 摸他也没反应
+  label: true
+  tags: [neuro, panic, voice]
+  why: 叫不醒
+
+- msg: whiskers ate a whole bar of chocolate like ten minutes ago im freaking out
+  label: true
+  tags: [toxin, panic, en]
+  why: 大量误食刚发生
+
+- msg: 小维不知道咋了 嘴巴一直流口水 身体僵硬的 站不住
+  label: true
+  tags: [neuro, panic, voice]
+  why: 僵硬站不住
+
+- msg: mochi is not breathing right his mouth is open and he wont close it
+  label: true
+  tags: [breathing, panic, en]
+  why: 张口呼吸
+
+- msg: 那个 我家狗 突然就软了 抱起来跟没骨头一样
+  label: true
+  tags: [shock, panic, voice]
+  why: 软瘫无力
+
+- msg: 天啊天啊 豆豆吃了一整包葡萄干 刚刚的事
+  label: true
+  tags: [toxin, panic, voice]
+  why: 大量葡萄干误食
+
+- msg: help my dog just collapsed in the yard he wont get up
+  label: true
+  tags: [neuro, panic, en]
+  why: 突然倒地
+
+- msg: 团子被车撞了 现在嘴巴一直流血 停不下来
+  label: true
+  tags: [trauma, bleeding, panic, voice]
+  why: 车祸出血不止
+
+- msg: 咪咪的舌头 那个 颜色不对 有点发青 我好害怕
+  label: true
+  tags: [breathing, panic, voice]
+  why: 舌头发紫
+
+- msg: 呃呃呃 花花肚子摸着硬邦邦的 还一直干呕
+  label: true
+  tags: [gdv, panic, voice]
+  why: 腹胀干呕
+
+- msg: my rabbit is just flopped over on his side not moving
+  label: true
+  tags: [neuro, panic, en]
+  why: 侧躺不动
+
+- msg: 旺财吃了老鼠药的盒子 刚才咬的 我不确定吃了多少
+  label: true
+  tags: [toxin, panic, voice]
+  why: 误食鼠药
+
+- msg: 小维突然叫得特别惨 然后就趴下不动了
+  label: true
+  tags: [neuro, panic, voice]
+  why: 突然趴地不动
+
+- msg: help he swallowed a bone piece and now he's pawing at his throat
+  label: true
+  tags: [trauma, panic, en]
+  why: 骨头卡喉
+
+- msg: 维尼身上好多血 从耳朵那边一直流 不知道怎么弄的
+  label: true
+  tags: [bleeding, panic, voice]
+  why: 出血不止
+
+- msg: 那个 球球好像中暑了 软趴趴的 叫他也没劲抬头
+  label: true
+  tags: [heat, panic, voice]
+  why: 中暑软瘫
+
+- msg: max keeps trying to pee and nothing comes out he's crying
+  label: true
+  tags: [urinary, panic, en]
+  why: 尿不出叫唤
+
+- msg: 咪咪吃了半瓶我的降压药 刚打翻的 我好慌
+  label: true
+  tags: [toxin, panic, voice]
+  why: 人用药大量误食
+
+- msg: 快点快点 豆豆眼睛翻白了 身体一直在抖
+  label: true
+  tags: [neuro, panic, voice]
+  why: 眼睛翻白抖动
+
+- msg: my cat's belly is huge and hard and she keeps dry heaving
+  label: true
+  tags: [gdv, panic, en]
+  why: 腹胀干呕
+
+- msg: 花花从阳台摔下去了 现在腿不能动 一直叫
+  label: true
+  tags: [trauma, panic, voice]
+  why: 高坠肢体异常
+
+- msg: 团子刚才在外面晒了好久 现在回来软塌塌的 不理人
+  label: true
+  tags: [heat, panic, voice]
+  why: 中暑虚弱
+
+- msg: something is really wrong with luna she's drooling everywhere and cant walk straight
+  label: true
+  tags: [neuro, panic, en]
+  why: 流涎步态异常
+
+- msg: 我家狗被邻居的狗咬了一口 现在一直流血 好多血
+  label: true
+  tags: [trauma, bleeding, panic, voice]
+  why: 咬伤出血不止
+
+- msg: 呃 那个 旺财吃了巧克力蛋糕 一整块的那种 刚发生的
+  label: true
+  tags: [toxin, panic, voice]
+  why: 大量巧克力误食
+
+- msg: 小维现在一直趴着喘 舌头伸得老长 颜色也不对
+  label: true
+  tags: [breathing, panic, voice]
+  why: 喘息舌色异常
+
+- msg: max just ate a whole bag of grapes off the counter like right now
+  label: true
+  tags: [toxin, panic, en]
+  why: 大量葡萄误食
+
+- msg: 咪咪抓喉咙 一直干呕 呼吸也怪怪的 是不是卡东西了
+  label: true
+  tags: [trauma, breathing, panic, voice]
+  why: 疑似异物卡喉
+
+- msg: 我朋友的狗刚被车撞了 他不知道怎么办 我帮他问问
+  label: true
+  tags: [trauma, other_owner, panic]
+  why: 他人宠物正求助
+
+- msg: friend's cat just fell from the 5th floor and isn't moving what do we do
+  label: true
+  tags: [trauma, other_owner, en, panic]
+  why: 他人宠物正求助
+
+- msg: 花花吃了一整块夏威夷果 就刚才的事 现在腿软软的走不稳
+  label: true
+  tags: [toxin, panic, voice]
+  why: 夏威夷果中毒症状
+
+- msg: 团子今天一直吐 一直拉 现在整个人瘫了 叫他也没反应
+  label: true
+  tags: [neuro, panic, voice, multi]
+  why: 多症状叠加瘫软
+
+- msg: whiskers is having some kind of episode his whole body is stiff and jerking
+  label: true
+  tags: [neuro, panic, en]
+  why: 描述抽搐
+
+- msg: 那个 咪咪好像喝了消毒液 洒地上的那种 她舔了好多
+  label: true
+  tags: [toxin, panic, voice]
+  why: 误食消毒液
+
+- msg: 维尼眼球好像凸出来了 撞到桌角之后 我好害怕
+  label: true
+  tags: [trauma, panic, voice]
+  why: 眼球异常外伤后
+
+- msg: 旺财今天一直不吃不喝 现在连站都站不起来了
+  label: true
+  tags: [neuro, panic, voice]
+  why: 站立不能持续恶化
+
+- msg: sos my dog is bleeding a lot from his leg cant stop it
+  label: true
+  tags: [bleeding, panic, en]
+  why: 出血不止
+
+- msg: 小维吞了根缝衣针 我刚看到线还在嘴巴外面 他一直挠嘴
+  label: true
+  tags: [trauma, panic, voice]
+  why: 误吞针线
+
+- msg: 我家老猫这几天一直不好 今天更严重了 完全不吃不喝不动
+  label: true
+  tags: [multi, panic, voice]
+  why: 老年动物持续恶化
+
+- msg: my puppy has been getting worse all day now she wont even lift her head
+  label: true
+  tags: [multi, panic, en]
+  why: 幼崽持续恶化
+
+- msg: 球球好像抽出来了 全身一直抖 嘴巴还有白色的沫子
+  label: true
+  tags: [seizure, panic, voice]
+  why: 抽搐白沫
+
+- msg: max fell off the balcony and now he's not putting weight on one leg and shaking
+  label: true
+  tags: [trauma, panic, en]
+  why: 高坠后异常
+
+- msg: 咪咪那个 呃 尿不出来 已经蹲了好久了 一直叫
+  label: true
+  tags: [urinary, panic, voice]
+  why: 排尿困难持续叫
+
+- msg: 花花吃了百合花瓣 就刚才闻着玩然后咬了一口
+  label: true
+  tags: [toxin, panic, voice]
+  why: 猫误食百合
+
+- msg: 快救命 团子被开水烫到了 一大片皮都红了
+  label: true
+  tags: [trauma, panic, voice]
+  why: 大面积烫伤
+
+- msg: something's seriously off with luna she's just staring into space and drooling
+  label: true
+  tags: [neuro, panic, en]
+  why: 意识异常流涎
+
+- msg: 维尼吃了防冻液漏在地上的那些 舔了好多口
+  label: true
+  tags: [toxin, panic, voice]
+  why: 误食防冻液
+
+- msg: 旺财跟别的狗打架 脖子那边被咬破了 血一直往外冒
+  label: true
+  tags: [trauma, bleeding, panic, voice]
+  why: 咬伤出血不止
+
+- msg: 那个 小维 突然就跟被电到一样抖了好久 现在还没缓过来
+  label: true
+  tags: [neuro, panic, voice]
+  why: 描述抽搐未缓解
+
+- msg: help max got into my pills bottle and i think he ate a bunch
+  label: true
+  tags: [toxin, panic, en]
+  why: 人用药大量误食
+
+- msg: 咪咪现在一直在角落里缩着 碰她就叫 肚子那块特别硬
+  label: true
+  tags: [gdv, panic, voice]
+  why: 触痛腹硬
+
+- msg: 球球呼吸声怪怪的 呼哧呼哧的 嘴巴张着合不上
+  label: true
+  tags: [breathing, panic, voice]
+  why: 张口呼吸异常声
+
+- msg: 花花在外面被别的东西咬了一口 伤口很深 一直流血
+  label: true
+  tags: [trauma, bleeding, panic, voice]
+  why: 深度咬伤出血
+
+- msg: my bird just fell off his perch and is lying at the bottom of the cage not moving
+  label: true
+  tags: [neuro, panic, en]
+  why: 突然坠落不动
+
+- msg: 团子今天特别不对劲 走两步就倒 反复好几次了
+  label: true
+  tags: [neuro, panic, voice]
+  why: 反复倒地
+
+- msg: 我家狗吞了个鸡骨头 现在一直干呕 脖子伸得老长
+  label: true
+  tags: [trauma, panic, voice]
+  why: 骨头卡喉干呕
+
+- msg: luna is bleeding from her mouth and won't let me look she's whimpering
+  label: true
+  tags: [bleeding, trauma, panic, en]
+  why: 口腔出血疼痛
+
+- msg: 咪咪刚才好像被门夹到了 现在那条腿完全不敢碰地
+  label: true
+  tags: [trauma, panic, voice]
+  why: 外伤肢体不能负重
+
+- msg: 呃 那个 维尼吃了洋葱圈 好多个 是我朋友喂的 刚才的事
+  label: true
+  tags: [toxin, panic, voice]
+  why: 大量洋葱误食
+
+- msg: my hamster is on his side and barely moving his legs are twitching
+  label: true
+  tags: [neuro, panic, en]
+  why: 侧躺抽动
+
+- msg: 小维突然嗷嗷叫然后就瘫在地上了 现在完全没反应
+  label: true
+  tags: [neuro, panic, voice]
+  why: 突然瘫痪无反应
+
+- msg: 旺财吃了木糖醇的口香糖 一整包 刚发生的
+  label: true
+  tags: [toxin, panic, voice]
+  why: 木糖醇大量误食
+
+- msg: 那个 球球肚子胀得跟气球一样 一直想吐又吐不出来 好可怜
+  label: true
+  tags: [gdv, panic, voice]
+  why: 腹胀干呕
+
+- msg: max is having trouble breathing his gums look pale too
+  label: true
+  tags: [breathing, shock, panic, en]
+  why: 呼吸困难牙龈发白
+
+- msg: 花花从二楼窗户掉下去了 现在不肯走路
+  label: true
+  tags: [trauma, panic, voice]
+  why: 高坠不肯走动
+
+- msg: 咪咪嘴巴一直流白色的东西 身体抖得停不下来
+  label: true
+  tags: [neuro, panic, voice]
+  why: 描述抽搐白沫
+
+- msg: 团子今天中暑了吧 一直喘 舌头特别红 摸着身上烫烫的
+  label: true
+  tags: [heat, panic, voice]
+  why: 中暑体征
+
+- msg: my dog just ate a whole bunch of my grandma's medication off the floor
+  label: true
+  tags: [toxin, panic, en]
+  why: 大量人用药误食
+
+- msg: 我朋友家猫刚摔了 他现在慌得不行 猫一直叫
+  label: true
+  tags: [trauma, other_owner, panic]
+  why: 他人宠物正求助
+
+- msg: 维尼吃了老鼠药 就刚才 包装袋被咬破了一大半
+  label: true
+  tags: [toxin, panic, voice]
+  why: 大量误食鼠药
+
+- msg: 小维今天状态特别差 一直吐血 精神也没了 完全不理人
+  label: true
+  tags: [bleeding, multi, panic, voice]
+  why: 吐血精神差
+
+- msg: luna's stomach is rock hard and she wont stop pacing and whining
+  label: true
+  tags: [gdv, panic, en]
+  why: 腹部僵硬不安
+
+- msg: 咪咪抽出来了好几次了 每次都僵一会 我真的不知道咋办
+  label: true
+  tags: [seizure, panic, voice]
+  why: 反复抽搐
+
+- msg: 旺财被摩托车撞了 腿都变形了 一直哀嚎
+  label: true
+  tags: [trauma, panic, voice]
+  why: 车祸肢体变形
+
+- msg: 球球今天一直没精神 现在直接晕过去了 叫也叫不醒
+  label: true
+  tags: [neuro, panic, voice]
+  why: 昏迷叫不醒
+
+- msg: my cat swallowed a needle and thread and now she's gagging nonstop
+  label: true
+  tags: [trauma, panic, en]
+  why: 误吞针线呕吐
+
+- msg: 花花蹲厕所蹲了好久 一滴都没有 一直哀叫特别痛苦的样子
+  label: true
+  tags: [urinary, panic, voice]
+  why: 排尿困难痛苦
+
+- msg: 那个 团子 呃 好像喝了漂白水 我刚打扫完忘收起来
+  label: true
+  tags: [toxin, panic, voice]
+  why: 误食消毒液
+
+- msg: max's leg is bent in a weird way after he got hit by that bike
+  label: true
+  tags: [trauma, panic, en]
+  why: 车祸肢体变形
+
+- msg: 咪咪今天一直抽搐 已经好几次了 每次都好久
+  label: true
+  tags: [seizure, panic, voice]
+  why: 反复抽搐
+
+- msg: 维尼呼吸困难 张着嘴一直喘 我从没见过他这样
+  label: true
+  tags: [breathing, panic, voice]
+  why: 呼吸困难张口喘
+
+- msg: my dog is poisoned i think he ate rat bait he's acting really weird now
+  label: true
+  tags: [toxin, panic, en]
+  why: 疑似鼠药中毒
+
+- msg: 小维今天摔了一跤之后就一直不太对 走路歪歪的 眼神也怪
+  label: true
+  tags: [trauma, neuro, panic, voice]
+  why: 外伤后神经异常
+
+- msg: 旺财肚子那边被划伤了 伤口挺深的 血止不住往外流
+  label: true
+  tags: [bleeding, trauma, panic, voice]
+  why: 深度外伤出血不止
+
+- msg: luna just went completely limp in my arms i dont know what happened
+  label: true
+  tags: [shock, neuro, panic, en]
+  why: 突然瘫软
+
+- msg: 球球吃了一整颗巧克力豆 是那种烘焙用的黑巧 刚刚吃的
+  label: true
+  tags: [toxin, panic, voice]
+  why: 大量黑巧误食
+
+- msg: 花花今天怪怪的 一直躺着不动 叫她耳朵都不动一下
+  label: true
+  tags: [neuro, panic, voice]
+  why: 反应迟钝不动
+
+- msg: my turtle isnt moving at all and his legs are just hanging out limp
+  label: true
+  tags: [neuro, panic, en]
+  why: 肢体软瘫不动
+
+- msg: 咪咪牙龈那边 呃 白白的 完全没颜色 摸着还挺凉的
+  label: true
+  tags: [shock, panic, voice]
+  why: 牙龈发白体凉
+
+- msg: 团子被邻居家狗追了之后一直发抖 现在站都站不稳了
+  label: true
+  tags: [shock, neuro, panic, voice]
+  why: 惊吓后站立不稳
+
+- msg: max ate an entire box of raisins i just found the empty box
+  label: true
+  tags: [toxin, panic, en]
+  why: 大量葡萄干误食
+
+- msg: 维尼今天状态很差 又吐又拉 现在整个人蜷缩在角落不动
+  label: true
+  tags: [multi, panic, voice]
+  why: 多症状叠加蜷缩
+
+- msg: 小维刚才吃了颗纽扣电池 是我随手放桌上的 现在一直流口水
+  label: true
+  tags: [toxin, panic, voice]
+  why: 误食异物流涎
+
+- msg: 我家兔子今天软趴趴的 完全没力气 连耳朵都垂下来了
+  label: true
+  tags: [heat, panic, voice]
+  why: 极度虚弱
+
+- msg: 旺财耳朵那边流了好多血 是打架弄的 一直止不住
+  label: true
+  tags: [bleeding, trauma, panic, voice]
+  why: 咬伤出血不止
+
+- msg: luna hasn't been right since this morning now she's just lying flat and wont respond
+  label: true
+  tags: [neuro, panic, en]
+  why: 持续恶化叫不醒
+
+- msg: 球球那个 呃 吃了葡萄一整串 刚才偷吃的 我阻止不及
+  label: true
+  tags: [toxin, panic, voice]
+  why: 大量葡萄误食
+
+- msg: 花花今天一直咳嗽 突然就喘不上气一样趴地上了
+  label: true
+  tags: [breathing, panic, voice]
+  why: 突发呼吸异常趴地
+
+- msg: my cat just went stiff all over and fell sideways off the couch
+  label: true
+  tags: [neuro, panic, en]
+  why: 描述抽搐倒地
+
+- msg: 团子被车撞了之后一直不肯起来 嘴巴那边有血
+  label: true
+  tags: [trauma, bleeding, panic, voice]
+  why: 车祸出血不起
+
+- msg: 咪咪今天一直干呕 肚子鼓得老高 敲上去闷闷的响
+  label: true
+  tags: [gdv, panic, voice]
+  why: 腹胀敲诊异常
+
+- msg: max just ate a bunch of xylitol gum off the table like two minutes ago
+  label: true
+  tags: [toxin, panic, en]
+  why: 木糖醇大量误食
+
+- msg: 维尼刚被开水烫到背 那一大片全红了 他一直哀嚎
+  label: true
+  tags: [trauma, panic, voice]
+  why: 大面积烫伤哀嚎
+
+- msg: 小维今天一直没精神 现在四肢一直抖 眼神也涣散了
+  label: true
+  tags: [neuro, panic, voice]
+  why: 描述抽搐意识涣散
+
+- msg: 我朋友的猫刚吃了不知道什么东西 现在一直吐 他慌死了
+  label: true
+  tags: [toxin, other_owner, panic]
+  why: 他人宠物正求助
+
+- msg: luna's gums are white and she's really cold to the touch
+  label: true
+  tags: [shock, panic, en]
+  why: 牙龈发白体温低
+
+- msg: 球球肚子那边突然肿了一大块 硬硬的 他叫得特别惨
+  label: true
+  tags: [gdv, panic, voice]
+  why: 腹部肿胀疼痛
+
+- msg: 花花吃了一整颗百合花蕊 就今天刚发生 他一直呕吐
+  label: true
+  tags: [toxin, panic, voice]
+  why: 猫误食百合大量
+
+- msg: max got attacked by another dog his stomach is torn open a bit its bleeding bad
+  label: true
+  tags: [trauma, bleeding, panic, en]
+  why: 严重咬伤出血
+
+- msg: 咪咪今天从早上就一直躲着 现在摸他他都不叫了 软软的
+  label: true
+  tags: [shock, panic, voice]
+  why: 极度虚弱无反应
+
+- msg: 团子吞了根牙签 现在一直用爪子挠嘴巴 还流口水
+  label: true
+  tags: [trauma, panic, voice]
+  why: 误吞异物
+
+- msg: 维尼被车撞了但是还有意识 就是一直发抖不敢动
+  label: true
+  tags: [trauma, shock, panic, voice]
+  why: 车祸后休克表现
+
+- msg: 小维今天蹲在猫砂盆里蹲了快一个小时 一直用力 啥也没有 还叫
+  label: true
+  tags: [urinary, panic, voice]
+  why: 排尿困难持续用力
+
+- msg: my dog just fell down the stairs and now he wont put any weight on his front leg
+  label: true
+  tags: [trauma, panic, en]
+  why: 摔伤后不能负重
+
+- msg: 花花今天吃了一整块巧克力慕斯蛋糕 是刚才生日会剩下的 全被他吃了
+  label: true
+  tags: [toxin, panic, voice]
+  why: 大量巧克力误食
+
+- msg: luna's whole body just seized up and she fell off the bed
+  label: true
+  tags: [seizure, panic, en]
+  why: 抽搐倒地
+
+- msg: 团子肚子胀得跟球一样 敲起来梆梆响 一直想吐吐不出来 好难受的样子
+  label: true
+  tags: [gdv, panic, voice]
+  why: 腹胀干呕
+
+- msg: 咪咪今天一直缩着不肯动 碰他就哼 肚子那边一碰就叫
+  label: true
+  tags: [gdv, panic, voice]
+  why: 腹部触痛
+
+- msg: 救命
+  label: false
+  tags: [gray, edge, panic]
+  why: 无具体体征
+
+- msg: 急
+  label: false
+  tags: [gray, edge, panic]
+  why: 无具体体征
+
+- msg: help
+  label: false
+  tags: [gray, edge, panic, en]
+  why: 无具体体征
+
+- msg: 怎么办
+  label: false
+  tags: [gray, edge, panic]
+  why: 无具体体征
+
+- msg: 快点
+  label: false
+  tags: [gray, edge, panic]
+  why: 无具体体征
+
+- msg: omg help
+  label: false
+  tags: [gray, edge, panic, en]
+  why: 无具体体征
+
+- msg: sos
+  label: false
+  tags: [gray, edge, panic, en]
+  why: 无具体体征
+
+- msg: 完了完了
+  label: false
+  tags: [gray, edge, panic]
+  why: 无具体体征
+
+- msg: 他今天怪怪的
+  label: false
+  tags: [gray, mild, voice]
+  why: 无具体体征
+
+- msg: 感觉不太对劲 但说不上来
+  label: false
+  tags: [gray, mild, voice]
+  why: 说不清楚
+
+- msg: 有点蔫
+  label: false
+  tags: [gray, mild]
+  why: 轻度不适
+
+- msg: 老是叫 不知道为啥
+  label: false
+  tags: [gray, mild, voice]
+  why: 行为无体征
+
+- msg: he's been weird all day
+  label: false
+  tags: [gray, mild, en]
+  why: 无具体体征
+
+- msg: 我好担心他
+  label: false
+  tags: [gray, mild, voice]
+  why: 纯焦虑无体征
+
+- msg: 总觉得他今天状态不太好
+  label: false
+  tags: [gray, mild, voice]
+  why: 纯焦虑无体征
+
+- msg: worried about luna lately she just seems off
+  label: false
+  tags: [gray, mild, en]
+  why: 纯焦虑无体征
+
+- msg: 团子今天没什么精神 就是懒懒的
+  label: false
+  tags: [mild, voice]
+  why: 轻度精神差
+
+- msg: 咪咪今天一直躲在床底下 不知道为什么
+  label: false
+  tags: [gray, mild, voice]
+  why: 行为改变无体征
+
+- msg: 花花叫的次数比平时多了点
+  label: false
+  tags: [gray, mild, voice]
+  why: 轻度行为变化
+
+- msg: max isnt really himself today idk why
+  label: false
+  tags: [gray, mild, en]
+  why: 无具体体征
+
+- msg: 那个 维尼今天吃的比平时少一点点
+  label: false
+  tags: [mild, voice]
+  why: 食欲略降
+
+- msg: 小维总感觉不太爱动 就这两天
+  label: false
+  tags: [gray, mild, voice]
+  why: 轻度活动减少
+
+- msg: 旺财今天一直看着我 好像有话要说似的
+  label: false
+  tags: [gray, chitchat, voice]
+  why: 无具体体征
+
+- msg: luna keeps following me around more than usual is that normal
+  label: false
+  tags: [gray, mild, en]
+  why: 行为轻度变化
+
+- msg: 球球今天特别粘人 一直要抱抱
+  label: false
+  tags: [chitchat, voice]
+  why: 无具体体征
+
+- msg: 我家狗最近老是趴着 是不是懒了
+  label: false
+  tags: [gray, mild, voice]
+  why: 无具体体征
+
+- msg: 咪咪今天叫得比较多 是不是饿了
+  label: false
+  tags: [mild, voice]
+  why: 行为轻度变化
+
+- msg: 团子好像有点没精神 但吃饭正常
+  label: false
+  tags: [mild, voice]
+  why: 轻度精神差食欲正常
+
+- msg: is it normal for cats to sleep this much
+  label: false
+  tags: [question, en]
+  why: 知识性提问
+
+- msg: 花花今天打了个喷嚏 吓死我了
+  label: false
+  tags: [mild, gray, keyword_trap, voice]
+  why: 单次喷嚏
+
+- msg: 维尼抖了一下 但好像没事 正常走来走去
+  label: false
+  tags: [gray, keyword_trap, voice]
+  why: 单次抖动无异常
+
+- msg: 咪咪今天吐了一点点 就一点点 之后就没事了 精神也好
+  label: false
+  tags: [mild, keyword_trap, voice]
+  why: 单次轻微呕吐
+
+- msg: max threw up once but he's playing fine now
+  label: false
+  tags: [mild, keyword_trap, en]
+  why: 单次呕吐精神好
+
+- msg: 小维拉了一次软便 其他都正常
+  label: false
+  tags: [mild, voice]
+  why: 单次软便
+
+- msg: 旺财今天挠了挠耳朵 应该是有点痒
+  label: false
+  tags: [mild, voice]
+  why: 轻微挠痒
+
+- msg: 球球眼睛有点眼屎 不知道要不要紧
+  label: false
+  tags: [mild, voice]
+  why: 轻微眼屎
+
+- msg: luna sneezed twice this morning should i be worried
+  label: false
+  tags: [mild, keyword_trap, en]
+  why: 单次喷嚏
+
+- msg: 花花走路好像有点一瘸一拐的 就一点点
+  label: false
+  tags: [mild, voice]
+  why: 轻微跛行
+
+- msg: 团子今天喝水比较多 是不是天热
+  label: false
+  tags: [mild, voice]
+  why: 喝水多单一
+
+- msg: 我家猫毛球吐了一个出来 应该没事吧
+  label: false
+  tags: [mild, voice]
+  why: 毛球
+
+- msg: 维尼今天有点挑食 不知道咋回事
+  label: false
+  tags: [mild, voice]
+  why: 食欲略降
+
+- msg: 那个 咪咪 呃 我也说不清 就是感觉怪怪的
+  label: false
+  tags: [gray, mild, voice]
+  why: 说不清体征
+
+- msg: something feels off with my dog but i cant explain it
+  label: false
+  tags: [gray, mild, en]
+  why: 说不清体征
+
+- msg: 小维好像不太开心 一直趴在角落
+  label: false
+  tags: [gray, mild, voice]
+  why: 行为轻度变化
+
+- msg: 旺财今天有点烦躁 老是原地转圈
+  label: false
+  tags: [gray, mild, voice]
+  why: 行为轻度变化
+
+- msg: 球球好像最近瘦了一点点 是不是没吃饱
+  label: false
+  tags: [gray, mild, voice]
+  why: 轻度体重变化
+
+- msg: does anyone know why my cat keeps staring at the wall
+  label: false
+  tags: [question, gray, en]
+  why: 行为咨询
+
+- msg: 花花今天一直理毛 理得比平时久
+  label: false
+  tags: [mild, voice]
+  why: 行为轻度变化
+
+- msg: 团子好像有点便秘 两天没拉了
+  label: false
+  tags: [mild, voice]
+  why: 单一轻微症状
+
+- msg: max has been panting a bit more than usual today it's kinda warm out though
+  label: false
+  tags: [mild, gray, keyword_trap, en]
+  why: 天热轻度喘气
+
+- msg: 咪咪今天打喷嚏打了两三次 别的都挺好的
+  label: false
+  tags: [mild, keyword_trap, voice]
+  why: 轻微喷嚏
+
+- msg: 维尼身上有点抖 可能是冷 我给他盖了毯子
+  label: false
+  tags: [gray, keyword_trap, voice]
+  why: 疑似受凉发抖
+
+- msg: 小维今天啃了一点点巧克力豆 就舔了一小口那种
+  label: false
+  tags: [toxin, gray, keyword_trap, voice]
+  why: 剂量极小
+
+- msg: luna licked a tiny bit of chocolate frosting off my finger
+  label: false
+  tags: [toxin, gray, keyword_trap, en]
+  why: 剂量极小
+
+- msg: 旺财偷吃了半颗葡萄干 就一颗那种
+  label: false
+  tags: [toxin, gray, keyword_trap, voice]
+  why: 剂量极小
+
+- msg: 球球去年中过一次毒 现在完全好了
+  label: false
+  tags: [past, keyword_trap, voice]
+  why: 过去的事
+
+- msg: 花花上个月抽搐过 医生说癫痫 现在药物控制得挺好
+  label: false
+  tags: [past, managed, keyword_trap, voice]
+  why: 已在治疗
+
+- msg: my dog had a seizure disorder years ago but he's on meds and totally fine now
+  label: false
+  tags: [past, managed, keyword_trap, en]
+  why: 已在治疗
+
+- msg: 帮我记一下 团子今天抖了一下
+  label: false
+  tags: [record, gray, keyword_trap, voice]
+  why: 事后记录
+
+- msg: can you just log that luna threw up once today
+  label: false
+  tags: [record, keyword_trap, en]
+  why: 事后记录
+
+- msg: 我朋友说她家狗以前中过毒 现在没事了 就是聊聊
+  label: false
+  tags: [other_owner, past, chitchat]
+  why: 他人过去的事
+
+- msg: 狗狗吃了葡萄会怎么样啊
+  label: false
+  tags: [question, hypothetical, keyword_trap, voice]
+  why: 假设提问
+
+- msg: what happens if a cat eats a lily petal
+  label: false
+  tags: [question, hypothetical, keyword_trap, en]
+  why: 假设提问
+
+- msg: 咪咪今天一直叫 是不是发情了
+  label: false
+  tags: [question, voice]
+  why: 行为咨询
+
+- msg: 维尼今天有点没胃口 但摸着精神还挺好的
+  label: false
+  tags: [mild, voice]
+  why: 食欲略降精神好
+
+- msg: 小维今天一直在窗边看鸟 挺兴奋的
+  label: false
+  tags: [chitchat, voice]
+  why: 无关正常行为
+
+- msg: 那个 旺财 呃 好像有点不太一样 但我也不知道哪里不一样
+  label: false
+  tags: [gray, mild, voice]
+  why: 说不清体征
+
+- msg: something is bugging me about how max has been acting but nothing specific
+  label: false
+  tags: [gray, mild, en]
+  why: 说不清体征
+
+- msg: 球球最近老爱躲在柜子里 以前不这样
+  label: false
+  tags: [gray, mild, voice]
+  why: 行为轻度变化
+
+- msg: 花花今天体重称了一下 好像轻了一点
+  label: false
+  tags: [record, mild, voice]
+  why: 体重记录
+
+- msg: 团子昨天打了疫苗 今天有点没精神 正常吗
+  label: false
+  tags: [mild, question, voice]
+  why: 疫苗后轻微反应
+
+- msg: is it normal for my puppy to be a little tired after vaccination
+  label: false
+  tags: [mild, question, en]
+  why: 疫苗后轻微反应
+
+- msg: 咪咪驱虫之后拉了一次稀 别的正常
+  label: false
+  tags: [mild, voice]
+  why: 驱虫后轻微反应
+
+- msg: 维尼今天洗完澡之后一直甩毛 是不是不舒服
+  label: false
+  tags: [mild, voice]
+  why: 洗澡后正常反应
+
+- msg: 小维今天换了新粮 拉的便便有点软
+  label: false
+  tags: [mild, voice]
+  why: 换粮轻微反应
+
+- msg: 旺财今天叫得比较凶 是不是有陌生人经过
+  label: false
+  tags: [chitchat, voice]
+  why: 正常防御行为
+
+- msg: my cat has been extra clingy today not sure why
+  label: false
+  tags: [gray, mild, en]
+  why: 行为轻度变化
+
+- msg: 球球今天在沙发上尿了一下 是不是生气了
+  label: false
+  tags: [mild, question, voice]
+  why: 行为咨询
+
+- msg: 花花今天一直挠沙发 是不是要磨爪子了
+  label: false
+  tags: [chitchat, voice]
+  why: 正常行为
+
+- msg: 团子好像有点怕生 见到陌生人就躲
+  label: false
+  tags: [chitchat, voice]
+  why: 性格描述
+
+- msg: does anyone else's dog get scared of thunderstorms like this
+  label: false
+  tags: [question, en]
+  why: 知识性提问
+
+- msg: 咪咪今天一直盯着空气看 有点瘆人
+  label: false
+  tags: [gray, chitchat, voice]
+  why: 正常猫咪行为
+
+- msg: 维尼今天精神特别好 蹦蹦跳跳的
+  label: false
+  tags: [chitchat, voice]
+  why: 正常状态
+
+- msg: 小维今天有点烦 一直挠自己
+  label: false
+  tags: [mild, voice]
+  why: 轻微挠痒
+
+- msg: 旺财最近老是打哈欠 是不是没睡好
+  label: false
+  tags: [gray, mild, voice]
+  why: 正常行为
+
+- msg: he keeps yawning a lot today is that a sign of something
+  label: false
+  tags: [gray, question, en]
+  why: 正常行为咨询
+
+- msg: 球球今天有点闷闷的 平时挺闹腾的
+  label: false
+  tags: [gray, mild, voice]
+  why: 轻度精神差
+
+- msg: 花花今天蹭我蹭得特别厉害 是不是没吃饱
+  label: false
+  tags: [chitchat, voice]
+  why: 正常行为
+
+- msg: 团子今天有点粘人 一直要抱
+  label: false
+  tags: [chitchat, voice]
+  why: 无具体体征
+
+- msg: something just feels weird today with luna cant put my finger on it
+  label: false
+  tags: [gray, mild, en]
+  why: 说不清体征
+
+- msg: 咪咪今天没什么反常 就是感觉有点安静
+  label: false
+  tags: [gray, mild, voice]
+  why: 轻度安静
+
+- msg: 维尼今天一直望着门口 是不是想出去玩
+  label: false
+  tags: [chitchat, voice]
+  why: 正常行为
+
+- msg: 小维好像瘦了 但也可能是我看错了
+  label: false
+  tags: [gray, mild, voice]
+  why: 不确定体重变化
+
+- msg: not sure if this is anything but max seems a little slower today
+  label: false
+  tags: [gray, mild, en]
+  why: 轻度活动减少
+
+- msg: 旺财今天一直摇尾巴 好像很开心
+  label: false
+  tags: [chitchat, voice]
+  why: 正常状态
+
+- msg: 球球今天叫声有点不一样 是变声期吗
+  label: false
+  tags: [question, voice]
+  why: 知识性提问
+
+- msg: 花花今天睡得比平时久 是不是累了
+  label: false
+  tags: [gray, mild, voice]
+  why: 睡眠增多
+
+- msg: 团子昨天吃多了今天有点撑 拉了一次软便
+  label: false
+  tags: [mild, voice]
+  why: 单一轻微症状
+
+- msg: luna pooped a bit soft this morning but seems fine otherwise
+  label: false
+  tags: [mild, en]
+  why: 单次软便
+
+- msg: 咪咪今天有点怕冷 一直找暖气待着
+  label: false
+  tags: [chitchat, voice]
+  why: 正常行为
+
+- msg: 维尼今天叫我起床叫了好久 是不是饿了
+  label: false
+  tags: [chitchat, voice]
+  why: 正常行为
+
+- msg: 小维今天有点吵 一直在窗边叫
+  label: false
+  tags: [chitchat, voice]
+  why: 无具体体征
+
+- msg: 旺财今天挖沙发挖得特别起劲
+  label: false
+  tags: [chitchat, voice]
+  why: 无关正常行为
+
+- msg: is it bad that my cat sleeps 18 hours a day
+  label: false
+  tags: [question, en]
+  why: 知识性提问
+
+- msg: 球球今天在阳台晒了会太阳 回来精神挺好
+  label: false
+  tags: [record, voice]
+  why: 日常活动记录
+
+- msg: 花花今天理毛理出一个秃块 不知道咋回事
+  label: false
+  tags: [mild, gray, voice]
+  why: 局部轻微异常
+
+- msg: 团子今天磨牙磨得挺响 是不是牙齿不舒服
+  label: false
+  tags: [mild, question, voice]
+  why: 咨询轻微症状
+
+- msg: my rabbit seems a little quiet today but eating fine
+  label: false
+  tags: [gray, mild, en]
+  why: 轻度安静食欲正常
+
+- msg: 咪咪今天一直蹭门框 是不是想出去
+  label: false
+  tags: [chitchat, voice]
+  why: 正常行为
+
+- msg: 维尼吃药之后有点没精神 是药的副作用吗
+  label: false
+  tags: [mild, question, voice]
+  why: 用药后轻微反应
+
+- msg: 小维今天体检回来 说一切正常 就是有点紧张
+  label: false
+  tags: [record, voice]
+  why: 体检记录正常
+
+- msg: 旺财今天一直追自己尾巴玩 挺好玩的
+  label: false
+  tags: [chitchat, voice]
+  why: 正常玩耍行为
+
+- msg: 球球今天有点认生 见到新朋友就躲床底下
+  label: false
+  tags: [chitchat, voice]
+  why: 性格描述
+
+- msg: not sure if i should be concerned max just seems a bit down today
+  label: false
+  tags: [gray, mild, en]
+  why: 轻度情绪低落
+
+- msg: 怎么办呀
+  label: false
+  tags: [gray, edge, panic]
+  why: 无具体体征
+
+- msg: 快帮帮我
+  label: false
+  tags: [gray, edge, panic, voice]
+  why: 无具体体征
+
+- msg: please help
+  label: false
+  tags: [gray, edge, panic, en]
+  why: 无具体体征
+
+- msg: 团子今天有点没劲 但还是跑来跑去要吃的
+  label: false
+  tags: [mild, voice]
+  why: 轻度精神差食欲正常
+
+- msg: kinda worried max seems a little off but hes eating and playing normal
+  label: false
+  tags: [gray, mild, en]
+  why: 纯焦虑无体征
+
+- msg: 咪咪今天叫得有点奇怪 但摸他哪都不疼
+  label: false
+  tags: [gray, mild, voice]
+  why: 触诊无异常

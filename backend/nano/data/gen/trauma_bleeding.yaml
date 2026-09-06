@@ -1,0 +1,1200 @@
+- msg: 豆豆被车撞了 还有意识但是嘴里在流血 怎么办
+  label: true
+  tags: [trauma, bleeding, voice, panic]
+  why: 车祸口鼻出血
+- msg: 我家狗刚被电动车带飞了 摔在地上不会站
+  label: true
+  tags: [trauma, voice, panic]
+  why: 车带飞不能站
+- msg: 那个 团子被车轮子压到后腿了 腿完全不能动 耷拉着
+  label: true
+  tags: [trauma, voice, panic]
+  why: 轮子压腿耷拉
+- msg: omg my dog just got hit by a car he's still breathing but not moving his legs
+  label: true
+  tags: [trauma, en, voice, panic]
+  why: 车祸后腿不动
+- msg: 咪咪跑出去被车撞了 现在瘫在马路上 喵喵叫
+  label: true
+  tags: [trauma, voice, panic]
+  why: 车祸瘫在路上
+- msg: 刚才旺财追车结果被幢飞了 摔出去好几米 躺那不动了
+  label: true
+  tags: [trauma, voice, typo, panic]
+  why: 撞飞躺地不动
+- msg: 小区门口 球球被车撞倒了 站不起来 嘴角有血
+  label: true
+  tags: [trauma, bleeding, voice, panic]
+  why: 车祸站不起来
+- msg: dog got hit by a car crossing the street he's crying and can't stand
+  label: true
+  tags: [trauma, en, voice, panic]
+  why: 车祸不能站
+- msg: 呃 就是 花花被车撞了一下 现在一直哆嗦 腿好像断了
+  label: true
+  tags: [trauma, voice, panic]
+  why: 车祸腿疑似断
+- msg: Max just got clipped by a car his back leg is bent the wrong way
+  label: true
+  tags: [trauma, en, voice]
+  why: 车祸腿角度不对
+- msg: 维尼被外卖电动车撞了 倒地上一动不动 我很害怕
+  label: true
+  tags: [trauma, voice, panic]
+  why: 车祸倒地不动
+- msg: 完了完了 大橘被车撞了 现在软趴趴的抱都不会叫
+  label: true
+  tags: [trauma, voice, panic]
+  why: 车祸软趴无反应
+- msg: 可乐追球跑到马路上被撞了 现在肚子那边看着凹进去了
+  label: true
+  tags: [trauma, shock, voice, panic]
+  why: 车祸肚子凹陷
+- msg: my cat got hit by a car and now she's just lying there not responding
+  label: true
+  tags: [trauma, en, voice]
+  why: 车祸无反应
+- msg: 布丁刚被车幢飞了 落地的时候听见骨头响的声音
+  label: true
+  tags: [trauma, voice, typo, panic]
+  why: 撞飞骨头声响
+- msg: 阿黄被摩托车撞倒 后腿血肉模糊的
+  label: true
+  tags: [trauma, bleeding, voice]
+  why: 车祸后腿重伤
+- msg: 那个米米被车撞到头了 眼睛一直翻白 抽了一下
+  label: true
+  tags: [trauma, neuro, voice, panic]
+  why: 车祸头部翻白眼
+- msg: Luna got hit crossing the road she's not putting weight on her leg at all and whimpering nonstop
+  label: true
+  tags: [trauma, en, voice, panic]
+  why: 车祸腿不敢着地
+- msg: 糯米被车撞了 现在嘴里一直吐白沫 躺着不动
+  label: true
+  tags: [trauma, neuro, voice, panic]
+  why: 车祸吐白沫不动
+- msg: 刚出门遛狗 旺财被车撞飞出去砸墙上了 现在起不来
+  label: true
+  tags: [trauma, voice, panic]
+  why: 车祸撞墙起不来
+- msg: 咪咪从五楼窗户掉下去了 现在不会走路 一直叫
+  label: true
+  tags: [trauma, voice, panic]
+  why: 高坠不能走路
+- msg: 我家猫从阳台摔下去了 落地声音特别大 现在缩在角落发抖
+  label: true
+  tags: [trauma, shock, voice, panic]
+  why: 高坠缩角落发抖
+- msg: 团子跳楼上摔下来了 腿那个角度不对劲
+  label: true
+  tags: [trauma, voice]
+  why: 高坠腿角度异常
+- msg: cat fell off the balcony like six floors down not moving much
+  label: true
+  tags: [trauma, en, voice]
+  why: 高坠六楼不动
+- msg: 小维从楼梯上滚下去了 头撞到地上 现在迷迷糊糊的
+  label: true
+  tags: [trauma, neuro, voice]
+  why: 摔滚头部迷糊
+- msg: 呃 花花从窗台掉下去了 摔到水泥地上 现在站不稳一直摇晃
+  label: true
+  tags: [trauma, neuro, voice, panic]
+  why: 高坠站不稳
+- msg: 球球从二楼阳台掉下去了 落地后就没叫过 趴那不动
+  label: true
+  tags: [trauma, shock, voice]
+  why: 高坠落地不动
+- msg: my kitten fell from the window like four stories she's not moving at all
+  label: true
+  tags: [trauma, en, voice]
+  why: 高坠不动
+- msg: 布丁跳空调外机结果掉下去了 现在一条腿完全立不起来
+  label: true
+  tags: [trauma, voice]
+  why: 高坠腿立不起
+- msg: 那个 米米从高处摔下来 鼻子那边流了好多血
+  label: true
+  tags: [trauma, voice]
+  why: 高坠鼻部出血
+- msg: Whiskers fell off the fire escape and hasn't moved since we found him
+  label: true
+  tags: [trauma, shock, en, voice]
+  why: 高坠未动
+- msg: 大橘从窗户上摔出去了 现在肚子鼓鼓的还一直干呕
+  label: true
+  tags: [trauma, gdv, voice, panic]
+  why: 高坠肚胀干呕
+- msg: 阿黄从三楼阳台跌下来了 前腿骨头露出来了
+  label: true
+  tags: [trauma, voice, panic]
+  why: 高坠骨头外露
+- msg: 糯米从楼上摔下来的 现在一直哭
+  label: true
+  tags: [trauma, voice, panic]
+  why: 高坠一直哭
+- msg: cat jumped from the balcony chasing a bird now can't move her back legs
+  label: true
+  tags: [trauma, en, voice]
+  why: 高坠后腿瘫
+- msg: 乐乐从窗户缝钻出去掉下去了 现在整个身体都是软的
+  label: true
+  tags: [trauma, shock, voice, panic]
+  why: 高坠全身软
+- msg: 毛毛从五楼阳台摔到楼下的车棚顶上了 现在动不了
+  label: true
+  tags: [trauma, voice]
+  why: 高坠动不了
+- msg: 完了 维尼从窗台上掉下去了 摔在马路牙子上 头一直低垂着
+  label: true
+  tags: [trauma, neuro, voice, panic]
+  why: 高坠头低垂
+- msg: 可乐从高处摔下来撞到花坛边了 现在嘴巴那边一直流口水带血
+  label: true
+  tags: [trauma, bleeding, voice]
+  why: 高坠口部出血
+- msg: Mochi fell off the balcony this morning he's breathing weird and won't stand up
+  label: true
+  tags: [trauma, breathing, en, voice]
+  why: 高坠不站立
+- msg: 豆豆被邻居的大狗咬了 脖子那块一直在流血 按不住
+  label: true
+  tags: [trauma, bleeding, voice, panic]
+  why: 咬伤按不住血
+- msg: 我家猫被别人家狗叼着甩了几下 身上好多血止不住
+  label: true
+  tags: [trauma, bleeding, voice, panic]
+  why: 犬叼甩出血不止
+- msg: 团子被大狗咬到腹部了 那个伤口一直往外渗血 已经湿透一块毛巾了
+  label: true
+  tags: [trauma, bleeding, voice]
+  why: 腹部咬伤渗血
+- msg: small dog got attacked by a big dog his leg is bleeding non stop we cant stop it
+  label: true
+  tags: [trauma, bleeding, en, voice]
+  why: 咬伤出血不止
+- msg: 呃就是 球球被拉布拉多咬了一口 现在血一直流 怎么按都不停
+  label: true
+  tags: [trauma, bleeding, voice]
+  why: 咬伤按不停
+- msg: 花花被大狗叼着甩来甩去 放开以后浑身都是血
+  label: true
+  tags: [trauma, bleeding, voice, panic]
+  why: 犬叼甩浑身血
+- msg: Luna got bitten by a huge dog at the park blood everywhere it wont stop
+  label: true
+  tags: [trauma, bleeding, en, voice]
+  why: 咬伤到处是血
+- msg: 咪咪被流浪狗咬了后腿 一直滴血 走一步滴一路
+  label: true
+  tags: [trauma, bleeding, voice]
+  why: 咬伤滴血一路
+- msg: 那个 旺财被隔壁的德牧咬了脖子 咬得挺深的 血一直往出冒
+  label: true
+  tags: [trauma, bleeding, voice]
+  why: 脖子咬伤深
+- msg: my puppy was attacked by a bigger dog he's bleeding a lot from his side and shaking
+  label: true
+  tags: [trauma, bleeding, en, voice, panic]
+  why: 咬伤大量出血
+- msg: 布丁被大狗咬到肚子 一按纸巾就湿了 换了好几张都止不住
+  label: true
+  tags: [trauma, bleeding, voice]
+  why: 腹部咬伤渗血
+- msg: 阿黄和别人家狗打架被咬破了 现在那伤口血止不住 都滴地上了
+  label: true
+  tags: [trauma, bleeding, voice]
+  why: 咬伤滴地不止
+- msg: 完了完了 大橘被狗咬伤 出血好多 毛都黏在一起了
+  label: true
+  tags: [trauma, bleeding, voice, panic]
+  why: 咬伤毛发黏血
+- msg: dog fight happened at the dog park my dog got bit and is bleeding pretty badly
+  label: true
+  tags: [trauma, bleeding, en, voice]
+  why: 打架咬伤出血
+- msg: 米米被邻居的狗叼住甩了两下才松口 现在浑身软趴趴的 伤口一直渗血
+  label: true
+  tags: [trauma, bleeding, shock, voice]
+  why: 犬叼后软趴
+- msg: 维尼被大狗咬到耳朵 血一直往下滴 甩头甩得到处都是
+  label: true
+  tags: [trauma, bleeding, voice]
+  why: 耳朵咬伤滴血
+- msg: 糯米被流浪狗追上咬了一口 咬穿了 血止不住一直流
+  label: true
+  tags: [trauma, bleeding, voice]
+  why: 咬穿出血不止
+- msg: Whiskers got attacked by a neighbor's dog there's a deep bite wound still bleeding
+  label: true
+  tags: [trauma, bleeding, en, voice]
+  why: 深咬伤持续出血
+- msg: 小维被咬伤了后腿 那伤口张着口子一直往出渗血
+  label: true
+  tags: [trauma, bleeding, voice]
+  why: 后腿咬伤渗血
+- msg: 乐乐被别人家大狗叼着甩 现在放地上都不敢站 身下一滩血
+  label: true
+  tags: [trauma, bleeding, shock, voice]
+  why: 犬叼身下积血
+- msg: 咪咪打翻了热水壶 整个背都烫红了一大片 毛都掉了
+  label: true
+  tags: [trauma, voice, panic]
+  why: 大面积烫伤脱毛
+- msg: 我家狗蹭到刚出锅的油锅了 半边身子都是水泡
+  label: true
+  tags: [trauma, voice, panic]
+  why: 油锅大面积水泡
+- msg: 团子被开水浇到了 皮都掀起来了一大片
+  label: true
+  tags: [trauma, voice, panic]
+  why: 开水烫皮掀起
+- msg: my cat knocked over boiling water and got scalded across her whole back
+  label: true
+  tags: [trauma, en, voice]
+  why: 开水烫伤整背
+- msg: 呃 球球碰到火锅锅底了 肚子那一片全是烫伤的水泡
+  label: true
+  tags: [trauma, voice]
+  why: 火锅烫伤水泡
+- msg: 花花被热汤浇到背上了 那一片毛都焦了皮也翻起来了
+  label: true
+  tags: [trauma, voice, panic]
+  why: 热汤烫伤皮翻起
+- msg: dog got burned by hot oil spilling from the pan half his side is blistered
+  label: true
+  tags: [trauma, en, voice]
+  why: 热油大面积起泡
+- msg: 咪咪掉进刚倒的热水盆里了 四条腿全烫伤了 皮都白了
+  label: true
+  tags: [trauma, voice, panic]
+  why: 热水盆四肢烫伤
+- msg: 那个 旺财蹭到暖气片烫伤了一大片 皮肤都起泡了
+  label: true
+  tags: [trauma, voice]
+  why: 暖气片大面积起泡
+- msg: Luna got scalded by boiling water on her back it's a huge area already blistering
+  label: true
+  tags: [trauma, en, voice]
+  why: 开水烫伤起泡
+- msg: 布丁被热粥泼到了 从脖子到背整片都是烫伤
+  label: true
+  tags: [trauma, voice, panic]
+  why: 热粥大面积烫伤
+- msg: 阿黄不小心被烤箱烫到了肚皮 一大片红肿起泡
+  label: true
+  tags: [trauma, voice]
+  why: 烤箱烫伤红肿
+- msg: 完了 大橘打翻火锅了 后背整片都是烫的 皮都翻了
+  label: true
+  tags: [trauma, voice, panic]
+  why: 火锅大面积烫伤
+- msg: my dog got splashed with hot coffee all over his back it's blistering badly
+  label: true
+  tags: [trauma, en, voice]
+  why: 热咖啡大面积起泡
+- msg: 米米被热水器漏水烫到了 整个侧身都是水泡
+  label: true
+  tags: [trauma, voice]
+  why: 热水器烫伤水泡
+- msg: 维尼碰到了刚拿出来的烤盘 肚子那一片皮都掉了
+  label: true
+  tags: [trauma, voice]
+  why: 烤盘烫伤脱皮
+- msg: 糯米被热油溅到了背上 一大片全是水泡还破了
+  label: true
+  tags: [trauma, voice, panic]
+  why: 热油大片水泡破
+- msg: Mochi got burned pretty badly from spilled hot soup his fur is coming off in patches
+  label: true
+  tags: [trauma, en, voice]
+  why: 热汤烫伤脱毛
+- msg: 小维蹭到刚烧完的炭火了 后腿一大片烫伤起泡
+  label: true
+  tags: [trauma, voice]
+  why: 炭火烫伤起泡
+- msg: 乐乐掉进泡脚桶的热水里了 四只脚都烫伤了 皮开始掉了
+  label: true
+  tags: [trauma, voice, panic]
+  why: 泡脚桶四脚烫伤
+- msg: 咪咪打架之后眼睛整个凸出来挂在外面了
+  label: true
+  tags: [trauma, voice, panic]
+  why: 打架眼球脱出
+- msg: 我家狗被门框撞了一下 眼睛现在鼓出来悬在外面
+  label: true
+  tags: [trauma, voice, panic]
+  why: 撞门眼球悬出
+- msg: 团子眼睛好像脱出来了 挂在眼眶外面一团
+  label: true
+  tags: [trauma, voice]
+  why: 眼球脱出挂外
+- msg: my dog's eye popped out after he got hit it's just hanging there
+  label: true
+  tags: [trauma, en, voice]
+  why: 眼球弹出悬挂
+- msg: 呃就是 球球眼睛整个突出来了 感觉快掉下来了
+  label: true
+  tags: [trauma, voice, panic]
+  why: 眼球快脱落
+- msg: 花花打架以后一只眼睛鼓出来挂在外面 血糊糊的
+  label: true
+  tags: [trauma, bleeding, voice, panic]
+  why: 打架眼球脱出
+- msg: cat's eyeball is hanging out of the socket after a fight
+  label: true
+  tags: [trauma, en, voice]
+  why: 眼球脱出眼眶
+- msg: 咪咪被别的猫抓了以后眼球鼓出来了 悬在外边一坨
+  label: true
+  tags: [trauma, voice]
+  why: 抓伤眼球脱出
+- msg: 那个 旺财眼睛脱框了 整个眼球突在外面
+  label: true
+  tags: [trauma, voice]
+  why: 眼球脱框
+- msg: Luna's eye is bulging out of the socket she got hit by something
+  label: true
+  tags: [trauma, en, voice]
+  why: 眼球脱出眼眶
+- msg: 布丁那只眼睛整个凸出来了 挂在脸外边
+  label: true
+  tags: [trauma, voice]
+  why: 眼球凸出挂脸外
+- msg: 阿黄眼球脱出来了 现在耷拉在眼眶下面
+  label: true
+  tags: [trauma, voice]
+  why: 眼球耷拉眼眶下
+- msg: 完了完了 大橘一只眼睛整个鼓出来悬着 好吓人
+  label: true
+  tags: [trauma, voice, panic]
+  why: 眼球鼓出悬挂
+- msg: my cat's eye is literally popping out of her head after getting hit by something
+  label: true
+  tags: [trauma, en, voice]
+  why: 眼球弹出
+- msg: 米米眼睛脱出眼眶了 一直流血水
+  label: true
+  tags: [trauma, bleeding, voice]
+  why: 眼球脱出流血水
+- msg: 维尼被幢了一下眼球就凸出来了 挂在外面动
+  label: true
+  tags: [trauma, voice, typo, panic]
+  why: 撞击眼球脱出
+- msg: 糯米眼睛突出来了整个悬空挂着
+  label: true
+  tags: [trauma, voice]
+  why: 眼球悬空
+- msg: Whiskers eye popped out of its socket it's just dangling there now
+  label: true
+  tags: [trauma, en, voice]
+  why: 眼球弹出悬挂
+- msg: 小维那只眼睛鼓出眶外了 看着特别可怕
+  label: true
+  tags: [trauma, voice, panic]
+  why: 眼球鼓出眶外
+- msg: 乐乐眼球脱出来悬在外面一直眨也眨不了
+  label: true
+  tags: [trauma, voice]
+  why: 眼球脱出不能眨
+- msg: 豆豆腿摔断了 骨头都戳出来了 白白的一截
+  label: true
+  tags: [trauma, voice, panic]
+  why: 骨折骨头戳出
+- msg: 我家猫那条腿骨头露出来了 皮肉翻开的
+  label: true
+  tags: [trauma, voice, panic]
+  why: 骨头外露皮肉翻
+- msg: 团子腿上破了个口子 里面骨头都看得见
+  label: true
+  tags: [trauma, voice]
+  why: 伤口深见骨
+- msg: my dog's leg is broken so bad the bone is sticking out through the skin
+  label: true
+  tags: [trauma, en, voice]
+  why: 骨折骨头戳皮外
+- msg: 呃就是 球球那条前腿骨头戳破皮了 露出来一截白的
+  label: true
+  tags: [trauma, voice]
+  why: 前腿骨头外露
+- msg: 花花摔了一下 腿骨直接穿出皮肤外面了
+  label: true
+  tags: [trauma, voice, panic]
+  why: 腿骨穿出皮外
+- msg: dog got hit and now there's bone visible through a wound on his leg
+  label: true
+  tags: [trauma, en, voice]
+  why: 伤口骨头可见
+- msg: 咪咪腿断了 骨头顶破了肉 露在外面
+  label: true
+  tags: [trauma, voice]
+  why: 骨头顶破肉外露
+- msg: 那个 旺财腿伤口特别深 能看到里面的骨头
+  label: true
+  tags: [trauma, voice]
+  why: 伤口深见骨头
+- msg: Luna's leg is fractured badly the bone is poking out of the skin
+  label: true
+  tags: [trauma, en, voice]
+  why: 骨折骨头戳出
+- msg: 布丁那条腿摔骨折了 破皮那块能看见骨头
+  label: true
+  tags: [trauma, voice]
+  why: 骨折破皮见骨
+- msg: 阿黄被门夹的那条腿 伤口深得看见骨头了
+  label: true
+  tags: [trauma, voice]
+  why: 门夹见骨
+- msg: 完了 大橘腿伤口里露出一截白骨
+  label: true
+  tags: [trauma, voice, panic]
+  why: 伤口露白骨
+- msg: my cat's leg is broken and the bone is sticking out it looks awful
+  label: true
+  tags: [trauma, en, voice]
+  why: 骨折骨头外露
+- msg: 米米那条后腿伤得很深 骨头都能看到
+  label: true
+  tags: [trauma, voice]
+  why: 后腿伤深见骨
+- msg: 维尼摔下来那条腿骨头戳穿皮肤了
+  label: true
+  tags: [trauma, voice]
+  why: 摔伤骨头戳穿
+- msg: 糯米那条腿骨折了 伤口张着能看到里面白色的骨头
+  label: true
+  tags: [trauma, voice]
+  why: 骨折伤口见骨
+- msg: Mochi's paw got crushed and there's bone showing through the wound
+  label: true
+  tags: [trauma, en, voice]
+  why: 爪子压碎见骨
+- msg: 小维那条腿受伤特别重 皮开肉绽骨头都露出来了
+  label: true
+  tags: [trauma, voice, panic]
+  why: 重伤骨头露出
+- msg: 乐乐腿摔折了 里面骨头都戳出来了看着很吓人
+  label: true
+  tags: [trauma, voice, panic]
+  why: 摔折骨头戳出
+- msg: 豆豆尾巴被防盗门夹住了 夹得那截都扁了 一直哀嚎
+  label: true
+  tags: [trauma, voice, panic]
+  why: 尾巴夹扁哀嚎
+- msg: 我家猫爪子被电梯门夹了 现在爪子肿得老高
+  label: true
+  tags: [trauma, voice]
+  why: 电梯夹爪肿大
+- msg: 团子尾巴被车门夹住 拖着走了一段
+  label: true
+  tags: [trauma, voice, panic]
+  why: 车门夹尾拖行
+- msg: my dog's tail got slammed in the door it's swollen and he won't stop crying
+  label: true
+  tags: [trauma, en, voice]
+  why: 门夹尾肿大哭闹
+- msg: 呃就是 球球脚被纱窗门夹到了 现在一瘸一拐还一直叫
+  label: true
+  tags: [trauma, voice]
+  why: 门夹脚一瘸一拐
+- msg: 花花尾巴被卧室门夹住了 夹得那节软塌塌的动不了了
+  label: true
+  tags: [trauma, voice]
+  why: 门夹尾软塌不动
+- msg: cat's paw got shut in the door and it's swollen and bent weirdly now
+  label: true
+  tags: [trauma, en, voice]
+  why: 门夹爪肿弯曲
+- msg: 咪咪尾巴根被门夹断了 现在拖在地上不会动
+  label: true
+  tags: [trauma, voice, panic]
+  why: 门夹尾根断裂
+- msg: 那个 旺财爪子被车门夹了一下 指甲都翻起来了
+  label: true
+  tags: [trauma, voice]
+  why: 车门夹指甲翻
+- msg: Luna's tail was slammed in the car door it looks broken and she's in a lot of pain
+  label: true
+  tags: [trauma, en, voice, panic]
+  why: 车门夹尾疑断
+- msg: 布丁的脚被防盗门夹住了 一直哀嚎不肯落地
+  label: true
+  tags: [trauma, voice, panic]
+  why: 门夹脚不肯落地
+- msg: 阿黄尾巴被大门夹到了 夹得地方已经发紫了
+  label: true
+  tags: [trauma, voice]
+  why: 门夹尾发紫
+- msg: 完了 大橘爪子被抽屉夹住了 现在整个爪子肿起来不能动
+  label: true
+  tags: [trauma, voice, panic]
+  why: 抽屉夹爪肿不能动
+- msg: my cat got her paw caught in the door and it's twisted at a weird angle
+  label: true
+  tags: [trauma, en, voice]
+  why: 门夹爪角度异常
+- msg: 米米尾巴被门夹了一下 现在垂着不动了
+  label: true
+  tags: [trauma, voice]
+  why: 门夹尾垂不动
+- msg: 维尼脚趾被门夹断了 血从指甲缝里渗出来
+  label: true
+  tags: [trauma, bleeding, voice]
+  why: 门夹脚趾渗血
+- msg: 糯米爪子被玻璃门夹到 现在肿得跟馒头一样
+  label: true
+  tags: [trauma, voice]
+  why: 玻璃门夹爪肿大
+- msg: Mochi's tail got caught in the door it's bent and he's screaming
+  label: true
+  tags: [trauma, en, voice, panic]
+  why: 门夹尾弯曲哀叫
+- msg: 小维尾巴被夹住的地方骨头感觉都断了 一碰就叫
+  label: true
+  tags: [trauma, voice]
+  why: 门夹尾疑似骨折
+- msg: 乐乐爪子被门夹了 指甲都掀起来了
+  label: true
+  tags: [trauma, voice]
+  why: 门夹指甲掀起
+- msg: 豆豆踩到碎玻璃了 爪子那块开了个深口子 一直往外渗
+  label: true
+  tags: [trauma, bleeding, voice]
+  why: 碎玻璃深伤渗血
+- msg: 我家猫被打碎的花瓶划到 肚子那边开了道很深的口子
+  label: true
+  tags: [trauma, voice, panic]
+  why: 花瓶划伤深口子
+- msg: 团子跳窗户碰到玻璃碴子了 腿上划了个大口子
+  label: true
+  tags: [trauma, voice]
+  why: 玻璃划伤大口子
+- msg: my dog stepped on broken glass and cut his paw really deep
+  label: true
+  tags: [trauma, en, voice]
+  why: 玻璃深伤爪子
+- msg: 呃就是 球球被酒瓶碎片划到了 那伤口挺深的一直往外冒
+  label: true
+  tags: [trauma, bleeding, voice]
+  why: 碎瓶深伤渗血
+- msg: 花花碰到打碎的镜子了 胸口划了一道很深的口子
+  label: true
+  tags: [trauma, voice, panic]
+  why: 镜子划伤深口子
+- msg: cat got a deep cut from broken glass her leg has a gash in it
+  label: true
+  tags: [trauma, en, voice]
+  why: 玻璃深伤腿部
+- msg: 咪咪踩碎玻璃杯了 脚垫那边划开一个大口子
+  label: true
+  tags: [trauma, voice]
+  why: 玻璃杯划伤脚垫
+- msg: 那个 旺财跳进碎玻璃堆里了 肚皮被划了个深口子
+  label: true
+  tags: [trauma, voice, panic]
+  why: 玻璃堆肚皮深伤
+- msg: Luna cut her paw on broken glass really bad it's a deep gash
+  label: true
+  tags: [trauma, en, voice]
+  why: 玻璃深伤爪子
+- msg: 布丁被打碎的窗户玻璃划伤了 脖子那道口子挺深的
+  label: true
+  tags: [trauma, voice]
+  why: 窗户玻璃划伤脖子
+- msg: 阿黄踩到碎啤酒瓶了 爪垫开了个深口子
+  label: true
+  tags: [trauma, voice]
+  why: 碎瓶深伤爪垫
+- msg: 完了 大橘被玻璃碴划破肚子 伤口很深还在渗
+  label: true
+  tags: [trauma, bleeding, voice, panic]
+  why: 玻璃碴腹部深伤
+- msg: my cat sliced her paw open on some broken glass it's a pretty deep cut
+  label: true
+  tags: [trauma, en, voice]
+  why: 玻璃深割爪子
+- msg: 米米不小心碰到玻璃桌角碎片了 腿上开了个深口
+  label: true
+  tags: [trauma, voice]
+  why: 玻璃碎片腿部深伤
+- msg: 维尼跳窗户框的时候被玻璃划到 伤口挺深的
+  label: true
+  tags: [trauma, voice]
+  why: 玻璃划伤较深
+- msg: 糯米踩到碎玻璃了 那道口子挺深的一直没停过
+  label: true
+  tags: [trauma, bleeding, voice]
+  why: 碎玻璃深伤未止
+- msg: Mochi cut his leg on broken glass it's a deep wound
+  label: true
+  tags: [trauma, en, voice]
+  why: 玻璃深伤腿部
+- msg: 小维被摔碎的杯子划到了 那口子挺深的
+  label: true
+  tags: [trauma, voice]
+  why: 杯子划伤较深
+- msg: 乐乐踩碎玻璃了 脚底那个口子挺深还在渗
+  label: true
+  tags: [trauma, bleeding, voice]
+  why: 碎玻璃脚底深伤
+- msg: 豆豆不知道怎么弄的 身上有个伤口血一直流 怎么按都止不住
+  label: true
+  tags: [trauma, bleeding, voice, panic]
+  why: 不明伤口出血不止
+- msg: 我家猫也不知道咋了 突然流好多血 用纸巾按了半天都没用
+  label: true
+  tags: [trauma, bleeding, voice, panic]
+  why: 大量出血按不住
+- msg: 团子伤口那块血一直渗 换了三次纱布都湿透了
+  label: true
+  tags: [trauma, bleeding, voice]
+  why: 伤口渗血换纱布
+- msg: blood won't stop coming from the wound no matter how much pressure I apply
+  label: true
+  tags: [trauma, bleeding, en, voice]
+  why: 加压仍出血不止
+- msg: 呃就是 球球哪里破了 血滴了一地都止不住
+  label: true
+  tags: [trauma, bleeding, voice]
+  why: 出血一地止不住
+- msg: 花花身上流血挺多的 压了十几分钟还在流
+  label: true
+  tags: [trauma, bleeding, voice]
+  why: 加压十分钟未止
+- msg: my dog is bleeding a lot and it just won't stop no matter what I do
+  label: true
+  tags: [trauma, bleeding, en, voice, panic]
+  why: 大量出血止不住
+- msg: 咪咪也不知道被什么划的 血一直往外冒
+  label: true
+  tags: [trauma, bleeding, voice]
+  why: 不明划伤血冒出
+- msg: 那个 旺财伤口血止不住 已经湿了好几层毛巾了
+  label: true
+  tags: [trauma, bleeding, voice]
+  why: 出血浸湿数层毛巾
+- msg: Luna is bleeding heavily and it's not stopping even with pressure
+  label: true
+  tags: [trauma, bleeding, en, voice]
+  why: 加压仍出血不止
+- msg: 布丁流了好多血 地上都是 一直止不住
+  label: true
+  tags: [trauma, bleeding, voice, panic]
+  why: 地上积血止不住
+- msg: 阿黄不知道咋弄伤的 血一直渗出来擦不干净
+  label: true
+  tags: [trauma, bleeding, voice]
+  why: 伤因不明渗血不止
+- msg: 完了完了 大橘伤口血一直往外冒 按都按不住
+  label: true
+  tags: [trauma, bleeding, voice, panic]
+  why: 出血按不住
+- msg: my cat's cut just keeps bleeding I've held pressure for ten minutes
+  label: true
+  tags: [trauma, bleeding, en, voice]
+  why: 加压十分钟未止
+- msg: 米米身上有个口子一直流血 已经流了好一会了
+  label: true
+  tags: [trauma, bleeding, voice]
+  why: 伤口持续流血
+- msg: 维尼血止不住 毛都黏成一片红的了
+  label: true
+  tags: [trauma, bleeding, voice, panic]
+  why: 出血毛发染红
+- msg: 糯米不知道哪弄破了 血一直流没停过
+  label: true
+  tags: [trauma, bleeding, voice]
+  why: 不明伤口持续流血
+- msg: Mochi has been bleeding non stop for a while now nothing is working
+  label: true
+  tags: [trauma, bleeding, en, voice]
+  why: 持续出血无法止住
+- msg: 小维伤口一直渗血 纸巾都吸不完
+  label: true
+  tags: [trauma, bleeding, voice]
+  why: 伤口渗血量大
+- msg: 乐乐流血流了好久都没止住 地上一滩
+  label: true
+  tags: [trauma, bleeding, voice, panic]
+  why: 出血久未止地上积血
+- msg: 豆豆嘴唇翻开看牙龈是白的 平时是粉色的
+  label: true
+  tags: [shock, voice]
+  why: 牙龈发白
+- msg: 我家猫牙龈今天看着特别白 跟纸一样
+  label: true
+  tags: [shock, voice]
+  why: 牙龈苍白如纸
+- msg: 团子扒开嘴看牙龈发白 跟平时不一样
+  label: true
+  tags: [shock, voice]
+  why: 牙龈异常发白
+- msg: my dog's gums look really pale almost white today
+  label: true
+  tags: [shock, en, voice]
+  why: 牙龈苍白
+- msg: 呃就是 球球牙龈白白的 不是平时那种粉色
+  label: true
+  tags: [shock, voice]
+  why: 牙龈发白非粉色
+- msg: 花花牙龈发白 精神也特别差 趴着不动
+  label: true
+  tags: [shock, voice, panic]
+  why: 牙龈发白精神差
+- msg: cat's gums are pale white and she's very lethargic
+  label: true
+  tags: [shock, en, voice]
+  why: 牙龈苍白嗜睡
+- msg: 咪咪嘴巴里牙龈看着惨白 摸着也凉凉的
+  label: true
+  tags: [shock, voice]
+  why: 牙龈苍白偏凉
+- msg: 那个 旺财牙龈今天特别白 而且一直趴着不肯起来
+  label: true
+  tags: [shock, voice]
+  why: 牙龈发白不肯起
+- msg: Luna's gums turned pale white and she's breathing fast
+  label: true
+  tags: [shock, breathing, en, voice]
+  why: 牙龈发白呼吸快
+- msg: 布丁牙龈白得吓人 跟平时粉粉的完全不一样
+  label: true
+  tags: [shock, voice, panic]
+  why: 牙龈异常发白
+- msg: 阿黄嘴里牙龈发白还有点发凉 整个人软趴趴的
+  label: true
+  tags: [shock, voice]
+  why: 牙龈发白发凉软趴
+- msg: 完了 大橘牙龈白成那样了 之前都是好好的
+  label: true
+  tags: [shock, voice, panic]
+  why: 突发牙龈发白
+- msg: my cat's gums are white as a sheet and she won't move at all
+  label: true
+  tags: [shock, en, voice]
+  why: 牙龈苍白不动
+- msg: 米米今天扒嘴看牙龈是白色的 平时是粉的
+  label: true
+  tags: [shock, voice]
+  why: 牙龈异常发白
+- msg: 维尼牙龈发白 而且一直船气挺费劲
+  label: true
+  tags: [shock, breathing, voice, typo]
+  why: 牙龈发白喘气费劲
+- msg: 糯米嘴唇一翻开牙龈全白了 感觉不太对劲
+  label: true
+  tags: [shock, voice]
+  why: 牙龈异常发白
+- msg: Mochi's gums look pale and he's really weak right now
+  label: true
+  tags: [shock, en, voice]
+  why: 牙龈发白虚弱
+- msg: 小维牙龈白白的没有血色 趴着一动不动
+  label: true
+  tags: [shock, voice]
+  why: 牙龈无血色不动
+- msg: 乐乐牙龈突然发白了 之前体检还是好的
+  label: true
+  tags: [shock, voice, panic]
+  why: 突发牙龈发白
+- msg: 豆豆被电动车不小心压过去了 现在腿耷拉着不能动
+  label: true
+  tags: [trauma, voice, panic]
+  why: 被压腿耷拉不动
+- msg: 我家猫被人不小心踩到了 现在一直哀嚎不敢动
+  label: true
+  tags: [trauma, voice, panic]
+  why: 被踩哀嚎不敢动
+- msg: 团子被大人不小心一脚踩到肚子上了 现在缩着不动
+  label: true
+  tags: [trauma, voice, panic]
+  why: 被踩肚子缩着不动
+- msg: someone accidentally stepped on my dog and now he can't put weight on his leg
+  label: true
+  tags: [trauma, en, voice]
+  why: 被踩腿不能着地
+- msg: 呃就是 球球被踩了一脚 现在走路一瘸一拐还一直叫
+  label: true
+  tags: [trauma, voice]
+  why: 被踩一瘸一拐
+- msg: 花花被踩到尾巴了 现在整条尾巴垂着没反应
+  label: true
+  tags: [trauma, voice]
+  why: 被踩尾巴无反应
+- msg: cat got stepped on by accident and she's not moving her back leg at all
+  label: true
+  tags: [trauma, en, voice]
+  why: 被踩后腿不动
+- msg: 咪咪被人踩到脚了 现在爪子肿得老高
+  label: true
+  tags: [trauma, voice]
+  why: 被踩脚肿大
+- msg: 那个 旺财在电梯里被人踩到了 现在腿都不敢着地
+  label: true
+  tags: [trauma, voice]
+  why: 电梯被踩不敢着地
+- msg: Luna got stepped on and now she's limping badly and crying
+  label: true
+  tags: [trauma, en, voice, panic]
+  why: 被踩严重跛行
+- msg: 布丁被踩到肚子了 现在一直干呕缩着身子
+  label: true
+  tags: [trauma, gdv, voice, panic]
+  why: 被踩肚子干呕
+- msg: 阿黄被邻居家小孩踩到了 现在腰那边一直哼哼
+  label: true
+  tags: [trauma, voice]
+  why: 被踩腰部呻吟
+- msg: 完了 大橘被踩到尾巴根 现在拖着后腿走路
+  label: true
+  tags: [trauma, voice, panic]
+  why: 被踩拖后腿走路
+- msg: my cat got stepped on hard and now she's hiding and won't let me touch her belly
+  label: true
+  tags: [trauma, voice, en]
+  why: 被踩拒碰腹部
+- msg: 米米被踩了一下腰 现在走路姿势都不对了
+  label: true
+  tags: [trauma, voice]
+  why: 被踩走路姿势异常
+- msg: 维尼被人不小心踩到胸口了 现在喘气都费劲
+  label: true
+  tags: [trauma, breathing, voice, panic]
+  why: 被踩胸口喘气费劲
+- msg: 糯米脚被踩到了 现在肿得走不了路
+  label: true
+  tags: [trauma, voice]
+  why: 被踩脚肿走不了路
+- msg: Mochi got stepped on and he's yelping every time he tries to walk
+  label: true
+  tags: [trauma, en, voice]
+  why: 被踩走路哀叫
+- msg: 小维尾巴被踩断了 拖在地上没知觉的样子
+  label: true
+  tags: [trauma, voice, panic]
+  why: 被踩尾巴疑似断裂
+- msg: 乐乐被踩到肚子以后就一直躲着不肯出来 走路也怪怪的
+  label: true
+  tags: [trauma, voice]
+  why: 被踩躲藏走路异常
+- msg: 咪咪跟别的猫打架 眼睛被抓了一下 现在一直流眼泪睁不开
+  label: true
+  tags: [trauma, voice, panic]
+  why: 抓伤眼睛睁不开
+- msg: 我家狗被邻居家猫挠到眼睛了 现在眼睛肿得睁不开还一直流水
+  label: true
+  tags: [trauma, voice, panic]
+  why: 猫抓眼肿睁不开
+- msg: 团子眼睛被抓破了 眼皮那块划开了 一直眨眼睛
+  label: true
+  tags: [trauma, voice]
+  why: 抓伤眼皮划开
+- msg: my cat got scratched in the eye during a fight and now it's swollen shut
+  label: true
+  tags: [trauma, en, voice]
+  why: 抓伤眼肿闭合
+- msg: 呃就是 球球被猫抓了一下眼睛 现在眼球那边有个划痕还在流泪
+  label: true
+  tags: [trauma, voice]
+  why: 抓伤眼球划痕
+- msg: 花花眼睛被抓伤了 眼白那块都发红出血了
+  label: true
+  tags: [trauma, bleeding, voice]
+  why: 抓伤眼白出血
+- msg: dog got scratched in the eye by a cat he's pawing at it and it's watering nonstop
+  label: true
+  tags: [trauma, en, voice]
+  why: 猫抓眼一直流泪
+- msg: 咪咪跟别的猫打架伤到眼睛了 现在眼睛周围全是血
+  label: true
+  tags: [trauma, bleeding, voice, panic]
+  why: 打架眼周出血
+- msg: 那个 旺财被猫挠到眼睛 现在眼睛闭不上一直流泪水
+  label: true
+  tags: [trauma, voice]
+  why: 猫抓眼闭不上
+- msg: Luna got clawed in the eye by our neighbor's cat it looks really swollen and red
+  label: true
+  tags: [trauma, en, voice]
+  why: 猫抓眼肿红
+- msg: 布丁眼睛被猫抓破了 划痕挺深的 一直眯着
+  label: true
+  tags: [trauma, voice]
+  why: 猫抓眼划痕深
+- msg: 阿黄跟猫干了一架 眼睛被抓伤 现在睁不开
+  label: true
+  tags: [trauma, voice]
+  why: 打架眼睛睁不开
+- msg: 完了 大橘眼睛被别的猫抓了 眼球表面都看着有点浑浊了
+  label: true
+  tags: [trauma, voice, panic]
+  why: 抓伤眼球浑浊
+- msg: my cat scratched my other cat's eye and now it's swollen and won't open
+  label: true
+  tags: [trauma, en, voice]
+  why: 猫抓眼肿不开
+- msg: 米米眼睛被挠伤了 一直用爪子去蹭 越蹭越红
+  label: true
+  tags: [trauma, voice]
+  why: 抓伤眼睛越蹭越红
+- msg: 维尼被猫抓伤眼角 那块伤口一直渗血
+  label: true
+  tags: [trauma, bleeding, voice]
+  why: 抓伤眼角渗血
+- msg: 糯米眼睛被抓破皮了 现在肿成一条缝
+  label: true
+  tags: [trauma, voice]
+  why: 抓伤眼肿成缝
+- msg: Mochi got his eye scratched by another cat it's bleeding a bit and swollen
+  label: true
+  tags: [trauma, bleeding, en, voice]
+  why: 抓伤眼出血肿胀
+- msg: 小维眼睛被抓了 现在角膜那边看着有点白翳
+  label: true
+  tags: [trauma, voice]
+  why: 抓伤角膜白翳
+- msg: 乐乐跟猫打架伤到眼睛 眼皮肿得跟核桃一样
+  label: true
+  tags: [trauma, voice]
+  why: 打架眼皮肿大
+- msg: 豆豆刚才蹭到桌角 有个小口子 现在血已经不流了
+  label: false
+  tags: [mild, bleeding, gray, voice]
+  why: 小伤已止血
+- msg: 我家猫抓了一下沙发划到自己了 一点点血 已经好了
+  label: false
+  tags: [mild, gray, voice]
+  why: 轻微划伤已好
+- msg: 团子被树枝划了一下 就一道小印子 没流血了
+  label: false
+  tags: [mild, gray, voice]
+  why: 小划痕未出血
+- msg: dog got a tiny scratch from the fence it already stopped bleeding
+  label: false
+  tags: [mild, gray, en, voice]
+  why: 小擦伤已止血
+- msg: 呃就是 球球爪子擦破点皮 血早就止住了
+  label: false
+  tags: [mild, gray, voice]
+  why: 擦伤已止血
+- msg: 花花蹭到门框破了点皮 现在已经不流了
+  label: false
+  tags: [mild, gray, voice]
+  why: 破皮已不流血
+- msg: small cut on my cat's paw from a branch it stopped bleeding a while ago
+  label: false
+  tags: [mild, gray, en, voice]
+  why: 小伤已止血
+- msg: 咪咪被指甲刀刮到一点 血早就不流了
+  label: false
+  tags: [mild, gray, voice]
+  why: 刮伤已止血
+- msg: 阿黄跳栏杆蹭破点皮 已经结痂了
+  label: false
+  tags: [mild, gray, voice]
+  why: 擦伤已结痂
+- msg: 布丁小爪子刮破了一点点 现在已经好了没事
+  label: false
+  tags: [mild, gray, voice]
+  why: 小刮伤已痊愈
+- msg: 团子从沙发上跳下来了 现在活蹦乱跳的没事
+  label: false
+  tags: [mild, gray, voice]
+  why: 跳落无事
+- msg: Mochi jumped off the couch earlier he's totally fine now running around
+  label: false
+  tags: [mild, gray, en, voice]
+  why: 跳落无事
+- msg: 咪咪从床上跳下去了 落地也没啥事 照样上蹿下跳
+  label: false
+  tags: [mild, gray, voice]
+  why: 跳落无事
+- msg: 旺财从沙发跳茶几上又跳下来 现在正常玩耍呢
+  label: false
+  tags: [mild, gray, voice]
+  why: 跳落正常玩耍
+- msg: 花花从窗台跳下来 落地稳稳的 现在吃饭呢
+  label: false
+  tags: [mild, gray, voice]
+  why: 跳落稳当无事
+- msg: cat jumped off the bookshelf landed fine and is now chasing her toy
+  label: false
+  tags: [mild, gray, en, voice]
+  why: 跳落无事
+- msg: 豆豆从沙发上蹦下去了 没事一样正常跑跳
+  label: false
+  tags: [mild, gray, voice]
+  why: 跳落无事
+- msg: 维尼从床边跳下来 现在照样上蹿下跳的
+  label: false
+  tags: [mild, gray, voice]
+  why: 跳落无事
+- msg: 剪指甲剪到肉了 出了一点点血 现在已经不流了
+  label: false
+  tags: [mild, gray, voice, keyword_trap]
+  why: 剪甲出血已止
+- msg: clipped my dog's nail too short it bled a tiny bit but stopped now
+  label: false
+  tags: [mild, gray, en, voice, keyword_trap]
+  why: 剪甲出血已止
+- msg: 咪咪剪指甲剪深了一点 有点血珠 已经没事了
+  label: false
+  tags: [mild, gray, voice, keyword_trap]
+  why: 剪甲出血已止
+- msg: 给旺财剪指甲不小心剪到快了 出了点血 一会就止住了
+  label: false
+  tags: [mild, gray, voice, keyword_trap]
+  why: 剪甲出血已止
+- msg: trimmed her nails and cut the quick a little just a small drop of blood
+  label: false
+  tags: [mild, gray, en, voice, keyword_trap]
+  why: 剪甲少量出血
+- msg: 团子剪指甲的时候剪到肉了 血了一点点 现在好了
+  label: false
+  tags: [mild, gray, voice, keyword_trap]
+  why: 剪甲出血已止
+- msg: 布丁剪指甲剪短了 出了一小滴血 已经止住不流了
+  label: false
+  tags: [mild, gray, voice, keyword_trap]
+  why: 剪甲出血已止
+- msg: clipping nails accidentally hit the quick tiny bit of blood already stopped
+  label: false
+  tags: [mild, gray, en, voice, keyword_trap]
+  why: 剪甲出血已止
+- msg: 豆豆上个月摔过一次腿 现在早就好利索了
+  label: false
+  tags: [past, gray, voice]
+  why: 旧伤已愈
+- msg: 我家猫去年被车刮到过 现在完全恢复了没事
+  label: false
+  tags: [past, gray, voice]
+  why: 旧伤已愈
+- msg: Luna got hit by a bike months ago she's totally healed now
+  label: false
+  tags: [past, gray, en, voice]
+  why: 旧伤已愈
+- msg: 团子小时候骨折过 现在腿脚都正常
+  label: false
+  tags: [past, gray, voice]
+  why: 旧伤已愈
+- msg: 花花之前被门夹过尾巴 早都好了没事了
+  label: false
+  tags: [past, gray, voice]
+  why: 旧伤已愈
+- msg: my dog was bitten by another dog last year the scar is all healed now
+  label: false
+  tags: [past, gray, en, voice]
+  why: 旧伤已愈
+- msg: 阿黄小时候摔断过腿 现在跑跳都好好的
+  label: false
+  tags: [past, gray, voice]
+  why: 旧伤已愈
+- msg: 米米以前眼睛受过伤 现在恢复得挺好的
+  label: false
+  tags: [past, gray, voice]
+  why: 旧伤已愈
+- msg: 狗被车撞了一般要怎么处理啊
+  label: false
+  tags: [hypothetical, question, keyword_trap, voice]
+  why: 假设提问
+- msg: 如果猫从高处摔下来一般会怎么样
+  label: false
+  tags: [hypothetical, question, keyword_trap, voice]
+  why: 假设提问
+- msg: what should I do if my dog gets hit by a car hypothetically
+  label: false
+  tags: [hypothetical, question, keyword_trap, en, voice]
+  why: 假设提问
+- msg: 想问一下万一被大狗咬了要注意什么
+  label: false
+  tags: [hypothetical, question, keyword_trap, voice]
+  why: 假设提问
+- msg: 假如宠物眼球脱出了该怎么急救啊
+  label: false
+  tags: [hypothetical, question, keyword_trap, voice]
+  why: 假设提问
+- msg: 骨折露骨头一般严重吗 就是想了解一下
+  label: false
+  tags: [hypothetical, question, knowledge, keyword_trap, voice]
+  why: 科普提问
+- msg: if a cat's gums turn pale what does that usually mean
+  label: false
+  tags: [hypothetical, question, knowledge, keyword_trap, en]
+  why: 科普提问
+- msg: 平时怎么预防宠物被门夹到啊
+  label: false
+  tags: [hypothetical, question, knowledge, keyword_trap, voice]
+  why: 科普提问
+- msg: 我朋友的狗去年被车撞了 后来没事
+  label: false
+  tags: [other_owner, past, keyword_trap, voice]
+  why: 他人旧事已恢复
+- msg: 我表姐家猫之前被狗咬过 现在挺好的
+  label: false
+  tags: [other_owner, past, keyword_trap, voice]
+  why: 他人旧事已恢复
+- msg: my friend's dog got hit by a car last summer he recovered fine
+  label: false
+  tags: [other_owner, past, keyword_trap, en, voice]
+  why: 他人旧事已恢复
+- msg: 邻居家狗以前从楼上摔下来过 后来养好了
+  label: false
+  tags: [other_owner, past, keyword_trap, voice]
+  why: 他人旧事已恢复
+- msg: 同事家猫去年眼睛受过伤 现在没事了
+  label: false
+  tags: [other_owner, past, keyword_trap, voice]
+  why: 他人旧事已恢复
+- msg: a coworker's cat fell off a balcony last year and made a full recovery
+  label: false
+  tags: [other_owner, past, keyword_trap, en]
+  why: 他人旧事已恢复
+- msg: 团子今天跟别的猫干了一架 没受伤 就是毛炸了
+  label: false
+  tags: [mild, keyword_trap, voice]
+  why: 打架无受伤
+- msg: 旺财和邻居家狗打了一架 身上没伤口 就是叫得凶
+  label: false
+  tags: [mild, keyword_trap, voice]
+  why: 打架无受伤
+- msg: my dogs got into it at the park but neither one got hurt
+  label: false
+  tags: [mild, keyword_trap, en, voice]
+  why: 打架无受伤
+- msg: 咪咪跟野猫打架 回来看了一下没破皮
+  label: false
+  tags: [mild, keyword_trap, voice]
+  why: 打架无破皮
+- msg: 花花跟别的猫干架 检查了一下没伤
+  label: false
+  tags: [mild, keyword_trap, voice]
+  why: 打架无受伤
+- msg: dogs had a scuffle at the dog park everyone's fine no injuries
+  label: false
+  tags: [mild, keyword_trap, en]
+  why: 打架无受伤
+- msg: 帮我记一下豆豆今天磕了一下腿 现在没事了
+  label: false
+  tags: [record, gray, voice]
+  why: 事后记录已无事
+- msg: 想问问一般伤口多久能自己愈合
+  label: false
+  tags: [question, knowledge, keyword_trap, voice]
+  why: 科普提问
+- msg: how long does it usually take for a small cut to heal on a dog
+  label: false
+  tags: [question, knowledge, keyword_trap, en]
+  why: 科普提问
+- msg: 团子擦伤那块结痂了 该怎么护理
+  label: false
+  tags: [question, mild, gray, voice]
+  why: 已结痂问护理
+- msg: 之前咬伤的地方已经拆线了 恢复得不错
+  label: false
+  tags: [past, managed, gray, voice]
+  why: 旧伤已拆线恢复
+- msg: 我家猫上次的伤口复查说愈合得很好
+  label: false
+  tags: [past, managed, gray, voice]
+  why: 复查愈合良好

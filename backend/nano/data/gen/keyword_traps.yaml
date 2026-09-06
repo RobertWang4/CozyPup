@@ -1,0 +1,1400 @@
+- msg: 狗吃葡萄会怎么样啊
+  label: false
+  tags: [question, hypothetical, keyword_trap, toxin]
+  why: 假设提问
+- msg: 猫中暑了一般啥症状
+  label: false
+  tags: [question, hypothetical, keyword_trap, heat]
+  why: 科普提问
+- msg: 抽搐是什么原因引起的呀
+  label: false
+  tags: [question, hypothetical, keyword_trap, seizure]
+  why: 假设提问
+- msg: is chocolate toxic to dogs
+  label: false
+  tags: [question, hypothetical, keyword_trap, toxin, en]
+  why: 假设提问
+- msg: how much onion is dangerous for a cat
+  label: false
+  tags: [question, hypothetical, keyword_trap, toxin, en]
+  why: 假设提问
+- msg: 兔子吃了巧克力会中毒吗
+  label: false
+  tags: [question, hypothetical, keyword_trap, toxin]
+  why: 假设提问
+- msg: 狗狗窒息了要怎么判断
+  label: false
+  tags: [question, hypothetical, keyword_trap, breathing]
+  why: 科普提问
+- msg: 猫咪溺水了能救活吗
+  label: false
+  tags: [question, hypothetical, keyword_trap, neuro]
+  why: 假设提问
+- msg: 什么情况算是昏迷啊
+  label: false
+  tags: [question, hypothetical, keyword_trap, neuro]
+  why: 科普提问
+- msg: 狗被车撞了一般伤得重吗
+  label: false
+  tags: [question, hypothetical, keyword_trap, trauma]
+  why: 假设提问
+- msg: 木糖醇对狗是不是特别毒
+  label: false
+  tags: [question, hypothetical, keyword_trap, toxin]
+  why: 科普提问
+- msg: 猫呼吸困难都有哪些表现
+  label: false
+  tags: [question, hypothetical, keyword_trap, breathing]
+  why: 科普提问
+- msg: 龟龟溺水了会怎样
+  label: false
+  tags: [question, hypothetical, keyword_trap, neuro]
+  why: 假设提问
+- msg: what are signs of seizure in dogs
+  label: false
+  tags: [question, hypothetical, keyword_trap, seizure, en]
+  why: 假设提问
+- msg: 出血量多少算严重啊
+  label: false
+  tags: [question, hypothetical, keyword_trap, bleeding]
+  why: 科普提问
+- msg: 摔一下会不会内出血
+  label: false
+  tags: [question, hypothetical, keyword_trap, trauma]
+  why: 假设提问
+- msg: 狗中毒了一般多久发作
+  label: false
+  tags: [question, hypothetical, keyword_trap, toxin]
+  why: 科普提问
+- msg: 仓鼠也会中暑吗
+  label: false
+  tags: [question, hypothetical, keyword_trap, heat]
+  why: 假设提问
+- msg: 猫咪抽搐是不是一定是癫痫
+  label: false
+  tags: [question, hypothetical, keyword_trap, seizure]
+  why: 科普提问
+- msg: does grape poisoning show up immediately
+  label: false
+  tags: [question, hypothetical, keyword_trap, toxin, en]
+  why: 假设提问
+- msg: 撞到头会不会马上就昏迷
+  label: false
+  tags: [question, hypothetical, keyword_trap, trauma]
+  why: 假设提问
+- msg: 鹦鹉窒息了怎么办这种情况
+  label: false
+  tags: [question, hypothetical, keyword_trap, breathing]
+  why: 假设提问
+- msg: 狗吃了葡萄干严重吗
+  label: false
+  tags: [question, hypothetical, keyword_trap, toxin]
+  why: 假设提问
+- msg: 猫喝了消毒液会怎样啊 就是假如
+  label: false
+  tags: [question, hypothetical, keyword_trap, toxin]
+  why: 假设提问
+- msg: 巧克力中毒症状一般多久出现
+  label: false
+  tags: [question, hypothetical, keyword_trap, toxin]
+  why: 科普提问
+- msg: what does dog seizure actually look like
+  label: false
+  tags: [question, hypothetical, keyword_trap, seizure, en]
+  why: 科普提问
+- msg: 出血不止是什么概念 流多少算
+  label: false
+  tags: [question, hypothetical, keyword_trap, bleeding]
+  why: 科普提问
+- msg: 兔子摔了会不会有生命危险
+  label: false
+  tags: [question, hypothetical, keyword_trap, trauma]
+  why: 假设提问
+- msg: 猫昏迷跟睡着怎么区分啊
+  label: false
+  tags: [question, hypothetical, keyword_trap, neuro]
+  why: 科普提问
+- msg: 是不是所有中毒都会呕吐
+  label: false
+  tags: [question, hypothetical, keyword_trap, toxin]
+  why: 科普提问
+- msg: dogs choking on bones how common is that
+  label: false
+  tags: [question, hypothetical, keyword_trap, breathing, en]
+  why: 科普提问
+- msg: 狗狗中暑瘫软具体是什么样子
+  label: false
+  tags: [question, hypothetical, keyword_trap, heat]
+  why: 科普提问
+- msg: 撞车了内脏出血能看出来吗
+  label: false
+  tags: [question, hypothetical, keyword_trap, trauma]
+  why: 假设提问
+- msg: 猫抽搐会不会自己好
+  label: false
+  tags: [question, hypothetical, keyword_trap, seizure]
+  why: 假设提问
+- msg: is xylitol that dangerous for dogs really
+  label: false
+  tags: [question, hypothetical, keyword_trap, toxin, en]
+  why: 假设提问
+- msg: 昏迷叫不醒跟平时睡死了咋区分
+  label: false
+  tags: [question, hypothetical, keyword_trap, neuro]
+  why: 科普提问
+- msg: 狗窒息脸色会变紫吗
+  label: false
+  tags: [question, hypothetical, keyword_trap, breathing]
+  why: 假设提问
+- msg: 中毒了眼睛会有什么变化
+  label: false
+  tags: [question, hypothetical, keyword_trap, toxin]
+  why: 科普提问
+- msg: how do you know if a cat is having trouble breathing
+  label: false
+  tags: [question, hypothetical, keyword_trap, breathing, en]
+  why: 科普提问
+- msg: 撞了以后多久算安全期
+  label: false
+  tags: [question, hypothetical, keyword_trap, trauma]
+  why: 假设提问
+- msg: 猫咪溺水后肺里进水怎么处理这种
+  label: false
+  tags: [question, hypothetical, keyword_trap, neuro]
+  why: 科普提问
+- msg: 抽搐的时候要不要按住它
+  label: false
+  tags: [question, hypothetical, keyword_trap, seizure]
+  why: 科普提问
+- msg: what happens if a dog eats a lily
+  label: false
+  tags: [question, hypothetical, keyword_trap, toxin, en]
+  why: 假设提问
+- msg: 出血性肠炎是不是很严重那种
+  label: false
+  tags: [question, hypothetical, keyword_trap, bleeding]
+  why: 科普提问
+- msg: 狗吃了洋葱多久会中毒
+  label: false
+  tags: [question, hypothetical, keyword_trap, toxin]
+  why: 假设提问
+- msg: 摔下楼梯一般会摔出什么问题
+  label: false
+  tags: [question, hypothetical, keyword_trap, trauma]
+  why: 假设提问
+- msg: does a collapsed dog always mean emergency
+  label: false
+  tags: [question, hypothetical, keyword_trap, neuro, en]
+  why: 假设提问
+- msg: 中暑跟发烧怎么区别啊
+  label: false
+  tags: [question, hypothetical, keyword_trap, heat]
+  why: 科普提问
+- msg: 猫窒息的话嘴巴会张开吗
+  label: false
+  tags: [question, hypothetical, keyword_trap, breathing]
+  why: 假设提问
+- msg: 撞到肚子会不会内出血看不出来
+  label: false
+  tags: [question, hypothetical, keyword_trap, trauma]
+  why: 假设提问
+- msg: seizure跟抖是一个东西吗
+  label: false
+  tags: [question, hypothetical, keyword_trap, seizure]
+  why: 科普提问
+- msg: 狗中毒了洗胃有用吗
+  label: false
+  tags: [question, hypothetical, keyword_trap, toxin]
+  why: 假设提问
+- msg: 昏迷了瞳孔会放大吗
+  label: false
+  tags: [question, hypothetical, keyword_trap, neuro]
+  why: 科普提问
+- msg: what's the difference between fainting and collapse in dogs
+  label: false
+  tags: [question, hypothetical, keyword_trap, neuro, en]
+  why: 科普提问
+- msg: 抽搐完了会不会很虚弱正常吗
+  label: false
+  tags: [question, hypothetical, keyword_trap, seizure]
+  why: 假设提问
+- msg: 猫咪出血了颜色不一样代表什么
+  label: false
+  tags: [question, hypothetical, keyword_trap, bleeding]
+  why: 科普提问
+- msg: 撞车后没有外伤是不是就没事
+  label: false
+  tags: [question, hypothetical, keyword_trap, trauma]
+  why: 假设提问
+- msg: is chicken bone choking a real risk
+  label: false
+  tags: [question, hypothetical, keyword_trap, breathing, en]
+  why: 假设提问
+- msg: 中毒之后多久能确定没事了
+  label: false
+  tags: [question, hypothetical, keyword_trap, toxin]
+  why: 假设提问
+- msg: 溺水以后要观察多久
+  label: false
+  tags: [question, hypothetical, keyword_trap, neuro]
+  why: 假设提问
+- msg: 去年中过一次毒 现在没事了
+  label: false
+  tags: [past, keyword_trap, toxin]
+  why: 过去的事
+- msg: 小时候摔过一次 后来也好了
+  label: false
+  tags: [past, keyword_trap, trauma]
+  why: 过去的事
+- msg: 上次抽搐是什么时候来着
+  label: false
+  tags: [past, keyword_trap, seizure, question]
+  why: 过去的事
+- msg: 上周被车撞过 现在恢复得挺好
+  label: false
+  tags: [past, keyword_trap, trauma]
+  why: 过去的事
+- msg: 两年前差点溺水 幸好救回来了
+  label: false
+  tags: [past, keyword_trap, neuro]
+  why: 过去的事
+- msg: 它小时候窒息过一次 卡骨头
+  label: false
+  tags: [past, keyword_trap, breathing]
+  why: 过去的事
+- msg: last year he got hit by a car but he's fine now
+  label: false
+  tags: [past, keyword_trap, trauma, en]
+  why: 过去的事
+- msg: 记得三月份的时候中毒过一次
+  label: false
+  tags: [past, keyword_trap, toxin]
+  why: 过去的事
+- msg: 以前抽搐发作过 现在好几年没犯了
+  label: false
+  tags: [past, keyword_trap, seizure]
+  why: 过去的事
+- msg: 小维小时候差点溺水 那次吓死我了
+  label: false
+  tags: [past, keyword_trap, neuro]
+  why: 过去的事
+- msg: 那年撞车之后休养了好久
+  label: false
+  tags: [past, keyword_trap, trauma]
+  why: 过去的事
+- msg: she had a seizure like two years ago
+  label: false
+  tags: [past, keyword_trap, seizure, en]
+  why: 过去的事
+- msg: 去年夏天中暑差点没抢救过来
+  label: false
+  tags: [past, keyword_trap, heat]
+  why: 过去的事
+- msg: 上个月摔了一跤 现在走路正常了
+  label: false
+  tags: [past, keyword_trap, trauma]
+  why: 过去的事
+- msg: 小时候被邻居家狗咬出血 后来好了
+  label: false
+  tags: [past, keyword_trap, bleeding]
+  why: 过去的事
+- msg: 记得是去年冬天 它抽搐了一次
+  label: false
+  tags: [past, keyword_trap, seizure]
+  why: 过去的事
+- msg: 他小时候误食过毒药 那次真的吓坏了
+  label: false
+  tags: [past, keyword_trap, toxin]
+  why: 过去的事
+- msg: it choked on a toy once when it was a puppy
+  label: false
+  tags: [past, keyword_trap, breathing, en]
+  why: 过去的事
+- msg: 三年前撞过车 骨折了但恢复挺好
+  label: false
+  tags: [past, keyword_trap, trauma]
+  why: 过去的事
+- msg: 上次它昏迷是因为低血糖 后来好了
+  label: false
+  tags: [past, keyword_trap, neuro]
+  why: 过去的事
+- msg: 去年那次中毒送急诊 后来没事了
+  label: false
+  tags: [past, keyword_trap, toxin]
+  why: 过去的事
+- msg: 团子小时候溺过水 现在怕水
+  label: false
+  tags: [past, keyword_trap, neuro]
+  why: 过去的事
+- msg: 大概半年前抽搐过一回
+  label: false
+  tags: [past, keyword_trap, seizure]
+  why: 过去的事
+- msg: remember when he got poisoned last summer
+  label: false
+  tags: [past, keyword_trap, toxin, en]
+  why: 过去的事
+- msg: 去年冬天摔了一跤伤到腿 现在好利索了
+  label: false
+  tags: [past, keyword_trap, trauma]
+  why: 过去的事
+- msg: 上次出血那次是打架咬伤的
+  label: false
+  tags: [past, keyword_trap, bleeding]
+  why: 过去的事
+- msg: 花花以前窒息过 因为吃太快
+  label: false
+  tags: [past, keyword_trap, breathing]
+  why: 过去的事
+- msg: 他年轻时候撞过一次车 留了点后遗症
+  label: false
+  tags: [past, keyword_trap, trauma]
+  why: 过去的事
+- msg: 记得去年抽搐送医院那次
+  label: false
+  tags: [past, keyword_trap, seizure]
+  why: 过去的事
+- msg: that time she almost drowned in the pool last year
+  label: false
+  tags: [past, keyword_trap, neuro, en]
+  why: 过去的事
+- msg: 前年夏天中暑晕过去过一次
+  label: false
+  tags: [past, keyword_trap, heat]
+  why: 过去的事
+- msg: 咪咪小时候被车撞了 现在腿有点瘸
+  label: false
+  tags: [past, keyword_trap, trauma]
+  why: 过去的事
+- msg: 上次昏迷是什么原因来着不太记得了
+  label: false
+  tags: [past, keyword_trap, neuro, question]
+  why: 过去的事
+- msg: 之前抽搐好像是因为中暑
+  label: false
+  tags: [past, keyword_trap, seizure]
+  why: 过去的事
+- msg: he had a bad choking incident as a puppy
+  label: false
+  tags: [past, keyword_trap, breathing, en]
+  why: 过去的事
+- msg: 去年那次出血挺多的 后来止住了
+  label: false
+  tags: [past, keyword_trap, bleeding]
+  why: 过去的事
+- msg: 上周撞了一下 现在完全没事了
+  label: false
+  tags: [past, keyword_trap, trauma]
+  why: 过去的事
+- msg: 三个月前中毒那次是吃了老鼠药
+  label: false
+  tags: [past, keyword_trap, toxin]
+  why: 过去的事
+- msg: 小时候摔断过腿 现在跑跳都正常
+  label: false
+  tags: [past, keyword_trap, trauma]
+  why: 过去的事
+- msg: remember his seizure episode from last year
+  label: false
+  tags: [past, keyword_trap, seizure, en]
+  why: 过去的事
+- msg: 团子小时候溺水那次是掉进池塘
+  label: false
+  tags: [past, keyword_trap, neuro]
+  why: 过去的事
+- msg: 去年冬天窒息过一次 卡了颗糖
+  label: false
+  tags: [past, keyword_trap, breathing]
+  why: 过去的事
+- msg: 记得上次撞车之后它一瘸一拐的
+  label: false
+  tags: [past, keyword_trap, trauma]
+  why: 过去的事
+- msg: 半年前中暑过 那次真的很吓人
+  label: false
+  tags: [past, keyword_trap, heat]
+  why: 过去的事
+- msg: it used to have seizures when it was young
+  label: false
+  tags: [past, keyword_trap, seizure, en]
+  why: 过去的事
+- msg: 去年抽搐那次后来查出来是脑炎
+  label: false
+  tags: [past, keyword_trap, seizure]
+  why: 过去的事
+- msg: 上次出血是月经期 不是外伤
+  label: false
+  tags: [past, keyword_trap, bleeding]
+  why: 过去的事
+- msg: 好几年前撞车留下的旧伤
+  label: false
+  tags: [past, keyword_trap, trauma]
+  why: 过去的事
+- msg: 他小时候中毒住院过一周
+  label: false
+  tags: [past, keyword_trap, toxin]
+  why: 过去的事
+- msg: do you remember when he almost choked on chicken bone
+  label: false
+  tags: [past, keyword_trap, breathing, en]
+  why: 过去的事
+- msg: 去年那次昏迷送医院观察了一晚
+  label: false
+  tags: [past, keyword_trap, neuro]
+  why: 过去的事
+- msg: 记得夏天中暑那次给它冲凉才缓过来
+  label: false
+  tags: [past, keyword_trap, heat]
+  why: 过去的事
+- msg: 三年前它溺水那次 现在还怕游泳
+  label: false
+  tags: [past, keyword_trap, neuro]
+  why: 过去的事
+- msg: 去年抽搐的频率大概一个月一次
+  label: false
+  tags: [past, keyword_trap, seizure]
+  why: 过去的事
+- msg: 上次撞车之后带去拍片没大问题
+  label: false
+  tags: [past, keyword_trap, trauma]
+  why: 过去的事
+- msg: 小时候误食毒物那次真的把我吓哭了
+  label: false
+  tags: [past, keyword_trap, toxin]
+  why: 过去的事
+- msg: 去年冬天窒息急救那次记忆犹新
+  label: false
+  tags: [past, keyword_trap, breathing]
+  why: 过去的事
+- msg: 之前中毒那次是吃了巧克力蛋糕
+  label: false
+  tags: [past, keyword_trap, toxin]
+  why: 过去的事
+- msg: remember when she collapsed at the park last month
+  label: false
+  tags: [past, keyword_trap, neuro, en]
+  why: 过去的事
+- msg: 去年那次出血挺严重 后来缝了针
+  label: false
+  tags: [past, keyword_trap, bleeding]
+  why: 过去的事
+- msg: 癫痫在吃药 最近控制得挺好
+  label: false
+  tags: [managed, keyword_trap, seizure]
+  why: 已在治疗
+- msg: 心脏病定期复查 医生说稳定
+  label: false
+  tags: [managed, keyword_trap]
+  why: 已在治疗
+- msg: 肾病打皮下 每周三次
+  label: false
+  tags: [managed, keyword_trap]
+  why: 已在治疗
+- msg: he's on medication for his seizure disorder
+  label: false
+  tags: [managed, keyword_trap, seizure, en]
+  why: 已在治疗
+- msg: 中毒后遗症一直在吃保肝药
+  label: false
+  tags: [managed, keyword_trap, toxin]
+  why: 已在治疗
+- msg: 慢性出血问题 在打止血针
+  label: false
+  tags: [managed, keyword_trap, bleeding]
+  why: 已在治疗
+- msg: 抽搐是癫痫 每天两次药控制着
+  label: false
+  tags: [managed, keyword_trap, seizure]
+  why: 已在治疗
+- msg: she's managed on heart medication now
+  label: false
+  tags: [managed, keyword_trap, en]
+  why: 已在治疗
+- msg: 窒息之后留下的气管问题 一直在治
+  label: false
+  tags: [managed, keyword_trap, breathing]
+  why: 已在治疗
+- msg: 肾衰竭中期 定期去医院打皮下水
+  label: false
+  tags: [managed, keyword_trap]
+  why: 已在治疗
+- msg: 撞车骨折后一直在做康复
+  label: false
+  tags: [managed, keyword_trap, trauma]
+  why: 已在治疗
+- msg: on epilepsy meds twice a day, doing okay
+  label: false
+  tags: [managed, keyword_trap, seizure, en]
+  why: 已在治疗
+- msg: 慢性中毒后遗症在恢复期 医生说没大问题
+  label: false
+  tags: [managed, keyword_trap, toxin]
+  why: 已在治疗
+- msg: 呼吸困难是哮喘 一直在用吸入剂
+  label: false
+  tags: [managed, keyword_trap, breathing]
+  why: 已在治疗
+- msg: 每周复查一次心脏 医生说控制住了
+  label: false
+  tags: [managed, keyword_trap]
+  why: 已在治疗
+- msg: she's on seizure medication and stable now
+  label: false
+  tags: [managed, keyword_trap, seizure, en]
+  why: 已在治疗
+- msg: 撞车之后腿部康复训练一直在做
+  label: false
+  tags: [managed, keyword_trap, trauma]
+  why: 已在治疗
+- msg: 抽搐已经确诊癫痫 药量调好了
+  label: false
+  tags: [managed, keyword_trap, seizure]
+  why: 已在治疗
+- msg: 慢性肾病三期 每周打皮下补液
+  label: false
+  tags: [managed, keyword_trap]
+  why: 已在治疗
+- msg: he takes heart pills every morning for his condition
+  label: false
+  tags: [managed, keyword_trap, en]
+  why: 已在治疗
+- msg: 窒息导致的支气管炎在恢复中
+  label: false
+  tags: [managed, keyword_trap, breathing]
+  why: 已在治疗
+- msg: 中毒引起的肝损伤在吃护肝药调理
+  label: false
+  tags: [managed, keyword_trap, toxin]
+  why: 已在治疗
+- msg: 出血是子宫问题 已经做了手术在恢复
+  label: false
+  tags: [managed, keyword_trap, bleeding]
+  why: 已在治疗
+- msg: managing his epilepsy with daily meds for a year now
+  label: false
+  tags: [managed, keyword_trap, seizure, en]
+  why: 已在治疗
+- msg: 抽搐控制得挺好 已经三个月没发作了
+  label: false
+  tags: [managed, keyword_trap, seizure]
+  why: 已在治疗
+- msg: 心脏病吃药控制 医生说预期正常
+  label: false
+  tags: [managed, keyword_trap]
+  why: 已在治疗
+- msg: 肾病每周去医院打皮下水维持着
+  label: false
+  tags: [managed, keyword_trap]
+  why: 已在治疗
+- msg: on medication for chronic bleeding disorder, stable
+  label: false
+  tags: [managed, keyword_trap, bleeding, en]
+  why: 已在治疗
+- msg: 撞车后遗留的神经问题一直在康复训练
+  label: false
+  tags: [managed, keyword_trap, trauma]
+  why: 已在治疗
+- msg: 窒息急救之后一直在监测肺部情况
+  label: false
+  tags: [managed, keyword_trap, breathing]
+  why: 已在治疗
+- msg: 猫的癫痫吃药控制住了 挺稳定
+  label: false
+  tags: [managed, keyword_trap, seizure]
+  why: 已在治疗
+- msg: she's had chronic seizures but medication keeps it under control
+  label: false
+  tags: [managed, keyword_trap, seizure, en]
+  why: 已在治疗
+- msg: 抽搐属于遗传性癫痫 长期服药
+  label: false
+  tags: [managed, keyword_trap, seizure]
+  why: 已在治疗
+- msg: 中毒后肾功能一直在复查监测
+  label: false
+  tags: [managed, keyword_trap, toxin]
+  why: 已在治疗
+- msg: 呼吸道有慢性问题 医生开了长期药
+  label: false
+  tags: [managed, keyword_trap, breathing]
+  why: 已在治疗
+- msg: 心脏杂音在观察吃药 每月复查
+  label: false
+  tags: [managed, keyword_trap]
+  why: 已在治疗
+- msg: dog has managed epilepsy, on phenobarbital daily
+  label: false
+  tags: [managed, keyword_trap, seizure, en]
+  why: 已在治疗
+- msg: 撞车后的骨科随访一直按医嘱来
+  label: false
+  tags: [managed, keyword_trap, trauma]
+  why: 已在治疗
+- msg: 抽搐发作频率降到一个月一次了 药在调
+  label: false
+  tags: [managed, keyword_trap, seizure]
+  why: 已在治疗
+- msg: 肾衰竭确诊后一直在皮下补液维持
+  label: false
+  tags: [managed, keyword_trap]
+  why: 已在治疗
+- msg: 窒息造成的声带损伤在慢慢恢复
+  label: false
+  tags: [managed, keyword_trap, breathing]
+  why: 已在治疗
+- msg: bleeding disorder diagnosed, on regular treatment
+  label: false
+  tags: [managed, keyword_trap, bleeding, en]
+  why: 已在治疗
+- msg: 心脏病复查这周去 医生说状态挺好
+  label: false
+  tags: [managed, keyword_trap]
+  why: 已在治疗
+- msg: 抽搐已经吃了半年药 控制得不错
+  label: false
+  tags: [managed, keyword_trap, seizure]
+  why: 已在治疗
+- msg: 中毒后遗留问题定期查肝肾功能
+  label: false
+  tags: [managed, keyword_trap, toxin]
+  why: 已在治疗
+- msg: 朋友的狗中毒了好可怜
+  label: false
+  tags: [other_owner, keyword_trap, toxin]
+  why: 别人宠物
+- msg: 邻居家猫被车撞了 挺惨的
+  label: false
+  tags: [other_owner, keyword_trap, trauma]
+  why: 别人宠物
+- msg: 同事的狗抽搐了 她吓坏了
+  label: false
+  tags: [other_owner, keyword_trap, seizure]
+  why: 别人宠物
+- msg: my friend's dog got hit by a car last week, so sad
+  label: false
+  tags: [other_owner, keyword_trap, trauma, en]
+  why: 别人宠物
+- msg: 楼下那只猫溺水了 有人救起来了
+  label: false
+  tags: [other_owner, keyword_trap, neuro]
+  why: 别人宠物
+- msg: 表姐家狗狗窒息过一次 现在没事了
+  label: false
+  tags: [other_owner, keyword_trap, breathing, past]
+  why: 别人宠物
+- msg: 群里有人说她家猫昏迷送医了
+  label: false
+  tags: [other_owner, keyword_trap, neuro]
+  why: 别人宠物
+- msg: a coworker's dog had a seizure at the vet, poor thing
+  label: false
+  tags: [other_owner, keyword_trap, seizure, en]
+  why: 别人宠物
+- msg: 邻居的兔子中毒了 好像是吃了植物
+  label: false
+  tags: [other_owner, keyword_trap, toxin]
+  why: 别人宠物
+- msg: 同学家的狗被撞 现在还在治疗
+  label: false
+  tags: [other_owner, keyword_trap, trauma]
+  why: 别人宠物
+- msg: 朋友说她猫咪呼吸困难 挺担心的
+  label: false
+  tags: [other_owner, keyword_trap, breathing]
+  why: 别人宠物
+- msg: someone in my group chat said their dog got poisoned
+  label: false
+  tags: [other_owner, keyword_trap, toxin, en]
+  why: 别人宠物
+- msg: 我表哥家狗狗出血挺严重 已经送医了
+  label: false
+  tags: [other_owner, keyword_trap, bleeding]
+  why: 别人宠物
+- msg: 邻居家猫摔下楼了 现在在观察
+  label: false
+  tags: [other_owner, keyword_trap, trauma]
+  why: 别人宠物
+- msg: 朋友的仓鼠中毒死了 挺难过的
+  label: false
+  tags: [other_owner, keyword_trap, toxin]
+  why: 别人宠物
+- msg: her cat collapsed at the shelter apparently
+  label: false
+  tags: [other_owner, keyword_trap, neuro, en]
+  why: 别人宠物
+- msg: 群里宝妈说她狗抽搐好几次了
+  label: false
+  tags: [other_owner, keyword_trap, seizure]
+  why: 别人宠物
+- msg: 同事家的猫窒息过 好在救回来了
+  label: false
+  tags: [other_owner, keyword_trap, breathing, past]
+  why: 别人宠物
+- msg: 朋友家狗撞车之后一直在恢复
+  label: false
+  tags: [other_owner, keyword_trap, trauma]
+  why: 别人宠物
+- msg: a friend's dog is bleeding after a fight, she's worried
+  label: false
+  tags: [other_owner, keyword_trap, bleeding, en]
+  why: 别人宠物
+- msg: 我阿姨家猫中暑瘫软了 送去医院了
+  label: false
+  tags: [other_owner, keyword_trap, heat]
+  why: 别人宠物
+- msg: 邻居狗溺水那次全楼都知道
+  label: false
+  tags: [other_owner, keyword_trap, neuro, past]
+  why: 别人宠物
+- msg: 同学的兔子摔了 现在瘸了一条腿
+  label: false
+  tags: [other_owner, keyword_trap, trauma]
+  why: 别人宠物
+- msg: my sister's cat had a seizure yesterday, she's freaking out
+  label: false
+  tags: [other_owner, keyword_trap, seizure, en]
+  why: 别人宠物
+- msg: 朋友圈看到有人家狗窒息急救成功
+  label: false
+  tags: [other_owner, keyword_trap, breathing]
+  why: 别人宠物
+- msg: 邻居猫昏迷了 好像是中毒
+  label: false
+  tags: [other_owner, keyword_trap, neuro, toxin]
+  why: 别人宠物
+- msg: someone posted their dog got hit by a car this morning
+  label: false
+  tags: [other_owner, keyword_trap, trauma, en]
+  why: 别人宠物
+- msg: 表妹家狗出血不止 已经缝针了
+  label: false
+  tags: [other_owner, keyword_trap, bleeding]
+  why: 别人宠物
+- msg: 朋友的猫呼吸困难 带去医院了
+  label: false
+  tags: [other_owner, keyword_trap, breathing]
+  why: 别人宠物
+- msg: 群里有人晒她狗抽搐视频 好吓人
+  label: false
+  tags: [other_owner, keyword_trap, seizure]
+  why: 别人宠物
+- msg: a neighbor's cat almost drowned in their pool
+  label: false
+  tags: [other_owner, keyword_trap, neuro, en]
+  why: 别人宠物
+- msg: 同事说她家狗中毒住院了三天
+  label: false
+  tags: [other_owner, keyword_trap, toxin]
+  why: 别人宠物
+- msg: 朋友家猫撞车之后骨折了
+  label: false
+  tags: [other_owner, keyword_trap, trauma]
+  why: 别人宠物
+- msg: her rabbit had a seizure at the vet clinic today
+  label: false
+  tags: [other_owner, keyword_trap, seizure, en]
+  why: 别人宠物
+- msg: 邻居家狗窒息那次差点没救回来
+  label: false
+  tags: [other_owner, keyword_trap, breathing, past]
+  why: 别人宠物
+- msg: 我朋友的鸟撞窗户昏迷了
+  label: false
+  tags: [other_owner, keyword_trap, trauma, neuro]
+  why: 别人宠物
+- msg: someone at the dog park said their dog collapsed suddenly
+  label: false
+  tags: [other_owner, keyword_trap, neuro, en]
+  why: 别人宠物
+- msg: 表姐家猫中毒了 现在在ICU观察
+  label: false
+  tags: [other_owner, keyword_trap, toxin]
+  why: 别人宠物
+- msg: 朋友说她狗出血挺多 已经止住了
+  label: false
+  tags: [other_owner, keyword_trap, bleeding]
+  why: 别人宠物
+- msg: 邻居猫溺水获救 现在恢复挺好
+  label: false
+  tags: [other_owner, keyword_trap, neuro]
+  why: 别人宠物
+- msg: my coworker's dog choked on a toy at home
+  label: false
+  tags: [other_owner, keyword_trap, breathing, en]
+  why: 别人宠物
+- msg: 同学家狗撞车 现在打着石膏
+  label: false
+  tags: [other_owner, keyword_trap, trauma]
+  why: 别人宠物
+- msg: 群友分享她猫抽搐送急诊的经历
+  label: false
+  tags: [other_owner, keyword_trap, seizure]
+  why: 别人宠物
+- msg: a friend's cat was poisoned by antifreeze, so scary
+  label: false
+  tags: [other_owner, keyword_trap, toxin, en]
+  why: 别人宠物
+- msg: 邻居家狗中暑瘫软 邻居赶紧送医了
+  label: false
+  tags: [other_owner, keyword_trap, heat]
+  why: 别人宠物
+- msg: 刷到一个狗溺水的视频 看着好心疼
+  label: false
+  tags: [knowledge, keyword_trap, neuro]
+  why: 新闻视频
+- msg: 看了篇文章说猫误食中毒的案例
+  label: false
+  tags: [knowledge, keyword_trap, toxin]
+  why: 新闻视频
+- msg: 新闻里说有只狗被车撞了没人管
+  label: false
+  tags: [knowledge, keyword_trap, trauma]
+  why: 新闻视频
+- msg: saw a video of a dog having a seizure online
+  label: false
+  tags: [knowledge, keyword_trap, seizure, en]
+  why: 新闻视频
+- msg: 看到个帖子说猫窒息急救的方法
+  label: false
+  tags: [knowledge, keyword_trap, breathing]
+  why: 新闻视频
+- msg: 抖音上有个视频狗抽搐 好多人在评论
+  label: false
+  tags: [knowledge, keyword_trap, seizure]
+  why: 新闻视频
+- msg: read an article about pets getting poisoned by chocolate
+  label: false
+  tags: [knowledge, keyword_trap, toxin, en]
+  why: 新闻视频
+- msg: 看到新闻说小区里有猫被撞死了
+  label: false
+  tags: [knowledge, keyword_trap, trauma]
+  why: 新闻视频
+- msg: 那个纪录片里讲动物中暑的案例
+  label: false
+  tags: [knowledge, keyword_trap, heat]
+  why: 新闻视频
+- msg: saw a story about a cat collapsing from heatstroke
+  label: false
+  tags: [knowledge, keyword_trap, heat, en]
+  why: 新闻视频
+- msg: 微博上有人发狗出血的图 好惨
+  label: false
+  tags: [knowledge, keyword_trap, bleeding]
+  why: 新闻视频
+- msg: 看了个视频教怎么给狗做心肺复苏
+  label: false
+  tags: [knowledge, keyword_trap]
+  why: 新闻视频
+- msg: news article about pets choking on toys
+  label: false
+  tags: [knowledge, keyword_trap, breathing, en]
+  why: 新闻视频
+- msg: 抖音刷到一个猫昏迷抢救的视频
+  label: false
+  tags: [knowledge, keyword_trap, neuro]
+  why: 新闻视频
+- msg: 看到个帖子讲宠物溺水急救步骤
+  label: false
+  tags: [knowledge, keyword_trap, neuro]
+  why: 新闻视频
+- msg: saw a reel about dog seizures and what to do
+  label: false
+  tags: [knowledge, keyword_trap, seizure, en]
+  why: 新闻视频
+- msg: 朋友圈转发的文章说葡萄对狗中毒的原理
+  label: false
+  tags: [knowledge, keyword_trap, toxin]
+  why: 新闻视频
+- msg: 电视上播了一个动物救援节目 讲车祸受伤的狗
+  label: false
+  tags: [knowledge, keyword_trap, trauma]
+  why: 新闻视频
+- msg: read a thread about symptoms of poisoning in cats
+  label: false
+  tags: [knowledge, keyword_trap, toxin, en]
+  why: 新闻视频
+- msg: 看到一个视频讲怎么判断狗昏迷还是睡觉
+  label: false
+  tags: [knowledge, keyword_trap, neuro]
+  why: 新闻视频
+- msg: b站有个科普视频讲宠物窒息急救
+  label: false
+  tags: [knowledge, keyword_trap, breathing]
+  why: 新闻视频
+- msg: saw a documentary clip about heatstroke in dogs
+  label: false
+  tags: [knowledge, keyword_trap, heat, en]
+  why: 新闻视频
+- msg: 刷到个新闻说有人给狗喂巧克力中毒了
+  label: false
+  tags: [knowledge, keyword_trap, toxin]
+  why: 新闻视频
+- msg: 看到篇文章分析车祸对狗内脏的影响
+  label: false
+  tags: [knowledge, keyword_trap, trauma]
+  why: 新闻视频
+- msg: that video of the puppy almost drowning went viral
+  label: false
+  tags: [knowledge, keyword_trap, neuro, en]
+  why: 新闻视频
+- msg: 论坛帖子讲猫抽搐可能的病因
+  label: false
+  tags: [knowledge, keyword_trap, seizure]
+  why: 新闻视频
+- msg: 看了一集纪录片讲动物急救知识
+  label: false
+  tags: [knowledge, keyword_trap]
+  why: 新闻视频
+- msg: saw someone post about their dog's near-death choking experience online
+  label: false
+  tags: [knowledge, keyword_trap, breathing, en]
+  why: 新闻视频
+- msg: 抖音那个视频狗被车撞了路人帮忙送医
+  label: false
+  tags: [knowledge, keyword_trap, trauma]
+  why: 新闻视频
+- msg: 微信推送了篇文章讲宠物出血怎么处理
+  label: false
+  tags: [knowledge, keyword_trap, bleeding]
+  why: 新闻视频
+- msg: read a post about a cat that collapsed from a heart condition
+  label: false
+  tags: [knowledge, keyword_trap, neuro, en]
+  why: 新闻视频
+- msg: 看到个新闻讲小区里猫中毒的案例增多
+  label: false
+  tags: [knowledge, keyword_trap, toxin]
+  why: 新闻视频
+- msg: 那个视频里兽医演示怎么给猫做急救
+  label: false
+  tags: [knowledge, keyword_trap]
+  why: 新闻视频
+- msg: saw a clip explaining what dog seizures look like
+  label: false
+  tags: [knowledge, keyword_trap, seizure, en]
+  why: 新闻视频
+- msg: 刷到篇帖子讲宠物溺水后的护理
+  label: false
+  tags: [knowledge, keyword_trap, neuro]
+  why: 新闻视频
+- msg: 家里哪些植物对猫有毒啊 想清理一下
+  label: false
+  tags: [hypothetical, keyword_trap, toxin]
+  why: 预防提问
+- msg: 怎么防止狗吃到巧克力
+  label: false
+  tags: [hypothetical, keyword_trap, toxin]
+  why: 预防提问
+- msg: 家里要不要把百合都扔了 怕猫中毒
+  label: false
+  tags: [hypothetical, keyword_trap, toxin]
+  why: 预防提问
+- msg: how do i keep my dog from eating grapes
+  label: false
+  tags: [hypothetical, keyword_trap, toxin, en]
+  why: 预防提问
+- msg: 想问问怎么防止狗被车撞 出门要注意啥
+  label: false
+  tags: [hypothetical, keyword_trap, trauma]
+  why: 预防提问
+- msg: 洋葱要放多高才安全 怕狗偷吃
+  label: false
+  tags: [hypothetical, keyword_trap, toxin]
+  why: 预防提问
+- msg: what plants are toxic to cats that i should avoid
+  label: false
+  tags: [hypothetical, keyword_trap, toxin, en]
+  why: 预防提问
+- msg: 家里药要放哪比较安全 怕它误食中毒
+  label: false
+  tags: [hypothetical, keyword_trap, toxin]
+  why: 预防提问
+- msg: 怎么预防狗夏天中暑
+  label: false
+  tags: [hypothetical, keyword_trap, heat]
+  why: 预防提问
+- msg: how to prevent choking hazards for puppies
+  label: false
+  tags: [hypothetical, keyword_trap, breathing, en]
+  why: 预防提问
+- msg: 游泳池要不要围起来 怕猫溺水
+  label: false
+  tags: [hypothetical, keyword_trap, neuro]
+  why: 预防提问
+- msg: 家里柜子要不要装锁 防止它吃到毒的东西
+  label: false
+  tags: [hypothetical, keyword_trap, toxin]
+  why: 预防提问
+- msg: what should i do to prevent heatstroke in summer
+  label: false
+  tags: [hypothetical, keyword_trap, heat, en]
+  why: 预防提问
+- msg: 想问下窗户要不要装纱窗 怕鸟撞上去
+  label: false
+  tags: [hypothetical, keyword_trap, trauma]
+  why: 预防提问
+- msg: 出门遛狗怎么防止被车撞
+  label: false
+  tags: [hypothetical, keyword_trap, trauma]
+  why: 预防提问
+- msg: how do i pet-proof my house against poisoning
+  label: false
+  tags: [hypothetical, keyword_trap, toxin, en]
+  why: 预防提问
+- msg: 家里巧克力放哪比较安全
+  label: false
+  tags: [hypothetical, keyword_trap, toxin]
+  why: 预防提问
+- msg: 想给猫准备个安全的高处 防止摔下来
+  label: false
+  tags: [hypothetical, keyword_trap, trauma]
+  why: 预防提问
+- msg: what's the best way to avoid choking hazards at home
+  label: false
+  tags: [hypothetical, keyword_trap, breathing, en]
+  why: 预防提问
+- msg: 家里要不要囤点急救用品 以防万一
+  label: false
+  tags: [hypothetical, keyword_trap]
+  why: 预防提问
+- msg: 阳台要不要封起来 怕猫摔下去
+  label: false
+  tags: [hypothetical, keyword_trap, trauma]
+  why: 预防提问
+- msg: how can i keep antifreeze away from my dog
+  label: false
+  tags: [hypothetical, keyword_trap, toxin, en]
+  why: 预防提问
+- msg: 想问问驱虫药和人用药要分开放吗 怕误食
+  label: false
+  tags: [hypothetical, keyword_trap, toxin]
+  why: 预防提问
+- msg: 夏天怎么防止狗中暑 有啥好办法
+  label: false
+  tags: [hypothetical, keyword_trap, heat]
+  why: 预防提问
+- msg: what precautions should i take against drowning for my dog
+  label: false
+  tags: [hypothetical, keyword_trap, neuro, en]
+  why: 预防提问
+- msg: 家里骨头零食要怎么给才不会卡住窒息
+  label: false
+  tags: [hypothetical, keyword_trap, breathing]
+  why: 预防提问
+- msg: 想给猫装个门缝挡板 防止它跑出去被车撞
+  label: false
+  tags: [hypothetical, keyword_trap, trauma]
+  why: 预防提问
+- msg: how do i childproof cabinets against pet poisoning
+  label: false
+  tags: [hypothetical, keyword_trap, toxin, en]
+  why: 预防提问
+- msg: 家里要不要备点活性炭 万一它误食
+  label: false
+  tags: [hypothetical, keyword_trap, toxin]
+  why: 预防提问
+- msg: 想问下水盆要多深合适 怕小猫溺水
+  label: false
+  tags: [hypothetical, keyword_trap, neuro]
+  why: 预防提问
+- msg: what's a safe way to store rat poison at home
+  label: false
+  tags: [hypothetical, keyword_trap, toxin, en]
+  why: 预防提问
+- msg: 家里植物买之前怎么查是不是对猫狗有毒
+  label: false
+  tags: [hypothetical, keyword_trap, toxin]
+  why: 预防提问
+- msg: 想给狗买个牵引绳 出门防止被撞
+  label: false
+  tags: [hypothetical, keyword_trap, trauma]
+  why: 预防提问
+- msg: how to reduce risk of heatstroke during walks
+  label: false
+  tags: [hypothetical, keyword_trap, heat, en]
+  why: 预防提问
+- msg: 家里楼梯要不要装门挡 怕它摔下去
+  label: false
+  tags: [hypothetical, keyword_trap, trauma]
+  why: 预防提问
+- msg: 帮我记一下今天抽搐了
+  label: false
+  tags: [record, gray, keyword_trap, seizure]
+  why: 事后记录
+- msg: 记录一下上周中毒那次
+  label: false
+  tags: [record, gray, keyword_trap, toxin, past]
+  why: 事后记录
+- msg: 帮我记下昨天出血的事
+  label: false
+  tags: [record, gray, keyword_trap, bleeding]
+  why: 事后记录
+- msg: log that he had a seizure this morning, all resolved now
+  label: false
+  tags: [record, gray, keyword_trap, seizure, en]
+  why: 事后记录
+- msg: 记一下今天摔了一下 没事了
+  label: false
+  tags: [record, gray, keyword_trap, trauma]
+  why: 事后记录
+- msg: 帮我记录一下上次窒息急救的经过
+  label: false
+  tags: [record, gray, keyword_trap, breathing, past]
+  why: 事后记录
+- msg: 昨天中暑了 记一下时间
+  label: false
+  tags: [record, gray, keyword_trap, heat]
+  why: 事后记录
+- msg: record that she collapsed briefly today but recovered
+  label: false
+  tags: [record, gray, keyword_trap, neuro, en]
+  why: 事后记录
+- msg: 记一下今天撞到桌角出血了一点
+  label: false
+  tags: [record, gray, keyword_trap, bleeding]
+  why: 事后记录
+- msg: 帮我记录下上周溺水那次的情况
+  label: false
+  tags: [record, gray, keyword_trap, neuro, past]
+  why: 事后记录
+- msg: 记录一下今天中毒送医的过程
+  label: false
+  tags: [record, gray, keyword_trap, toxin]
+  why: 事后记录
+- msg: add a note that he had a seizure episode today
+  label: false
+  tags: [record, gray, keyword_trap, seizure, en]
+  why: 事后记录
+- msg: 帮我记下今天抽搐持续了多久
+  label: false
+  tags: [record, gray, keyword_trap, seizure]
+  why: 事后记录
+- msg: 记一下昨晚呼吸困难那次
+  label: false
+  tags: [record, gray, keyword_trap, breathing]
+  why: 事后记录
+- msg: log today's choking incident, resolved quickly
+  label: false
+  tags: [record, gray, keyword_trap, breathing, en]
+  why: 事后记录
+- msg: 记录一下今天摔下楼梯的事
+  label: false
+  tags: [record, gray, keyword_trap, trauma]
+  why: 事后记录
+- msg: 帮我记下上次出血是什么原因
+  label: false
+  tags: [record, gray, keyword_trap, bleeding, past]
+  why: 事后记录
+- msg: 记一下今天中暑瘫软的情况
+  label: false
+  tags: [record, gray, keyword_trap, heat]
+  why: 事后记录
+- msg: record the seizure that happened this afternoon
+  label: false
+  tags: [record, gray, keyword_trap, seizure, en]
+  why: 事后记录
+- msg: 帮我记录一下今天撞车受伤的详情
+  label: false
+  tags: [record, gray, keyword_trap, trauma]
+  why: 事后记录
+- msg: 记一下这周窒息那次的经过
+  label: false
+  tags: [record, gray, keyword_trap, breathing]
+  why: 事后记录
+- msg: 帮我记下今天昏迷了几分钟
+  label: false
+  tags: [record, gray, keyword_trap, neuro]
+  why: 事后记录
+- msg: log that she had a minor bleeding episode today
+  label: false
+  tags: [record, gray, keyword_trap, bleeding, en]
+  why: 事后记录
+- msg: 记一下今天中毒的时间和处理方式
+  label: false
+  tags: [record, gray, keyword_trap, toxin]
+  why: 事后记录
+- msg: 帮我记录下今天抽搐发作的次数
+  label: false
+  tags: [record, gray, keyword_trap, seizure]
+  why: 事后记录
+- msg: 记一下上次溺水获救之后的恢复情况
+  label: false
+  tags: [record, gray, keyword_trap, neuro, past]
+  why: 事后记录
+- msg: add today's seizure to his health log
+  label: false
+  tags: [record, gray, keyword_trap, seizure, en]
+  why: 事后记录
+- msg: 帮我记下今天呼吸困难持续了多长时间
+  label: false
+  tags: [record, gray, keyword_trap, breathing]
+  why: 事后记录
+- msg: 记一下这次撞车之后的检查结果
+  label: false
+  tags: [record, gray, keyword_trap, trauma]
+  why: 事后记录
+- msg: record that he choked on food today but is fine now
+  label: false
+  tags: [record, gray, keyword_trap, breathing, en]
+  why: 事后记录
+- msg: 帮我记录一下今天摔了一跤的细节
+  label: false
+  tags: [record, gray, keyword_trap, trauma]
+  why: 事后记录
+- msg: 记一下今天出血止住的时间
+  label: false
+  tags: [record, gray, keyword_trap, bleeding]
+  why: 事后记录
+- msg: log the collapse incident from this morning
+  label: false
+  tags: [record, gray, keyword_trap, neuro, en]
+  why: 事后记录
+- msg: 帮我记下今天中暑之后降温处理的过程
+  label: false
+  tags: [record, gray, keyword_trap, heat]
+  why: 事后记录
+- msg: 记一下今天抽搐之后它睡了很久
+  label: false
+  tags: [record, gray, keyword_trap, seizure]
+  why: 事后记录
+- msg: 小维以前抽搐过吗
+  label: false
+  tags: [question, record, keyword_trap, seizure]
+  why: 查历史
+- msg: when was the last time he got poisoned
+  label: false
+  tags: [question, record, keyword_trap, toxin, en]
+  why: 查历史
+- msg: 团子有没有中毒的记录
+  label: false
+  tags: [question, record, keyword_trap, toxin]
+  why: 查历史
+- msg: 帮我查一下上次出血是什么时候
+  label: false
+  tags: [question, record, keyword_trap, bleeding]
+  why: 查历史
+- msg: has she ever had a seizure before
+  label: false
+  tags: [question, record, keyword_trap, seizure, en]
+  why: 查历史
+- msg: 咪咪撞车的记录还在吗
+  label: false
+  tags: [question, record, keyword_trap, trauma]
+  why: 查历史
+- msg: 查一下上次窒息急救是哪天
+  label: false
+  tags: [question, record, keyword_trap, breathing]
+  why: 查历史
+- msg: when did he last collapse like that
+  label: false
+  tags: [question, record, keyword_trap, neuro, en]
+  why: 查历史
+- msg: 花花以前中暑过几次
+  label: false
+  tags: [question, record, keyword_trap, heat]
+  why: 查历史
+- msg: 帮我看看溺水那次的记录在不在
+  label: false
+  tags: [question, record, keyword_trap, neuro]
+  why: 查历史
+- msg: has our dog ever choked on something before
+  label: false
+  tags: [question, record, keyword_trap, breathing, en]
+  why: 查历史
+- msg: 查一下上次出血持续了多久
+  label: false
+  tags: [question, record, keyword_trap, bleeding]
+  why: 查历史
+- msg: 豆豆抽搐的历史记录能调出来吗
+  label: false
+  tags: [question, record, keyword_trap, seizure]
+  why: 查历史
+- msg: when was the last seizure logged for him
+  label: false
+  tags: [question, record, keyword_trap, seizure, en]
+  why: 查历史
+- msg: 帮我查一下中毒那次用了什么药
+  label: false
+  tags: [question, record, keyword_trap, toxin]
+  why: 查历史
+- msg: 球球以前撞过车吗 记录里有吗
+  label: false
+  tags: [question, record, keyword_trap, trauma]
+  why: 查历史
+- msg: has he had bleeding issues in the past
+  label: false
+  tags: [question, record, keyword_trap, bleeding, en]
+  why: 查历史
+- msg: 查一下上次昏迷是什么原因
+  label: false
+  tags: [question, record, keyword_trap, neuro]
+  why: 查历史
+- msg: 旺财窒息的记录是什么时候的
+  label: false
+  tags: [question, record, keyword_trap, breathing]
+  why: 查历史
+- msg: when did the poisoning incident happen last time
+  label: false
+  tags: [question, record, keyword_trap, toxin, en]
+  why: 查历史
+- msg: 狗窒息怎么做海姆立克急救
+  label: false
+  tags: [knowledge, keyword_trap, breathing]
+  why: 急救知识
+- msg: 急救包要备哪些东西啊
+  label: false
+  tags: [knowledge, keyword_trap]
+  why: 急救知识
+- msg: how do you do cpr on a dog
+  label: false
+  tags: [knowledge, keyword_trap, en]
+  why: 急救知识
+- msg: 猫抽搐的时候要怎么处理比较好
+  label: false
+  tags: [knowledge, keyword_trap, seizure]
+  why: 急救知识
+- msg: 中毒了第一时间应该怎么做
+  label: false
+  tags: [knowledge, keyword_trap, toxin]
+  why: 急救知识
+- msg: what's the first aid for choking in cats
+  label: false
+  tags: [knowledge, keyword_trap, breathing, en]
+  why: 急救知识
+- msg: 溺水急救的步骤是什么样的
+  label: false
+  tags: [knowledge, keyword_trap, neuro]
+  why: 急救知识
+- msg: 出血不止要怎么止血比较有效
+  label: false
+  tags: [knowledge, keyword_trap, bleeding]
+  why: 急救知识
+- msg: how to help a dog that's having a seizure
+  label: false
+  tags: [knowledge, keyword_trap, seizure, en]
+  why: 急救知识
+- msg: 撞车之后第一时间要注意什么
+  label: false
+  tags: [knowledge, keyword_trap, trauma]
+  why: 急救知识
+- msg: 昏迷了要怎么判断要不要送医
+  label: false
+  tags: [knowledge, keyword_trap, neuro]
+  why: 急救知识
+- msg: what should i put in a pet first aid kit
+  label: false
+  tags: [knowledge, keyword_trap, en]
+  why: 急救知识
+- msg: 中暑瘫软了要怎么紧急降温
+  label: false
+  tags: [knowledge, keyword_trap, heat]
+  why: 急救知识
+- msg: how do you perform heimlich on a choking dog
+  label: false
+  tags: [knowledge, keyword_trap, breathing, en]
+  why: 急救知识
+- msg: 呼吸困难的急救办法有哪些
+  label: false
+  tags: [knowledge, keyword_trap, breathing]
+  why: 急救知识

@@ -1,0 +1,1999 @@
+- msg: cat keeps trying to pee nothing
+  label: true
+  tags: [urinary, en]
+  why: 排尿困难
+
+- msg: he cant breathe
+  label: true
+  tags: [breathing, en]
+  why: 呼吸异常
+
+- msg: 天啊 咪咪中毒了
+  label: true
+  tags: [toxin, panic, voice]
+  why: 疑似中毒
+
+- msg: dog frothing at mouth now
+  label: true
+  tags: [seizure, en]
+  why: 抽搐发作
+
+- msg: 昨天吐过一次
+  label: false
+  tags: [past, record]
+  why: 过去记录
+
+- msg: 咪咪被毒到了
+  label: true
+  tags: [toxin, panic, voice]
+  why: 疑似中毒
+
+- msg: 完了 他不喘气了
+  label: true
+  tags: [breathing, panic]
+  why: 呼吸异常
+
+- msg: cat wont wake up
+  label: true
+  tags: [shock, en]
+  why: 倒地无反应
+
+- msg: 我降压药被狗吃了
+  label: true
+  tags: [toxin, voice]
+  why: 误食危险物
+
+- msg: dog is having a seizure
+  label: true
+  tags: [seizure, en]
+  why: 抽搐发作
+
+- msg: 维尼中毒了不动了
+  label: true
+  tags: [toxin, panic, voice]
+  why: 疑似中毒
+
+- msg: max got poisoned help
+  label: true
+  tags: [toxin, panic, en]
+  why: 疑似中毒
+
+- msg: 小维中毒了不动了
+  label: true
+  tags: [toxin, panic, voice]
+  why: 疑似中毒
+
+- msg: 小维中毒了
+  label: true
+  tags: [toxin, panic, voice]
+  why: 疑似中毒
+
+- msg: 咪咪浑身僵直发抖
+  label: true
+  tags: [seizure, voice]
+  why: 抽搐发作
+
+- msg: 骨头卡他嗓子了
+  label: true
+  tags: [toxin, voice]
+  why: 误食危险物
+
+- msg: dog struggling to breathe
+  label: true
+  tags: [breathing, en]
+  why: 呼吸异常
+
+- msg: 狗吐了一次
+  label: false
+  tags: [mild, voice]
+  why: 单次呕吐
+
+- msg: dog collapsed not moving
+  label: true
+  tags: [shock, en]
+  why: 倒地无反应
+
+- msg: 他反复进出猫砂盆干叫
+  label: true
+  tags: [urinary, voice]
+  why: 排尿困难
+
+- msg: 豆豆是不是中毒了
+  label: true
+  tags: [toxin, panic, voice]
+  why: 疑似中毒
+
+- msg: 猫踩了下猫砂
+  label: false
+  tags: [record]
+  why: 日常记录
+
+- msg: 他叫不醒了
+  label: true
+  tags: [shock, panic]
+  why: 倒地无反应
+
+- msg: 公猫尿道堵了
+  label: true
+  tags: [urinary, voice]
+  why: 排尿困难
+
+- msg: not this one
+  label: false
+  tags: [correction, en]
+  why: 纠正
+
+- msg: 狗晒太久瘫地上了
+  label: true
+  tags: [heat, voice]
+  why: 中暑瘫软
+
+- msg: 狗呼吸困难了
+  label: true
+  tags: [breathing, voice]
+  why: 呼吸异常
+
+- msg: 咪咪啃百合花了
+  label: true
+  tags: [toxin, voice]
+  why: 误食危险物
+
+- msg: 狗被鸡骨头卡喉咙
+  label: true
+  tags: [toxin, voice]
+  why: 误食危险物
+
+- msg: 他舔了地上的防冻液
+  label: true
+  tags: [toxin, voice]
+  why: 误食危险物
+
+- msg: 他不停干呕肚子鼓
+  label: true
+  tags: [gdv, voice]
+  why: 腹胀干呕
+
+- msg: bone stuck in his throat
+  label: true
+  tags: [toxin, en]
+  why: 误食危险物
+
+- msg: 猫瘫了站不起来
+  label: true
+  tags: [shock, voice]
+  why: 倒地无反应
+
+- msg: 怎么训练狗坐下
+  label: false
+  tags: [knowledge, question]
+  why: 训练知识
+
+- msg: 删掉
+  label: false
+  tags: [delete]
+  why: 删除操作
+
+- msg: dog got into the pesticide
+  label: true
+  tags: [toxin, en]
+  why: 误食危险物
+
+- msg: 他从窗户摔下去了
+  label: true
+  tags: [trauma, panic]
+  why: 严重外伤
+
+- msg: i think luna is poisoned
+  label: true
+  tags: [toxin, panic, en]
+  why: 疑似中毒
+
+- msg: i think max is poisoned
+  label: true
+  tags: [toxin, panic, en]
+  why: 疑似中毒
+
+- msg: 咪咪是不是中毒了
+  label: true
+  tags: [toxin, panic, voice]
+  why: 疑似中毒
+
+- msg: 这啥垃圾机器人
+  label: false
+  tags: [chitchat]
+  why: 吐槽机器人
+
+- msg: 狗抽出来了
+  label: true
+  tags: [seizure, typo]
+  why: 抽搐发作
+
+- msg: 猫尿里全是血
+  label: true
+  tags: [bleeding, voice]
+  why: 大量出血
+
+- msg: 狗有点毛球
+  label: false
+  tags: [mild]
+  why: 轻微症状
+
+- msg: 猫舌头紫了
+  label: true
+  tags: [breathing, voice]
+  why: 呼吸异常
+
+- msg: cat straining cant pee
+  label: true
+  tags: [urinary, en]
+  why: 排尿困难
+
+- msg: 他偷吃老鼠药了
+  label: true
+  tags: [toxin, voice]
+  why: 误食危险物
+
+- msg: 车里闷太久瘫了
+  label: true
+  tags: [heat, voice]
+  why: 中暑瘫软
+
+- msg: 完了 维尼中毒了
+  label: true
+  tags: [toxin, panic, voice]
+  why: 疑似中毒
+
+- msg: 猫在猫砂盆蹲好久没尿
+  label: true
+  tags: [urinary, voice]
+  why: 排尿困难
+
+- msg: 中毒了多久发作
+  label: false
+  tags: [hypothetical, keyword_trap, question]
+  why: 假设提问
+
+- msg: 咪咪中毒了
+  label: true
+  tags: [toxin, panic, voice]
+  why: 疑似中毒
+
+- msg: 狗舔了杀虫剂
+  label: true
+  tags: [toxin, voice]
+  why: 误食危险物
+
+- msg: 维尼好像中毒了
+  label: true
+  tags: [toxin, panic, voice]
+  why: 疑似中毒
+
+- msg: 发烧过一次而已
+  label: false
+  tags: [past, mild]
+  why: 过去轻微
+
+- msg: 小维中毒了吧这是
+  label: true
+  tags: [toxin, panic, voice]
+  why: 疑似中毒
+
+- msg: 他被热水浇到了
+  label: true
+  tags: [trauma, voice]
+  why: 严重外伤
+
+- msg: 他中暑站不住了
+  label: true
+  tags: [heat, voice]
+  why: 中暑瘫软
+
+- msg: cat shaking on the floor
+  label: true
+  tags: [seizure, en]
+  why: 抽搐发作
+
+- msg: 猫突然抽了一下倒地
+  label: true
+  tags: [seizure, voice]
+  why: 抽搐发作
+
+- msg: 帮我记一下抽搐了
+  label: false
+  tags: [record, gray, keyword_trap]
+  why: 事后记录
+
+- msg: 他从阳台摔下去了
+  label: true
+  tags: [trauma, panic]
+  why: 严重外伤
+
+- msg: blood everywhere from his paw
+  label: true
+  tags: [bleeding, en]
+  why: 大量出血
+
+- msg: 狗刚吃一板巧克力
+  label: true
+  tags: [toxin, voice]
+  why: 误食危险物
+
+- msg: 狗中暑瘫软了
+  label: true
+  tags: [heat, voice]
+  why: 中暑瘫软
+
+- msg: 在吗
+  label: false
+  tags: [chitchat]
+  why: 闲聊
+
+- msg: 上周他抽过
+  label: false
+  tags: [past, keyword_trap]
+  why: 过去的事
+
+- msg: max is poisoned omg
+  label: true
+  tags: [toxin, panic, en]
+  why: 疑似中毒
+
+- msg: 小奶狗身体越来越凉
+  label: true
+  tags: [shock, neuro, voice]
+  why: 急剧恶化
+
+- msg: 狗兔血了好多
+  label: true
+  tags: [bleeding, typo]
+  why: 大量出血
+
+- msg: 豆豆中毒了快看看
+  label: true
+  tags: [toxin, panic, voice]
+  why: 疑似中毒
+
+- msg: 天啊 豆豆中毒了
+  label: true
+  tags: [toxin, panic, voice]
+  why: 疑似中毒
+
+- msg: he keeps gasping now
+  label: true
+  tags: [breathing, en]
+  why: 呼吸异常
+
+- msg: 猫舔了老鼠药
+  label: true
+  tags: [toxin, voice]
+  why: 误食危险物
+
+- msg: male cat blocked wont pee
+  label: true
+  tags: [urinary, en]
+  why: 排尿困难
+
+- msg: 提醒我喂药
+  label: false
+  tags: [reminder]
+  why: 提醒
+
+- msg: 狗被开水烫伤一大片
+  label: true
+  tags: [trauma, voice]
+  why: 严重外伤
+
+- msg: 救命 豆豆中毒了
+  label: true
+  tags: [toxin, panic, voice]
+  why: 疑似中毒
+
+- msg: 又拆家了
+  label: false
+  tags: [chitchat]
+  why: 吐槽
+
+- msg: puppy is shaking uncontrollably
+  label: true
+  tags: [seizure, en]
+  why: 抽搐发作
+
+- msg: max passed out suddenly
+  label: true
+  tags: [shock, en]
+  why: 倒地无反应
+
+- msg: 猫今天有点懒
+  label: false
+  tags: [mild, voice]
+  why: 轻微行为
+
+- msg: left in hot car limp now
+  label: true
+  tags: [heat, en]
+  why: 中暑瘫软
+
+- msg: 幼犬突然不吃不动了
+  label: true
+  tags: [shock, neuro, voice]
+  why: 急剧恶化
+
+- msg: 咪咪耳朵一直滴血
+  label: true
+  tags: [bleeding, voice]
+  why: 大量出血
+
+- msg: 狗喝了防冻液
+  label: true
+  tags: [toxin, voice]
+  why: 误食危险物
+
+- msg: dog is vomiting blood
+  label: true
+  tags: [bleeding, en]
+  why: 大量出血
+
+- msg: 小维好像中毒了
+  label: true
+  tags: [toxin, panic, voice]
+  why: 疑似中毒
+
+- msg: 下周打针提醒
+  label: false
+  tags: [reminder]
+  why: 提醒
+
+- msg: 团子烫伤起泡了
+  label: true
+  tags: [trauma, voice]
+  why: 严重外伤
+
+- msg: 救命 咪咪中毒了
+  label: true
+  tags: [toxin, panic, voice]
+  why: 疑似中毒
+
+- msg: 豆豆中毒了
+  label: true
+  tags: [toxin, panic, voice]
+  why: 疑似中毒
+
+- msg: 取消提醒
+  label: false
+  tags: [task]
+  why: 取消任务
+
+- msg: 团子肚子敲起来梆梆响
+  label: true
+  tags: [gdv, voice]
+  why: 腹胀干呕
+
+- msg: 驱虫了
+  label: false
+  tags: [record]
+  why: 记录驱虫
+
+- msg: 鸡骨头卡他喉咙了
+  label: true
+  tags: [toxin, voice]
+  why: 误食危险物
+
+- msg: 怎么办 他晕过去了
+  label: true
+  tags: [shock, panic]
+  why: 倒地无反应
+
+- msg: 咪咪嘴巴发紫喘气
+  label: true
+  tags: [breathing, voice]
+  why: 呼吸异常
+
+- msg: 团子被车撞了咋办
+  label: true
+  tags: [trauma, voice]
+  why: 严重外伤
+
+- msg: 咬了一小口葡萄
+  label: false
+  tags: [toxin, gray, keyword_trap]
+  why: 剂量极小
+
+- msg: 狗又抽起来了
+  label: true
+  tags: [seizure, voice]
+  why: 抽搐发作
+
+- msg: 附近医院
+  label: false
+  tags: [places, gray]
+  why: 找店
+
+- msg: dog ate rat poison
+  label: true
+  tags: [toxin, en]
+  why: 误食危险物
+
+- msg: 狗站不稳肚子胀硬
+  label: true
+  tags: [gdv, voice]
+  why: 腹胀干呕
+
+- msg: 狗偷吃洋葱一大堆
+  label: true
+  tags: [toxin, voice]
+  why: 误食危险物
+
+- msg: 狗喘气声好怪
+  label: true
+  tags: [breathing, voice]
+  why: 呼吸异常
+
+- msg: 狗好可爱
+  label: false
+  tags: [chitchat]
+  why: 夸奖
+
+- msg: 救命 小维中毒了
+  label: true
+  tags: [toxin, panic, voice]
+  why: 疑似中毒
+
+- msg: 豆豆软了叫不应
+  label: true
+  tags: [shock, voice]
+  why: 倒地无反应
+
+- msg: 同事狗昨天中毒了
+  label: false
+  tags: [other_owner, past, gray]
+  why: 别人过去的事
+
+- msg: kitten too weak to nurse
+  label: true
+  tags: [shock, neuro, en]
+  why: 急剧恶化
+
+- msg: max poisoned right now
+  label: true
+  tags: [toxin, panic, en]
+  why: 疑似中毒
+
+- msg: dog foaming at the mouth
+  label: true
+  tags: [seizure, en]
+  why: 抽搐发作
+
+- msg: 狗中毒了会咋样
+  label: false
+  tags: [hypothetical, keyword_trap, question]
+  why: 假设提问
+
+- msg: 总结一下档案
+  label: false
+  tags: [profile]
+  why: 总结档案
+
+- msg: he got poisoned last year
+  label: false
+  tags: [past, keyword_trap, en]
+  why: 过去的事
+
+- msg: remind me daily walk
+  label: false
+  tags: [reminder, en]
+  why: 提醒
+
+- msg: 他肚子伤口渗血好多
+  label: true
+  tags: [bleeding, voice]
+  why: 大量出血
+
+- msg: 他吃了好多葡萄
+  label: true
+  tags: [toxin, voice]
+  why: 误食危险物
+
+- msg: 狗打呼噜挺响
+  label: false
+  tags: [chitchat, voice]
+  why: 闲聊
+
+- msg: 他四脚乱蹬倒地
+  label: true
+  tags: [seizure, voice]
+  why: 抽搐发作
+
+- msg: 咪咪一直干呕喘气
+  label: true
+  tags: [breathing, voice]
+  why: 呼吸异常
+
+- msg: 小维中毒了口吐白沫
+  label: true
+  tags: [toxin, panic, voice]
+  why: 疑似中毒
+
+- msg: 狗被电到了抽搐
+  label: true
+  tags: [trauma, voice]
+  why: 严重外伤
+
+- msg: cat eyeball popped out
+  label: true
+  tags: [trauma, en]
+  why: 严重外伤
+
+- msg: 他舌头发紫了
+  label: true
+  tags: [breathing, voice]
+  why: 呼吸异常
+
+- msg: think my dog got poisoned
+  label: true
+  tags: [toxin, panic, en]
+  why: 疑似中毒
+
+- msg: 豆豆中毒了口吐白沫
+  label: true
+  tags: [toxin, panic, voice]
+  why: 疑似中毒
+
+- msg: 猫呼吸急促发紫
+  label: true
+  tags: [breathing, voice]
+  why: 呼吸异常
+
+- msg: 他晒中暑软了
+  label: true
+  tags: [heat, voice]
+  why: 中暑瘫软
+
+- msg: 刚看个视频挺搞笑
+  label: false
+  tags: [chitchat]
+  why: 无关话题
+
+- msg: 维尼是不是中毒了
+  label: true
+  tags: [toxin, panic, voice]
+  why: 疑似中毒
+
+- msg: 他抽出白沫了
+  label: true
+  tags: [seizure, typo]
+  why: 抽搐发作
+
+- msg: 他伤口喷血了
+  label: true
+  tags: [bleeding, voice]
+  why: 大量出血
+
+- msg: 猫全身瘫软没力气
+  label: true
+  tags: [shock, voice]
+  why: 倒地无反应
+
+- msg: 咪咪吃了半板巧克力
+  label: true
+  tags: [toxin, voice]
+  why: 误食危险物
+
+- msg: 猫从楼上摔下来了
+  label: true
+  tags: [trauma, voice]
+  why: 严重外伤
+
+- msg: puppy suddenly stopped moving
+  label: true
+  tags: [shock, neuro, en]
+  why: 急剧恶化
+
+- msg: 查下体重记录
+  label: false
+  tags: [question]
+  why: 查询记录
+
+- msg: 他吸气声音很怪
+  label: true
+  tags: [breathing, voice]
+  why: 呼吸异常
+
+- msg: 咪咪一动不动软了
+  label: true
+  tags: [shock, voice]
+  why: 倒地无反应
+
+- msg: 以前抽过一次
+  label: false
+  tags: [past, keyword_trap]
+  why: 过去的事
+
+- msg: 改一下生日
+  label: false
+  tags: [profile]
+  why: 改档案
+
+- msg: 看医生了
+  label: false
+  tags: [record]
+  why: 记录就医
+
+- msg: 狗软便一次
+  label: false
+  tags: [mild, voice]
+  why: 单次软便
+
+- msg: 团子舔了洁厕液
+  label: true
+  tags: [toxin, voice]
+  why: 误食危险物
+
+- msg: cat tongue turned blue
+  label: true
+  tags: [breathing, en]
+  why: 呼吸异常
+
+- msg: he ate xylitol gum
+  label: true
+  tags: [toxin, en]
+  why: 误食危险物
+
+- msg: help luna got poisoned
+  label: true
+  tags: [toxin, panic, en]
+  why: 疑似中毒
+
+- msg: 咪咪啃了百合花瓣
+  label: true
+  tags: [toxin, voice]
+  why: 误食危险物
+
+- msg: 改一下体重
+  label: false
+  tags: [profile]
+  why: 改档案
+
+- msg: dog gums are pale white
+  label: true
+  tags: [shock, en]
+  why: 倒地无反应
+
+- msg: 小奶猫一直尖叫抽搐
+  label: true
+  tags: [shock, neuro, voice]
+  why: 急剧恶化
+
+- msg: 小维是不是中毒了
+  label: true
+  tags: [toxin, panic, voice]
+  why: 疑似中毒
+
+- msg: vet visit today
+  label: false
+  tags: [record, en]
+  why: 记录就医
+
+- msg: does xylitol harm dogs
+  label: false
+  tags: [hypothetical, keyword_trap, question, en]
+  why: 假设提问
+
+- msg: he keeps convulsing help
+  label: true
+  tags: [seizure, en]
+  why: 抽搐发作
+
+- msg: 称重了
+  label: false
+  tags: [record]
+  why: 记录体重
+
+- msg: 狗突然倒地全身抖
+  label: true
+  tags: [seizure, voice]
+  why: 抽搐发作
+
+- msg: cat tail got slammed in door
+  label: true
+  tags: [trauma, en]
+  why: 严重外伤
+
+- msg: 咪咪热得直喘瘫软
+  label: true
+  tags: [heat, voice]
+  why: 中暑瘫软
+
+- msg: 猫抓伤流血不停
+  label: true
+  tags: [bleeding, voice]
+  why: 大量出血
+
+- msg: 狗被车撞了
+  label: true
+  tags: [trauma, voice]
+  why: 严重外伤
+
+- msg: too hot outside he collapsed
+  label: true
+  tags: [heat, en]
+  why: 中暑瘫软
+
+- msg: 咪咪中毒了吧这是
+  label: true
+  tags: [toxin, panic, voice]
+  why: 疑似中毒
+
+- msg: 百合对猫有毒吗
+  label: false
+  tags: [hypothetical, keyword_trap, question]
+  why: 假设提问
+
+- msg: 小维中毒了！！
+  label: true
+  tags: [toxin, panic, voice]
+  why: 疑似中毒
+
+- msg: 维尼中毒了怎么办
+  label: true
+  tags: [toxin, panic, voice]
+  why: 疑似中毒
+
+- msg: 狗牙龈一直渗血
+  label: true
+  tags: [bleeding, voice]
+  why: 大量出血
+
+- msg: 狗嘴里冒泡沫抖
+  label: true
+  tags: [seizure, voice]
+  why: 抽搐发作
+
+- msg: 猫胸口起伏好快
+  label: true
+  tags: [breathing, voice]
+  why: 呼吸异常
+
+- msg: 舔了一口巧克力
+  label: false
+  tags: [toxin, gray, keyword_trap]
+  why: 剂量极小
+
+- msg: 小维中毒了快看看
+  label: true
+  tags: [toxin, panic, voice]
+  why: 疑似中毒
+
+- msg: 猫吃了夏威夷果好多
+  label: true
+  tags: [toxin, voice]
+  why: 误食危险物
+
+- msg: 朋友猫中毒了 唉
+  label: false
+  tags: [other_owner, gray]
+  why: 别人的宠物
+
+- msg: 维尼中毒了
+  label: true
+  tags: [toxin, panic, voice]
+  why: 疑似中毒
+
+- msg: 车里待久了他软了
+  label: true
+  tags: [heat, voice]
+  why: 中暑瘫软
+
+- msg: dog limping slightly
+  label: false
+  tags: [mild, en]
+  why: 轻微跛行
+
+- msg: dog cant breathe right
+  label: true
+  tags: [breathing, en]
+  why: 呼吸异常
+
+- msg: 维尼误食中毒了
+  label: true
+  tags: [toxin, panic, voice]
+  why: 疑似中毒
+
+- msg: walked the dog
+  label: false
+  tags: [record, en]
+  why: 记录遛狗
+
+- msg: luna got poisoned
+  label: true
+  tags: [toxin, panic, en]
+  why: 疑似中毒
+
+- msg: 豆豆喘不上气了
+  label: true
+  tags: [breathing, voice]
+  why: 呼吸异常
+
+- msg: he keeps dry heaving bloated belly
+  label: true
+  tags: [gdv, en]
+  why: 腹胀干呕
+
+- msg: he got hit by a bike
+  label: true
+  tags: [trauma, en]
+  why: 严重外伤
+
+- msg: 完了他不动了
+  label: true
+  tags: [shock, panic]
+  why: 倒地无反应
+
+- msg: 癫痫在吃药
+  label: false
+  tags: [managed, keyword_trap]
+  why: 已在治疗
+
+- msg: 不是这个
+  label: false
+  tags: [correction]
+  why: 纠正
+
+- msg: he fainted and wont respond
+  label: true
+  tags: [shock, en]
+  why: 倒地无反应
+
+- msg: 换粮了
+  label: false
+  tags: [record]
+  why: 记录换粮
+
+- msg: help max got poisoned
+  label: true
+  tags: [toxin, panic, en]
+  why: 疑似中毒
+
+- msg: 天啊 维尼中毒了
+  label: true
+  tags: [toxin, panic, voice]
+  why: 疑似中毒
+
+- msg: 团子嘴唇发紫
+  label: true
+  tags: [breathing, voice]
+  why: 呼吸异常
+
+- msg: 咪咪中毒了快看看
+  label: true
+  tags: [toxin, panic, voice]
+  why: 疑似中毒
+
+- msg: 老猫今天突然站不起来
+  label: true
+  tags: [shock, neuro, voice]
+  why: 急剧恶化
+
+- msg: 他肚子硬邦邦干呕
+  label: true
+  tags: [gdv, voice]
+  why: 腹胀干呕
+
+- msg: 他抽搐口吐白沫
+  label: true
+  tags: [seizure, keyword]
+  why: 抽搐发作
+
+- msg: bleeding wont stop from cut
+  label: true
+  tags: [bleeding, en]
+  why: 大量出血
+
+- msg: 狗尾巴被门夹断了
+  label: true
+  tags: [trauma, voice]
+  why: 严重外伤
+
+- msg: 他被咬伤血止不住
+  label: true
+  tags: [trauma, voice]
+  why: 严重外伤
+
+- msg: 称了下体重偏轻
+  label: false
+  tags: [record, mild]
+  why: 记录体重
+
+- msg: what if dog eats grapes
+  label: false
+  tags: [hypothetical, keyword_trap, question, en]
+  why: 假设提问
+
+- msg: cat had a seizure just now
+  label: true
+  tags: [seizure, en]
+  why: 抽搐发作
+
+- msg: 谢谢
+  label: false
+  tags: [chitchat]
+  why: 感谢
+
+- msg: 他眼睛翻白倒地
+  label: true
+  tags: [seizure, voice]
+  why: 抽搐发作
+
+- msg: 狗趴那喘个不停
+  label: true
+  tags: [breathing, voice]
+  why: 呼吸异常
+
+- msg: 小维中毒抽了
+  label: true
+  tags: [toxin, panic, voice]
+  why: 疑似中毒
+
+- msg: 他一直抖倒地上
+  label: true
+  tags: [seizure, voice]
+  why: 抽搐发作
+
+- msg: he seized and fell
+  label: true
+  tags: [seizure, en]
+  why: 抽搐发作
+
+- msg: max swallowed grapes a lot
+  label: true
+  tags: [toxin, en]
+  why: 误食危险物
+
+- msg: 狗吃了老鼠药
+  label: true
+  tags: [toxin, voice]
+  why: 误食危险物
+
+- msg: 狗嘴巴不停抽动
+  label: true
+  tags: [seizure, voice]
+  why: 抽搐发作
+
+- msg: dog sneezed once
+  label: false
+  tags: [mild, en]
+  why: 轻微症状
+
+- msg: 小猫吸奶都没力气了
+  label: true
+  tags: [shock, neuro, voice]
+  why: 急剧恶化
+
+- msg: 狗太阳下站不住了
+  label: true
+  tags: [heat, voice]
+  why: 中暑瘫软
+
+- msg: 猫舔了百合花粉
+  label: true
+  tags: [toxin, voice]
+  why: 误食危险物
+
+- msg: delete that please
+  label: false
+  tags: [delete, en]
+  why: 删除操作
+
+- msg: 同事狗中毒了
+  label: false
+  tags: [other_owner, gray]
+  why: 别人的宠物
+
+- msg: 打疫苗了
+  label: false
+  tags: [record]
+  why: 记录疫苗
+
+- msg: 维尼被毒到了
+  label: true
+  tags: [toxin, panic, voice]
+  why: 疑似中毒
+
+- msg: dog overheated and collapsed
+  label: true
+  tags: [heat, en]
+  why: 中暑瘫软
+
+- msg: male cat cant urinate
+  label: true
+  tags: [urinary, en]
+  why: 排尿困难
+
+- msg: 团子抽搐了
+  label: true
+  tags: [seizure, voice]
+  why: 抽搐发作
+
+- msg: 测试一下
+  label: false
+  tags: [chitchat]
+  why: 测试机器人
+
+- msg: 狗轻微跛行
+  label: false
+  tags: [mild]
+  why: 轻微跛行
+
+- msg: 他躺那一动不动
+  label: true
+  tags: [shock, voice]
+  why: 倒地无反应
+
+- msg: 猫嘴张着一直喘
+  label: true
+  tags: [breathing, voice]
+  why: 呼吸异常
+
+- msg: weighed her today
+  label: false
+  tags: [record, en]
+  why: 记录体重
+
+- msg: cancel the reminder
+  label: false
+  tags: [task, en]
+  why: 取消任务
+
+- msg: 小猫越来越软没反应
+  label: true
+  tags: [shock, neuro, voice]
+  why: 急剧恶化
+
+- msg: 公猫尿道好像堵住了
+  label: true
+  tags: [urinary, voice]
+  why: 排尿困难
+
+- msg: 猫从三楼掉下来了
+  label: true
+  tags: [trauma, voice]
+  why: 严重外伤
+
+- msg: 狗直挺挺躺着不理人
+  label: true
+  tags: [shock, voice]
+  why: 倒地无反应
+
+- msg: gave meds today
+  label: false
+  tags: [record, en]
+  why: 记录喂药
+
+- msg: 猫尿不出来了
+  label: true
+  tags: [urinary, voice]
+  why: 排尿困难
+
+- msg: 咪咪中毒抽了
+  label: true
+  tags: [toxin, panic, voice]
+  why: 疑似中毒
+
+- msg: max is wheezing bad
+  label: true
+  tags: [breathing, en]
+  why: 呼吸异常
+
+- msg: 遛了狗
+  label: false
+  tags: [record]
+  why: 记录遛狗
+
+- msg: 他脖子伸直呼吸急
+  label: true
+  tags: [breathing, voice]
+  why: 呼吸异常
+
+- msg: 狗耳朵咬掉一块
+  label: true
+  tags: [trauma, voice]
+  why: 严重外伤
+
+- msg: 团子肚子胀硬干呕
+  label: true
+  tags: [gdv, voice]
+  why: 腹胀干呕
+
+- msg: 洗完澡有点冷
+  label: false
+  tags: [mild, voice]
+  why: 轻微症状
+
+- msg: 查一下疫苗
+  label: false
+  tags: [question]
+  why: 查询记录
+
+- msg: cat threw up once
+  label: false
+  tags: [mild, en]
+  why: 单次呕吐
+
+- msg: 咪咪肚子鼓得像气球
+  label: true
+  tags: [gdv, voice]
+  why: 腹胀干呕
+
+- msg: cat pooping blood a lot
+  label: true
+  tags: [bleeding, en]
+  why: 大量出血
+
+- msg: 查一下日历
+  label: false
+  tags: [question]
+  why: 查日历
+
+- msg: is chocolate bad for dogs
+  label: false
+  tags: [hypothetical, keyword_trap, question, en]
+  why: 假设提问
+
+- msg: dog stomach swollen tight now
+  label: true
+  tags: [gdv, en]
+  why: 腹胀干呕
+
+- msg: 完了 豆豆中毒了
+  label: true
+  tags: [toxin, panic, voice]
+  why: 疑似中毒
+
+- msg: hey there
+  label: false
+  tags: [chitchat, en]
+  why: 打招呼
+
+- msg: 喂了
+  label: false
+  tags: [record]
+  why: 记录喂食
+
+- msg: 狗中暑吐舌软倒
+  label: true
+  tags: [heat, voice]
+  why: 中暑瘫软
+
+- msg: 狗张着嘴直喘气
+  label: true
+  tags: [breathing, voice]
+  why: 呼吸异常
+
+- msg: 团子怎么推都不动
+  label: true
+  tags: [shock, voice]
+  why: 倒地无反应
+
+- msg: 他偷吃了降压药一把
+  label: true
+  tags: [toxin, voice]
+  why: 误食危险物
+
+- msg: 狗突然倒地不动
+  label: true
+  tags: [shock, voice]
+  why: 倒地无反应
+
+- msg: 木糖醇对狗有毒吗
+  label: false
+  tags: [hypothetical, keyword_trap, question]
+  why: 假设提问
+
+- msg: 豆豆被毒到了
+  label: true
+  tags: [toxin, panic, voice]
+  why: 疑似中毒
+
+- msg: dog hit by a car
+  label: true
+  tags: [trauma, en]
+  why: 严重外伤
+
+- msg: 狗抽了根刺没事
+  label: false
+  tags: [mild, gray, voice]
+  why: 轻微处理
+
+- msg: 团子拉血了
+  label: true
+  tags: [bleeding, voice]
+  why: 大量出血
+
+- msg: 他一阵一阵抖个不停
+  label: true
+  tags: [seizure, voice]
+  why: 抽搐发作
+
+- msg: 豆豆中毒抽了
+  label: true
+  tags: [toxin, panic, voice]
+  why: 疑似中毒
+
+- msg: 狗突然喘不上气
+  label: true
+  tags: [breathing, voice]
+  why: 呼吸异常
+
+- msg: 小维被毒到了
+  label: true
+  tags: [toxin, panic, voice]
+  why: 疑似中毒
+
+- msg: 猫嘴里白白的没血色
+  label: true
+  tags: [shock, voice]
+  why: 倒地无反应
+
+- msg: 狗掉毛有点多
+  label: false
+  tags: [mild, voice]
+  why: 轻微症状
+
+- msg: cat ate lily petals
+  label: true
+  tags: [toxin, en]
+  why: 误食危险物
+
+- msg: cat totally limp no response
+  label: true
+  tags: [shock, en]
+  why: 倒地无反应
+
+- msg: 狗肚子胀干呕吐不出
+  label: true
+  tags: [gdv, voice]
+  why: 腹胀干呕
+
+- msg: dog panting weird wont stop
+  label: true
+  tags: [breathing, en]
+  why: 呼吸异常
+
+- msg: 老狗突然瘫痪叫不应
+  label: true
+  tags: [shock, neuro, voice]
+  why: 急剧恶化
+
+- msg: 完了完了 他没反应了
+  label: true
+  tags: [shock, panic]
+  why: 倒地无反应
+
+- msg: 他刚被车撞飞了
+  label: true
+  tags: [trauma, panic]
+  why: 严重外伤
+
+- msg: 维尼中毒了快看看
+  label: true
+  tags: [toxin, panic, voice]
+  why: 疑似中毒
+
+- msg: 他蹲尿盆半天没尿
+  label: true
+  tags: [urinary, voice]
+  why: 排尿困难
+
+- msg: 新闻说猫瘟严重
+  label: false
+  tags: [knowledge]
+  why: 新闻话题
+
+- msg: 他把缝衣针吃了
+  label: true
+  tags: [toxin, voice]
+  why: 误食危险物
+
+- msg: max got poisoned
+  label: true
+  tags: [toxin, panic, en]
+  why: 疑似中毒
+
+- msg: dog chest heaving hard
+  label: true
+  tags: [breathing, en]
+  why: 呼吸异常
+
+- msg: 洗澡了
+  label: false
+  tags: [record]
+  why: 记录洗澡
+
+- msg: dog belly hard and bloated
+  label: true
+  tags: [gdv, en]
+  why: 腹胀干呕
+
+- msg: dog drank antifreeze
+  label: true
+  tags: [toxin, en]
+  why: 误食危险物
+
+- msg: 幼崽体温好凉不动
+  label: true
+  tags: [shock, neuro, voice]
+  why: 急剧恶化
+
+- msg: 团子吞了无糖口香糖
+  label: true
+  tags: [toxin, voice]
+  why: 误食危险物
+
+- msg: cat gasping for air
+  label: true
+  tags: [breathing, en]
+  why: 呼吸异常
+
+- msg: 幼犬一直哀叫不吃奶
+  label: true
+  tags: [shock, neuro, voice]
+  why: 急剧恶化
+
+- msg: 维尼中毒抽了
+  label: true
+  tags: [toxin, panic, voice]
+  why: 疑似中毒
+
+- msg: 咪咪高空坠落了
+  label: true
+  tags: [trauma, voice]
+  why: 严重外伤
+
+- msg: 换个头像
+  label: false
+  tags: [profile]
+  why: 改档案
+
+- msg: dog swallowed a button battery
+  label: true
+  tags: [toxin, en]
+  why: 误食危险物
+
+- msg: 豆豆吃了一整盒巧克力
+  label: true
+  tags: [toxin, voice]
+  why: 误食危险物
+
+- msg: 猫口吐白沫
+  label: true
+  tags: [seizure, voice]
+  why: 抽搐发作
+
+- msg: 豆豆好像中毒了
+  label: true
+  tags: [toxin, panic, voice]
+  why: 疑似中毒
+
+- msg: dog retching cant vomit bloated
+  label: true
+  tags: [gdv, en]
+  why: 腹胀干呕
+
+- msg: friends cat got poisoned
+  label: false
+  tags: [other_owner, gray, en]
+  why: 别人的宠物
+
+- msg: 老狗突然抽搐不认人
+  label: true
+  tags: [shock, neuro, voice]
+  why: 急剧恶化
+
+- msg: cat is bleeding from the nose
+  label: true
+  tags: [bleeding, en]
+  why: 大量出血
+
+- msg: 狗突然倒地口无反应
+  label: true
+  tags: [shock, voice]
+  why: 倒地无反应
+
+- msg: 猫喝水多了点
+  label: false
+  tags: [mild, voice]
+  why: 轻微症状
+
+- msg: luna got poisoned help
+  label: true
+  tags: [toxin, panic, en]
+  why: 疑似中毒
+
+- msg: 他一直干呕肚子硬
+  label: true
+  tags: [gdv, voice]
+  why: 腹胀干呕
+
+- msg: 狗趴地上大口喘气
+  label: true
+  tags: [breathing, voice]
+  why: 呼吸异常
+
+- msg: 豆豆四肢僵硬抖
+  label: true
+  tags: [seizure, voice]
+  why: 抽搐发作
+
+- msg: 猫眼球掉出来了
+  label: true
+  tags: [trauma, voice]
+  why: 严重外伤
+
+- msg: 豆豆呼哧呼哧喘不停
+  label: true
+  tags: [breathing, voice]
+  why: 呼吸异常
+
+- msg: 他呼息急促
+  label: true
+  tags: [breathing, typo]
+  why: 呼吸异常
+
+- msg: update his birthday
+  label: false
+  tags: [profile, en]
+  why: 改档案
+
+- msg: dog fell down the stairs hard
+  label: true
+  tags: [trauma, en]
+  why: 严重外伤
+
+- msg: 完了 咪咪中毒了
+  label: true
+  tags: [toxin, panic, voice]
+  why: 疑似中毒
+
+- msg: 豆豆中毒了！！
+  label: true
+  tags: [toxin, panic, voice]
+  why: 疑似中毒
+
+- msg: 猫爪子被夹断了
+  label: true
+  tags: [trauma, voice]
+  why: 严重外伤
+
+- msg: 救命 维尼中毒了
+  label: true
+  tags: [toxin, panic, voice]
+  why: 疑似中毒
+
+- msg: he just went limp
+  label: true
+  tags: [shock, en]
+  why: 倒地无反应
+
+- msg: 豆豆误食中毒了
+  label: true
+  tags: [toxin, panic, voice]
+  why: 疑似中毒
+
+- msg: 猫张嘴船气
+  label: true
+  tags: [breathing, typo]
+  why: 呼吸异常
+
+- msg: 狗吃了木糖醇口香糖
+  label: true
+  tags: [toxin, voice]
+  why: 误食危险物
+
+- msg: cat fell from balcony
+  label: true
+  tags: [trauma, en]
+  why: 严重外伤
+
+- msg: groomed him today
+  label: false
+  tags: [record, en]
+  why: 记录洗澡
+
+- msg: 换成英文
+  label: false
+  tags: [language]
+  why: 切语言
+
+- msg: 去年中过毒
+  label: false
+  tags: [past, keyword_trap]
+  why: 过去的事
+
+- msg: 换个品种粮试试
+  label: false
+  tags: [record]
+  why: 换粮
+
+- msg: luna is poisoned omg
+  label: true
+  tags: [toxin, panic, en]
+  why: 疑似中毒
+
+- msg: 猫嘴巴发紫喘
+  label: true
+  tags: [breathing, voice]
+  why: 呼吸异常
+
+- msg: 他吐血了
+  label: true
+  tags: [bleeding, voice]
+  why: 大量出血
+
+- msg: dog ate a whole chocolate bar
+  label: true
+  tags: [toxin, en]
+  why: 误食危险物
+
+- msg: dog is unresponsive on floor
+  label: true
+  tags: [shock, en]
+  why: 倒地无反应
+
+- msg: 他伤口血止不住
+  label: true
+  tags: [bleeding, voice]
+  why: 大量出血
+
+- msg: 猫挠痒痒
+  label: false
+  tags: [mild]
+  why: 轻微行为
+
+- msg: newborn kitten limp and cold
+  label: true
+  tags: [shock, neuro, en]
+  why: 急剧恶化
+
+- msg: dog bleeding wont stop bite
+  label: true
+  tags: [trauma, en]
+  why: 严重外伤
+
+- msg: 狗嘴里全是血
+  label: true
+  tags: [bleeding, voice]
+  why: 大量出血
+
+- msg: 完了他抽了
+  label: true
+  tags: [seizure, panic]
+  why: 抽搐发作
+
+- msg: 团子倒了
+  label: true
+  tags: [shock, voice]
+  why: 倒地无反应
+
+- msg: had seizure before meds now
+  label: false
+  tags: [managed, keyword_trap, en]
+  why: 已在治疗
+
+- msg: max collapsed and twitching
+  label: true
+  tags: [seizure, en]
+  why: 抽搐发作
+
+- msg: 写封邮件给医生
+  label: false
+  tags: [email]
+  why: 写邮件
+
+- msg: 豆豆抽了！！
+  label: true
+  tags: [seizure, voice]
+  why: 抽搐发作
+
+- msg: 狗被别的狗咬出血不止
+  label: true
+  tags: [trauma, voice]
+  why: 严重外伤
+
+- msg: 团子吃老鼠药了
+  label: true
+  tags: [toxin, voice]
+  why: 误食危险物
+
+- msg: 狗把安眠药吃了
+  label: true
+  tags: [toxin, voice]
+  why: 误食危险物
+
+- msg: 猫咬人玩闹而已
+  label: false
+  tags: [chitchat]
+  why: 行为吐槽
+
+- msg: 疫苗周期是啥
+  label: false
+  tags: [question, knowledge]
+  why: 查询知识
+
+- msg: 狗打嗝几下
+  label: false
+  tags: [mild, voice]
+  why: 轻微症状
+
+- msg: 猫嘴角冒白沫
+  label: true
+  tags: [seizure, voice]
+  why: 抽搐发作
+
+- msg: 咪咪偷吃一把葡萄干
+  label: true
+  tags: [toxin, voice]
+  why: 误食危险物
+
+- msg: change to english
+  label: false
+  tags: [language, en]
+  why: 切语言
+
+- msg: 猫便血一大摊
+  label: true
+  tags: [bleeding, voice]
+  why: 大量出血
+
+- msg: 团子呼吸声嘶哑
+  label: true
+  tags: [breathing, voice]
+  why: 呼吸异常
+
+- msg: dog badly burned by hot oil
+  label: true
+  tags: [trauma, en]
+  why: 严重外伤
+
+- msg: 豆豆中毒了吧这是
+  label: true
+  tags: [toxin, panic, voice]
+  why: 疑似中毒
+
+- msg: 维尼中毒了口吐白沫
+  label: true
+  tags: [toxin, panic, voice]
+  why: 疑似中毒
+
+- msg: fed him already
+  label: false
+  tags: [record, en]
+  why: 记录喂食
+
+- msg: cat licking paw a lot
+  label: false
+  tags: [mild, en]
+  why: 轻微行为
+
+- msg: 旺财偷吃巧克力一整块
+  label: true
+  tags: [toxin, voice]
+  why: 误食危险物
+
+- msg: 上次驱虫时间
+  label: false
+  tags: [question]
+  why: 查询记录
+
+- msg: thanks so much
+  label: false
+  tags: [chitchat, en]
+  why: 感谢
+
+- msg: 狗食欲差点
+  label: false
+  tags: [mild, voice]
+  why: 食欲略降
+
+- msg: dog ate my pills
+  label: true
+  tags: [toxin, en]
+  why: 误食危险物
+
+- msg: cat chewed on lily leaves
+  label: true
+  tags: [toxin, en]
+  why: 误食危险物
+
+- msg: 咪咪一直张嘴喘
+  label: true
+  tags: [breathing, voice]
+  why: 呼吸异常
+
+- msg: cat drank toilet cleaner
+  label: true
+  tags: [toxin, en]
+  why: 误食危险物
+
+- msg: 他眼珠子凸出来了
+  label: true
+  tags: [trauma, panic]
+  why: 严重外伤
+
+- msg: 猫有点眼屎
+  label: false
+  tags: [mild]
+  why: 轻微症状
+
+- msg: 狗吃葡萄会怎样
+  label: false
+  tags: [hypothetical, keyword_trap, question]
+  why: 假设提问
+
+- msg: 咪咪好像中毒了
+  label: true
+  tags: [toxin, panic, voice]
+  why: 疑似中毒
+
+- msg: 猫肚子突然胀硬
+  label: true
+  tags: [gdv, voice]
+  why: 腹胀干呕
+
+- msg: 豆豆眼神呆滞抽着
+  label: true
+  tags: [seizure, voice]
+  why: 抽搐发作
+
+- msg: leg bone is sticking out now
+  label: true
+  tags: [trauma, en]
+  why: 严重外伤
+
+- msg: dog swallowed a sewing needle
+  label: true
+  tags: [toxin, en]
+  why: 误食危险物
+
+- msg: 他吞了一整瓶药
+  label: true
+  tags: [toxin, voice]
+  why: 误食危险物
+
+- msg: 猫喝了消毒液
+  label: true
+  tags: [toxin, voice]
+  why: 误食危险物
+
+- msg: 咪咪中毒了不动了
+  label: true
+  tags: [toxin, panic, voice]
+  why: 疑似中毒
+
+- msg: cat breathing really fast
+  label: true
+  tags: [breathing, en]
+  why: 呼吸异常
+
+- msg: 狗刚吞了一把葡萄干
+  label: true
+  tags: [toxin, voice]
+  why: 误食危险物
+
+- msg: 咪咪中毒了口吐白沫
+  label: true
+  tags: [toxin, panic, voice]
+  why: 疑似中毒
+
+- msg: 发个可爱照片
+  label: false
+  tags: [chitchat]
+  why: 闲聊
+
+- msg: 维尼中毒了！！
+  label: true
+  tags: [toxin, panic, voice]
+  why: 疑似中毒
+
+- msg: 咪咪误食中毒了
+  label: true
+  tags: [toxin, panic, voice]
+  why: 疑似中毒
+
+- msg: 猫误食了缝衣线
+  label: true
+  tags: [toxin, voice]
+  why: 误食危险物
+
+- msg: 你好呀
+  label: false
+  tags: [chitchat]
+  why: 打招呼
+
+- msg: nearby vet clinic
+  label: false
+  tags: [places, gray, en]
+  why: 找店
+
+- msg: 团子被摩托撞了
+  label: true
+  tags: [trauma, voice]
+  why: 严重外伤
+
+- msg: puppy ate sleeping pills
+  label: true
+  tags: [toxin, en]
+  why: 误食危险物
+
+- msg: what can this app do
+  label: false
+  tags: [question]
+  why: 查询功能
+
+- msg: 他眼睛半睁不动了
+  label: true
+  tags: [shock, voice]
+  why: 倒地无反应
+
+- msg: 猫叫着蹲厕所尿不出
+  label: true
+  tags: [urinary, voice]
+  why: 排尿困难
+
+- msg: 猫啃了百合叶子
+  label: true
+  tags: [toxin, voice]
+  why: 误食危险物
+
+- msg: 完了 小维中毒了
+  label: true
+  tags: [toxin, panic, voice]
+  why: 疑似中毒
+
+- msg: 团子舔了84消毒液
+  label: true
+  tags: [toxin, voice]
+  why: 误食危险物
+
+- msg: 狗牙龈发白了
+  label: true
+  tags: [shock, voice]
+  why: 倒地无反应
+
+- msg: 狗肚子胀得像球干呕
+  label: true
+  tags: [gdv, voice]
+  why: 腹胀干呕
+
+- msg: 猫打喷嚏
+  label: false
+  tags: [mild]
+  why: 轻微症状
+
+- msg: 早
+  label: false
+  tags: [chitchat]
+  why: 打招呼
+
+- msg: 狗吞了一根针
+  label: true
+  tags: [toxin, voice]
+  why: 误食危险物
+
+- msg: 团子又抖起来了
+  label: true
+  tags: [seizure, voice]
+  why: 抽搐发作
+
+- msg: 狗肚子鼓硬吐不出
+  label: true
+  tags: [gdv, voice]
+  why: 腹胀干呕
+
+- msg: 咪咪中毒了！！
+  label: true
+  tags: [toxin, panic, voice]
+  why: 疑似中毒
+
+- msg: 对
+  label: false
+  tags: [confirm]
+  why: 确认

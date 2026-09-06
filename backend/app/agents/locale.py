@@ -480,6 +480,11 @@ Rules:
         "en": "Executed",
     },
 
+    "emergency_clf_label": {
+        "zh": "紧急分类模型判定为危急",
+        "en": "emergency classifier flagged this message",
+    },
+
     "emergency_hint": {
         "zh": (
             "🚨🚨🚨 紧急关键词检测: [{keywords}]\n"

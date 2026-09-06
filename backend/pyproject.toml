@@ -31,12 +31,14 @@ dependencies = [
 debug = "app.admin_cli.main:debug_shim"
 admin = "app.admin_cli.main:cli"
 agent = "app.agent_harness.cli:cli"
+nano = "nano.cli:cli"
 
 [project.optional-dependencies]
 dev = ["respx>=0.21.0", "pytest-asyncio>=0.23.0"]
+nano = ["torch", "transformers", "accelerate", "peft", "trl", "datasets", "pyyaml"]
 
 [tool.setuptools.packages.find]
-include = ["app*"]
+include = ["app*", "nano*"]
 
 [build-system]
 requires = ["setuptools>=75.0"]

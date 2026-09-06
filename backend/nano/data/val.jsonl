@@ -1,0 +1,632 @@
+{"msg": "咪咪去年掉毛掉得比较厉害 后来换季就好了", "label": false, "tags": ["mild", "past", "voice"], "source": "mild_symptoms.yaml"}
+{"msg": "球球刚吐了 里头有血丝还挺明显的", "label": true, "tags": ["bleeding", "voice"], "source": "gi_urinary.yaml"}
+{"msg": "那个我家猫今天挠了挠沙发 指甲有点长 顺便记一下明天带去剪指甲", "label": false, "tags": ["record", "chitchat", "voice"], "source": "compound_long.yaml"}
+{"msg": "兔兔和旺旺一起上了训练课 国庆那几天的事", "label": false, "tags": ["daily", "record", "voice", "multi"], "source": "records.yaml"}
+{"msg": "狗抽了根刺没事", "label": false, "tags": ["mild", "gray", "voice"], "source": "short_true.yaml"}
+{"msg": "团子刚吐出蛔虫 现在整只猫软的抱不起来", "label": true, "tags": ["multi", "voice"], "source": "gi_urinary.yaml"}
+{"msg": "charlie has some tear staining under his eyes", "label": false, "tags": ["mild", "en", "voice"], "source": "english_broad.yaml"}
+{"msg": "布丁今天挠耳朵挠得有点频繁 是不是该滴点洗耳液了", "label": false, "tags": ["mild", "question", "voice"], "source": "compound_long.yaml"}
+{"msg": "charlie's weight today was 30 pounds", "label": false, "tags": ["weight", "record", "en", "voice"], "source": "records.yaml"}
+{"msg": "那个 我家两只狗 一只驱虫了 一只还没 记一下提醒我下周补上", "label": false, "tags": ["record", "reminder", "multi", "voice"], "source": "compound_long.yaml"}
+{"msg": "咪咪今天喷嚏打个不停 眼睛鼻子都没啥分泌物 正常吗", "label": false, "tags": ["mild", "voice", "question"], "source": "mild_symptoms.yaml"}
+{"msg": "小黑今天跟着我去超市门口等我 一直很有耐心地趴着", "label": false, "tags": ["chitchat", "voice"], "source": "compound_long.yaml"}
+{"msg": "那个 我家狗最近不爱吃粮是不是要换个口味", "label": false, "tags": ["question", "knowledge", "voice"], "source": "queries_knowledge.yaml"}
+{"msg": "咪咪今天没什么反常 就是感觉有点安静", "label": false, "tags": ["gray", "mild", "voice"], "source": "vague_panic.yaml"}
+{"msg": "我有两只猫 一只叫米米一只叫球球", "label": false, "tags": ["profile", "multi", "voice"], "source": "pet_profile.yaml"}
+{"msg": "小维舔了指甲盖大的巧克力", "label": false, "tags": ["toxin", "gray", "keyword_trap", "voice"], "source": "short_false.yaml"}
+{"msg": "狗的嗅觉到底比人灵敏多少", "label": false, "tags": ["question", "knowledge", "voice"], "source": "queries_knowledge.yaml"}
+{"msg": "旺财挠得厉害 是不是感染跳蚤了 要买驱虫药吗", "label": false, "tags": ["mild", "voice", "question"], "source": "mild_symptoms.yaml"}
+{"msg": "附近有没有给花花洗澡的地方", "label": false, "tags": ["places", "voice"], "source": "tools_misc.yaml"}
+{"msg": "邻居家狗窒息那次差点没救回来", "label": false, "tags": ["other_owner", "keyword_trap", "breathing", "past"], "source": "keyword_traps.yaml"}
+{"msg": "小维今天吃了三顿", "label": false, "tags": ["record", "voice"], "source": "short_false.yaml"}
+{"msg": "记录写错了 鹦鹉是洗牙不是拔牙", "label": false, "tags": ["record", "correction", "voice"], "source": "records.yaml"}
+{"msg": "咪咪之前中过毒 吃了发霉的东西 那次事 记到病史", "label": false, "tags": ["profile", "keyword_trap", "voice"], "source": "pet_profile.yaml"}
+{"msg": "idkkk", "label": false, "tags": ["edge", "en"], "source": "chitchat_edge.yaml"}
+{"msg": "阿黄舌头都紫了 张着嘴巴不停喘 吓死我了", "label": true, "tags": ["breathing", "panic", "voice"], "source": "breathing_heat.yaml"}
+{"msg": "阿福今天遛狗回来吐了一口草 应该是吃草吐出来的没啥事", "label": false, "tags": ["mild", "voice"], "source": "compound_long.yaml"}
+{"msg": "my dog threw up white foam once but seems totally fine now", "label": false, "tags": ["mild", "gray", "en"], "source": "gi_urinary.yaml"}
+{"msg": "刚才旺财追车结果被幢飞了 摔出去好几米 躺那不动了", "label": true, "tags": ["trauma", "voice", "typo", "panic"], "source": "trauma_bleeding.yaml"}
+{"msg": "小维吞了根缝衣针 我刚看到线还在嘴巴外面 他一直挠嘴", "label": true, "tags": ["trauma", "panic", "voice"], "source": "vague_panic.yaml"}
+{"msg": "when is weiwei's vaccine due", "label": false, "tags": ["question", "en"], "source": "short_false.yaml"}
+{"msg": "dog drank antifreeze", "label": true, "tags": ["toxin", "en"], "source": "short_true.yaml"}
+{"msg": "灰灰嘴巴张开一直喘 肚子一鼓一鼓的", "label": true, "tags": ["breathing", "voice"], "source": "breathing_heat.yaml"}
+{"msg": "花花刚生完崽 现在突然抽起来了 全身僵硬", "label": true, "tags": ["neuro", "voice"], "source": "seizure_neuro.yaml"}
+{"msg": "dog cant breathe right", "label": true, "tags": ["breathing", "en"], "source": "short_true.yaml"}
+{"msg": "呃就是 球球眼睛整个突出来了 感觉快掉下来了", "label": true, "tags": ["trauma", "voice", "panic"], "source": "trauma_bleeding.yaml"}
+{"msg": "幼犬体重涨得慢了一点点 正常范围内吗", "label": false, "tags": ["mild", "voice", "question"], "source": "mild_symptoms.yaml"}
+{"msg": "豆豆上次打喷嚏是哪天记的", "label": false, "tags": ["question", "record", "voice"], "source": "queries_knowledge.yaml"}
+{"msg": "布丁这周一体重五公斤 帮我记录", "label": false, "tags": ["weight", "record", "voice"], "source": "records.yaml"}
+{"msg": "不是球球 是另一只", "label": false, "tags": ["correction", "voice"], "source": "tools_misc.yaml"}
+{"msg": "心脏病定期复查 医生说稳定", "label": false, "tags": ["managed", "keyword_trap"], "source": "keyword_traps.yaml"}
+{"msg": "花花闻了闻口香糖盒子 没吃进去", "label": false, "tags": ["toxin", "gray", "keyword_trap"], "source": "toxin_food_plant.yaml"}
+{"msg": "咪咪吃了点三文鱼", "label": false, "tags": ["record", "voice"], "source": "short_false.yaml"}
+{"msg": "球球突然喘不上来 蹲地上不敢动了", "label": true, "tags": ["breathing", "panic", "voice"], "source": "breathing_heat.yaml"}
+{"msg": "whiskers has some gunk in his eyes this morning", "label": false, "tags": ["mild", "en", "voice"], "source": "english_broad.yaml"}
+{"msg": "布丁今天打了个哈欠伸了个懒腰 然后就睡了一下午", "label": false, "tags": ["chitchat", "voice"], "source": "compound_long.yaml"}
+{"msg": "他一直干呕肚子硬", "label": true, "tags": ["gdv", "voice"], "source": "short_true.yaml"}
+{"msg": "品种填错了帮我改成金毛寻回犬", "label": false, "tags": ["profile", "voice"], "source": "pet_profile.yaml"}
+{"msg": "花花把滴水观音叶柄咬断了 汁水沾了满嘴", "label": true, "tags": ["toxin", "voice"], "source": "toxin_food_plant.yaml"}
+{"msg": "小维今天吐了一下", "label": false, "tags": ["mild", "voice"], "source": "short_false.yaml"}
+{"msg": "小维称重五公斤", "label": false, "tags": ["record", "voice"], "source": "short_false.yaml"}
+{"msg": "团子今天有点咳嗽又有点流鼻涕 是不是感冒了 要吃药吗", "label": false, "tags": ["mild", "multi", "voice", "question"], "source": "mild_symptoms.yaml"}
+{"msg": "猫猫喉咙好像卡东西了 一直干呕出不来", "label": true, "tags": ["breathing", "voice"], "source": "breathing_heat.yaml"}
+{"msg": "团子刚拉了一大滩 全是鲜血 吓人", "label": true, "tags": ["bleeding", "voice", "panic"], "source": "gi_urinary.yaml"}
+{"msg": "球球躺那 嘴张着 感觉船不上来", "label": true, "tags": ["breathing", "voice", "typo"], "source": "breathing_heat.yaml"}
+{"msg": "my dog and cat both got their nails done today the cat was not happy about it", "label": false, "tags": ["record", "chitchat", "multi", "en", "voice"], "source": "compound_long.yaml"}
+{"msg": "阿福躺地上嘴巴张开 喘的声音很粗 感觉不太行", "label": true, "tags": ["breathing", "panic", "voice"], "source": "breathing_heat.yaml"}
+{"msg": "he passed away last month i still cant believe it", "label": false, "tags": ["chitchat", "en", "gray"], "source": "chitchat_edge.yaml"}
+{"msg": "狗狗能吃胡萝卜吗 生的还是熟的好", "label": false, "tags": ["question", "knowledge", "hypothetical", "voice"], "source": "queries_knowledge.yaml"}
+{"msg": "团子突然眼睛往上吊 一直没恢复", "label": true, "tags": ["neuro", "voice"], "source": "seizure_neuro.yaml"}
+{"msg": "微信推送了篇文章讲宠物出血怎么处理", "label": false, "tags": ["knowledge", "keyword_trap", "bleeding"], "source": "keyword_traps.yaml"}
+{"msg": "摔下楼梯一般会摔出什么问题", "label": false, "tags": ["question", "hypothetical", "keyword_trap", "trauma"], "source": "keyword_traps.yaml"}
+{"msg": "怎么让狗狗学会定点大小便", "label": false, "tags": ["question", "knowledge", "voice"], "source": "queries_knowledge.yaml"}
+{"msg": "处方粮和普通粮有啥区别", "label": false, "tags": ["question", "knowledge", "voice"], "source": "queries_knowledge.yaml"}
+{"msg": "my cat knocked over boiling water and got scalded across her whole back", "label": true, "tags": ["trauma", "en", "voice"], "source": "trauma_bleeding.yaml"}
+{"msg": "摔一下会不会内出血", "label": false, "tags": ["question", "hypothetical", "keyword_trap", "trauma"], "source": "keyword_traps.yaml"}
+{"msg": "max had his usual dinner", "label": false, "tags": ["record", "en"], "source": "short_false.yaml"}
+{"msg": "呃就是 球球脚被纱窗门夹到了 现在一瘸一拐还一直叫", "label": true, "tags": ["trauma", "voice"], "source": "trauma_bleeding.yaml"}
+{"msg": "generate a health report for max i need to show the vet", "label": false, "tags": ["profile", "question", "en", "voice"], "source": "pet_profile.yaml"}
+{"msg": "咪咪今天软便一次 之后就正常了 应该没事吧", "label": false, "tags": ["mild", "gray", "voice", "question"], "source": "mild_symptoms.yaml"}
+{"msg": "那种毒鼠强的颗粒 撒在楼道角落 维尼刚才路过叼了一颗", "label": true, "tags": ["toxin", "voice"], "source": "toxin_chem_foreign.yaml"}
+{"msg": "豆豆生日其实是农历的 帮我换算改一下", "label": false, "tags": ["profile", "voice"], "source": "pet_profile.yaml"}
+{"msg": "add a new pet profile for our new kitten", "label": false, "tags": ["profile", "en", "voice"], "source": "english_broad.yaml"}
+{"msg": "doudou walked around the park", "label": false, "tags": ["record", "en"], "source": "short_false.yaml"}
+{"msg": "维尼突然发抖发的很厉害 站不住 眼神也不对 完了怎么办呀", "label": true, "tags": ["neuro", "voice", "panic"], "source": "seizure_neuro.yaml"}
+{"msg": "我家狗把我布洛芬瓶咬开了 药撒了一地 数了数少了五六颗", "label": true, "tags": ["toxin", "voice"], "source": "toxin_chem_foreign.yaml"}
+{"msg": "remind me to walk huahua", "label": false, "tags": ["reminder", "en"], "source": "short_false.yaml"}
+{"msg": "壮壮喘得跟拉锯一样 嘴巴张老大", "label": true, "tags": ["breathing", "voice"], "source": "breathing_heat.yaml"}
+{"msg": "那个 提醒我给花花打针 兽医说要连打一周", "label": false, "tags": ["reminder", "task", "voice"], "source": "reminders_tasks.yaml"}
+{"msg": "update the dogs weight from last vet visit", "label": false, "tags": ["profile", "en", "voice"], "source": "english_broad.yaml"}
+{"msg": "小维吐血了", "label": true, "tags": ["bleeding", "voice"], "source": "short_false.yaml"}
+{"msg": "乐乐今天称重十斤二两 比上个月重了一点点 正常吗", "label": false, "tags": ["record", "question", "voice"], "source": "compound_long.yaml"}
+{"msg": "球球叼着袜子玩了一下就扔了 袜子还是完整的", "label": false, "tags": ["toxin", "gray", "mild", "voice"], "source": "toxin_chem_foreign.yaml"}
+{"msg": "i think max is poisoned", "label": true, "tags": ["toxin", "panic", "en"], "source": "short_true.yaml"}
+{"msg": "小奶狗身体越来越凉", "label": true, "tags": ["shock", "neuro", "voice"], "source": "short_true.yaml"}
+{"msg": "把球球从我账号里删掉 已经不养了", "label": false, "tags": ["profile", "delete", "voice"], "source": "pet_profile.yaml"}
+{"msg": "whiskers snores so loud at night is that just breed related", "label": false, "tags": ["mild", "en", "voice", "question"], "source": "mild_symptoms.yaml"}
+{"msg": "小维今天蹲在猫砂盆里蹲了快一个小时 一直用力 啥也没有 还叫", "label": true, "tags": ["urinary", "panic", "voice"], "source": "vague_panic.yaml"}
+{"msg": "do dogs actually understand what we say", "label": false, "tags": ["question", "knowledge", "en", "voice"], "source": "queries_knowledge.yaml"}
+{"msg": "团子小时候溺水那次是掉进池塘", "label": false, "tags": ["past", "keyword_trap", "neuro"], "source": "keyword_traps.yaml"}
+{"msg": "Coco今天散步回来一直舔爪子 是不是踩到什么东西了", "label": false, "tags": ["mild", "question", "en", "voice"], "source": "compound_long.yaml"}
+{"msg": "cat is choking on something cant breathe properly right now", "label": true, "tags": ["breathing", "en", "voice"], "source": "breathing_heat.yaml"}
+{"msg": "豆豆吐了毛球", "label": false, "tags": ["mild", "voice"], "source": "short_false.yaml"}
+{"msg": "豆豆今天拉的便便有点软 别的都挺正常", "label": false, "tags": ["mild", "gray", "voice"], "source": "gi_urinary.yaml"}
+{"msg": "团子软便了一点", "label": false, "tags": ["mild", "voice"], "source": "short_false.yaml"}
+{"msg": "壮壮今天太热了 遛完就直接躺地上不起来", "label": true, "tags": ["heat", "voice"], "source": "breathing_heat.yaml"}
+{"msg": "小维洗澡后抽搐了", "label": true, "tags": ["seizure", "voice"], "source": "short_false.yaml"}
+{"msg": "他吞了一整瓶药", "label": true, "tags": ["toxin", "voice"], "source": "short_true.yaml"}
+{"msg": "luna ate a bit of pumpkin", "label": false, "tags": ["record", "en"], "source": "short_false.yaml"}
+{"msg": "黑豆之前咬伤流了好多血 缝针了 接下来一周每天换药提醒我", "label": false, "tags": ["reminder", "task", "keyword_trap", "voice"], "source": "reminders_tasks.yaml"}
+{"msg": "我家猫三天了 完全不吃不喝 叫他也不理", "label": true, "tags": ["multi", "voice"], "source": "gi_urinary.yaml"}
+{"msg": "Max keeps gasping mouth open tongue kinda purple color", "label": true, "tags": ["breathing", "en", "voice"], "source": "breathing_heat.yaml"}
+{"msg": "可乐把我孩子的磁力笔记本扣咬掉了 那个小磁片不见了", "label": true, "tags": ["toxin", "voice"], "source": "toxin_chem_foreign.yaml"}
+{"msg": "my husky got into a whole pack of chocolate wafers at the office and just standing there dazed now", "label": true, "tags": ["toxin", "en"], "source": "toxin_food_plant.yaml"}
+{"msg": "每天喝水提醒我记录一下 团子最近喝水少", "label": false, "tags": ["task", "voice", "gray"], "source": "reminders_tasks.yaml"}
+{"msg": "is it normal for my puppy to be a little tired after vaccination", "label": false, "tags": ["mild", "question", "en"], "source": "vague_panic.yaml"}
+{"msg": "ok 拜了", "label": false, "tags": ["chitchat", "multi"], "source": "chitchat_edge.yaml"}
+{"msg": "haha nvm", "label": false, "tags": ["edge", "en"], "source": "chitchat_edge.yaml"}
+{"msg": "Mochi got his eye scratched by another cat it's bleeding a bit and swollen", "label": true, "tags": ["trauma", "bleeding", "en", "voice"], "source": "trauma_bleeding.yaml"}
+{"msg": "小猫崽一直拉肚子还吐 现在四肢没力气了", "label": true, "tags": ["multi", "voice"], "source": "gi_urinary.yaml"}
+{"msg": "狗狗拆家怎么办 一天到晚咬东西", "label": false, "tags": ["question", "knowledge", "voice"], "source": "queries_knowledge.yaml"}
+{"msg": "豆豆今天吃了新买的鸡肉干 拉的便便颜色深了点 正常吗", "label": false, "tags": ["mild", "question", "voice"], "source": "compound_long.yaml"}
+{"msg": "馒头大前天挑食 只吃罐头不吃干粮", "label": false, "tags": ["record", "voice", "diet"], "source": "records.yaml"}
+{"msg": "我家猫拉出来的便便像柏油一样黑还带血", "label": true, "tags": ["bleeding", "voice"], "source": "gi_urinary.yaml"}
+{"msg": "狗吃葡萄会怎样", "label": false, "tags": ["hypothetical", "keyword_trap", "question"], "source": "short_true.yaml"}
+{"msg": "猫舔了百合花粉", "label": true, "tags": ["toxin", "voice"], "source": "short_true.yaml"}
+{"msg": "你几岁了", "label": false, "tags": ["chitchat", "other"], "source": "chitchat_edge.yaml"}
+{"msg": "维尼偷啃了绿萝藤蔓 叶子掉了一地嚼碎了几片", "label": true, "tags": ["toxin", "voice"], "source": "toxin_food_plant.yaml"}
+{"msg": "那就先聊到这 晚安", "label": false, "tags": ["chitchat", "voice"], "source": "chitchat_edge.yaml"}
+{"msg": "cat got stepped on by accident and she's not moving her back leg at all", "label": true, "tags": ["trauma", "en", "voice"], "source": "trauma_bleeding.yaml"}
+{"msg": "lol milo is obsessed with his new toy", "label": false, "tags": ["chitchat", "en", "voice"], "source": "english_broad.yaml"}
+{"msg": "我一包烟被咪咪叼走了 找到的时候烟丝撒了一地嚼过的痕迹", "label": true, "tags": ["toxin", "voice"], "source": "toxin_chem_foreign.yaml"}
+{"msg": "帮我看下这照片里的皮肤情况", "label": false, "tags": ["other", "voice"], "source": "tools_misc.yaml"}
+{"msg": "咪咪生日改成十二月", "label": false, "tags": ["profile", "voice"], "source": "pet_profile.yaml"}
+{"msg": "luna has some redness between her toes", "label": false, "tags": ["mild", "en", "voice"], "source": "english_broad.yaml"}
+{"msg": "那个 我妈的药盒开着的 小维刚才叼着跑 现在药盒是空的", "label": true, "tags": ["toxin", "voice"], "source": "toxin_chem_foreign.yaml"}
+{"msg": "我朋友的猫上周吞了个玩具零件 已经手术取出来了 现在恢复得挺好", "label": false, "tags": ["toxin", "other_owner", "past", "keyword_trap", "voice"], "source": "toxin_chem_foreign.yaml"}
+{"msg": "新养了只柯基叫团子公的三个月大", "label": false, "tags": ["profile", "voice", "typo"], "source": "pet_profile.yaml"}
+{"msg": "my dog just cant seem to catch his breath something is wrong", "label": true, "tags": ["breathing", "en", "voice"], "source": "breathing_heat.yaml"}
+{"msg": "我家可乐以前误食过塑料袋一小块 后来自己排出来了没事", "label": false, "tags": ["toxin", "past", "keyword_trap", "voice"], "source": "toxin_chem_foreign.yaml"}
+{"msg": "my cat got her paw caught in the door and it's twisted at a weird angle", "label": true, "tags": ["trauma", "en", "voice"], "source": "trauma_bleeding.yaml"}
+{"msg": "小维尼幼犬突然软了 一直抖 没吃东西", "label": true, "tags": ["neuro", "voice"], "source": "seizure_neuro.yaml"}
+{"msg": "前天带我家狗去河边玩水了 一身泥", "label": false, "tags": ["daily", "record", "voice"], "source": "records.yaml"}
+{"msg": "老猫最近跛得比较明显了 但还是能跳上猫爬架", "label": false, "tags": ["mild", "gray", "voice"], "source": "mild_symptoms.yaml"}
+{"msg": "你理解错了", "label": false, "tags": ["other", "voice"], "source": "tools_misc.yaml"}
+{"msg": "咪咪今天在窗边看鸟看了一整个下午 尾巴一直在抖", "label": false, "tags": ["chitchat", "voice"], "source": "compound_long.yaml"}
+{"msg": "Max keeps stealing socks and hiding them somewhere", "label": false, "tags": ["chitchat", "en"], "source": "chitchat_edge.yaml"}
+{"msg": "帮我记录一下 鹦鹉刚才挠痒挠得厉害 精神还挺好的", "label": false, "tags": ["record", "past", "mild", "gray", "voice"], "source": "records.yaml"}
+{"msg": "帮我记录 皮皮今天开始吃新粮了 换粮期", "label": false, "tags": ["diet", "record", "voice"], "source": "records.yaml"}
+{"msg": "那个 团子好像掉了一颗牙 是换牙吗 它还小", "label": false, "tags": ["mild", "voice", "question"], "source": "mild_symptoms.yaml"}
+{"msg": "大黄今天吐了两回 吐完照样撒欢跑来跑去", "label": false, "tags": ["mild", "gray", "voice"], "source": "gi_urinary.yaml"}
+{"msg": "幼犬软便正常吗 换粮多久能适应", "label": false, "tags": ["mild", "question", "knowledge", "voice"], "source": "mild_symptoms.yaml"}
+{"msg": "豆豆软了叫不应", "label": true, "tags": ["shock", "voice"], "source": "short_true.yaml"}
+{"msg": "牵引绳有啥推荐的吗", "label": false, "tags": ["question", "voice"], "source": "queries_knowledge.yaml"}
+{"msg": "朋友的仓鼠中毒死了 挺难过的", "label": false, "tags": ["other_owner", "keyword_trap", "toxin"], "source": "keyword_traps.yaml"}
+{"msg": "小维今天吃了南瓜", "label": false, "tags": ["record", "voice"], "source": "short_false.yaml"}
+{"msg": "again", "label": false, "tags": ["multi", "en"], "source": "tools_misc.yaml"}
+{"msg": "my cat's head is tilted to one side and she keeps falling over", "label": true, "tags": ["neuro", "en"], "source": "seizure_neuro.yaml"}
+{"msg": "为啥猫咪不让我抱它 是不亲我吗", "label": false, "tags": ["question", "chitchat", "voice"], "source": "queries_knowledge.yaml"}
+{"msg": "阿黄那个疫苗站便宜的在哪", "label": false, "tags": ["places", "gray", "voice"], "source": "tools_misc.yaml"}
+{"msg": "不是他 是另一只", "label": false, "tags": ["correction", "voice"], "source": "tools_misc.yaml"}
+{"msg": "大橘吐出来一摊全是血 颜色特别红", "label": true, "tags": ["bleeding", "voice"], "source": "gi_urinary.yaml"}
+{"msg": "团子称了5公斤", "label": false, "tags": ["record", "voice"], "source": "short_false.yaml"}
+{"msg": "他不对劲 一直嚎 肚子硬 我好慌", "label": true, "tags": ["gdv", "panic", "voice"], "source": "vague_panic.yaml"}
+{"msg": "幼犬疫苗一般怎么打呀 顺序是啥", "label": false, "tags": ["question", "knowledge", "voice"], "source": "queries_knowledge.yaml"}
+{"msg": "我家兔子耳朵上有个小包 是不是蚊子咬的", "label": false, "tags": ["mild", "edge", "voice", "question"], "source": "mild_symptoms.yaml"}
+{"msg": "幼犬突然不吃不动了", "label": true, "tags": ["shock", "neuro", "voice"], "source": "short_true.yaml"}
+{"msg": "那个 我家猫 公的 一直蹲那使劲叫唤 都快一天没见他尿了", "label": true, "tags": ["urinary", "voice"], "source": "gi_urinary.yaml"}
+{"msg": "团子把院子里堆肥桶扒拉开吃了发霉的果皮", "label": true, "tags": ["toxin", "voice"], "source": "toxin_food_plant.yaml"}
+{"msg": "小白今天大便有点稀软 但玩的挺欢", "label": false, "tags": ["mild", "gray", "voice"], "source": "gi_urinary.yaml"}
+{"msg": "cat played with a plastic bag for a bit but didn't tear it or eat any", "label": false, "tags": ["toxin", "gray", "en", "voice"], "source": "toxin_chem_foreign.yaml"}
+{"msg": "团子指甲裂了 走路一瘸一瘸的 要不要处理", "label": false, "tags": ["mild", "gray", "voice", "question"], "source": "mild_symptoms.yaml"}
+{"msg": "我烟包放茶几上 球球把烟抽出来咬得稀烂 好几根都嚼过了", "label": true, "tags": ["toxin", "voice"], "source": "toxin_chem_foreign.yaml"}
+{"msg": "狗狗看到我回家为啥那么兴奋", "label": false, "tags": ["question", "knowledge", "voice"], "source": "queries_knowledge.yaml"}
+{"msg": "糯米把我烟盒撕开了 里面好几根烟都被咬烂了", "label": true, "tags": ["toxin", "voice"], "source": "toxin_chem_foreign.yaml"}
+{"msg": "没事了", "label": false, "tags": ["edge"], "source": "chitchat_edge.yaml"}
+{"msg": "8月30号的事补记一下 小七打了疫苗", "label": false, "tags": ["record", "voice"], "source": "records.yaml"}
+{"msg": "完了 咪咪中毒了", "label": true, "tags": ["toxin", "panic", "voice"], "source": "short_true.yaml"}
+{"msg": "does diabetes in dogs need lifelong insulin", "label": false, "tags": ["question", "knowledge", "keyword_trap", "gray", "en", "voice"], "source": "queries_knowledge.yaml"}
+{"msg": "this app is actually really useful", "label": false, "tags": ["chitchat", "en", "voice"], "source": "english_broad.yaml"}
+{"msg": "绝育之后多久能正常运动", "label": false, "tags": ["question", "knowledge", "voice"], "source": "queries_knowledge.yaml"}
+{"msg": "小狗断奶之后多久能打疫苗", "label": false, "tags": ["question", "knowledge", "voice"], "source": "queries_knowledge.yaml"}
+{"msg": "今天带球球去公园玩水 回来之后一直在发抖 摸它身上特别烫 走两步就晃一下站不稳", "label": true, "tags": ["heat", "voice"], "source": "compound_long.yaml"}
+{"msg": "dog chewed off a plastic part from his toy and it's missing now", "label": true, "tags": ["toxin", "en", "voice"], "source": "toxin_chem_foreign.yaml"}
+{"msg": "帮我改一下 那个 咪咪的性别 之前填反了", "label": false, "tags": ["profile", "voice"], "source": "pet_profile.yaml"}
+{"msg": "went to the vet this morning for a routine checkup everything was fine came home ate dinner and now he's collapsed on the floor and won't get up", "label": true, "tags": ["neuro", "en", "voice"], "source": "compound_long.yaml"}
+{"msg": "雪球做完手术在家休养 医生说一周每天换药一次", "label": false, "tags": ["task", "voice", "keyword_trap"], "source": "reminders_tasks.yaml"}
+{"msg": "took Whiskers to the dog park over the weekend he had a blast", "label": false, "tags": ["record", "en", "voice", "daily"], "source": "records.yaml"}
+{"msg": "球球拆了个沙发角", "label": false, "tags": ["record", "voice"], "source": "short_false.yaml"}
+{"msg": "小维今天吃得挺香", "label": false, "tags": ["record", "voice"], "source": "short_false.yaml"}
+{"msg": "皮皮从架子上掉下来后一直趴着起不来", "label": true, "tags": ["neuro", "voice"], "source": "seizure_neuro.yaml"}
+{"msg": "记一下今天中暑瘫软的情况", "label": false, "tags": ["record", "gray", "keyword_trap", "heat"], "source": "keyword_traps.yaml"}
+{"msg": "my cat knocked three cups off the counter tonight", "label": false, "tags": ["chitchat", "en"], "source": "chitchat_edge.yaml"}
+{"msg": "反应太慢了", "label": false, "tags": ["other", "voice"], "source": "tools_misc.yaml"}
+{"msg": "那个就是 我家猫今天挠了下笼子挺兴奋的 想问问驱虫周期", "label": false, "tags": ["chitchat", "question", "voice"], "source": "compound_long.yaml"}
+{"msg": "那个止疼药 我随手放桌角了 团子够着咬开吃了几颗", "label": true, "tags": ["toxin", "voice"], "source": "toxin_chem_foreign.yaml"}
+{"msg": "那个 维尼今天吃的比平时少一点点", "label": false, "tags": ["mild", "voice"], "source": "vague_panic.yaml"}
+{"msg": "狗能不能吃西瓜啊", "label": false, "tags": ["question", "knowledge", "hypothetical", "voice"], "source": "queries_knowledge.yaml"}
+{"msg": "bella pooped twice today which is more than usual", "label": false, "tags": ["mild", "en", "voice"], "source": "english_broad.yaml"}
+{"msg": "那个 咪咪 就是 昏过去了 完全没反应", "label": true, "tags": ["neuro", "voice", "panic"], "source": "seizure_neuro.yaml"}
+{"msg": "奥利奥今天体检说心脏有点小杂音 医生说先观察不用太担心", "label": false, "tags": ["record", "voice"], "source": "compound_long.yaml"}
+{"msg": "狗狗坐电梯很紧张怎么帮它适应", "label": false, "tags": ["question", "knowledge", "voice"], "source": "queries_knowledge.yaml"}
+{"msg": "我家狗吞了个鸡骨头 现在一直干呕 脖子伸得老长", "label": true, "tags": ["trauma", "panic", "voice"], "source": "vague_panic.yaml"}
+{"msg": "旺财被摩托车撞了 腿都变形了 一直哀嚎", "label": true, "tags": ["trauma", "panic", "voice"], "source": "vague_panic.yaml"}
+{"msg": "啊 乐乐3号喝水有点多 现在好了 帮我记一下", "label": false, "tags": ["record", "past", "mild", "gray", "voice"], "source": "records.yaml"}
+{"msg": "dog has been throwing up all day now he's just lying there not moving", "label": true, "tags": ["multi", "en"], "source": "gi_urinary.yaml"}
+{"msg": "mochi threw up and seized", "label": true, "tags": ["seizure", "en"], "source": "short_false.yaml"}
+{"msg": "can you give me a summary of mochi's condition", "label": false, "tags": ["profile", "question", "en", "voice"], "source": "pet_profile.yaml"}
+{"msg": "我冰箱上的磁贴不见了两个 团子今天一直在那边转悠", "label": true, "tags": ["toxin", "voice"], "source": "toxin_chem_foreign.yaml"}
+{"msg": "花花打架以后一只眼睛鼓出来挂在外面 血糊糊的", "label": true, "tags": ["trauma", "bleeding", "voice", "panic"], "source": "trauma_bleeding.yaml"}
+{"msg": "呀 是你呀", "label": false, "tags": ["chitchat", "edge"], "source": "chitchat_edge.yaml"}
+{"msg": "大白晒了会太阳 现在软趴趴的叫不起来", "label": true, "tags": ["heat", "voice"], "source": "breathing_heat.yaml"}
+{"msg": "小维最近一次体重是多少斤", "label": false, "tags": ["question", "record", "voice"], "source": "queries_knowledge.yaml"}
+{"msg": "毛毛的体检报告发我邮箱一下", "label": false, "tags": ["email", "voice"], "source": "tools_misc.yaml"}
+{"msg": "add a task to clean whiskers ears this weekend", "label": false, "tags": ["task", "en", "voice"], "source": "english_broad.yaml"}
+{"msg": "omg my dog just got hit by a car he's still breathing but not moving his legs", "label": true, "tags": ["trauma", "en", "voice", "panic"], "source": "trauma_bleeding.yaml"}
+{"msg": "咪咪突然像喝醉了一样走不稳 头晃来晃去", "label": true, "tags": ["neuro", "voice"], "source": "seizure_neuro.yaml"}
+{"msg": "mochi is panting and wont settle", "label": true, "tags": ["breathing", "en"], "source": "breathing_cat_typo.yaml"}
+{"msg": "dog choking on a bone right now cant get it out", "label": true, "tags": ["breathing", "en", "voice"], "source": "breathing_heat.yaml"}
+{"msg": "团子在笼子里一直撞笼子边 转不出方向", "label": true, "tags": ["neuro", "voice"], "source": "seizure_neuro.yaml"}
+{"msg": "doudou tasted a grape once", "label": false, "tags": ["toxin", "gray", "keyword_trap", "en"], "source": "short_false.yaml"}
+{"msg": "那个 团子最近喝水量明显多了 是不是天热的原因", "label": false, "tags": ["mild", "voice", "question"], "source": "mild_symptoms.yaml"}
+{"msg": "帮我记录一下 兔兔晚上拉稀了一次 精神还挺好的", "label": false, "tags": ["record", "past", "mild", "gray", "voice"], "source": "records.yaml"}
+{"msg": "whiskers has a little limp after playing rough", "label": false, "tags": ["mild", "en", "voice"], "source": "english_broad.yaml"}
+{"msg": "猫抓柱要多高才够猫伸懒腰", "label": false, "tags": ["question", "voice"], "source": "queries_knowledge.yaml"}
+{"msg": "糯米今天在小区里社交 交了新朋友 刚刚的事", "label": false, "tags": ["record", "voice", "daily"], "source": "records.yaml"}
+{"msg": "昨天给糯米剪毛了", "label": false, "tags": ["record", "voice", "daily"], "source": "records.yaml"}
+{"msg": "luna is a bit gassy after her walk", "label": false, "tags": ["mild", "en", "voice"], "source": "english_broad.yaml"}
+{"msg": "米米下半身突然不能动了 尿也失禁了", "label": true, "tags": ["neuro", "voice", "panic"], "source": "seizure_neuro.yaml"}
+{"msg": "cat threw up grass she must have eaten outside", "label": false, "tags": ["mild", "en", "voice"], "source": "english_broad.yaml"}
+{"msg": "cat licked an empty antifreeze jug that had no liquid left in it", "label": false, "tags": ["toxin", "gray", "en", "voice"], "source": "toxin_chem_foreign.yaml"}
+{"msg": "84消毒液瓶子被咪咪打翻了 撒了一地 它当时就在旁边", "label": true, "tags": ["toxin", "voice"], "source": "toxin_chem_foreign.yaml"}
+{"msg": "not sure if this is anything but max seems a little slower today", "label": false, "tags": ["gray", "mild", "en"], "source": "vague_panic.yaml"}
+{"msg": "你叫什么名字", "label": false, "tags": ["chitchat", "other"], "source": "chitchat_edge.yaml"}
+{"msg": "记一下 豆豆今天做了心丝虫检测", "label": false, "tags": ["medical", "record", "voice"], "source": "records.yaml"}
+{"msg": "猫抓板用瓦楞纸的还是麻绳的好", "label": false, "tags": ["question", "voice"], "source": "queries_knowledge.yaml"}
+{"msg": "米米偶尔咳一下 没别的症状 精神也好", "label": false, "tags": ["mild", "gray", "voice"], "source": "breathing_heat.yaml"}
+{"msg": "可乐嘴角挂着一截白线 拽的时候感觉里面连着东西拉不动", "label": true, "tags": ["toxin", "voice"], "source": "toxin_chem_foreign.yaml"}
+{"msg": "乌龟国庆那几天第一次吃冻干 挺喜欢的 记录一下", "label": false, "tags": ["record", "voice", "diet"], "source": "records.yaml"}
+{"msg": "猫呼吸急促发紫", "label": true, "tags": ["breathing", "voice"], "source": "short_true.yaml"}
+{"msg": "豆豆四肢僵硬抖", "label": true, "tags": ["seizure", "voice"], "source": "short_true.yaml"}
+{"msg": "维尼刚拉出来全是血 而且拉了好几次", "label": true, "tags": ["bleeding", "voice"], "source": "gi_urinary.yaml"}
+{"msg": "dog ate rat poison", "label": true, "tags": ["toxin", "en"], "source": "short_true.yaml"}
+{"msg": "大黄今天称重的时候一直不老实 最后还是量到了十八公斤", "label": false, "tags": ["record", "chitchat", "voice"], "source": "compound_long.yaml"}
+{"msg": "Luna got stepped on and now she's limping badly and crying", "label": true, "tags": ["trauma", "en", "voice", "panic"], "source": "trauma_bleeding.yaml"}
+{"msg": "急", "label": false, "tags": ["gray", "edge", "panic"], "source": "vague_panic.yaml"}
+{"msg": "那个 我家猫...狗 把咖啡粉罐打翻自己舔了好多粉末", "label": true, "tags": ["toxin", "voice"], "source": "toxin_food_plant.yaml"}
+{"msg": "小白拉了次干硬的大便 上面有一点点血 精神很好", "label": false, "tags": ["bleeding", "gray", "voice", "keyword_trap"], "source": "gi_urinary.yaml"}
+{"msg": "Mochi keeps scratching", "label": false, "tags": ["mild", "en"], "source": "short_false.yaml"}
+{"msg": "how old is my cat now", "label": false, "tags": ["profile", "question", "en", "voice"], "source": "pet_profile.yaml"}
+{"msg": "老猫最近睡得比以前多很多 是老了吗", "label": false, "tags": ["mild", "voice", "question"], "source": "mild_symptoms.yaml"}
+{"msg": "团子肚子胀得跟球一样 敲起来梆梆响 一直想吐吐不出来 好难受的样子", "label": true, "tags": ["gdv", "panic", "voice"], "source": "vague_panic.yaml"}
+{"msg": "团子在笼子里一直抽 身体绷得很直", "label": true, "tags": ["neuro", "voice"], "source": "seizure_neuro.yaml"}
+{"msg": "宠物溺水急救一般要怎么处理", "label": false, "tags": ["question", "hypothetical", "keyword_trap", "gray"], "source": "breathing_heat.yaml"}
+{"msg": "球球打喷嚏两声", "label": false, "tags": ["mild", "voice"], "source": "short_false.yaml"}
+{"msg": "charlie stole a sock again and paraded it around the house like a trophy", "label": false, "tags": ["chitchat", "en", "voice"], "source": "compound_long.yaml"}
+{"msg": "my dog is struggling to breathe he won't stop panting hard", "label": true, "tags": ["breathing", "en", "voice"], "source": "breathing_heat.yaml"}
+{"msg": "撞车后遗留的神经问题一直在康复训练", "label": false, "tags": ["managed", "keyword_trap", "trauma"], "source": "keyword_traps.yaml"}
+{"msg": "导航带我去他上次去的那家医院", "label": false, "tags": ["places", "voice"], "source": "tools_misc.yaml"}
+{"msg": "my cat's poop is full of blood this time way more than usual", "label": true, "tags": ["bleeding", "en"], "source": "gi_urinary.yaml"}
+{"msg": "puppy has been throwing up and having diarrhea all day he's really weak now", "label": true, "tags": ["multi", "en"], "source": "gi_urinary.yaml"}
+{"msg": "help my dog just collapsed in the yard he wont get up", "label": true, "tags": ["neuro", "panic", "en"], "source": "vague_panic.yaml"}
+{"msg": "what does dog seizure actually look like", "label": false, "tags": ["question", "hypothetical", "keyword_trap", "seizure", "en"], "source": "keyword_traps.yaml"}
+{"msg": "球球今天有点闷闷的 平时挺闹腾的", "label": false, "tags": ["gray", "mild", "voice"], "source": "vague_panic.yaml"}
+{"msg": "老白今天打喷嚏打了一次 就没别的事了 精神也挺好", "label": false, "tags": ["mild", "voice"], "source": "compound_long.yaml"}
+{"msg": "帮我把维尼的头像换成刚拍的这张", "label": false, "tags": ["profile", "voice"], "source": "pet_profile.yaml"}
+{"msg": "看看这个是不是耳螨", "label": false, "tags": ["other", "voice"], "source": "tools_misc.yaml"}
+{"msg": "布丁误食巧克力那次送医洗胃了 现在恢复中 每天喂护肝药提醒我", "label": false, "tags": ["reminder", "task", "keyword_trap", "voice"], "source": "reminders_tasks.yaml"}
+{"msg": "给皮皮糯米都办了驱虫套餐 上周末做的", "label": false, "tags": ["medical", "record", "voice", "multi"], "source": "records.yaml"}
+{"msg": "cat's been drinking a bit more water today but seems fine otherwise", "label": false, "tags": ["mild", "gray", "en"], "source": "gi_urinary.yaml"}
+{"msg": "楼下保安说撒了灭鼠药 我家猫今天在外面待了一会 回来一直流口水", "label": true, "tags": ["toxin", "voice"], "source": "toxin_chem_foreign.yaml"}
+{"msg": "milo keeps dry heaving and his stomach is rock hard", "label": true, "tags": ["gdv", "en", "voice"], "source": "english_broad.yaml"}
+{"msg": "那个 我家猫...狗 把大蒜爆炒的菜整盘造了", "label": true, "tags": ["toxin", "voice"], "source": "toxin_food_plant.yaml"}
+{"msg": "what toys do cats actually like", "label": false, "tags": ["question", "en", "voice"], "source": "queries_knowledge.yaml"}
+{"msg": "is xylitol really that toxic to dogs even in tiny amounts", "label": false, "tags": ["toxin", "question", "hypothetical", "keyword_trap", "en"], "source": "toxin_food_plant.yaml"}
+{"msg": "我妈的褪黑素加安眠那种 掉了几颗 皮皮好像叼着吃了", "label": true, "tags": ["toxin", "voice"], "source": "toxin_chem_foreign.yaml"}
+{"msg": "花花闻了闻空酒瓶 里面已经没酒了", "label": false, "tags": ["toxin", "gray", "keyword_trap"], "source": "toxin_food_plant.yaml"}
+{"msg": "我家猫呼吸困难 感觉快喘不上气了", "label": true, "tags": ["breathing", "voice"], "source": "breathing_heat.yaml"}
+{"msg": "老狗突然抽搐不认人", "label": true, "tags": ["shock", "neuro", "voice"], "source": "short_true.yaml"}
+{"msg": "bleeding disorder diagnosed, on regular treatment", "label": false, "tags": ["managed", "keyword_trap", "bleeding", "en"], "source": "keyword_traps.yaml"}
+{"msg": "狗狗得了糖尿病一般怎么控制", "label": false, "tags": ["question", "knowledge", "keyword_trap", "gray", "voice"], "source": "queries_knowledge.yaml"}
+{"msg": "米米突然眼珠不见了只剩白色的", "label": true, "tags": ["neuro", "voice"], "source": "seizure_neuro.yaml"}
+{"msg": "老猫最近老打喷嚏 上次体检说是轻微鼻炎 定期在吃药", "label": false, "tags": ["mild", "managed", "voice"], "source": "mild_symptoms.yaml"}
+{"msg": "cat chewed on the battery compartment cover but the battery itself is untouched", "label": false, "tags": ["toxin", "gray", "en", "voice"], "source": "toxin_chem_foreign.yaml"}
+{"msg": "bella is making this awful wheezing sound and cant catch her breath", "label": true, "tags": ["breathing", "en", "voice"], "source": "english_broad.yaml"}
+{"msg": "雪球一直哈哈哈的喘 感觉快喘不过来了", "label": true, "tags": ["breathing", "voice"], "source": "breathing_heat.yaml"}
+{"msg": "团子把奶奶给的巧克力棒一整根吃没了", "label": true, "tags": ["toxin", "voice"], "source": "toxin_food_plant.yaml"}
+{"msg": "维尼今天不太爱吃", "label": false, "tags": ["mild", "voice"], "source": "short_false.yaml"}
+{"msg": "小维趁我们不注意把巧克力礼盒里三四颗都吞了 就刚才", "label": true, "tags": ["toxin", "voice"], "source": "toxin_food_plant.yaml"}
+{"msg": "猫挠痒痒", "label": false, "tags": ["mild"], "source": "short_true.yaml"}
+{"msg": "someone in my group chat said their dog got heatstroke last week", "label": false, "tags": ["other_owner", "keyword_trap", "gray", "en", "voice"], "source": "breathing_heat.yaml"}
+{"msg": "took Max to the dog park over the weekend he had a blast", "label": false, "tags": ["record", "en", "voice", "daily"], "source": "records.yaml"}
+{"msg": "灰灰发情期食欲有点变化 正常吗", "label": false, "tags": ["mild", "voice", "question"], "source": "mild_symptoms.yaml"}
+{"msg": "能不能帮我给宠物医院发个邮件", "label": false, "tags": ["email", "voice"], "source": "tools_misc.yaml"}
+{"msg": "帮我记一下 团子今天抖了一下", "label": false, "tags": ["record", "gray", "keyword_trap", "voice"], "source": "vague_panic.yaml"}
+{"msg": "小维突然一软就趴下了 叫他也没反应站起来", "label": true, "tags": ["neuro", "voice"], "source": "seizure_neuro.yaml"}
+{"msg": "毛毛今天打疫苗顺便问了下医生它的品种容易得什么病", "label": false, "tags": ["record", "question", "knowledge", "voice"], "source": "compound_long.yaml"}
+{"msg": "我家狗刚把朋友喝剩的啤酒一整罐舔干净了", "label": true, "tags": ["toxin", "voice"], "source": "toxin_food_plant.yaml"}
+{"msg": "cat's face is swelling fast after a bee sting and shes wheezing", "label": true, "tags": ["shock", "breathing", "en", "voice"], "source": "breathing_heat.yaml"}
+{"msg": "a friend's dog is bleeding after a fight, she's worried", "label": false, "tags": ["other_owner", "keyword_trap", "bleeding", "en"], "source": "keyword_traps.yaml"}
+{"msg": "charlie has epilepsy hes on meds and doing fine", "label": false, "tags": ["managed", "keyword_trap", "en", "voice"], "source": "english_broad.yaml"}
+{"msg": "bro my dog is literally seizing on the floor right now help", "label": true, "tags": ["seizure", "en", "panic"], "source": "seizure_neuro.yaml"}
+{"msg": "电视上播了一个动物救援节目 讲车祸受伤的狗", "label": false, "tags": ["knowledge", "keyword_trap", "trauma"], "source": "keyword_traps.yaml"}
+{"msg": "十四岁的老狗突然精神特别差 今天不吃不喝还一直喘", "label": true, "tags": ["multi", "voice"], "source": "gi_urinary.yaml"}
+{"msg": "豆豆吃了鸡胸肉", "label": false, "tags": ["record", "voice"], "source": "short_false.yaml"}
+{"msg": "黑豆一天要喂四顿 少食多餐那种 设成每日任务吧", "label": false, "tags": ["task", "voice"], "source": "reminders_tasks.yaml"}
+{"msg": "老白和毛毛今天都换了新猫砂 老白不太适应一直扒拉", "label": false, "tags": ["record", "chitchat", "multi", "voice"], "source": "compound_long.yaml"}
+{"msg": "给小黑皮皮都办了驱虫套餐 早上做的", "label": false, "tags": ["medical", "record", "voice", "multi"], "source": "records.yaml"}
+{"msg": "dog seems like he cant catch his breath at all right now", "label": true, "tags": ["breathing", "en", "voice"], "source": "breathing_heat.yaml"}
+{"msg": "团子上周吐过一次", "label": false, "tags": ["past", "keyword_trap", "voice"], "source": "short_false.yaml"}
+{"msg": "附近有没有给Rocky洗澡的地方", "label": false, "tags": ["places", "voice"], "source": "tools_misc.yaml"}
+{"msg": "刚才记错了 家里的狗子洗澡是今天不是昨天", "label": false, "tags": ["record", "correction", "voice"], "source": "records.yaml"}
+{"msg": "毛毛今天跟邻居家的猫隔着窗户对视了好久 谁也不让谁", "label": false, "tags": ["chitchat", "voice"], "source": "compound_long.yaml"}
+{"msg": "我表哥家狗狗出血挺严重 已经送医了", "label": false, "tags": ["other_owner", "keyword_trap", "bleeding"], "source": "keyword_traps.yaml"}
+{"msg": "大黄肚子上长了几个小红点 也不痒", "label": false, "tags": ["mild", "voice"], "source": "mild_symptoms.yaml"}
+{"msg": "小白肚子突然涨的老大 一直干呕不吐东西 走路摇摇晃晃的", "label": true, "tags": ["gdv", "voice"], "source": "gi_urinary.yaml"}
+{"msg": "阿福今天去公园跑了一下午 大黄在家睡了一天 挺有意思的对比", "label": false, "tags": ["chitchat", "record", "voice"], "source": "compound_long.yaml"}
+{"msg": "帮我建档 猫 三个月 母 叫小七", "label": false, "tags": ["profile", "voice"], "source": "pet_profile.yaml"}
+{"msg": "猫玩逗猫棒玩疯了喘两下", "label": false, "tags": ["mild", "gray", "voice"], "source": "breathing_cat_typo.yaml"}
+{"msg": "帮我建一个任务 芒果每天喂两次 早上八点晚上八点", "label": false, "tags": ["task", "voice"], "source": "reminders_tasks.yaml"}
+{"msg": "max has been panting a bit more than usual today it's kinda warm out though", "label": false, "tags": ["mild", "gray", "keyword_trap", "en"], "source": "vague_panic.yaml"}
+{"msg": "cat has been extra gassy today but eating and playing normally", "label": false, "tags": ["mild", "gray", "en"], "source": "gi_urinary.yaml"}
+{"msg": "豆豆把烘焙用的夏威夷果碎一整袋吃了", "label": true, "tags": ["toxin", "voice"], "source": "toxin_food_plant.yaml"}
+{"msg": "那个 我家猫今天有点打嗝又放屁 是不是吃太快了", "label": false, "tags": ["mild", "multi", "voice", "question"], "source": "mild_symptoms.yaml"}
+{"msg": "log that he had a seizure this morning, all resolved now", "label": false, "tags": ["record", "gray", "keyword_trap", "seizure", "en"], "source": "keyword_traps.yaml"}
+{"msg": "帮我把咪咪的性别改一下 之前录错了", "label": false, "tags": ["profile", "voice"], "source": "pet_profile.yaml"}
+{"msg": "会员多少钱", "label": false, "tags": ["other"], "source": "tools_misc.yaml"}
+{"msg": "车里闷太久瘫了", "label": true, "tags": ["heat", "voice"], "source": "short_true.yaml"}
+{"msg": "help", "label": false, "tags": ["gray", "edge", "panic", "en"], "source": "vague_panic.yaml"}
+{"msg": "yes", "label": false, "tags": ["confirm", "en", "voice"], "source": "english_broad.yaml"}
+{"msg": "团子这几天嗜睡又有点食欲差 是不是压力大", "label": false, "tags": ["mild", "multi", "gray", "voice", "question"], "source": "mild_symptoms.yaml"}
+{"msg": "豆豆上个月摔过一次腿 现在早就好利索了", "label": false, "tags": ["past", "gray", "voice"], "source": "trauma_bleeding.yaml"}
+{"msg": "charlie just did the funniest thing lol", "label": false, "tags": ["chitchat", "en", "voice"], "source": "english_broad.yaml"}
+{"msg": "帮我记下昨天出血的事", "label": false, "tags": ["record", "gray", "keyword_trap", "bleeding"], "source": "keyword_traps.yaml"}
+{"msg": "帮我看下猫猫这周有没有便秘的记录", "label": false, "tags": ["question", "record", "voice"], "source": "queries_knowledge.yaml"}
+{"msg": "Luna今天吃了新猫粮拉肚子拉了一次 精神还是很好", "label": false, "tags": ["mild", "voice"], "source": "compound_long.yaml"}
+{"msg": "帮我记下今天呼吸困难持续了多长时间", "label": false, "tags": ["record", "gray", "keyword_trap", "breathing"], "source": "keyword_traps.yaml"}
+{"msg": "他舌头发紫了", "label": true, "tags": ["breathing", "voice"], "source": "short_true.yaml"}
+{"msg": "那个 球球 呃 体重改一下 又胖了点", "label": false, "tags": ["profile", "voice"], "source": "pet_profile.yaml"}
+{"msg": "Buddy skipped one meal last wednesday ate fine the next one", "label": false, "tags": ["record", "en", "voice", "gray"], "source": "records.yaml"}
+{"msg": "老猫最近牙齿又松了一颗 吃饭比以前慢一些", "label": false, "tags": ["mild", "voice"], "source": "mild_symptoms.yaml"}
+{"msg": "咪咪睡觉呼噜声特别大 是不是感冒了", "label": false, "tags": ["mild", "voice", "question"], "source": "mild_symptoms.yaml"}
+{"msg": "米米被邻居的狗叼住甩了两下才松口 现在浑身软趴趴的 伤口一直渗血", "label": true, "tags": ["trauma", "bleeding", "shock", "voice"], "source": "trauma_bleeding.yaml"}
+{"msg": "Mochi cut his leg on broken glass it's a deep wound", "label": true, "tags": ["trauma", "en", "voice"], "source": "trauma_bleeding.yaml"}
+{"msg": "美美昨天拔了颗乳牙 医生说正常", "label": false, "tags": ["record", "voice", "medical"], "source": "records.yaml"}
+{"msg": "旺财今天早上起来后腿突然瘫痪了", "label": true, "tags": ["neuro", "voice"], "source": "seizure_neuro.yaml"}
+{"msg": "驱虫药选滴剂还是口服的好", "label": false, "tags": ["question", "voice"], "source": "queries_knowledge.yaml"}
+{"msg": "团子拉的粑粑有点稀 但吃喝都正常", "label": false, "tags": ["mild", "gray", "voice"], "source": "gi_urinary.yaml"}
+{"msg": "维尼上个月驱虫了 体内驱虫那种", "label": false, "tags": ["medical", "record", "voice"], "source": "records.yaml"}
+{"msg": "出门遛狗怎么防止被车撞", "label": false, "tags": ["hypothetical", "keyword_trap", "trauma"], "source": "keyword_traps.yaml"}
+{"msg": "whats the best way to introduce a new cat to the house", "label": false, "tags": ["question", "knowledge", "en", "voice"], "source": "english_broad.yaml"}
+{"msg": "帮我记一下维尼今天体检正常 血常规和肝肾功能都没问题", "label": false, "tags": ["record", "voice"], "source": "compound_long.yaml"}
+{"msg": "charlie just swallowed a bunch of macadamia nuts", "label": true, "tags": ["toxin", "en", "voice"], "source": "english_broad.yaml"}
+{"msg": "那个 就是 家里的狗 又拆了个纸箱子 到处都是纸屑", "label": false, "tags": ["chitchat", "voice"], "source": "chitchat_edge.yaml"}
+{"msg": "雪球突然不对劲 嘴张开呼哧呼哧的 舌头颜色怪怪的", "label": true, "tags": ["breathing", "panic", "voice"], "source": "breathing_heat.yaml"}
+{"msg": "😂😂😂", "label": false, "tags": ["edge"], "source": "chitchat_edge.yaml"}
+{"msg": "幼犬几个月前抽搐过一次 现在完全恢复了", "label": false, "tags": ["past", "keyword_trap", "voice"], "source": "seizure_neuro.yaml"}
+{"msg": "领养了只流浪狗 好像被丢弃的 记一下", "label": false, "tags": ["profile", "voice"], "source": "pet_profile.yaml"}
+{"msg": "多久剪一次指甲比较合适", "label": false, "tags": ["question", "knowledge", "voice"], "source": "queries_knowledge.yaml"}
+{"msg": "我家猫去年被车刮到过 现在完全恢复了没事", "label": false, "tags": ["past", "gray", "voice"], "source": "trauma_bleeding.yaml"}
+{"msg": "that's not what i asked", "label": false, "tags": ["other", "en"], "source": "tools_misc.yaml"}
+{"msg": "那个 咪咪的品种 呃 我记错了 应该是英短", "label": false, "tags": ["profile", "voice"], "source": "pet_profile.yaml"}
+{"msg": "my cat has been vomiting since this morning and is now just lying motionless", "label": true, "tags": ["multi", "en"], "source": "gi_urinary.yaml"}
+{"msg": "想问问怎么防止狗被车撞 出门要注意啥", "label": false, "tags": ["hypothetical", "keyword_trap", "trauma"], "source": "keyword_traps.yaml"}
+{"msg": "whiskers got a chicken bone stuck in his throat and is gagging nonstop", "label": true, "tags": ["toxin", "en"], "source": "toxin_food_plant.yaml"}
+{"msg": "那个 我家狗 刚拉出来的便便全是血水", "label": true, "tags": ["bleeding", "voice"], "source": "gi_urinary.yaml"}
+{"msg": "wrong name it's luna not max", "label": false, "tags": ["correction", "en"], "source": "tools_misc.yaml"}
+{"msg": "set a reminder to walk luna every morning at 7", "label": false, "tags": ["reminder", "en", "voice"], "source": "english_broad.yaml"}
+{"msg": "维尼抖了一下 但好像没事 正常走来走去", "label": false, "tags": ["gray", "keyword_trap", "voice"], "source": "vague_panic.yaml"}
+{"msg": "布丁剪指甲剪短了 出了一小滴血 已经止住不流了", "label": false, "tags": ["mild", "gray", "voice", "keyword_trap"], "source": "trauma_bleeding.yaml"}
+{"msg": "怎么训练狗坐下", "label": false, "tags": ["knowledge", "question"], "source": "short_true.yaml"}
+{"msg": "weiwei went for a walk", "label": false, "tags": ["record", "en"], "source": "short_false.yaml"}
+{"msg": "猫咪呼吸急促 张嘴呼吸了 咋整", "label": true, "tags": ["breathing", "voice"], "source": "breathing_heat.yaml"}
+{"msg": "whats the best pizza place near me", "label": false, "tags": ["chitchat", "other", "places", "en"], "source": "chitchat_edge.yaml"}
+{"msg": "呃那个 昨天领养了只老猫 想建个档案", "label": false, "tags": ["profile", "voice"], "source": "pet_profile.yaml"}
+{"msg": "帮我记一下今天壮壮阿福都去打疫苗了 壮壮打完没事 阿福打完睡了一下午", "label": false, "tags": ["record", "mild", "multi", "voice"], "source": "compound_long.yaml"}
+{"msg": "奥利奥糖糖今天都体检了 结果都挺好 就是奥利奥体重偏轻一点点医生建议加餐", "label": false, "tags": ["record", "multi", "voice"], "source": "compound_long.yaml"}
+{"msg": "想给猫准备个安全的高处 防止摔下来", "label": false, "tags": ["hypothetical", "keyword_trap", "trauma"], "source": "keyword_traps.yaml"}
+{"msg": "仓鼠也会中暑吗", "label": false, "tags": ["question", "hypothetical", "keyword_trap", "heat"], "source": "keyword_traps.yaml"}
+{"msg": "猫咬人玩闹而已", "label": false, "tags": ["chitchat"], "source": "short_true.yaml"}
+{"msg": "帮我订个机票", "label": false, "tags": ["chitchat", "other"], "source": "chitchat_edge.yaml"}
+{"msg": "嗯嗯嗯", "label": false, "tags": ["edge"], "source": "chitchat_edge.yaml"}
+{"msg": "花卷把炖鸡汤里泡烂的洋葱块全捞出来吃了", "label": true, "tags": ["toxin", "voice"], "source": "toxin_food_plant.yaml"}
+{"msg": "那个 团子最近老挠 掀毛一看好像有跳蚤 咋处理", "label": false, "tags": ["mild", "voice", "question"], "source": "mild_symptoms.yaml"}
+{"msg": "大黄吐出来东西里全是血丝 而且量还不小", "label": true, "tags": ["bleeding", "voice"], "source": "gi_urinary.yaml"}
+{"msg": "my dog has a few small red spots on his belly not itchy though", "label": false, "tags": ["mild", "en", "voice"], "source": "mild_symptoms.yaml"}
+{"msg": "charlie skipped breakfast but ate dinner fine", "label": false, "tags": ["mild", "en", "voice"], "source": "english_broad.yaml"}
+{"msg": "团子今天喷嚏打得挺多的 会不会传染给我呀", "label": false, "tags": ["mild", "question", "voice"], "source": "mild_symptoms.yaml"}
+{"msg": "咪咪吐出来的东西是暗红色的 跟咖啡渣一样", "label": true, "tags": ["bleeding", "voice"], "source": "gi_urinary.yaml"}
+{"msg": "那个就是 今天糖糖跟着我去逛超市外面等着 回来之后没多久突然就开始一直咳嗽然后卡在那不动了嘴巴一直开着喘", "label": true, "tags": ["breathing", "voice"], "source": "compound_long.yaml"}
+{"msg": "狗狗上次修剪指甲是啥时候", "label": false, "tags": ["question", "record", "voice"], "source": "queries_knowledge.yaml"}
+{"msg": "今天特别乖 一天没闯祸", "label": false, "tags": ["chitchat", "voice"], "source": "chitchat_edge.yaml"}
+{"msg": "my dog had a seizure disorder years ago but he's on meds and totally fine now", "label": false, "tags": ["past", "managed", "keyword_trap", "en"], "source": "vague_panic.yaml"}
+{"msg": "555", "label": false, "tags": ["edge"], "source": "chitchat_edge.yaml"}
+{"msg": "我孩子昨晚咳嗽了一夜", "label": false, "tags": ["chitchat", "other", "edge"], "source": "chitchat_edge.yaml"}
+{"msg": "洗完澡有点冷", "label": false, "tags": ["mild", "voice"], "source": "short_true.yaml"}
+{"msg": "删掉", "label": false, "tags": ["delete"], "source": "short_true.yaml"}
+{"msg": "芒果的复诊提醒是哪一天", "label": false, "tags": ["reminder", "question", "voice"], "source": "reminders_tasks.yaml"}
+{"msg": "救命 我家猫 那个 不动了 还有气", "label": true, "tags": ["neuro", "panic", "voice", "edge"], "source": "vague_panic.yaml"}
+{"msg": "狗窒息怎么做海姆立克急救", "label": false, "tags": ["knowledge", "keyword_trap", "breathing"], "source": "keyword_traps.yaml"}
+{"msg": "不对", "label": false, "tags": ["confirm", "edge"], "source": "tools_misc.yaml"}
+{"msg": "cat got a deep cut from broken glass her leg has a gash in it", "label": true, "tags": ["trauma", "en", "voice"], "source": "trauma_bleeding.yaml"}
+{"msg": "团子啃了一片绿萝叶子 旁边有百合但没碰", "label": false, "tags": ["toxin", "gray", "keyword_trap"], "source": "toxin_food_plant.yaml"}
+{"msg": "my cat suddenly collapsed on the floor and can't stand", "label": true, "tags": ["neuro", "en"], "source": "seizure_neuro.yaml"}
+{"msg": "球球去公园遛了圈", "label": false, "tags": ["record", "voice"], "source": "short_false.yaml"}
+{"msg": "下周一到了记得提醒我 糯米要开始吃新驱虫药", "label": false, "tags": ["reminder", "voice"], "source": "reminders_tasks.yaml"}
+{"msg": "刚出生没多久的小狗一直吐拉 现在软塌塌的抱着没反应", "label": true, "tags": ["multi", "voice"], "source": "gi_urinary.yaml"}
+{"msg": "我家猫把消毒液瓶子推倒了 瓶盖是紧的 应该没漏", "label": false, "tags": ["toxin", "gray", "voice"], "source": "toxin_chem_foreign.yaml"}
+{"msg": "我表姐家猫以前吃过洗衣粉 后来医生说没事就是提醒我以后小心", "label": false, "tags": ["toxin", "other_owner", "past", "keyword_trap", "voice"], "source": "toxin_chem_foreign.yaml"}
+{"msg": "幼犬睡觉抽动一下 醒了就完全正常", "label": false, "tags": ["gray", "voice"], "source": "seizure_neuro.yaml"}
+{"msg": "Oreo had a vet checkup today vet said he's healthy", "label": false, "tags": ["record", "en", "voice", "medical"], "source": "records.yaml"}
+{"msg": "我先去忙了 拜拜", "label": false, "tags": ["chitchat", "voice"], "source": "chitchat_edge.yaml"}
+{"msg": "Whiskers has soft stool", "label": false, "tags": ["mild", "en"], "source": "short_false.yaml"}
+{"msg": "max just had a seizure like a minute ago he's still out of it", "label": true, "tags": ["seizure", "en"], "source": "seizure_neuro.yaml"}
+{"msg": "大黄挠痒挠得挺频繁的 上次看医生说是轻微皮肤过敏 开了药在吃", "label": false, "tags": ["mild", "managed", "voice"], "source": "mild_symptoms.yaml"}
+{"msg": "旺财疫苗过期没", "label": false, "tags": ["question", "voice"], "source": "short_false.yaml"}
+{"msg": "my cat keeps sneezing today no discharge or anything is that normal", "label": false, "tags": ["mild", "en", "voice", "question"], "source": "mild_symptoms.yaml"}
+{"msg": "my cat swallowed a needle and thread and now she's gagging nonstop", "label": true, "tags": ["trauma", "panic", "en"], "source": "vague_panic.yaml"}
+{"msg": "update charlies breed to golden retriever mix", "label": false, "tags": ["profile", "en", "voice"], "source": "english_broad.yaml"}
+{"msg": "my cat has some eye discharge this morning eye doesnt look red though", "label": false, "tags": ["mild", "en", "voice"], "source": "mild_symptoms.yaml"}
+{"msg": "小维喘得特别急 感觉上不来气 咋整", "label": true, "tags": ["breathing", "voice"], "source": "breathing_heat.yaml"}
+{"msg": "i dont know whats happening to bella shes just not herself at all and scaring me", "label": true, "tags": ["panic", "en", "voice"], "source": "english_broad.yaml"}
+{"msg": "花花软便带血", "label": true, "tags": ["bleeding", "voice"], "source": "short_false.yaml"}
+{"msg": "sure", "label": false, "tags": ["confirm", "edge"], "source": "tools_misc.yaml"}
+{"msg": "星期二那天带来福去河边遛了一圈", "label": false, "tags": ["record", "voice", "daily"], "source": "records.yaml"}
+{"msg": "团子今天挠痒挠得毛掉了不少 是不是皮肤病啊", "label": false, "tags": ["mild", "multi", "keyword_trap", "voice", "question"], "source": "mild_symptoms.yaml"}
+{"msg": "用这张给球球当头像吧", "label": false, "tags": ["profile", "voice"], "source": "pet_profile.yaml"}
+{"msg": "咪咪中毒了不动了", "label": true, "tags": ["toxin", "panic", "voice"], "source": "short_true.yaml"}
+{"msg": "Max has thrown up like five times today and now he won't move at all", "label": true, "tags": ["multi", "en"], "source": "gi_urinary.yaml"}
+{"msg": "qwerty", "label": false, "tags": ["edge", "en"], "source": "chitchat_edge.yaml"}
+{"msg": "小维今天换了新粮 拉的便便有点软", "label": false, "tags": ["mild", "voice"], "source": "vague_panic.yaml"}
+{"msg": "馒头之前误食葡萄干送去洗胃了 现在没事了 医生让每天吃护肝药 提醒我", "label": false, "tags": ["reminder", "task", "keyword_trap", "voice"], "source": "reminders_tasks.yaml"}
+{"msg": "记一下今天撞到桌角出血了一点", "label": false, "tags": ["record", "gray", "keyword_trap", "bleeding"], "source": "keyword_traps.yaml"}
+{"msg": "毛毛今天称重的时候不太配合 挣扎了好久才量准", "label": false, "tags": ["record", "chitchat", "voice"], "source": "compound_long.yaml"}
+{"msg": "旺财咬了插线板 弹开后就一直趴着不动", "label": true, "tags": ["shock", "voice"], "source": "breathing_heat.yaml"}
+{"msg": "something is really wrong with luna she's drooling everywhere and cant walk straight", "label": true, "tags": ["neuro", "panic", "en"], "source": "vague_panic.yaml"}
+{"msg": "朋友圈转发的文章说葡萄对狗中毒的原理", "label": false, "tags": ["knowledge", "keyword_trap", "toxin"], "source": "keyword_traps.yaml"}
+{"msg": "max got into a whole box of valentine's chocolates while we were out shopping", "label": true, "tags": ["toxin", "en"], "source": "toxin_food_plant.yaml"}
+{"msg": "维尼被人不小心踩到胸口了 现在喘气都费劲", "label": true, "tags": ["trauma", "breathing", "voice", "panic"], "source": "trauma_bleeding.yaml"}
+{"msg": "max just ate a whole bag of grapes off the counter like right now", "label": true, "tags": ["toxin", "panic", "en"], "source": "vague_panic.yaml"}
+{"msg": "测试一下", "label": false, "tags": ["chitchat"], "source": "short_true.yaml"}
+{"msg": "my dog has been hiccuping a bunch today is that weird", "label": false, "tags": ["mild", "en", "voice", "question"], "source": "mild_symptoms.yaml"}
+{"msg": "咪咪眼屎有点多", "label": false, "tags": ["mild", "voice"], "source": "short_false.yaml"}
+{"msg": "兔兔晚上抽搐了一下 现在完全正常了 帮我记一下方便复诊时说", "label": false, "tags": ["record", "past", "gray", "keyword_trap", "voice"], "source": "records.yaml"}
+{"msg": "帮我总结一下维尼的情况", "label": false, "tags": ["profile", "question", "voice"], "source": "pet_profile.yaml"}
+{"msg": "how old is my dog again", "label": false, "tags": ["profile", "question", "en", "voice"], "source": "pet_profile.yaml"}
+{"msg": "球球把我妈买的黑巧克力一整板啃了 咬得到处都是碎渣", "label": true, "tags": ["toxin", "voice"], "source": "toxin_food_plant.yaml"}
+{"msg": "那个 我家猫吐了 就吐了一小滩 没别的事", "label": false, "tags": ["mild", "voice"], "source": "mild_symptoms.yaml"}
+{"msg": "doudou had a treat", "label": false, "tags": ["record", "en"], "source": "short_false.yaml"}
+{"msg": "那个 我家猫 三天都没吃饭 也不喝水了", "label": true, "tags": ["multi", "voice"], "source": "gi_urinary.yaml"}
+{"msg": "帮我查一下最近有没有喂药提醒", "label": false, "tags": ["reminder", "question", "voice"], "source": "reminders_tasks.yaml"}
+{"msg": "然后呢", "label": false, "tags": ["edge", "voice"], "source": "chitchat_edge.yaml"}
+{"msg": "那个 团子这几天特别嗜睡 别的都正常", "label": false, "tags": ["mild", "voice"], "source": "mild_symptoms.yaml"}
+{"msg": "my dog has been drooling a little more than usual today anything to worry about", "label": false, "tags": ["mild", "en", "voice", "question"], "source": "mild_symptoms.yaml"}
+{"msg": "小维三天没进食 水也不碰 整个猫都蔫了", "label": true, "tags": ["multi", "voice"], "source": "gi_urinary.yaml"}
+{"msg": "huahua slept all day", "label": false, "tags": ["record", "en"], "source": "short_false.yaml"}
+{"msg": "how long can dogs go without eating normally", "label": false, "tags": ["question", "knowledge", "en", "voice"], "source": "english_broad.yaml"}
+{"msg": "邻居家狗以前从楼上摔下来过 后来养好了", "label": false, "tags": ["other_owner", "past", "keyword_trap", "voice"], "source": "trauma_bleeding.yaml"}
+{"msg": "朋友家狗啃骨头卡喉咙了 已经去医院取出来了在观察", "label": false, "tags": ["toxin", "gray", "edge", "other_owner"], "source": "toxin_food_plant.yaml"}
+{"msg": "豆豆被邻居的大狗咬了 脖子那块一直在流血 按不住", "label": true, "tags": ["trauma", "bleeding", "voice", "panic"], "source": "trauma_bleeding.yaml"}
+{"msg": "mochi got into the roach trap under the sink it's chewed to pieces", "label": true, "tags": ["toxin", "en", "voice"], "source": "toxin_chem_foreign.yaml"}
+{"msg": "好几年前撞车留下的旧伤", "label": false, "tags": ["past", "keyword_trap", "trauma"], "source": "keyword_traps.yaml"}
+{"msg": "总觉得他今天状态不太好", "label": false, "tags": ["gray", "mild", "voice"], "source": "vague_panic.yaml"}
+{"msg": "龙猫刚才拉了个便便挺正常的 记一下颜色", "label": false, "tags": ["record", "voice", "daily"], "source": "records.yaml"}
+{"msg": "🐱🐱🐱", "label": false, "tags": ["edge"], "source": "chitchat_edge.yaml"}
+{"msg": "旺财刚把炒洋葱丝整盘干掉了 我准备做菜用的", "label": true, "tags": ["toxin", "voice"], "source": "toxin_food_plant.yaml"}
+{"msg": "前天称了一下饺子 八公斤整 记一下", "label": false, "tags": ["weight", "record", "voice"], "source": "records.yaml"}
+{"msg": "同事说她猫舔了蒜末 现在在宠物医院观察血象呢", "label": false, "tags": ["toxin", "gray", "edge", "other_owner"], "source": "toxin_food_plant.yaml"}
+{"msg": "对啊", "label": false, "tags": ["confirm", "edge"], "source": "tools_misc.yaml"}
+{"msg": "狗刚吞了一把葡萄干", "label": true, "tags": ["toxin", "voice"], "source": "short_true.yaml"}
+{"msg": "update luna's breed she's actually a ragdoll not persian", "label": false, "tags": ["profile", "en", "voice"], "source": "pet_profile.yaml"}
+{"msg": "max drank more water today", "label": false, "tags": ["mild", "en"], "source": "short_false.yaml"}
+{"msg": "每周提醒我一次给奶茶换猫砂 就周日吧", "label": false, "tags": ["reminder", "task", "voice"], "source": "reminders_tasks.yaml"}
+{"msg": "猫尿不出来了", "label": true, "tags": ["urinary", "voice"], "source": "short_true.yaml"}
+{"msg": "维尼被车撞了但是还有意识 就是一直发抖不敢动", "label": true, "tags": ["trauma", "shock", "panic", "voice"], "source": "vague_panic.yaml"}
+{"msg": "milo got groomed and looks so fluffy now", "label": false, "tags": ["record", "en", "voice"], "source": "english_broad.yaml"}
+{"msg": "帮我把体重改成8.5公斤", "label": false, "tags": ["profile", "voice"], "source": "pet_profile.yaml"}
+{"msg": "呃就是 球球牙龈白白的 不是平时那种粉色", "label": true, "tags": ["shock", "voice"], "source": "trauma_bleeding.yaml"}
+{"msg": "米米躺那不动 嘴一直张开 呼吸声音特别粗", "label": true, "tags": ["breathing", "voice"], "source": "breathing_heat.yaml"}
+{"msg": "whiskers somehow chewed through a whole pack of sugarless gum", "label": true, "tags": ["toxin", "en"], "source": "toxin_food_plant.yaml"}
+{"msg": "咪咪叼着绿萝叶子玩着玩着就吃了下去", "label": true, "tags": ["toxin", "voice"], "source": "toxin_food_plant.yaml"}
+{"msg": "团子今天口臭挺重的 而且有点流口水 要不要看牙医", "label": false, "tags": ["mild", "multi", "voice", "question"], "source": "mild_symptoms.yaml"}
+{"msg": "switch default pet to max please", "label": false, "tags": ["profile", "managed", "en", "voice"], "source": "pet_profile.yaml"}
+{"msg": "it choked on a toy once when it was a puppy", "label": false, "tags": ["past", "keyword_trap", "breathing", "en"], "source": "keyword_traps.yaml"}
+{"msg": "维尼把发条玩具的小齿轮部件抠出来了 现在不见了", "label": true, "tags": ["toxin", "voice"], "source": "toxin_chem_foreign.yaml"}
+{"msg": "how do you know if a cat is having trouble breathing", "label": false, "tags": ["question", "hypothetical", "keyword_trap", "breathing", "en"], "source": "keyword_traps.yaml"}
+{"msg": "团子公猫 一直蹲下又站起来 反反复复的 叫的很痛苦的样子 没尿", "label": true, "tags": ["urinary", "voice"], "source": "gi_urinary.yaml"}
+{"msg": "my dog threw up once this morning kinda watery is that normal", "label": false, "tags": ["mild", "en", "voice", "question"], "source": "mild_symptoms.yaml"}
+{"msg": "咪咪今天一直缩着不肯动 碰他就哼 肚子那边一碰就叫", "label": true, "tags": ["gdv", "panic", "voice"], "source": "vague_panic.yaml"}
+{"msg": "帮我提醒下 两个小时之后要给鱼缸那边 呃不对是给兔子换水", "label": false, "tags": ["reminder", "voice", "typo"], "source": "reminders_tasks.yaml"}
+{"msg": "cat swallowed something and now she is gagging and pawing at mouth", "label": true, "tags": ["breathing", "en", "voice"], "source": "breathing_heat.yaml"}
+{"msg": "我最近老是心悸", "label": false, "tags": ["chitchat", "other", "edge"], "source": "chitchat_edge.yaml"}
+{"msg": "咪咪今天挠了下耳朵 甩了甩头 帮我看看是不是耳朵有问题", "label": false, "tags": ["mild", "question", "voice"], "source": "compound_long.yaml"}
+{"msg": "球球最近偶尔咳一两声 精神食欲都正常", "label": false, "tags": ["mild", "gray", "voice"], "source": "breathing_heat.yaml"}
+{"msg": "撞到肚子会不会内出血看不出来", "label": false, "tags": ["question", "hypothetical", "keyword_trap", "trauma"], "source": "keyword_traps.yaml"}
+{"msg": "家里骨头零食要怎么给才不会卡住窒息", "label": false, "tags": ["hypothetical", "keyword_trap", "breathing"], "source": "keyword_traps.yaml"}
+{"msg": "我家狗被邻居的狗咬了一口 现在一直流血 好多血", "label": true, "tags": ["trauma", "bleeding", "panic", "voice"], "source": "vague_panic.yaml"}
+{"msg": "luna pooped a bit soft this morning but seems fine otherwise", "label": false, "tags": ["mild", "en"], "source": "vague_panic.yaml"}
+{"msg": "雪球在阳台晒太阳晒久了 现在软的抱不起来的感觉", "label": true, "tags": ["heat", "voice"], "source": "breathing_heat.yaml"}
+{"msg": "他伤口喷血了", "label": true, "tags": ["bleeding", "voice"], "source": "short_true.yaml"}
+{"msg": "米米后腿突然软了 一点力气都没有", "label": true, "tags": ["neuro", "voice"], "source": "seizure_neuro.yaml"}
+{"msg": "我家狗今天拉了两次稀 但是没有血 也没吐 精神也可以", "label": false, "tags": ["mild", "gray", "voice"], "source": "mild_symptoms.yaml"}
+{"msg": "改成明天", "label": false, "tags": ["correction", "voice"], "source": "tools_misc.yaml"}
+{"msg": "朵朵15号打完针有点蔫 现在活蹦乱跳了 记一下", "label": false, "tags": ["record", "voice", "medical"], "source": "records.yaml"}
+{"msg": "旺财遛完弯气喘吁吁的 一会就好了", "label": false, "tags": ["mild", "heat", "gray", "voice"], "source": "breathing_heat.yaml"}
+{"msg": "维尼被蜜蜂蛰了鼻子 现在整个脸肿了喘气怪怪的", "label": true, "tags": ["shock", "breathing", "voice"], "source": "breathing_heat.yaml"}
+{"msg": "龟龟今天一直躲在壳里不出来 有点担心它心情不好", "label": false, "tags": ["chitchat", "voice"], "source": "chitchat_edge.yaml"}
+{"msg": "特斯拉股价今天涨了吗", "label": false, "tags": ["chitchat", "other"], "source": "chitchat_edge.yaml"}
+{"msg": "那个就是 今天早上遛完狗回来一切正常 晚上散步的时候路过马路突然被一辆车撞飞了 现在躺地上起不来一直呜咽", "label": true, "tags": ["trauma", "voice", "panic"], "source": "compound_long.yaml"}
+{"msg": "阿黄跳栏杆蹭破点皮 已经结痂了", "label": false, "tags": ["mild", "gray", "voice"], "source": "trauma_bleeding.yaml"}
+{"msg": "团子好像有点怕生 见到陌生人就躲", "label": false, "tags": ["chitchat", "voice"], "source": "vague_panic.yaml"}
+{"msg": "charlie has been trying to pee for an hour with nothing coming out", "label": true, "tags": ["urinary", "en", "voice"], "source": "english_broad.yaml"}
+{"msg": "on medication for chronic bleeding disorder, stable", "label": false, "tags": ["managed", "keyword_trap", "bleeding", "en"], "source": "keyword_traps.yaml"}
+{"msg": "猫睡觉呼息声有点大", "label": false, "tags": ["mild", "typo", "voice"], "source": "breathing_cat_typo.yaml"}
+{"msg": "我表弟家猫夏天总喘气 他说去医院看了没事", "label": false, "tags": ["other_owner", "keyword_trap", "gray", "voice"], "source": "breathing_heat.yaml"}
+{"msg": "乐乐踩碎玻璃了 脚底那个口子挺深还在渗", "label": true, "tags": ["trauma", "bleeding", "voice"], "source": "trauma_bleeding.yaml"}
+{"msg": "咪咪上次张嘴喘是去年夏天", "label": false, "tags": ["past", "keyword_trap"], "source": "breathing_cat_typo.yaml"}
+{"msg": "swap luna's avatar for this new picture", "label": false, "tags": ["profile", "en", "voice"], "source": "pet_profile.yaml"}
+{"msg": "旺财今天去公园玩了好久 回来喝水特别多 是不是玩太累了", "label": false, "tags": ["mild", "question", "voice"], "source": "compound_long.yaml"}
+{"msg": "just wanna log that luna threw up once yesterday she's totally fine now", "label": false, "tags": ["record", "past", "mild", "gray", "en", "voice"], "source": "records.yaml"}
+{"msg": "他被热水浇到了", "label": true, "tags": ["trauma", "voice"], "source": "short_true.yaml"}
+{"msg": "my cat discovered the water fountain today and now she won't stop playing in it", "label": false, "tags": ["chitchat", "en", "voice"], "source": "compound_long.yaml"}
+{"msg": "花花今天在厨房转悠 我发现蟑螂胶饵盒子被扒烂了里面少了大半", "label": true, "tags": ["toxin", "voice"], "source": "toxin_chem_foreign.yaml"}
+{"msg": "what precautions should i take against drowning for my dog", "label": false, "tags": ["hypothetical", "keyword_trap", "neuro", "en"], "source": "keyword_traps.yaml"}
+{"msg": "旺财从沙发跳茶几上又跳下来 现在正常玩耍呢", "label": false, "tags": ["mild", "gray", "voice"], "source": "trauma_bleeding.yaml"}
+{"msg": "doudou walking with a limp", "label": false, "tags": ["mild", "en"], "source": "short_false.yaml"}
+{"msg": "luna is up to 4.2 kg just logging her weight", "label": false, "tags": ["weight", "record", "en", "voice"], "source": "records.yaml"}
+{"msg": "帮我看看便便正常吗", "label": false, "tags": ["other", "gray", "voice"], "source": "tools_misc.yaml"}
+{"msg": "found a sock missing and my dog has been gagging on and off today", "label": true, "tags": ["toxin", "en", "voice"], "source": "toxin_chem_foreign.yaml"}
+{"msg": "大橘拉的便便全是血 颜色特别鲜红", "label": true, "tags": ["bleeding", "voice"], "source": "gi_urinary.yaml"}
+{"msg": "看了个视频教怎么给狗做心肺复苏", "label": false, "tags": ["knowledge", "keyword_trap"], "source": "keyword_traps.yaml"}
+{"msg": "去年冬天窒息急救那次记忆犹新", "label": false, "tags": ["past", "keyword_trap", "breathing"], "source": "keyword_traps.yaml"}
+{"msg": "可乐拉稀了一天 精神吃喝都还行 需要注意啥吗", "label": false, "tags": ["mild", "gray", "voice", "question"], "source": "mild_symptoms.yaml"}
+{"msg": "lol max is such a goofball today", "label": false, "tags": ["chitchat", "en", "voice"], "source": "english_broad.yaml"}
+{"msg": "咪咪浑身僵直发抖", "label": true, "tags": ["seizure", "voice"], "source": "short_true.yaml"}
+{"msg": "took bella to the vet for her checkup everything looked fine just a bit of tartar", "label": false, "tags": ["record", "en", "voice"], "source": "compound_long.yaml"}
+{"msg": "帮我把维尼设成常用宠物", "label": false, "tags": ["profile", "managed", "voice"], "source": "pet_profile.yaml"}
+{"msg": "豆豆在车里晒了半小时 现在软趴趴的站不起来", "label": true, "tags": ["heat", "voice"], "source": "breathing_heat.yaml"}
+{"msg": "花花牙龈发白 精神也特别差 趴着不动", "label": true, "tags": ["shock", "voice", "panic"], "source": "trauma_bleeding.yaml"}
+{"msg": "维尼中毒了怎么办", "label": true, "tags": ["toxin", "panic", "voice"], "source": "short_true.yaml"}
+{"msg": "那个大型犬 晚饭后肚子鼓起来了 一直想吐吐不出来 焦躁不安", "label": true, "tags": ["gdv", "voice"], "source": "gi_urinary.yaml"}
+{"msg": "刚才给乐乐加了顿猫条当奖励 记一下", "label": false, "tags": ["record", "voice", "diet"], "source": "records.yaml"}
+{"msg": "remind me every night at 9 to give max his pill", "label": false, "tags": ["reminder", "task", "en", "voice"], "source": "reminders_tasks.yaml"}
+{"msg": "dog found my stash bag and chewed through it there's stuff missing", "label": true, "tags": ["toxin", "en", "voice"], "source": "toxin_chem_foreign.yaml"}
+{"msg": "维尼今天有点没胃口 但摸着精神还挺好的", "label": false, "tags": ["mild", "voice"], "source": "vague_panic.yaml"}
+{"msg": "来福这周六要洗澡 提前一小时提醒我准备水", "label": false, "tags": ["reminder", "voice"], "source": "reminders_tasks.yaml"}
+{"msg": "每天早晚各提醒我一次 喂黑豆吃药", "label": false, "tags": ["reminder", "task", "voice"], "source": "reminders_tasks.yaml"}
+{"msg": "三小时后提醒我 给团子的水加满", "label": false, "tags": ["reminder", "voice"], "source": "reminders_tasks.yaml"}
+{"msg": "my sisters cat ate chocolate what should she do", "label": false, "tags": ["other_owner", "keyword_trap", "en", "voice"], "source": "english_broad.yaml"}
+{"msg": "幼犬一天要喂几次", "label": false, "tags": ["question", "knowledge", "voice"], "source": "queries_knowledge.yaml"}
+{"msg": "那个我家狗今天去公园玩了一下午 回来精神特别好 就是喝水有点多 应该是渴了吧不是啥大事", "label": false, "tags": ["chitchat", "mild", "voice"], "source": "compound_long.yaml"}
+{"msg": "can i catch a cold from my cat if she keeps sneezing", "label": false, "tags": ["mild", "question", "hypothetical", "en", "voice"], "source": "mild_symptoms.yaml"}
+{"msg": "max is completely out cold and not responding at all", "label": true, "tags": ["neuro", "en"], "source": "seizure_neuro.yaml"}
+{"msg": "乌龟大前天去医院量了体温 三十八度五", "label": false, "tags": ["medical", "record", "voice"], "source": "records.yaml"}
+{"msg": "just rescued a stray kitten she was hiding under my car", "label": false, "tags": ["profile", "en", "voice"], "source": "pet_profile.yaml"}
+{"msg": "he takes heart pills every morning for his condition", "label": false, "tags": ["managed", "keyword_trap", "en"], "source": "keyword_traps.yaml"}
+{"msg": "cancel tomorrow's reminder please", "label": false, "tags": ["reminder", "delete", "en", "voice"], "source": "reminders_tasks.yaml"}
+{"msg": "家里柜子要不要装锁 防止它吃到毒的东西", "label": false, "tags": ["hypothetical", "keyword_trap", "toxin"], "source": "keyword_traps.yaml"}
+{"msg": "仓鼠指甲好像有点长了 走路听着有响声", "label": false, "tags": ["mild", "edge", "voice"], "source": "mild_symptoms.yaml"}
+{"msg": "小维被摔碎的杯子划到了 那口子挺深的", "label": true, "tags": ["trauma", "voice"], "source": "trauma_bleeding.yaml"}
+{"msg": "他小时候误食过毒药 那次真的吓坏了", "label": false, "tags": ["past", "keyword_trap", "toxin"], "source": "keyword_traps.yaml"}
+{"msg": "维尼喝水喝挺多", "label": false, "tags": ["mild", "voice"], "source": "short_false.yaml"}
+{"msg": "这个也要", "label": false, "tags": ["multi", "edge"], "source": "tools_misc.yaml"}
+{"msg": "体检加拍片子花了八十块 刚才的事", "label": false, "tags": ["medical", "record", "voice"], "source": "records.yaml"}
+{"msg": "last time we took mochi to the vet what was it for", "label": false, "tags": ["question", "record", "en", "voice"], "source": "queries_knowledge.yaml"}
+{"msg": "my cat's eye is literally popping out of her head after getting hit by something", "label": true, "tags": ["trauma", "en", "voice"], "source": "trauma_bleeding.yaml"}
+{"msg": "狗狗多大算成年 需要换粮吗", "label": false, "tags": ["question", "knowledge", "voice"], "source": "queries_knowledge.yaml"}
+{"msg": "help me plan a trip to japan", "label": false, "tags": ["chitchat", "other", "en"], "source": "chitchat_edge.yaml"}
+{"msg": "帮我把家里那只金渐层也建个档案", "label": false, "tags": ["profile", "voice"], "source": "pet_profile.yaml"}
+{"msg": "bella scratched at the door and broke a nail a little", "label": false, "tags": ["mild", "en", "voice"], "source": "english_broad.yaml"}
+{"msg": "大黄耳朵有点臭 凑近才能闻到", "label": false, "tags": ["mild", "voice"], "source": "mild_symptoms.yaml"}
+{"msg": "球球吃了半瓶药", "label": true, "tags": ["toxin", "voice"], "source": "short_false.yaml"}
+{"msg": "家里养猫 想问问哪些药物绝对不能让它碰到", "label": false, "tags": ["toxin", "question", "knowledge", "voice"], "source": "toxin_chem_foreign.yaml"}
+{"msg": "我家狗去年抽搐过一次 后来就没事了", "label": false, "tags": ["past", "keyword_trap", "voice"], "source": "seizure_neuro.yaml"}
+{"msg": "he fainted and wont respond", "label": true, "tags": ["shock", "en"], "source": "short_true.yaml"}
+{"msg": "旺财吃了木糖醇的口香糖 一整包 刚发生的", "label": true, "tags": ["toxin", "panic", "voice"], "source": "vague_panic.yaml"}
+{"msg": "同事家猫去年眼睛受过伤 现在没事了", "label": false, "tags": ["other_owner", "past", "keyword_trap", "voice"], "source": "trauma_bleeding.yaml"}
+{"msg": "团子洗完澡了", "label": false, "tags": ["record", "voice"], "source": "short_false.yaml"}
+{"msg": "how do i deal with separation anxiety in dogs", "label": false, "tags": ["question", "knowledge", "en", "voice"], "source": "queries_knowledge.yaml"}
+{"msg": "the second one", "label": false, "tags": ["multi", "en"], "source": "tools_misc.yaml"}
+{"msg": "米米走着走着撞到桌子腿好几回", "label": true, "tags": ["neuro", "voice"], "source": "seizure_neuro.yaml"}
+{"msg": "旺财喝水有点多", "label": false, "tags": ["mild", "voice"], "source": "short_false.yaml"}
+{"msg": "狗喝咖啡为什么会心跳过快啊 咖啡因中毒机制是啥", "label": false, "tags": ["toxin", "question", "hypothetical", "keyword_trap"], "source": "toxin_food_plant.yaml"}
+{"msg": "huahua limping slightly", "label": false, "tags": ["mild", "en"], "source": "short_false.yaml"}
+{"msg": "猫咪蹭我是喜欢我的意思吗", "label": false, "tags": ["question", "knowledge", "voice"], "source": "queries_knowledge.yaml"}
+{"msg": "团子把我避孕药盒叼走了 找到时候纸盒都咬烂了药不见几颗", "label": true, "tags": ["toxin", "voice"], "source": "toxin_chem_foreign.yaml"}
+{"msg": "Coco那个疫苗站便宜的在哪", "label": false, "tags": ["places", "gray", "voice"], "source": "tools_misc.yaml"}
+{"msg": "dog was chewing on a plastic bag and a chunk of it is missing now", "label": true, "tags": ["toxin", "en", "voice"], "source": "toxin_chem_foreign.yaml"}
+{"msg": "家里小孩的磁力片玩具 猫要是吃了会很危险吗 提前问问预防", "label": false, "tags": ["toxin", "question", "hypothetical", "voice"], "source": "toxin_chem_foreign.yaml"}
+{"msg": "蚌埠住了", "label": false, "tags": ["edge"], "source": "chitchat_edge.yaml"}
+{"msg": "阿黄嘴里牙龈发白还有点发凉 整个人软趴趴的", "label": true, "tags": ["shock", "voice"], "source": "trauma_bleeding.yaml"}
+{"msg": "max keeps trying to pee and nothing comes out he's crying", "label": true, "tags": ["urinary", "panic", "en"], "source": "vague_panic.yaml"}
+{"msg": "咪咪中毒了快看看", "label": true, "tags": ["toxin", "panic", "voice"], "source": "short_true.yaml"}
+{"msg": "bella has a heart murmur but the vet says its stable", "label": false, "tags": ["managed", "keyword_trap", "en", "voice"], "source": "english_broad.yaml"}
+{"msg": "my dog has diarrhea today no blood still eating and playing is this ok", "label": false, "tags": ["mild", "gray", "en", "voice", "question"], "source": "mild_symptoms.yaml"}
+{"msg": "fed him already", "label": false, "tags": ["record", "en"], "source": "short_true.yaml"}
+{"msg": "老猫十六岁了 今天突然又吐又拉还站不住", "label": true, "tags": ["multi", "voice"], "source": "gi_urinary.yaml"}
+{"msg": "我家猫已经绝育了 更新一下状态", "label": false, "tags": ["profile", "voice"], "source": "pet_profile.yaml"}
+{"msg": "我家猫也不知道咋了 突然流好多血 用纸巾按了半天都没用", "label": true, "tags": ["trauma", "bleeding", "voice", "panic"], "source": "trauma_bleeding.yaml"}
+{"msg": "帮我改一下维尼生日 其实是二月不是三月", "label": false, "tags": ["profile", "voice"], "source": "pet_profile.yaml"}
+{"msg": "what's a good cat food brand you'd recommend", "label": false, "tags": ["question", "en", "voice"], "source": "queries_knowledge.yaml"}
+{"msg": "豆豆呼息一顿一顿的", "label": true, "tags": ["breathing", "typo", "voice"], "source": "breathing_cat_typo.yaml"}
+{"msg": "帮我导航过去", "label": false, "tags": ["places", "gray", "voice"], "source": "tools_misc.yaml"}
+{"msg": "Bella got a bath and nail trim this morning", "label": false, "tags": ["record", "en", "voice", "daily"], "source": "records.yaml"}
+{"msg": "老狗最近走路慢 牙齿也松了一颗 是不是年纪大了正常的", "label": false, "tags": ["mild", "multi", "voice", "question"], "source": "mild_symptoms.yaml"}
+{"msg": "那个 我家猫...狗 把口香糖罐打翻自己舔了好几颗糖衣", "label": true, "tags": ["toxin", "voice"], "source": "toxin_food_plant.yaml"}
+{"msg": "明天有没有雨", "label": false, "tags": ["chitchat", "other"], "source": "chitchat_edge.yaml"}
+{"msg": "两个月大的小猫一直吐一直拉稀 现在都站不起来了", "label": true, "tags": ["multi", "voice"], "source": "gi_urinary.yaml"}
+{"msg": "维尼是啥品种", "label": false, "tags": ["profile", "question", "voice"], "source": "pet_profile.yaml"}
+{"msg": "大黄最近喝水多了 也没见瘦 别的都挺好的", "label": false, "tags": ["mild", "voice"], "source": "mild_symptoms.yaml"}
+{"msg": "球球体重记录在哪", "label": false, "tags": ["question", "voice"], "source": "short_false.yaml"}
+{"msg": "猫从楼上摔下来了", "label": true, "tags": ["trauma", "voice"], "source": "short_true.yaml"}
+{"msg": "旺财闻了下洋葱片", "label": false, "tags": ["toxin", "gray", "keyword_trap", "voice"], "source": "short_false.yaml"}
+{"msg": "我肩膀最近老是酸痛", "label": false, "tags": ["chitchat", "other", "edge"], "source": "chitchat_edge.yaml"}
+{"msg": "our old cat had kidney failure a long time ago", "label": false, "tags": ["past", "keyword_trap", "en", "voice"], "source": "english_broad.yaml"}
+{"msg": "我车底下滴了点绿色的东西 旺财路过舔了几口才被我发现", "label": true, "tags": ["toxin", "voice"], "source": "toxin_chem_foreign.yaml"}
+{"msg": "doudou seized after vomiting", "label": true, "tags": ["seizure", "en"], "source": "short_false.yaml"}
+{"msg": "生成份维尼的健康报告", "label": false, "tags": ["profile", "question", "voice"], "source": "pet_profile.yaml"}
+{"msg": "删掉我那只那条记录", "label": false, "tags": ["delete", "voice"], "source": "tools_misc.yaml"}
+{"msg": "那个 我上周捡了只小奶猫 现在还没档案 帮我弄一下", "label": false, "tags": ["profile", "voice"], "source": "pet_profile.yaml"}
+{"msg": "团子吃了点小饼干", "label": false, "tags": ["record", "voice"], "source": "short_false.yaml"}
+{"msg": "咪咪确诊癫痫两年了 每天吃药没再发作", "label": false, "tags": ["managed", "keyword_trap", "voice"], "source": "seizure_neuro.yaml"}
+{"msg": "what symptoms would show up if a dog ate rat poison", "label": false, "tags": ["question", "hypothetical", "keyword_trap", "en", "voice"], "source": "english_broad.yaml"}
+{"msg": "球球把我的袜子叼到床底下 现在袜子只剩个洞", "label": true, "tags": ["toxin", "voice"], "source": "toxin_chem_foreign.yaml"}
+{"msg": "no", "label": false, "tags": ["confirm", "edge"], "source": "tools_misc.yaml"}
+{"msg": "花卷把过节囤的夏威夷果啃了小半斤", "label": true, "tags": ["toxin", "voice"], "source": "toxin_food_plant.yaml"}
+{"msg": "max threw up once this morning but hes back to normal now", "label": false, "tags": ["mild", "en", "voice"], "source": "english_broad.yaml"}
+{"msg": "没有", "label": false, "tags": ["confirm", "edge"], "source": "tools_misc.yaml"}
+{"msg": "仓鼠今天把瓜子都藏脸颊里了 鼓鼓的好可爱", "label": false, "tags": ["chitchat", "voice"], "source": "chitchat_edge.yaml"}
+{"msg": "our senior cat suddenly got much worse today barely moves and won't eat", "label": true, "tags": ["multi", "en"], "source": "gi_urinary.yaml"}
+{"msg": "维尼血止不住 毛都黏成一片红的了", "label": true, "tags": ["trauma", "bleeding", "voice", "panic"], "source": "trauma_bleeding.yaml"}
+{"msg": "皮皮叼着一板药跑我房间 追过去一看是我避孕药 咬开了", "label": true, "tags": ["toxin", "voice"], "source": "toxin_chem_foreign.yaml"}
+{"msg": "say that again", "label": false, "tags": ["multi", "en"], "source": "tools_misc.yaml"}
+{"msg": "大黄今天吃饭吃得特别快 打了个嗝 休息一下就好了", "label": false, "tags": ["mild", "voice"], "source": "compound_long.yaml"}
+{"msg": "那个 我家狗 就是 眼睛往上翻 看不见眼珠了", "label": true, "tags": ["neuro", "voice"], "source": "seizure_neuro.yaml"}
+{"msg": "max visited the vet", "label": false, "tags": ["record", "en"], "source": "short_false.yaml"}
+{"msg": "豆豆中毒了吧这是", "label": true, "tags": ["toxin", "panic", "voice"], "source": "short_true.yaml"}
+{"msg": "bleach spilled on the floor and my dog started licking it before i could clean up", "label": true, "tags": ["toxin", "en", "voice"], "source": "toxin_chem_foreign.yaml"}
+{"msg": "芒果眼球那次治好了以后 现在每天要点药提醒我三次", "label": false, "tags": ["reminder", "task", "keyword_trap", "voice"], "source": "reminders_tasks.yaml"}
+{"msg": "Daisy got his booster shot a couple days ago", "label": false, "tags": ["record", "en", "voice", "medical"], "source": "records.yaml"}
+{"msg": "just logging that Luna went swimming last month", "label": false, "tags": ["record", "en", "voice", "daily"], "source": "records.yaml"}
+{"msg": "布丁跳空调外机结果掉下去了 现在一条腿完全立不起来", "label": true, "tags": ["trauma", "voice"], "source": "trauma_bleeding.yaml"}
+{"msg": "大黄把玩具车电池盒咬开 里面电池找不着了", "label": true, "tags": ["toxin", "voice"], "source": "toxin_chem_foreign.yaml"}

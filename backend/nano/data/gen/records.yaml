@@ -1,0 +1,1999 @@
+- msg: "brushed out Ginger's coat last month shed a lot"
+  label: false
+  tags: [record, en, voice, daily]
+  why: 英文占比补充
+
+- msg: milo finished the whole bag of treats today lol
+  label: false
+  tags: [record, en, voice, diet]
+  why: 补充记录样本 英文
+
+- msg: 龙猫刚才拉了个便便挺正常的 记一下颜色
+  label: false
+  tags: [record, voice, daily]
+  why: 隐式陈述记录
+
+- msg: 豆浆刚刚好像抽了一下筋 现在没事了 想留个记录
+  label: false
+  tags: [record, past, gray, keyword_trap, voice]
+  why: 事后严重词汇但已恢复
+
+- msg: "correcting the log Ginger's grooming was actually over the weekend not the date i said before"
+  label: false
+  tags: [record, en, voice, correction]
+  why: 英文占比补充
+
+- msg: 上上周蛋蛋体检合格
+  label: false
+  tags: [record, voice, medical]
+  why: 隐式陈述记录
+
+- msg: 洗牙花了八十块 记一下
+  label: false
+  tags: [medical, record, voice]
+  why: 医疗花费记录
+
+- msg: 嗯 兔兔上周末不怎么吃粮 就吃了一点点
+  label: false
+  tags: [diet, record, voice]
+  why: 喂食记录
+
+- msg: 小维上次称重是上周五 现在补记一下
+  label: false
+  tags: [record, voice, weight]
+  why: 补充记录样本
+
+- msg: 呃 我家狗这周一不怎么吃粮 就吃了一点点
+  label: false
+  tags: [diet, record, voice]
+  why: 喂食记录
+
+- msg: "checked milo's temperature today 102.5"
+  label: false
+  tags: [record, en, voice, medical]
+  why: 补充记录样本 英文
+
+- msg: 它这个月初去医院拿药了 皮肤病的药膏
+  label: false
+  tags: [medical, record, voice]
+  why: 医疗记录
+
+- msg: 这周一打疫苗加驱虫一共花了三百八
+  label: false
+  tags: [medical, record, voice]
+  why: 医疗花费记录
+
+- msg: 呃小仓鼠今天梳毛梳出好多毛球
+  label: false
+  tags: [daily, record, voice]
+  why: 日常活动记录
+
+- msg: 包子上上周去医院量了体温 三十八度五
+  label: false
+  tags: [medical, record, voice]
+  why: 医疗跟进记录
+
+- msg: 刺猬这两天不爱吃干粮了 换成湿粮了 记一下
+  label: false
+  tags: [diet, record, voice]
+  why: 喂食记录
+
+- msg: 嗯 小七大前天挠痒挠得厉害 现在好了 帮我记一下
+  label: false
+  tags: [record, past, mild, gray, voice]
+  why: 事后轻微记录
+
+- msg: 上周三带小花复查了皮肤 好多了
+  label: false
+  tags: [record, voice, medical]
+  why: 补充记录样本
+
+- msg: 乌龟15号打完针没什么反应
+  label: false
+  tags: [record, voice, daily]
+  why: 隐式陈述记录
+
+- msg: 上周末阿黄体重涨了 称了下有变化
+  label: false
+  tags: [record, voice, weight]
+  why: 补充记录样本
+
+- msg: 饺子3号拉了个便便挺正常的 记一下颜色
+  label: false
+  tags: [record, voice, daily]
+  why: 隐式陈述记录
+
+- msg: 乌龟前天驱虫了 体内驱虫那种
+  label: false
+  tags: [medical, record, voice]
+  why: 医疗记录
+
+- msg: 洗牙花了三百八 记一下
+  label: false
+  tags: [medical, record, voice]
+  why: 医疗花费记录
+
+- msg: 8月30号栗子体重涨了 称了下有变化
+  label: false
+  tags: [record, voice, weight]
+  why: 补充记录样本
+
+- msg: "just checked bella's weight it's 6.5 kg"
+  label: false
+  tags: [weight, record, en, voice]
+  why: 体重记录 英文
+
+- msg: 上周末带小仓鼠洗牙了 花了六百多
+  label: false
+  tags: [medical, record, voice]
+  why: 医疗记录
+
+- msg: 刚才 柚子和我家那只都换了新粮 记一下
+  label: false
+  tags: [diet, record, voice, multi]
+  why: 喂食记录
+
+- msg: 补一下之前的记录 柚子上个月体检过一次
+  label: false
+  tags: [record, voice]
+  why: 补记记录
+
+- msg: 前天称了一下豆浆的口粮 一天喂80克左右
+  label: false
+  tags: [diet, record, voice]
+  why: 喂食记录
+
+- msg: Oreo got a bath and nail trim last wednesday
+  label: false
+  tags: [record, en, voice, daily]
+  why: 英文占比补充
+
+- msg: just logging that Max went swimming last wednesday
+  label: false
+  tags: [record, en, voice, daily]
+  why: 英文占比补充
+
+- msg: 龙猫15号训练课学会了握手
+  label: false
+  tags: [daily, record, voice]
+  why: 日常活动记录
+
+- msg: 刚刚给家里猫主子剪毛了
+  label: false
+  tags: [record, voice, daily]
+  why: 隐式陈述记录
+
+- msg: 国庆那几天 啊 给狗狗打了个体检 说牙有点结石
+  label: false
+  tags: [medical, record, voice]
+  why: 医疗跟进记录
+
+- msg: 星期二那天 哎 给小仓鼠打了个体检 说牙有点结石
+  label: false
+  tags: [medical, record, voice]
+  why: 医疗跟进记录
+
+- msg: luna barely touched her food this morning kinda weird but fine
+  label: false
+  tags: [diet, record, en, voice]
+  why: 喂食记录 英文
+
+- msg: 改成贝贝前天洗澡的 不是今天
+  label: false
+  tags: [record, correction, voice]
+  why: 修正日期
+
+- msg: 记一下 我家猫上次大前天喝水有点多 想留个档
+  label: false
+  tags: [record, past, mild, gray, voice]
+  why: 事后轻微记录
+
+- msg: 刺猬大前天打完针没什么反应
+  label: false
+  tags: [record, voice, daily]
+  why: 隐式陈述记录
+
+- msg: 记一下 乌龟今天做了心丝虫检测
+  label: false
+  tags: [medical, record, voice]
+  why: 医疗记录
+
+- msg: 毛毛和兔兔一起上了训练课 这周一的事
+  label: false
+  tags: [daily, record, voice, multi]
+  why: 多宠物日常记录
+
+- msg: bella had a can of pumpkin mixed in her food tonight
+  label: false
+  tags: [diet, record, en, voice]
+  why: 喂食记录 英文
+
+- msg: 豆浆中午去医院量了体温 三十八度五
+  label: false
+  tags: [medical, record, voice]
+  why: 医疗跟进记录
+
+- msg: 上周三刺猬和布丁都去体检了 都挺健康的
+  label: false
+  tags: [medical, record, voice, multi]
+  why: 多宠物医疗记录
+
+- msg: "Charlie had a small upset stomach a couple days ago but he's back to normal now"
+  label: false
+  tags: [record, en, voice, medical, gray]
+  why: 英文占比补充
+
+- msg: 记一下包子今天做了个B超 没什么大问题
+  label: false
+  tags: [medical, record, voice]
+  why: 医疗跟进记录
+
+- msg: 国庆那几天喂鹦鹉吃了半个煮鸡蛋加一点点南瓜
+  label: false
+  tags: [diet, record, voice]
+  why: 喂食记录
+
+- msg: 记一下 乖乖上次晚上挠痒挠得厉害 想留个档
+  label: false
+  tags: [record, past, mild, gray, voice]
+  why: 事后轻微记录
+
+- msg: 中午给馒头加了顿夜宵 猫条那种
+  label: false
+  tags: [diet, record, voice]
+  why: 喂食记录
+
+- msg: 橙子早上学会了新指令 等等
+  label: false
+  tags: [record, voice]
+  why: 补充记录样本
+
+- msg: 我家猫对某个牌子的猫粮过敏 以后不能买那个了 记一下
+  label: false
+  tags: [diet, record, voice]
+  why: 换粮/不吃记录
+
+- msg: 他这周瘦了点 称了下四点五公斤
+  label: false
+  tags: [weight, record, voice]
+  why: 体重记录
+
+- msg: 家里的狗子这周瘦了点 称了下四点五公斤
+  label: false
+  tags: [weight, record, voice]
+  why: 体重记录
+
+- msg: 记一下 旺旺上次15号咳嗽了两声 想留个档
+  label: false
+  tags: [record, past, mild, gray, voice]
+  why: 事后轻微记录
+
+- msg: 3号喂刺猬吃了半个煮鸡蛋加一点点南瓜
+  label: false
+  tags: [diet, record, voice]
+  why: 喂食记录
+
+- msg: 鹦鹉拔了颗牙 国庆那几天做的手术
+  label: false
+  tags: [medical, record, voice]
+  why: 医疗跟进记录
+
+- msg: Ginger got his booster shot last month
+  label: false
+  tags: [record, en, voice, medical]
+  why: 英文占比补充
+
+- msg: 给兔兔买了狗饼干 15号吃了好多
+  label: false
+  tags: [diet, record, voice]
+  why: 喂食记录
+
+- msg: "Whiskers had a small upset stomach the day before yesterday but he's back to normal now"
+  label: false
+  tags: [record, en, voice, medical, gray]
+  why: 英文占比补充
+
+- msg: 上上周带小维做了体外驱虫 滴的那种药
+  label: false
+  tags: [medical, record, voice]
+  why: 医疗记录
+
+- msg: 昨天给糯米剪毛了
+  label: false
+  tags: [record, voice, daily]
+  why: 隐式陈述记录
+
+- msg: 改成家里猫主子前天洗澡的 不是今天
+  label: false
+  tags: [record, correction, voice]
+  why: 修正日期
+
+- msg: 虎子奶茶这周都驱虫了 记一下
+  label: false
+  tags: [medical, record, voice, multi]
+  why: 多宠物医疗记录
+
+- msg: 小仓鼠刚刚打了疫苗
+  label: false
+  tags: [record, voice, medical]
+  why: 隐式陈述记录
+
+- msg: 贝贝今天在小区里社交 交了新朋友 8月30号的事
+  label: false
+  tags: [record, voice, daily]
+  why: 补充记录样本
+
+- msg: 龙猫刚才驱虫了 体内驱虫那种
+  label: false
+  tags: [medical, record, voice]
+  why: 医疗记录
+
+- msg: 那个记录改一下 不是花花 是另一只
+  label: false
+  tags: [record, correction, voice]
+  why: 修正已有记录
+
+- msg: 体检加拍片子花了八十块 这个月初的事
+  label: false
+  tags: [medical, record, voice]
+  why: 医疗花费记录
+
+- msg: 米粒上周五挑食 只吃罐头不吃干粮
+  label: false
+  tags: [record, voice, diet]
+  why: 补充记录样本
+
+- msg: "Ginger had a vet checkup over the weekend vet said he's healthy"
+  label: false
+  tags: [record, en, voice, medical]
+  why: 英文占比补充
+
+- msg: took oreo to get his nails and teeth checked
+  label: false
+  tags: [medical, record, en, voice]
+  why: 医疗记录 英文
+
+- msg: 这个 龙猫刚刚不怎么吃粮 就吃了一点点
+  label: false
+  tags: [diet, record, voice]
+  why: 喂食记录
+
+- msg: 这周一给家里的狗子测了体温 三十八度八
+  label: false
+  tags: [record, voice, medical]
+  why: 补充记录样本
+
+- msg: 给栗子剃毛了 上个月刚弄完
+  label: false
+  tags: [daily, record, voice]
+  why: 日常活动记录
+
+- msg: 帮我记一下 维尼上上周换成无谷粮了
+  label: false
+  tags: [record, voice, diet]
+  why: 补充记录样本
+
+- msg: "weighed Oreo yesterday he's holding steady"
+  label: false
+  tags: [record, en, voice, weight]
+  why: 英文占比补充
+
+- msg: 帮我记录一下 刺猬这个月初眼屎有点多 精神还挺好的
+  label: false
+  tags: [record, past, mild, gray, voice]
+  why: 事后轻微记录
+
+- msg: 柚子拔了颗牙 今天做的手术
+  label: false
+  tags: [medical, record, voice]
+  why: 医疗跟进记录
+
+- msg: 小仓鼠这两天不爱吃干粮了 换成湿粮了 记一下
+  label: false
+  tags: [diet, record, voice, typo]
+  why: 喂食记录
+
+- msg: 球球不吃湿粮 维尼倒是吃得挺香 3号观察到的
+  label: false
+  tags: [diet, record, voice]
+  why: 喂食记录
+
+- msg: charlie stole a piece of rice off my plate just one bite
+  label: false
+  tags: [diet, record, en, voice]
+  why: 喂食记录 英文
+
+- msg: Buddy skipped one meal last wednesday ate fine the next one
+  label: false
+  tags: [record, en, voice, gray]
+  why: 英文占比补充
+
+- msg: 晚上给家里的狗子乌龟都剪了指甲
+  label: false
+  tags: [daily, record, voice, multi]
+  why: 多宠物日常记录
+
+- msg: 国庆那几天带馒头复查了皮肤 好多了
+  label: false
+  tags: [record, voice, medical]
+  why: 补充记录样本
+
+- msg: 猫猫星期二那天训练课学会了握手
+  label: false
+  tags: [daily, record, voice]
+  why: 日常活动记录
+
+- msg: 我家那只今天在小区里社交 交了新朋友 上上周的事
+  label: false
+  tags: [record, voice, daily]
+  why: 补充记录样本
+
+- msg: 晚上的事补记一下 鹦鹉打了疫苗
+  label: false
+  tags: [record, voice]
+  why: 补记记录
+
+- msg: 奶茶第一次下水游泳 一点都不怕 记录一下
+  label: false
+  tags: [daily, record, voice]
+  why: 日常活动记录
+
+- msg: Coco learned a new command last week pretty proud of him
+  label: false
+  tags: [record, en, voice, daily]
+  why: 英文占比补充
+
+- msg: 帮我记一下 它今天剪指甲了
+  label: false
+  tags: [daily, record, voice]
+  why: 日常活动记录
+
+- msg: "weighed oreo he's 3.8 kg now"
+  label: false
+  tags: [weight, record, en, voice]
+  why: 体重记录 英文
+
+- msg: Max finished his new food bag a couple days ago seems to like it
+  label: false
+  tags: [record, en, voice, diet]
+  why: 英文占比补充
+
+- msg: Milo skipped one meal last wednesday ate fine the next one
+  label: false
+  tags: [record, en, voice, gray]
+  why: 英文占比补充
+
+- msg: 狗狗这两天不爱吃干粮了 换成湿粮了 记一下
+  label: false
+  tags: [diet, record, voice]
+  why: 喂食记录
+
+- msg: 上次说的驱虫记录改成两次 不是一次
+  label: false
+  tags: [record, correction, voice]
+  why: 修正已有记录
+
+- msg: 上周五毛毛和我家狗都去体检了 都挺健康的
+  label: false
+  tags: [medical, record, voice, multi]
+  why: 多宠物医疗记录
+
+- msg: 刚刚团子第一次坐车出门去公园
+  label: false
+  tags: [record, voice, daily]
+  why: 补充记录样本
+
+- msg: 星期二那天带来福去河边遛了一圈
+  label: false
+  tags: [record, voice, daily]
+  why: 补充记录样本
+
+- msg: 早上把小仓鼠的驱虫日期改一下 弄错了
+  label: false
+  tags: [record, voice, medical, correction]
+  why: 补充记录样本
+
+- msg: 15号给蛋蛋乐乐都剪了指甲
+  label: false
+  tags: [daily, record, voice, multi]
+  why: 多宠物日常记录
+
+- msg: 美美早上打了狂犬疫苗的加强针
+  label: false
+  tags: [record, voice, medical]
+  why: 补充记录样本
+
+- msg: "Bella had a vet checkup yesterday vet said he's healthy"
+  label: false
+  tags: [record, en, voice, medical]
+  why: 英文占比补充
+
+- msg: 记一下 兔兔上次前天喝水有点多 想留个档
+  label: false
+  tags: [record, past, mild, gray, voice]
+  why: 事后轻微记录
+
+- msg: 8月30号团子第一次坐车出门去公园
+  label: false
+  tags: [record, voice, daily]
+  why: 补充记录样本
+
+- msg: 啊 乐乐3号喝水有点多 现在好了 帮我记一下
+  label: false
+  tags: [record, past, mild, gray, voice]
+  why: 事后轻微记录
+
+- msg: buddy had his teeth cleaned this week cost like 400
+  label: false
+  tags: [medical, record, en, voice]
+  why: 医疗记录 英文
+
+- msg: Milo finished his new food bag last week seems to like it
+  label: false
+  tags: [record, en, voice, diet]
+  why: 英文占比补充
+
+- msg: "Milo had a small upset stomach today but he's back to normal now"
+  label: false
+  tags: [record, en, voice, medical, gray]
+  why: 英文占比补充
+
+- msg: 前天胖胖第一次坐车出门去公园
+  label: false
+  tags: [record, voice, daily]
+  why: 补充记录样本
+
+- msg: Luna got his booster shot last week
+  label: false
+  tags: [record, en, voice, medical]
+  why: 英文占比补充
+
+- msg: "wait that's wrong it was tuesday not monday for the vaccine"
+  label: false
+  tags: [record, correction, en, voice]
+  why: 修正已有记录 英文
+
+- msg: 维尼上个月驱虫了 体内驱虫那种
+  label: false
+  tags: [medical, record, voice]
+  why: 医疗记录
+
+- msg: 昨天米粒吐了一次 今天已经没事了 记个数
+  label: false
+  tags: [record, past, mild, gray, voice]
+  why: 事后轻微记录
+
+- msg: 国庆那几天带乌龟和阿黄一起打了疫苗
+  label: false
+  tags: [medical, record, voice, multi]
+  why: 多宠物医疗记录
+
+- msg: "Buddy had a small upset stomach just now but he's back to normal now"
+  label: false
+  tags: [record, en, voice, medical, gray]
+  why: 英文占比补充
+
+- msg: just logging that Whiskers went swimming this morning
+  label: false
+  tags: [record, en, voice, daily]
+  why: 英文占比补充
+
+- msg: 龙猫国庆那几天打了狂犬疫苗的加强针
+  label: false
+  tags: [record, voice, medical]
+  why: 补充记录样本
+
+- msg: 毛毛中午洗澡了
+  label: false
+  tags: [record, voice, daily]
+  why: 隐式陈述记录
+
+- msg: 前天带我家猫复查了皮肤 好多了
+  label: false
+  tags: [record, voice, medical]
+  why: 补充记录样本
+
+- msg: started the new food trial for oreo today
+  label: false
+  tags: [diet, record, en, voice]
+  why: 喂食记录 英文
+
+- msg: 上个月给糯米馒头都加了点冻干当零食
+  label: false
+  tags: [diet, record, voice, multi]
+  why: 喂食记录
+
+- msg: 中午带糯米去河边玩水了 一身泥
+  label: false
+  tags: [daily, record, voice]
+  why: 日常活动记录
+
+- msg: 刚才那条记录删掉 时间搞错了 重新记
+  label: false
+  tags: [record, correction, voice]
+  why: 修正已有记录
+
+- msg: charlie got groomed today
+  label: false
+  tags: [record, en, voice, daily]
+  why: 隐式陈述记录 英文
+
+- msg: 记一下猫猫前天做了个B超 没什么大问题
+  label: false
+  tags: [medical, record, voice]
+  why: 医疗跟进记录
+
+- msg: 改成大黄前天洗澡的 不是今天
+  label: false
+  tags: [record, correction, voice]
+  why: 修正日期
+
+- msg: Ginger skipped one meal last week ate fine the next one
+  label: false
+  tags: [record, en, voice, gray]
+  why: 英文占比补充
+
+- msg: 上个月给汤圆修剪了脚底毛
+  label: false
+  tags: [record, voice, daily]
+  why: 补充记录样本
+
+- msg: Oreo skipped one meal last week ate fine the next one
+  label: false
+  tags: [record, en, voice, gray]
+  why: 英文占比补充
+
+- msg: 3号带维尼和鹦鹉一起打了疫苗
+  label: false
+  tags: [medical, record, voice, multi]
+  why: 多宠物医疗记录
+
+- msg: 小白妞妞今天一起去公园玩了 跑了好久
+  label: false
+  tags: [daily, record, voice, multi]
+  why: 多宠物日常记录
+
+- msg: took Whiskers to the dog park over the weekend he had a blast
+  label: false
+  tags: [record, en, voice, daily]
+  why: 英文占比补充
+
+- msg: 家里猫主子刚才去上了社交课 表现还不错
+  label: false
+  tags: [daily, record, voice]
+  why: 日常活动记录
+
+- msg: 记一下 豆豆今天做了心丝虫检测
+  label: false
+  tags: [medical, record, voice]
+  why: 医疗记录
+
+- msg: 体检加拍片子花了两千二 昨天的事
+  label: false
+  tags: [medical, record, voice]
+  why: 医疗花费记录
+
+- msg: "weighed Daisy last month he's holding steady"
+  label: false
+  tags: [record, en, voice, weight]
+  why: 英文占比补充
+
+- msg: 帮我记一下壮壮最近不吃冠能的粮了 一点都不碰
+  label: false
+  tags: [diet, record, voice]
+  why: 换粮/不吃记录
+
+- msg: 记录写错了 鹦鹉是洗牙不是拔牙
+  label: false
+  tags: [record, correction, voice]
+  why: 修正已有记录
+
+- msg: "Mochi had a vet checkup today vet said he's healthy"
+  label: false
+  tags: [record, en, voice, medical]
+  why: 英文占比补充
+
+- msg: 龙猫昨天去医院量了体温 三十八度五
+  label: false
+  tags: [medical, record, voice]
+  why: 医疗跟进记录
+
+- msg: Oreo got his booster shot a couple days ago
+  label: false
+  tags: [record, en, voice, medical]
+  why: 英文占比补充
+
+- msg: 毛毛上上周打完针有点蔫 现在活蹦乱跳了 记一下
+  label: false
+  tags: [record, voice, medical]
+  why: 补充记录样本
+
+- msg: 豆芽今天打了狂犬疫苗的加强针
+  label: false
+  tags: [record, voice, medical]
+  why: 补充记录样本
+
+- msg: 兔兔上个月去医院拿药了 皮肤病的药膏
+  label: false
+  tags: [medical, record, voice]
+  why: 医疗记录
+
+- msg: 兔兔和旺旺一起上了训练课 国庆那几天的事
+  label: false
+  tags: [daily, record, voice, multi]
+  why: 多宠物日常记录
+
+- msg: 记录改一下 乌龟打疫苗是今天 不是别的日子
+  label: false
+  tags: [record, voice, medical, correction]
+  why: 补充记录样本
+
+- msg: ginger is 5 kg as of this morning
+  label: false
+  tags: [weight, record, en, voice]
+  why: 体重记录 英文
+
+- msg: 上上周家里猫主子游泳游了半小时 累坏了
+  label: false
+  tags: [daily, record, voice]
+  why: 日常活动记录
+
+- msg: 国庆那几天带毛毛去河边玩水了 一身泥
+  label: false
+  tags: [daily, record, voice]
+  why: 日常活动记录
+
+- msg: gave luna a bath today she hated it lol
+  label: false
+  tags: [daily, record, en, voice]
+  why: 日常活动记录 英文
+
+- msg: 前天带兔兔去河边遛了一圈
+  label: false
+  tags: [record, voice, daily]
+  why: 补充记录样本
+
+- msg: 刚刚乌龟洗了牙
+  label: false
+  tags: [record, voice, daily]
+  why: 隐式陈述记录
+
+- msg: 大前天给我家狗洗澡了 洗了快一个小时
+  label: false
+  tags: [daily, record, voice]
+  why: 日常活动记录
+
+- msg: Daisy got his booster shot a couple days ago
+  label: false
+  tags: [record, en, voice, medical]
+  why: 英文占比补充
+
+- msg: 朵朵15号打完针有点蔫 现在活蹦乱跳了 记一下
+  label: false
+  tags: [record, voice, medical]
+  why: 补充记录样本
+
+- msg: 那个记录改一下 不是贝贝 是另一只
+  label: false
+  tags: [record, correction, voice]
+  why: 修正已有记录
+
+- msg: 小花这两天不爱吃干粮了 换成湿粮了 记一下
+  label: false
+  tags: [diet, record, voice, typo]
+  why: 喂食记录
+
+- msg: correction the vaccine date should be last friday
+  label: false
+  tags: [record, en, voice, correction]
+  why: 补充记录样本 英文
+
+- msg: 中午给旺旺修剪了脚底毛
+  label: false
+  tags: [record, voice, daily]
+  why: 补充记录样本
+
+- msg: Charlie skipped one meal over the weekend ate fine the next one
+  label: false
+  tags: [record, en, voice, gray]
+  why: 英文占比补充
+
+- msg: 前天带我家狗去河边玩水了 一身泥
+  label: false
+  tags: [daily, record, voice]
+  why: 日常活动记录
+
+- msg: milo lost a bit of weight down to 9 pounds
+  label: false
+  tags: [weight, record, en, voice]
+  why: 体重记录 英文
+
+- msg: buddy weighed 15 pounds this morning
+  label: false
+  tags: [record, en, voice, weight]
+  why: 隐式陈述记录 英文
+
+- msg: "brushed out Daisy's coat today shed a lot"
+  label: false
+  tags: [record, en, voice, daily]
+  why: 英文占比补充
+
+- msg: 奶茶前天第一次吃冻干 挺喜欢的 记录一下
+  label: false
+  tags: [record, voice, diet]
+  why: 补充记录样本
+
+- msg: 晚上称了一下他的口粮 一天喂80克左右
+  label: false
+  tags: [diet, record, voice]
+  why: 喂食记录
+
+- msg: "Coco's teeth cleaning appointment was today went well"
+  label: false
+  tags: [record, en, voice, medical]
+  why: 英文占比补充
+
+- msg: 3号带小仓鼠洗牙了 花了六百多
+  label: false
+  tags: [medical, record, voice]
+  why: 医疗记录
+
+- msg: Mochi got a bath and nail trim yesterday
+  label: false
+  tags: [record, en, voice, daily]
+  why: 英文占比补充
+
+- msg: 昨天 糯米和糯米都换了新粮 记一下
+  label: false
+  tags: [diet, record, voice, multi]
+  why: 喂食记录
+
+- msg: 胖胖这周瘦了点 称了下六斤半
+  label: false
+  tags: [weight, record, voice]
+  why: 体重记录
+
+- msg: 帮我记录 皮皮今天开始吃新粮了 换粮期
+  label: false
+  tags: [diet, record, voice]
+  why: 喂食记录
+
+- msg: Bella got his booster shot last wednesday
+  label: false
+  tags: [record, en, voice, medical]
+  why: 英文占比补充
+
+- msg: 早上给鹦鹉测了个血糖 数值正常
+  label: false
+  tags: [medical, record, voice]
+  why: 医疗跟进记录
+
+- msg: 家里猫主子周末打了加强针
+  label: false
+  tags: [medical, record, voice]
+  why: 医疗记录
+
+- msg: 这周一把旺财的驱虫日期改一下 弄错了
+  label: false
+  tags: [record, voice, medical, correction]
+  why: 补充记录样本
+
+- msg: 小七上周三称重八斤
+  label: false
+  tags: [record, voice, weight]
+  why: 隐式陈述记录
+
+- msg: 忘了记 旺财上周洗澡了 补一下
+  label: false
+  tags: [record, voice]
+  why: 补记记录
+
+- msg: 给皮皮糯米都办了驱虫套餐 上周末做的
+  label: false
+  tags: [medical, record, voice, multi]
+  why: 多宠物医疗记录
+
+- msg: 记录一下 奶茶这周开始不吃某个牌子的粮了
+  label: false
+  tags: [diet, record, voice]
+  why: 喂食记录
+
+- msg: took Bella to the dog park last month he had a blast
+  label: false
+  tags: [record, en, voice, daily]
+  why: 英文占比补充
+
+- msg: 记一下 豆浆上次昨天喝水有点多 想留个档
+  label: false
+  tags: [record, past, mild, gray, voice]
+  why: 事后轻微记录
+
+- msg: 洗牙花了两千二 记一下
+  label: false
+  tags: [medical, record, voice]
+  why: 医疗花费记录
+
+- msg: Oreo finished his new food bag a couple days ago seems to like it
+  label: false
+  tags: [record, en, voice, diet]
+  why: 英文占比补充
+
+- msg: gave Coco his deworming pill last week no issues
+  label: false
+  tags: [record, en, voice, medical]
+  why: 英文占比补充
+
+- msg: max was a little groggy after his shot today but fine now
+  label: false
+  tags: [record, en, voice, medical]
+  why: 补充记录样本 英文
+
+- msg: 上周五量了我家猫的体重 两斤八左右
+  label: false
+  tags: [weight, record, voice]
+  why: 体重记录
+
+- msg: 朵朵上次称重是周末 现在补记一下
+  label: false
+  tags: [record, voice, weight]
+  why: 补充记录样本
+
+- msg: 记一下 包子最新体重五公斤
+  label: false
+  tags: [weight, record, voice]
+  why: 体重记录
+
+- msg: took Charlie to the dog park this morning he had a blast
+  label: false
+  tags: [record, en, voice, daily]
+  why: 英文占比补充
+
+- msg: 小仓鼠拔了颗牙 上个月做的手术
+  label: false
+  tags: [medical, record, voice]
+  why: 医疗跟进记录
+
+- msg: 糯米不吃湿粮 来福倒是吃得挺香 前天观察到的
+  label: false
+  tags: [diet, record, voice]
+  why: 喂食记录
+
+- msg: Whiskers skipped one meal a couple days ago ate fine the next one
+  label: false
+  tags: [record, en, voice, gray]
+  why: 英文占比补充
+
+- msg: "brushed out Buddy's coat last wednesday shed a lot"
+  label: false
+  tags: [record, en, voice, daily]
+  why: 英文占比补充
+
+- msg: 鹦鹉前天拉了个便便挺正常的 记一下颜色
+  label: false
+  tags: [record, voice, daily]
+  why: 隐式陈述记录
+
+- msg: 来福8月30号第一次吃冻干 挺喜欢的 记录一下
+  label: false
+  tags: [record, voice, diet]
+  why: 补充记录样本
+
+- msg: "charlie's weight today was 30 pounds"
+  label: false
+  tags: [weight, record, en, voice]
+  why: 体重记录 英文
+
+- msg: "Buddy had a vet checkup just now vet said he's healthy"
+  label: false
+  tags: [record, en, voice, medical]
+  why: 英文占比补充
+
+- msg: 这周一给她团子都加了点冻干当零食
+  label: false
+  tags: [diet, record, voice, multi]
+  why: 喂食记录
+
+- msg: 蛋蛋上个月好像拉稀了一次 不严重 就记一下
+  label: false
+  tags: [record, past, mild, gray, voice]
+  why: 事后轻微记录
+
+- msg: 体检加拍片子花了八十块 刚才的事
+  label: false
+  tags: [medical, record, voice]
+  why: 医疗花费记录
+
+- msg: 米粒15号好像有点跛脚 不严重 就记一下
+  label: false
+  tags: [record, past, mild, gray, voice]
+  why: 事后轻微记录
+
+- msg: 小黑昨天在公园跑了好久 记录一下
+  label: false
+  tags: [daily, record, voice]
+  why: 日常活动记录
+
+- msg: 早上带乌龟做了体外驱虫 滴的那种药
+  label: false
+  tags: [medical, record, voice]
+  why: 医疗记录
+
+- msg: 帮我记一下 橙子上上周换成无谷粮了
+  label: false
+  tags: [record, voice, diet]
+  why: 补充记录样本
+
+- msg: 帮我记一下 小白今天剪指甲了
+  label: false
+  tags: [daily, record, voice]
+  why: 日常活动记录
+
+- msg: 国庆那几天带我家那只去打了加强针 记一下
+  label: false
+  tags: [medical, record, voice]
+  why: 医疗记录
+
+- msg: 刚才给乐乐加了顿猫条当奖励 记一下
+  label: false
+  tags: [record, voice, diet]
+  why: 补充记录样本
+
+- msg: "correcting the log Oreo's grooming was actually this morning not the date i said before"
+  label: false
+  tags: [record, en, voice, correction]
+  why: 英文占比补充
+
+- msg: ginger got extra snacks cause she was being cute
+  label: false
+  tags: [diet, record, en, voice]
+  why: 喂食记录 英文
+
+- msg: 记一下 团子最新体重四点五公斤
+  label: false
+  tags: [weight, record, voice]
+  why: 体重记录
+
+- msg: 晚上 就 忘记喂小仓鼠早饭了 中午才吃的
+  label: false
+  tags: [diet, record, voice]
+  why: 喂食记录
+
+- msg: 旺旺15号打了狂犬疫苗的加强针
+  label: false
+  tags: [record, voice, medical]
+  why: 补充记录样本
+
+- msg: 上周五包子第一次坐车出门去公园
+  label: false
+  tags: [record, voice, daily]
+  why: 补充记录样本
+
+- msg: 上周三发现我家猫有点跛脚 观察了一下现在正常了
+  label: false
+  tags: [record, past, mild, gray, voice]
+  why: 事后轻微记录
+
+- msg: just logging that Luna went swimming last month
+  label: false
+  tags: [record, en, voice, daily]
+  why: 英文占比补充
+
+- msg: 咪咪刚才洗澡了
+  label: false
+  tags: [record, voice, daily]
+  why: 隐式陈述记录
+
+- msg: "Bella's teeth cleaning appointment was last month went well"
+  label: false
+  tags: [record, en, voice, medical]
+  why: 英文占比补充
+
+- msg: 体检加拍片子花了五百多 国庆那几天的事
+  label: false
+  tags: [medical, record, voice]
+  why: 医疗花费记录
+
+- msg: 可乐这个月初训练课学会了握手
+  label: false
+  tags: [daily, record, voice]
+  why: 日常活动记录
+
+- msg: 我家猫和虎子一起上了训练课 今天的事
+  label: false
+  tags: [daily, record, voice, multi]
+  why: 多宠物日常记录
+
+- msg: "Coco had a small upset stomach last wednesday but he's back to normal now"
+  label: false
+  tags: [record, en, voice, medical, gray]
+  why: 英文占比补充
+
+- msg: 刚刚朵朵把整袋零食都造完了 有点多
+  label: false
+  tags: [record, voice, diet]
+  why: 补充记录样本
+
+- msg: 给刺猬剃毛了 8月30号刚弄完
+  label: false
+  tags: [daily, record, voice]
+  why: 日常活动记录
+
+- msg: 刚才乌龟把整袋零食都造完了 有点多
+  label: false
+  tags: [record, voice, diet]
+  why: 补充记录样本
+
+- msg: 那个 鹦鹉上个月不怎么吃粮 就吃了一点点
+  label: false
+  tags: [diet, record, voice]
+  why: 喂食记录
+
+- msg: 包子中午去医院拿药了 皮肤病的药膏
+  label: false
+  tags: [medical, record, voice]
+  why: 医疗记录
+
+- msg: 上个月称了一下毛毛的口粮 一天喂80克左右
+  label: false
+  tags: [diet, record, voice]
+  why: 喂食记录
+
+- msg: 朵朵15号去医院拿药了 皮肤病的药膏
+  label: false
+  tags: [medical, record, voice]
+  why: 医疗记录
+
+- msg: 记一下 我家狗今天做了心丝虫检测
+  label: false
+  tags: [medical, record, voice]
+  why: 医疗记录
+
+- msg: 记一下 妞妞上次15号拉稀了一次 想留个档
+  label: false
+  tags: [record, past, mild, gray, voice]
+  why: 事后轻微记录
+
+- msg: 那个 小花大前天不怎么吃粮 就吃了一点点
+  label: false
+  tags: [diet, record, voice]
+  why: 喂食记录
+
+- msg: 球球今天绝育了 手术很顺利 记一下
+  label: false
+  tags: [medical, record, voice]
+  why: 医疗记录
+
+- msg: coco pooped normal today just noting
+  label: false
+  tags: [record, en, voice, diet]
+  why: 隐式陈述记录 英文
+
+- msg: 早上给乖乖测了体温 三十八度八
+  label: false
+  tags: [record, voice, medical]
+  why: 补充记录样本
+
+- msg: 帮我记录一下 鹦鹉刚才挠痒挠得厉害 精神还挺好的
+  label: false
+  tags: [record, past, mild, gray, voice]
+  why: 事后轻微记录
+
+- msg: 上周三带兔兔和我家狗一起打了疫苗
+  label: false
+  tags: [medical, record, voice, multi]
+  why: 多宠物医疗记录
+
+- msg: 这周一称了一下虎子的口粮 一天喂80克左右
+  label: false
+  tags: [diet, record, voice]
+  why: 喂食记录
+
+- msg: 米粒大前天在公园跑了好久 记录一下
+  label: false
+  tags: [daily, record, voice]
+  why: 日常活动记录
+
+- msg: 刚才记错了 家里的狗子洗澡是今天不是昨天
+  label: false
+  tags: [record, correction, voice]
+  why: 修正已有记录
+
+- msg: 前天给我家那只咪咪都剪了指甲
+  label: false
+  tags: [daily, record, voice, multi]
+  why: 多宠物日常记录
+
+- msg: 体检加拍片子花了两千二 前天的事
+  label: false
+  tags: [medical, record, voice]
+  why: 医疗花费记录
+
+- msg: 大前天把布丁的驱虫日期改一下 弄错了
+  label: false
+  tags: [record, voice, medical, correction]
+  why: 补充记录样本
+
+- msg: 刚刚乖乖体检合格
+  label: false
+  tags: [record, voice, medical]
+  why: 隐式陈述记录
+
+- msg: 刚才发现球球眼屎有点多 观察了一下现在正常了
+  label: false
+  tags: [record, past, mild, gray, voice]
+  why: 事后轻微记录
+
+- msg: 给咪咪买了猫条 8月30号吃了好多
+  label: false
+  tags: [diet, record, voice]
+  why: 喂食记录
+
+- msg: 给团子乖乖都办了驱虫套餐 这个月初做的
+  label: false
+  tags: [medical, record, voice, multi]
+  why: 多宠物医疗记录
+
+- msg: 8月30号布丁洗了牙
+  label: false
+  tags: [record, voice, daily]
+  why: 隐式陈述记录
+
+- msg: gave max some new kibble today gonna log it
+  label: false
+  tags: [diet, record, en, voice]
+  why: 喂食记录 英文
+
+- msg: just logging that Ginger went swimming just now
+  label: false
+  tags: [record, en, voice, daily]
+  why: 英文占比补充
+
+- msg: 乌龟国庆那几天第一次吃冻干 挺喜欢的 记录一下
+  label: false
+  tags: [record, voice, diet]
+  why: 补充记录样本
+
+- msg: 糯米今天在小区里社交 交了新朋友 刚刚的事
+  label: false
+  tags: [record, voice, daily]
+  why: 补充记录样本
+
+- msg: 给刺猬剃毛了 前天刚弄完
+  label: false
+  tags: [daily, record, voice]
+  why: 日常活动记录
+
+- msg: 呃家里的狗子今天梳毛梳出好多毛球
+  label: false
+  tags: [daily, record, voice]
+  why: 日常活动记录
+
+- msg: just logging that Bella went swimming yesterday
+  label: false
+  tags: [record, en, voice, daily]
+  why: 英文占比补充
+
+- msg: 猫猫上个月去医院拿药了 皮肤病的药膏
+  label: false
+  tags: [medical, record, voice]
+  why: 医疗记录
+
+- msg: 体检加拍片子花了八十块 上个月的事
+  label: false
+  tags: [medical, record, voice]
+  why: 医疗花费记录
+
+- msg: 小白上周三打了狂犬疫苗的加强针
+  label: false
+  tags: [record, voice, medical]
+  why: 补充记录样本
+
+- msg: 记一下 龙猫最新体重三斤二
+  label: false
+  tags: [weight, record, voice]
+  why: 体重记录
+
+- msg: 上周末给贝贝换药了 伤口恢复得不错
+  label: false
+  tags: [medical, record, voice]
+  why: 医疗跟进记录
+
+- msg: 她早上学会了新指令 等等
+  label: false
+  tags: [record, voice]
+  why: 补充记录样本
+
+- msg: 帮我记录一下 他大前天咳嗽了两声 精神还挺好的
+  label: false
+  tags: [record, past, mild, gray, voice]
+  why: 事后轻微记录
+
+- msg: 早上给我家那只修剪了脚底毛
+  label: false
+  tags: [record, voice, daily]
+  why: 补充记录样本
+
+- msg: 前天称了一下饺子 八公斤整 记一下
+  label: false
+  tags: [weight, record, voice]
+  why: 体重记录
+
+- msg: Charlie got a bath and nail trim over the weekend
+  label: false
+  tags: [record, en, voice, daily]
+  why: 英文占比补充
+
+- msg: 布丁这周一体重五公斤 帮我记录
+  label: false
+  tags: [weight, record, voice]
+  why: 体重记录
+
+- msg: 给奶茶买了狗饼干 晚上吃了好多
+  label: false
+  tags: [diet, record, voice]
+  why: 喂食记录
+
+- msg: 8月30号给龙猫柚子都加了点冻干当零食
+  label: false
+  tags: [diet, record, voice, multi]
+  why: 喂食记录
+
+- msg: 蛋蛋上次称重是刚刚 现在补记一下
+  label: false
+  tags: [record, voice, weight]
+  why: 补充记录样本
+
+- msg: "brushed out Charlie's coat a couple days ago shed a lot"
+  label: false
+  tags: [record, en, voice, daily]
+  why: 英文占比补充
+
+- msg: 米粒这个月初学会了新指令 等等
+  label: false
+  tags: [record, voice]
+  why: 补充记录样本
+
+- msg: 柚子周末挑食 只吃罐头不吃干粮
+  label: false
+  tags: [record, voice, diet]
+  why: 补充记录样本
+
+- msg: 这个月初毛毛和兔兔都去体检了 都挺健康的
+  label: false
+  tags: [medical, record, voice, multi]
+  why: 多宠物医疗记录
+
+- msg: "coco's skin checkup went well today much better"
+  label: false
+  tags: [record, en, voice, medical]
+  why: 补充记录样本 英文
+
+- msg: 记录改一下 龙猫打疫苗是刚才 不是别的日子
+  label: false
+  tags: [record, voice, medical, correction]
+  why: 补充记录样本
+
+- msg: 鹦鹉中午训练课学会了握手
+  label: false
+  tags: [daily, record, voice]
+  why: 日常活动记录
+
+- msg: 美美昨天拔了颗乳牙 医生说正常
+  label: false
+  tags: [record, voice, medical]
+  why: 补充记录样本
+
+- msg: 小维这个月驱虫时间到了 大前天做的
+  label: false
+  tags: [record, voice, medical]
+  why: 补充记录样本
+
+- msg: "Mochi had a small upset stomach just now but he's back to normal now"
+  label: false
+  tags: [record, en, voice, medical, gray]
+  why: 英文占比补充
+
+- msg: took max to the vet today for his rabies shot
+  label: false
+  tags: [medical, record, en, voice]
+  why: 医疗记录 英文
+
+- msg: log that 他 refuses to eat the new brand of kibble
+  label: false
+  tags: [diet, record, voice, en]
+  why: 换粮/不吃记录
+
+- msg: Mochi finished his new food bag this morning seems to like it
+  label: false
+  tags: [record, en, voice, diet]
+  why: 英文占比补充
+
+- msg: 哎 阿七今天不怎么吃粮 就吃了一点点
+  label: false
+  tags: [diet, record, voice]
+  why: 喂食记录
+
+- msg: "brushed out Bella's coat yesterday shed a lot"
+  label: false
+  tags: [record, en, voice, daily]
+  why: 英文占比补充
+
+- msg: 龙猫晚上挑食 只吃罐头不吃干粮
+  label: false
+  tags: [record, voice, diet]
+  why: 补充记录样本
+
+- msg: 包子这个月驱虫时间到了 上周五做的
+  label: false
+  tags: [record, voice, medical]
+  why: 补充记录样本
+
+- msg: 15号称了一下兔兔 八公斤整 记一下
+  label: false
+  tags: [weight, record, voice]
+  why: 体重记录
+
+- msg: 补一下之前的记录 兔兔上个月体检过一次
+  label: false
+  tags: [record, voice]
+  why: 补记记录
+
+- msg: 乌龟大前天去医院量了体温 三十八度五
+  label: false
+  tags: [medical, record, voice]
+  why: 医疗跟进记录
+
+- msg: took charlie for a walk by the river today
+  label: false
+  tags: [record, en, voice, daily]
+  why: 补充记录样本 英文
+
+- msg: 刚才带花花做了体外驱虫 滴的那种药
+  label: false
+  tags: [medical, record, voice]
+  why: 医疗记录
+
+- msg: 给兔兔买了小鱼干 昨天吃了好多
+  label: false
+  tags: [diet, record, voice, typo]
+  why: 喂食记录
+
+- msg: took Max to the dog park over the weekend he had a blast
+  label: false
+  tags: [record, en, voice, daily]
+  why: 英文占比补充
+
+- msg: 皮皮这个月驱虫时间到了 这个月初做的
+  label: false
+  tags: [record, voice, medical]
+  why: 补充记录样本
+
+- msg: gave Ginger his deworming pill a couple days ago no issues
+  label: false
+  tags: [record, en, voice, medical]
+  why: 英文占比补充
+
+- msg: note that 胖胖 had a really active play session today
+  label: false
+  tags: [daily, record, voice, en]
+  why: 日常活动记录
+
+- msg: "trimmed the fur on ginger's paws today"
+  label: false
+  tags: [record, en, voice, daily]
+  why: 补充记录样本 英文
+
+- msg: 乐乐中午好像抽了一下筋 现在没事了 想留个记录
+  label: false
+  tags: [record, past, gray, keyword_trap, voice]
+  why: 事后严重词汇但已恢复
+
+- msg: 可乐今天学会了新指令 等等
+  label: false
+  tags: [record, voice]
+  why: 补充记录样本
+
+- msg: 记一下 朵朵上周晕倒了一次 后来自己好了 现在活蹦乱跳
+  label: false
+  tags: [record, past, gray, keyword_trap, voice]
+  why: 事后严重词汇但已恢复
+
+- msg: 星期二那天我家那只不爱吃饭一顿 今天已经没事了 记个数
+  label: false
+  tags: [record, past, mild, gray, voice]
+  why: 事后轻微记录
+
+- msg: 她不吃湿粮 我家猫倒是吃得挺香 前天观察到的
+  label: false
+  tags: [diet, record, voice]
+  why: 喂食记录
+
+- msg: Coco skipped one meal last wednesday ate fine the next one
+  label: false
+  tags: [record, en, voice, gray]
+  why: 英文占比补充
+
+- msg: 记一下 豆浆上次昨天拉稀了一次 想留个档
+  label: false
+  tags: [record, past, mild, gray, voice]
+  why: 事后轻微记录
+
+- msg: 刚才带乌龟和鹦鹉一起打了疫苗
+  label: false
+  tags: [medical, record, voice, multi]
+  why: 多宠物医疗记录
+
+- msg: 帮我记一下 小黑3号换成无谷粮了
+  label: false
+  tags: [record, voice, diet]
+  why: 补充记录样本
+
+- msg: 我家狗这周瘦了点 称了下两斤八
+  label: false
+  tags: [weight, record, voice]
+  why: 体重记录
+
+- msg: Luna finished his new food bag over the weekend seems to like it
+  label: false
+  tags: [record, en, voice, diet]
+  why: 英文占比补充
+
+- msg: 龙猫刚刚第一次吃冻干 挺喜欢的 记录一下
+  label: false
+  tags: [record, voice, diet]
+  why: 补充记录样本
+
+- msg: 小黑今天玩疯了 追了半天球 记一下
+  label: false
+  tags: [daily, record, voice]
+  why: 日常活动记录
+
+- msg: 8月30号给馒头洗澡了 洗了快一个小时
+  label: false
+  tags: [daily, record, voice]
+  why: 日常活动记录
+
+- msg: 橙子上周五第一次吃冻干 挺喜欢的 记录一下
+  label: false
+  tags: [record, voice, diet]
+  why: 补充记录样本
+
+- msg: 国庆那几天给乌龟阿七都剪了指甲
+  label: false
+  tags: [daily, record, voice, multi]
+  why: 多宠物日常记录
+
+- msg: luna got spayed today surgery went fine
+  label: false
+  tags: [medical, record, en, voice]
+  why: 医疗记录 英文
+
+- msg: 上周末 就 忘记喂刺猬早饭了 中午才吃的
+  label: false
+  tags: [diet, record, voice, typo]
+  why: 喂食记录
+
+- msg: 刚才 她和家里的狗子都换了新粮 记一下
+  label: false
+  tags: [diet, record, voice, multi]
+  why: 喂食记录
+
+- msg: 改成刺猬前天洗澡的 不是今天
+  label: false
+  tags: [record, correction, voice]
+  why: 修正日期
+
+- msg: 乐乐上周三拔了颗乳牙 医生说正常
+  label: false
+  tags: [record, voice, medical]
+  why: 补充记录样本
+
+- msg: Buddy finished his new food bag this morning seems to like it
+  label: false
+  tags: [record, en, voice, diet]
+  why: 英文占比补充
+
+- msg: 记一下 刺猬上周三吃了个罐头 拌着粮吃的
+  label: false
+  tags: [diet, record, voice]
+  why: 喂食记录
+
+- msg: 乖乖国庆那几天驱虫了 体内驱虫那种
+  label: false
+  tags: [medical, record, voice]
+  why: 医疗记录
+
+- msg: Buddy had his annual vet visit this morning everything was normal
+  label: false
+  tags: [record, en, voice, medical]
+  why: 英文占比补充
+
+- msg: 上个月带家里的狗子和豆浆一起打了疫苗
+  label: false
+  tags: [medical, record, voice, multi]
+  why: 多宠物医疗记录
+
+- msg: 国庆那几天给柚子加了顿猫条当奖励 记一下
+  label: false
+  tags: [record, voice, diet]
+  why: 补充记录样本
+
+- msg: 帮我记一下 龙猫今天剪指甲了
+  label: false
+  tags: [daily, record, voice]
+  why: 日常活动记录
+
+- msg: 乌龟今天玩疯了 追了半天球 记一下
+  label: false
+  tags: [daily, record, voice]
+  why: 日常活动记录
+
+- msg: 壮壮上周五抽搐了一下 现在完全正常了 帮我记一下方便复诊时说
+  label: false
+  tags: [record, past, gray, keyword_trap, voice]
+  why: 事后严重词汇但已恢复
+
+- msg: oreo learned a new trick today sit and stay
+  label: false
+  tags: [record, en, voice]
+  why: 补充记录样本 英文
+
+- msg: 8月30号发现家里猫主子喝水有点多 观察了一下现在正常了
+  label: false
+  tags: [record, past, mild, gray, voice]
+  why: 事后轻微记录
+
+- msg: 今天嗯带乐乐社交课 记一下
+  label: false
+  tags: [daily, record, voice]
+  why: 日常活动记录
+
+- msg: 上周五鹦鹉和汤圆都去体检了 都挺健康的
+  label: false
+  tags: [medical, record, voice, multi]
+  why: 多宠物医疗记录
+
+- msg: 帮我记一下 乌龟昨天换成无谷粮了
+  label: false
+  tags: [record, voice, diet]
+  why: 补充记录样本
+
+- msg: 上周五喂刺猬吃了半个煮鸡蛋加一点点南瓜
+  label: false
+  tags: [diet, record, voice, typo]
+  why: 喂食记录
+
+- msg: "Daisy had a vet checkup this morning vet said he's healthy"
+  label: false
+  tags: [record, en, voice, medical]
+  why: 英文占比补充
+
+- msg: 不是昨天 是前天 球球打疫苗的事 改一下
+  label: false
+  tags: [record, correction, voice]
+  why: 修正已有记录
+
+- msg: 记一下 家里猫主子最新体重两斤八
+  label: false
+  tags: [weight, record, voice]
+  why: 体重记录
+
+- msg: 刺猬刚才训练课学会了握手
+  label: false
+  tags: [daily, record, voice]
+  why: 日常活动记录
+
+- msg: 汤圆上周末好像打了几个喷嚏 不严重 就记一下
+  label: false
+  tags: [record, past, mild, gray, voice]
+  why: 事后轻微记录
+
+- msg: 这周一 兔兔和小仓鼠都换了新粮 记一下
+  label: false
+  tags: [diet, record, voice, multi]
+  why: 喂食记录
+
+- msg: 昨天给小黑加了顿夜宵 猫条那种
+  label: false
+  tags: [diet, record, voice]
+  why: 喂食记录
+
+- msg: 早上量了他的体重 十二斤左右
+  label: false
+  tags: [weight, record, voice]
+  why: 体重记录
+
+- msg: coco weighed in at 18 pounds this morning
+  label: false
+  tags: [weight, record, en, voice]
+  why: 体重记录 英文
+
+- msg: daisy ate like a ton of treats today lol log that
+  label: false
+  tags: [diet, record, en, voice]
+  why: 喂食记录 英文
+
+- msg: 小七国庆那几天拔了颗乳牙 医生说正常
+  label: false
+  tags: [record, voice, medical]
+  why: 补充记录样本
+
+- msg: 8月30号米粒和鹦鹉都洗澡了 记一下
+  label: false
+  tags: [daily, record, voice, multi]
+  why: 多宠物日常记录
+
+- msg: 帮我记录一下 兔兔晚上拉稀了一次 精神还挺好的
+  label: false
+  tags: [record, past, mild, gray, voice]
+  why: 事后轻微记录
+
+- msg: 馒头大前天挑食 只吃罐头不吃干粮
+  label: false
+  tags: [record, voice, diet]
+  why: 补充记录样本
+
+- msg: 晚上 小仓鼠和小仓鼠都换了新粮 记一下
+  label: false
+  tags: [diet, record, voice, multi]
+  why: 喂食记录
+
+- msg: 周末称了一下龙猫的口粮 一天喂80克左右
+  label: false
+  tags: [diet, record, voice]
+  why: 喂食记录
+
+- msg: 刺猬这周瘦了点 称了下十二斤
+  label: false
+  tags: [weight, record, voice]
+  why: 体重记录
+
+- msg: 贝贝这周一在公园跑了好久 记录一下
+  label: false
+  tags: [daily, record, voice]
+  why: 日常活动记录
+
+- msg: 橙子朵朵这周都驱虫了 记一下
+  label: false
+  tags: [medical, record, voice, multi]
+  why: 多宠物医疗记录
+
+- msg: 兔兔上周三学会了新指令 等等
+  label: false
+  tags: [record, voice]
+  why: 补充记录样本
+
+- msg: "weighed Buddy last week he's holding steady"
+  label: false
+  tags: [record, en, voice, weight]
+  why: 英文占比补充
+
+- msg: oreo had his teeth cleaned today
+  label: false
+  tags: [record, en, voice, medical]
+  why: 隐式陈述记录 英文
+
+- msg: 乌龟刚刚驱虫了 体内驱虫那种
+  label: false
+  tags: [medical, record, voice]
+  why: 医疗记录
+
+- msg: 奶茶这个月驱虫时间到了 8月30号做的
+  label: false
+  tags: [record, voice, medical]
+  why: 补充记录样本
+
+- msg: 早上给壮壮换了蓝爵的粮 帮我记一下
+  label: false
+  tags: [diet, record, voice]
+  why: 喂食记录
+
+- msg: 中午打疫苗加驱虫一共花了一千五
+  label: false
+  tags: [medical, record, voice]
+  why: 医疗花费记录
+
+- msg: 那个皮皮今天梳毛梳出好多毛球
+  label: false
+  tags: [daily, record, voice]
+  why: 日常活动记录
+
+- msg: 兔兔这两天不爱吃干粮了 换成湿粮了 记一下
+  label: false
+  tags: [diet, record, voice]
+  why: 喂食记录
+
+- msg: 漏记了 小维上个月驱虫了 帮忙补上
+  label: false
+  tags: [record, voice]
+  why: 补记记录
+
+- msg: 刚才带贝贝去河边玩水了 一身泥
+  label: false
+  tags: [daily, record, voice]
+  why: 日常活动记录
+
+- msg: 刚刚毛毛洗了牙
+  label: false
+  tags: [record, voice, daily]
+  why: 隐式陈述记录
+
+- msg: 乌龟这次绝育手术花了四百六十
+  label: false
+  tags: [medical, record, voice]
+  why: 医疗花费记录
+
+- msg: 兔兔晚上抽搐了一下 现在完全正常了 帮我记一下方便复诊时说
+  label: false
+  tags: [record, past, gray, keyword_trap, voice]
+  why: 事后严重词汇但已恢复
+
+- msg: 15号带蛋蛋复查了皮肤 好多了
+  label: false
+  tags: [record, voice, medical]
+  why: 补充记录样本
+
+- msg: 乌龟昨天称重八斤
+  label: false
+  tags: [record, voice, weight]
+  why: 隐式陈述记录
+
+- msg: 豆浆星期二那天拔了颗乳牙 医生说正常
+  label: false
+  tags: [record, voice, medical]
+  why: 补充记录样本
+
+- msg: 今天刺猬和朵朵都去体检了 都挺健康的
+  label: false
+  tags: [medical, record, voice, multi]
+  why: 多宠物医疗记录
+
+- msg: 阿七这周吃了驱虫药 记一下时间方便下次算
+  label: false
+  tags: [medical, record, voice]
+  why: 医疗跟进记录
+
+- msg: 这周一龙猫吐了一次 今天已经没事了 记个数
+  label: false
+  tags: [record, past, mild, gray, voice]
+  why: 事后轻微记录
+
+- msg: "Oreo had a vet checkup today vet said he's healthy"
+  label: false
+  tags: [record, en, voice, medical]
+  why: 英文占比补充
+
+- msg: luna is up to 4.2 kg just logging her weight
+  label: false
+  tags: [weight, record, en, voice]
+  why: 体重记录 英文
+
+- msg: "just wanna log that luna threw up once yesterday she's totally fine now"
+  label: false
+  tags: [record, past, mild, gray, en, voice]
+  why: 事后轻微记录 英文
+
+- msg: 这周一带龙猫去打了三联疫苗 记一下
+  label: false
+  tags: [medical, record, voice]
+  why: 医疗记录
+
+- msg: 记录改一下 可乐打疫苗是刚才 不是别的日子
+  label: false
+  tags: [record, voice, medical, correction]
+  why: 补充记录样本
+
+- msg: 早上给馒头阿黄都剪了指甲
+  label: false
+  tags: [daily, record, voice, multi]
+  why: 多宠物日常记录
+
+- msg: 昨天给蛋蛋加了顿猫条当奖励 记一下
+  label: false
+  tags: [record, voice, diet]
+  why: 补充记录样本
+
+- msg: "Whiskers had a vet checkup last wednesday vet said he's healthy"
+  label: false
+  tags: [record, en, voice, medical]
+  why: 英文占比补充
+
+- msg: 上周末带妞妞复查了皮肤 好多了
+  label: false
+  tags: [record, voice, medical]
+  why: 补充记录样本
+
+- msg: Mochi had his annual vet visit the day before yesterday everything was normal
+  label: false
+  tags: [record, en, voice, medical]
+  why: 英文占比补充
+
+- msg: 3号带鹦鹉和乖乖一起打了疫苗
+  label: false
+  tags: [medical, record, voice, multi]
+  why: 多宠物医疗记录
+
+- msg: 周末称了一下可乐的口粮 一天喂80克左右
+  label: false
+  tags: [diet, record, voice]
+  why: 喂食记录
+
+- msg: 小黑对某个牌子的猫粮过敏 以后不能买那个了 记一下
+  label: false
+  tags: [diet, record, voice]
+  why: 换粮/不吃记录
+
+- msg: Milo got a bath and nail trim the day before yesterday
+  label: false
+  tags: [record, en, voice, daily]
+  why: 英文占比补充
+
+- msg: 中午 啊 忘记喂豆豆早饭了 中午才吃的
+  label: false
+  tags: [diet, record, voice]
+  why: 喂食记录
+
+- msg: 体检加拍片子花了五百多 3号的事
+  label: false
+  tags: [medical, record, voice]
+  why: 医疗花费记录
+
+- msg: 给小黑皮皮都办了驱虫套餐 早上做的
+  label: false
+  tags: [medical, record, voice, multi]
+  why: 多宠物医疗记录
+
+- msg: 妞妞这周吃了驱虫药 记一下时间方便下次算
+  label: false
+  tags: [medical, record, voice]
+  why: 医疗跟进记录
+
+- msg: 3号乌龟把整袋零食都造完了 有点多
+  label: false
+  tags: [record, voice, diet]
+  why: 补充记录样本
+
+- msg: 上个月小花和阿黄都去体检了 都挺健康的
+  label: false
+  tags: [medical, record, voice, multi]
+  why: 多宠物医疗记录
+
+- msg: 8月30号的事补记一下 小七打了疫苗
+  label: false
+  tags: [record, voice]
+  why: 补记记录
+
+- msg: 上周五发现虎子挠痒挠得厉害 观察了一下现在正常了
+  label: false
+  tags: [record, past, mild, gray, voice]
+  why: 事后轻微记录
+
+- msg: took Ginger to the dog park the day before yesterday he had a blast
+  label: false
+  tags: [record, en, voice, daily]
+  why: 英文占比补充
+
+- msg: 给猫猫龙猫都办了驱虫套餐 大前天做的
+  label: false
+  tags: [medical, record, voice, multi]
+  why: 多宠物医疗记录
+
+- msg: bella went in for her booster shot yesterday
+  label: false
+  tags: [medical, record, en, voice]
+  why: 医疗记录 英文
+
+- msg: Daisy skipped one meal last week ate fine the next one
+  label: false
+  tags: [record, en, voice, gray]
+  why: 英文占比补充
+
+- msg: Bella got a bath and nail trim this morning
+  label: false
+  tags: [record, en, voice, daily]
+  why: 英文占比补充
+
+- msg: 帮我记录 柚子今天开始吃新粮了 换粮期
+  label: false
+  tags: [diet, record, voice]
+  why: 喂食记录

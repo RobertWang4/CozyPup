@@ -1,0 +1,1200 @@
+- msg: 明天早上提醒我给豆豆喂药
+  label: false
+  tags: [reminder, voice]
+  why: 一次性提醒
+- msg: 帮我设个提醒 下周二带咪咪打疫苗
+  label: false
+  tags: [reminder, voice]
+  why: 一次性提醒
+- msg: 3号那天要带团子复查 提前提醒我一下
+  label: false
+  tags: [reminder, voice]
+  why: 一次性提醒
+- msg: 月底了 记得提醒我给旺财驱虫
+  label: false
+  tags: [reminder, voice]
+  why: 一次性提醒
+- msg: 两小时后提醒我换水 给球球的
+  label: false
+  tags: [reminder, voice]
+  why: 一次性提醒
+- msg: 那个 明早八点提醒我一下 维尼要吃药了
+  label: false
+  tags: [reminder, voice]
+  why: 一次性提醒
+- msg: remind me tomorrow morning to feed max his meds
+  label: false
+  tags: [reminder, en, voice]
+  why: 一次性提醒
+- msg: 提醒我下周二早上带luna去打疫苗
+  label: false
+  tags: [reminder, voice, en]
+  why: 一次性提醒
+- msg: 3号带小维去复查 别忘提醒我
+  label: false
+  tags: [reminder, voice]
+  why: 一次性提醒
+- msg: 月底给花花驱虫 到时候提醒我一声
+  label: false
+  tags: [reminder, voice]
+  why: 一次性提醒
+- msg: 帮我提醒下 两个小时之后要给鱼缸那边 呃不对是给兔子换水
+  label: false
+  tags: [reminder, voice, typo]
+  why: 一次性提醒
+- msg: 后天下午三点提醒我带饺子去洗澡
+  label: false
+  tags: [reminder, voice]
+  why: 一次性提醒
+- msg: 下下周一提醒我去药店取药 是给可乐的
+  label: false
+  tags: [reminder, voice]
+  why: 一次性提醒
+- msg: 今晚十点提醒我一下 该喂猫粮了
+  label: false
+  tags: [reminder, voice]
+  why: 一次性提醒
+- msg: 半小时后提醒我给团子喝水加水
+  label: false
+  tags: [reminder, voice]
+  why: 一次性提醒
+- msg: remind me in 2 hours to change the water bowl
+  label: false
+  tags: [reminder, en, voice]
+  why: 一次性提醒
+- msg: can u remind me next tuesday to take mochi for vaccine
+  label: false
+  tags: [reminder, en, voice]
+  why: 一次性提醒
+- msg: 那个 提醒我一下 后天早上要给布丁称重
+  label: false
+  tags: [reminder, voice]
+  why: 一次性提醒
+- msg: 帮我记个提醒 下周五复诊 汤圆的
+  label: false
+  tags: [reminder, voice]
+  why: 一次性提醒
+- msg: 明天中午十二点提醒我给糯米喂药 别忘了
+  label: false
+  tags: [reminder, voice]
+  why: 一次性提醒
+- msg: 大概再过一小时提醒我一下 该给仓鼠换垫料了
+  label: false
+  tags: [reminder, voice]
+  why: 一次性提醒
+- msg: 下周三上午提醒我带小白去体检
+  label: false
+  tags: [reminder, voice]
+  why: 一次性提醒
+- msg: 黑豆下个月三号要打针 提前一天提醒我
+  label: false
+  tags: [reminder, voice]
+  why: 一次性提醒
+- msg: 土豆明天要驱虫 记得早上提醒我一下
+  label: false
+  tags: [reminder, voice]
+  why: 一次性提醒
+- msg: 馒头下周要复查伤口 帮我设个提醒吧
+  label: false
+  tags: [reminder, voice]
+  why: 一次性提醒
+- msg: 阿福那个 就是 后天早上九点提醒我喂它吃驱虫药
+  label: false
+  tags: [reminder, voice]
+  why: 一次性提醒
+- msg: 来福这周六要洗澡 提前一小时提醒我准备水
+  label: false
+  tags: [reminder, voice]
+  why: 一次性提醒
+- msg: 雪球明天下午两点要打疫苗 提醒我
+  label: false
+  tags: [reminder, voice]
+  why: 一次性提醒
+- msg: 奶茶下下周复查 到时候提醒我请假
+  label: false
+  tags: [reminder, voice]
+  why: 一次性提醒
+- msg: 芒果这周五要体检 早上提醒我一下带它出门
+  label: false
+  tags: [reminder, voice]
+  why: 一次性提醒
+- msg: set a reminder for next monday to bring bella in for her shot
+  label: false
+  tags: [reminder, en, voice]
+  why: 一次性提醒
+- msg: remind me the 15th to take charlie for deworming
+  label: false
+  tags: [reminder, en, voice]
+  why: 一次性提醒
+- msg: hey remind me in like an hour to give coco water
+  label: false
+  tags: [reminder, en, voice]
+  why: 一次性提醒
+- msg: 柚子这周日要打疫苗 提醒我提前预约
+  label: false
+  tags: [reminder, voice]
+  why: 一次性提醒
+- msg: 明天要带daisy去复诊 提醒我一下行吗
+  label: false
+  tags: [reminder, en, voice]
+  why: 一次性提醒
+- msg: 下周四提醒我给rocky做驱虫
+  label: false
+  tags: [reminder, en, voice]
+  why: 一次性提醒
+- msg: 呃 提醒我一下 milo明早要空腹去抽血
+  label: false
+  tags: [reminder, en, voice]
+  why: 一次性提醒
+- msg: oscar has a vet appt next wed remind me to book off work
+  label: false
+  tags: [reminder, en, voice]
+  why: 一次性提醒
+- msg: zoe明天要拆线 早上八点提醒我一下
+  label: false
+  tags: [reminder, en, voice]
+  why: 一次性提醒
+- msg: 十五号那天提醒我带旺财去洗牙
+  label: false
+  tags: [reminder, voice]
+  why: 一次性提醒
+- msg: 后天早上七点半 提醒我一下 花花要复检
+  label: false
+  tags: [reminder, voice]
+  why: 一次性提醒
+- msg: 就是 那个 明天晚上提醒我喂咪咪吃钙片
+  label: false
+  tags: [reminder, voice]
+  why: 一次性提醒
+- msg: 三小时后提醒我 给团子的水加满
+  label: false
+  tags: [reminder, voice]
+  why: 一次性提醒
+- msg: 下周提醒我一下 忘了具体哪天了 反正是打疫苗那天
+  label: false
+  tags: [reminder, voice, gray]
+  why: 一次性提醒
+- msg: 提醒我明天上午十点 维尼要做血检
+  label: false
+  tags: [reminder, voice]
+  why: 一次性提醒
+- msg: 下个月初提醒我给球球买驱虫药
+  label: false
+  tags: [reminder, voice]
+  why: 一次性提醒
+- msg: 帮我设个提醒 周日下午带小维去洗澡店
+  label: false
+  tags: [reminder, voice]
+  why: 一次性提醒
+- msg: remind me next friday to get max his rabies shot
+  label: false
+  tags: [reminder, en, voice]
+  why: 一次性提醒
+- msg: 提醒我一下 二十号是布丁复诊的日子
+  label: false
+  tags: [reminder, voice]
+  why: 一次性提醒
+- msg: 明天下午四点提醒我喂鸟换水
+  label: false
+  tags: [reminder, voice]
+  why: 一次性提醒
+- msg: 后天提醒我带乌龟去测甲状腺 呃是不是这个词
+  label: false
+  tags: [reminder, voice, typo]
+  why: 一次性提醒
+- msg: 提醒我周三下班后带汤圆去打针
+  label: false
+  tags: [reminder, voice]
+  why: 一次性提醒
+- msg: 下周一到了记得提醒我 糯米要开始吃新驱虫药
+  label: false
+  tags: [reminder, voice]
+  why: 一次性提醒
+- msg: 一个小时后叫我一声 该给仓鼠喂水果了
+  label: false
+  tags: [reminder, voice]
+  why: 一次性提醒
+- msg: 明晚九点提醒我 黑豆的药到点吃
+  label: false
+  tags: [reminder, voice]
+  why: 一次性提醒
+- msg: remind me tmrw to pick up luna's prescription food
+  label: false
+  tags: [reminder, en, voice, typo]
+  why: 一次性提醒
+- msg: 提醒我今天下午五点 该给小白量体重了
+  label: false
+  tags: [reminder, voice]
+  why: 一次性提醒
+- msg: 呃那个 提醒我一下明天要带阿福去洗牙
+  label: false
+  tags: [reminder, voice]
+  why: 一次性提醒
+- msg: 提醒我下周复查那天早点起床
+  label: false
+  tags: [reminder, voice]
+  why: 一次性提醒
+- msg: pls remind me the 3rd to take mochi in for her checkup
+  label: false
+  tags: [reminder, en, voice]
+  why: 一次性提醒
+- msg: 明天提醒我 该给来福续办疫苗证了
+  label: false
+  tags: [reminder, voice]
+  why: 一次性提醒
+- msg: 每天晚上八点提醒我给团子喂药
+  label: false
+  tags: [reminder, task, voice]
+  why: 重复提醒
+- msg: 帮我设个每周三洗澡的提醒 咪咪的
+  label: false
+  tags: [reminder, task, voice]
+  why: 重复提醒
+- msg: 每月一号提醒我给旺财体外驱虫
+  label: false
+  tags: [reminder, task, voice]
+  why: 重复提醒
+- msg: 每天早上七点提醒我给豆豆喂胰岛素
+  label: false
+  tags: [reminder, task, voice]
+  why: 重复提醒
+- msg: 每周日提醒我一次 带球球去公园顺便称重
+  label: false
+  tags: [reminder, task, voice]
+  why: 重复提醒
+- msg: remind me every night at 9 to give max his pill
+  label: false
+  tags: [reminder, task, en, voice]
+  why: 重复提醒
+- msg: set a weekly reminder every sunday to bathe luna
+  label: false
+  tags: [reminder, task, en, voice]
+  why: 重复提醒
+- msg: 每两周提醒我一次 给花花剪指甲
+  label: false
+  tags: [reminder, task, voice]
+  why: 重复提醒
+- msg: 每天中午十二点提醒我一下 该给维尼吃药了
+  label: false
+  tags: [reminder, task, voice]
+  why: 重复提醒
+- msg: 每月十五号提醒我给小维买驱虫药
+  label: false
+  tags: [reminder, task, voice]
+  why: 重复提醒
+- msg: 每周一三五提醒我给团子换水加粮
+  label: false
+  tags: [reminder, task, voice]
+  why: 重复提醒
+- msg: 每晚十点提醒我 布丁的降压药到点了
+  label: false
+  tags: [reminder, task, voice]
+  why: 重复提醒
+- msg: 每天下午三点提醒我 汤圆要打胰岛素针
+  label: false
+  tags: [reminder, task, voice]
+  why: 重复提醒
+- msg: remind me every month on the 1st to do flea treatment
+  label: false
+  tags: [reminder, task, en, voice]
+  why: 重复提醒
+- msg: 每周六上午提醒我带糯米去美容店
+  label: false
+  tags: [reminder, task, voice]
+  why: 重复提醒
+- msg: 每天早晚各提醒我一次 喂黑豆吃药
+  label: false
+  tags: [reminder, task, voice]
+  why: 重复提醒
+- msg: 那个 每周三 帮我设个提醒 洗澡用的
+  label: false
+  tags: [reminder, task, voice, gray]
+  why: 重复提醒
+- msg: 每天晚上八点半提醒我 土豆的心脏药
+  label: false
+  tags: [reminder, task, voice]
+  why: 重复提醒
+- msg: every day at 7am remind me to give bella her insulin shot
+  label: false
+  tags: [reminder, task, en, voice]
+  why: 重复提醒
+- msg: 每隔一天提醒我给馒头量一次体温
+  label: false
+  tags: [reminder, task, voice]
+  why: 重复提醒
+- msg: 每月一号帮我提醒一次驱虫 阿福的
+  label: false
+  tags: [reminder, task, voice]
+  why: 重复提醒
+- msg: 每周二四六提醒我遛来福
+  label: false
+  tags: [reminder, task, voice]
+  why: 重复提醒
+- msg: 每天固定九点提醒我给雪球喂药 别的时间它不吃
+  label: false
+  tags: [reminder, task, voice]
+  why: 重复提醒
+- msg: remind me every wednesday morning to clean the cage
+  label: false
+  tags: [reminder, task, en, voice]
+  why: 重复提醒
+- msg: 每周提醒我一次给奶茶换猫砂 就周日吧
+  label: false
+  tags: [reminder, task, voice]
+  why: 重复提醒
+- msg: 每天晚饭后提醒我给芒果吃益生菌
+  label: false
+  tags: [reminder, task, voice]
+  why: 重复提醒
+- msg: set daily reminder 8pm to feed rocky his medication
+  label: false
+  tags: [reminder, task, en, voice]
+  why: 重复提醒
+- msg: 每天两次提醒我 早八点晚八点 给柚子喂药
+  label: false
+  tags: [reminder, task, voice]
+  why: 重复提醒
+- msg: 每月固定一号提醒我去买猫粮和驱虫药
+  label: false
+  tags: [reminder, task, voice]
+  why: 重复提醒
+- msg: 每周五提醒我给daisy剪毛
+  label: false
+  tags: [reminder, task, en, voice]
+  why: 重复提醒
+- msg: 那个每天晚上提醒我给charlie喂药 具体几点我再定
+  label: false
+  tags: [reminder, task, en, voice, gray]
+  why: 重复提醒
+- msg: 每天遛狗两次 帮我设成日常任务
+  label: false
+  tags: [task, voice]
+  why: 每日任务
+- msg: 一天喂三顿 早中晚各一次 麻烦设一下
+  label: false
+  tags: [task, voice]
+  why: 每日任务
+- msg: 这一周内每天都要给豆豆量体温 帮我建个任务
+  label: false
+  tags: [task, voice]
+  why: 每日任务持续
+- msg: 术后一周每天都要给团子换药 设个任务提醒我
+  label: false
+  tags: [task, voice, keyword_trap]
+  why: 术后照护任务
+- msg: 帮我设置每天两次的遛狗任务 早上晚上各一次
+  label: false
+  tags: [task, voice]
+  why: 每日任务
+- msg: create a daily task feed max 3 times a day
+  label: false
+  tags: [task, en, voice]
+  why: 每日任务
+- msg: need a task for the next 7 days check temperature daily
+  label: false
+  tags: [task, en, voice]
+  why: 持续任务
+- msg: 这周开始每天早晚各遛咪咪一次 帮我记成任务
+  label: false
+  tags: [task, voice]
+  why: 每日任务
+- msg: 接下来十天每天都要给旺财换药 弄成每日任务吧
+  label: false
+  tags: [task, voice, keyword_trap]
+  why: 术后照护
+- msg: 每天分三次喂球球 帮我设个每日任务
+  label: false
+  tags: [task, voice]
+  why: 每日任务
+- msg: 那个 就是 一周内每天都要测维尼的体温 拜托设一下
+  label: false
+  tags: [task, voice]
+  why: 持续任务
+- msg: 帮我建个任务 接下来五天每天都要喂药两次
+  label: false
+  tags: [task, voice]
+  why: 持续任务
+- msg: 每天喝水提醒我记录一下 团子最近喝水少
+  label: false
+  tags: [task, voice, gray]
+  why: 每日任务
+- msg: set up a daily task to walk luna twice a day
+  label: false
+  tags: [task, en, voice]
+  why: 每日任务
+- msg: for the next week i need a daily task to change his bandage
+  label: false
+  tags: [task, en, voice, keyword_trap]
+  why: 术后照护
+- msg: 每天喂小维四次 少食多餐 帮我做成任务
+  label: false
+  tags: [task, voice]
+  why: 每日任务
+- msg: 布丁刚做完手术 接下来一周每天换药一次 记成任务
+  label: false
+  tags: [task, voice, keyword_trap]
+  why: 术后照护
+- msg: 帮我把遛狗设成每天的任务 一次就行
+  label: false
+  tags: [task, voice]
+  why: 每日任务
+- msg: 汤圆做完绝育了 接下来七天每天都要观察伤口 帮我设个任务
+  label: false
+  tags: [task, voice, keyword_trap]
+  why: 术后照护
+- msg: 这周每天早中晚都要给糯米喂药 麻烦设成任务
+  label: false
+  tags: [task, voice]
+  why: 每日任务
+- msg: daily task please walk him twice morning and evening
+  label: false
+  tags: [task, en, voice]
+  why: 每日任务
+- msg: 黑豆一天要喂四顿 少食多餐那种 设成每日任务吧
+  label: false
+  tags: [task, voice]
+  why: 每日任务
+- msg: 土豆手术后医生说一周内每天都要测体温 帮我建个任务
+  label: false
+  tags: [task, voice, keyword_trap]
+  why: 术后照护
+- msg: 馒头术后照顾 接下来几天每天都要换药 弄个任务提醒我
+  label: false
+  tags: [task, voice, keyword_trap]
+  why: 术后照护
+- msg: 阿福一天遛两次 早上一次晚上一次 帮我设置
+  label: false
+  tags: [task, voice]
+  why: 每日任务
+- msg: i need a daily task for the next 5 days give her eye drops twice
+  label: false
+  tags: [task, en, voice]
+  why: 持续任务
+- msg: 来福这周每天都要吃三顿药 帮我做成任务提醒
+  label: false
+  tags: [task, voice]
+  why: 每日任务
+- msg: 雪球做完手术在家休养 医生说一周每天换药一次
+  label: false
+  tags: [task, voice, keyword_trap]
+  why: 术后照护
+- msg: 每天要遛三次 太小了消化不好 设个任务吧
+  label: false
+  tags: [task, voice]
+  why: 每日任务
+- msg: 奶茶术后恢复期 接下来十天每天都要检查一下伤口 建个任务
+  label: false
+  tags: [task, voice, keyword_trap]
+  why: 术后照护
+- msg: 帮我建一个任务 芒果每天喂两次 早上八点晚上八点
+  label: false
+  tags: [task, voice]
+  why: 每日任务
+- msg: create task walk rocky 2x a day starting today
+  label: false
+  tags: [task, en, voice]
+  why: 每日任务
+- msg: 柚子生完宝宝了 接下来一周每天要测体温 帮我设一下
+  label: false
+  tags: [task, voice]
+  why: 每日任务
+- msg: daisy just had surgery need daily bandage change for a week
+  label: false
+  tags: [task, en, voice, keyword_trap]
+  why: 术后照护
+- msg: 我有什么提醒
+  label: false
+  tags: [reminder, question, voice]
+  why: 查提醒
+- msg: 下次驱虫是什么时候
+  label: false
+  tags: [reminder, question, voice]
+  why: 查提醒
+- msg: 帮我看看最近有啥提醒没设
+  label: false
+  tags: [reminder, question, voice]
+  why: 查提醒
+- msg: 团子下次打疫苗是哪天
+  label: false
+  tags: [reminder, question, voice]
+  why: 查提醒
+- msg: 我设的那个喂药提醒还在吗
+  label: false
+  tags: [reminder, question, voice]
+  why: 查提醒
+- msg: what reminders do i have set up
+  label: false
+  tags: [reminder, question, en, voice]
+  why: 查提醒
+- msg: when's the next deworming reminder
+  label: false
+  tags: [reminder, question, en, voice]
+  why: 查提醒
+- msg: 咪咪的洗澡提醒是每周几来着
+  label: false
+  tags: [reminder, question, voice]
+  why: 查提醒
+- msg: 有没有关于旺财的提醒 我记不清了
+  label: false
+  tags: [reminder, question, voice, gray]
+  why: 查提醒
+- msg: 帮我查一下最近有没有喂药提醒
+  label: false
+  tags: [reminder, question, voice]
+  why: 查提醒
+- msg: 我这周还有啥任务没完成的
+  label: false
+  tags: [task, question, voice]
+  why: 查任务
+- msg: 球球的每日任务都设了哪些
+  label: false
+  tags: [task, question, voice]
+  why: 查任务
+- msg: do i have a reminder set for max's vaccine
+  label: false
+  tags: [reminder, question, en, voice]
+  why: 查提醒
+- msg: 维尼下次体检提醒是啥时候
+  label: false
+  tags: [reminder, question, voice]
+  why: 查提醒
+- msg: 那个 我记得设了个提醒 是啥来着 忘了
+  label: false
+  tags: [reminder, question, voice, gray]
+  why: 查提醒
+- msg: what's my next reminder for luna
+  label: false
+  tags: [reminder, question, en, voice]
+  why: 查提醒
+- msg: 小维的驱虫提醒周期是多久
+  label: false
+  tags: [reminder, question, voice]
+  why: 查提醒
+- msg: 帮我看下今天有没有要做的任务
+  label: false
+  tags: [task, question, voice]
+  why: 查任务
+- msg: 布丁上次驱虫是什么时候来着 下次呢
+  label: false
+  tags: [reminder, question, voice]
+  why: 查提醒
+- msg: is there a reminder set for rocky's meds
+  label: false
+  tags: [reminder, question, en, voice]
+  why: 查提醒
+- msg: 汤圆的洗牙提醒设了没
+  label: false
+  tags: [reminder, question, voice]
+  why: 查提醒
+- msg: 我有几个提醒还没到点的
+  label: false
+  tags: [reminder, question, voice]
+  why: 查提醒
+- msg: 糯米下次疫苗提醒是哪天 我忘记了
+  label: false
+  tags: [reminder, question, voice, gray]
+  why: 查提醒
+- msg: check if i still have a bathing reminder for bella
+  label: false
+  tags: [reminder, question, en, voice]
+  why: 查提醒
+- msg: 黑豆的每日喂药任务今天做了没
+  label: false
+  tags: [task, question, voice]
+  why: 查任务
+- msg: 土豆下次复查提醒是什么时候
+  label: false
+  tags: [reminder, question, voice]
+  why: 查提醒
+- msg: hey do i have any reminders today
+  label: false
+  tags: [reminder, question, en, voice]
+  why: 查提醒
+- msg: 馒头的驱虫周期提醒是每月几号
+  label: false
+  tags: [reminder, question, voice]
+  why: 查提醒
+- msg: 阿福这周的每日任务都完成了吗
+  label: false
+  tags: [task, question, voice]
+  why: 查任务
+- msg: when is charlie's next vaccine reminder
+  label: false
+  tags: [reminder, question, en, voice]
+  why: 查提醒
+- msg: 来福的洗澡提醒是不是每周三
+  label: false
+  tags: [reminder, question, voice]
+  why: 查提醒
+- msg: 雪球有没有正在进行的每日任务
+  label: false
+  tags: [task, question, voice]
+  why: 查任务
+- msg: what tasks do i have set for today
+  label: false
+  tags: [task, question, en, voice]
+  why: 查任务
+- msg: 奶茶那个胰岛素提醒还在吗
+  label: false
+  tags: [reminder, question, voice]
+  why: 查提醒
+- msg: 芒果的复诊提醒是哪一天
+  label: false
+  tags: [reminder, question, voice]
+  why: 查提醒
+- msg: do i have a task for walking rocky today
+  label: false
+  tags: [task, question, en, voice]
+  why: 查任务
+- msg: 柚子的每日换药任务还有几天
+  label: false
+  tags: [task, question, voice]
+  why: 查任务
+- msg: 把提醒改到九点吧 太早了
+  label: false
+  tags: [reminder, correction, voice]
+  why: 改提醒
+- msg: 删掉刚才那个提醒
+  label: false
+  tags: [reminder, delete, voice]
+  why: 删提醒
+- msg: 取消明天的提醒
+  label: false
+  tags: [reminder, delete, voice]
+  why: 删提醒
+- msg: 把喂药提醒改成每天晚上七点
+  label: false
+  tags: [reminder, correction, voice]
+  why: 改提醒
+- msg: 那个提醒不用了 帮我删了吧
+  label: false
+  tags: [reminder, delete, voice]
+  why: 删提醒
+- msg: change my reminder time to 9pm
+  label: false
+  tags: [reminder, correction, en, voice]
+  why: 改提醒
+- msg: delete that reminder i just made
+  label: false
+  tags: [reminder, delete, en, voice]
+  why: 删提醒
+- msg: cancel tomorrow's reminder please
+  label: false
+  tags: [reminder, delete, en, voice]
+  why: 删提醒
+- msg: 把团子那个驱虫提醒往后挪一天
+  label: false
+  tags: [reminder, correction, voice]
+  why: 改提醒
+- msg: 咪咪的洗澡提醒不要了 取消掉
+  label: false
+  tags: [reminder, delete, voice]
+  why: 删提醒
+- msg: 帮我把每周三改成每周五 那个洗澡提醒
+  label: false
+  tags: [reminder, correction, voice]
+  why: 改提醒
+- msg: 不对 我要的是八点不是九点 改一下
+  label: false
+  tags: [reminder, correction, voice]
+  why: 改提醒
+- msg: 把刚才设的那个每日任务删了
+  label: false
+  tags: [task, delete, voice]
+  why: 删任务
+- msg: 帮我取消维尼的量体温任务 已经好了
+  label: false
+  tags: [task, delete, voice]
+  why: 删任务
+- msg: can you move the reminder to 8am instead
+  label: false
+  tags: [reminder, correction, en, voice]
+  why: 改提醒
+- msg: 那个喂药提醒删掉 现在不用吃了
+  label: false
+  tags: [reminder, delete, voice]
+  why: 删提醒
+- msg: 把驱虫提醒改到下周一
+  label: false
+  tags: [reminder, correction, voice]
+  why: 改提醒
+- msg: remove the daily task for changing bandages
+  label: false
+  tags: [task, delete, en, voice]
+  why: 删任务
+- msg: 呃 那个提醒设错时间了 帮我改成十点
+  label: false
+  tags: [reminder, correction, voice]
+  why: 改提醒
+- msg: 把布丁的复查提醒取消 改期了
+  label: false
+  tags: [reminder, delete, voice]
+  why: 删提醒
+- msg: 把每天遛狗的任务停掉 最近没空
+  label: false
+  tags: [task, delete, voice]
+  why: 删任务
+- msg: turn off the daily feeding task for max
+  label: false
+  tags: [task, delete, en, voice]
+  why: 删任务
+- msg: 汤圆的疫苗提醒时间不对 改成下午三点
+  label: false
+  tags: [reminder, correction, voice]
+  why: 改提醒
+- msg: 帮我把量体温任务从每天改成隔天
+  label: false
+  tags: [task, correction, voice]
+  why: 改任务
+- msg: delete the reminder for luna's vaccine i made a mistake
+  label: false
+  tags: [reminder, delete, en, voice]
+  why: 删提醒
+- msg: 那个每日任务不用做了 团子伤口好了
+  label: false
+  tags: [task, delete, voice]
+  why: 删任务
+- msg: 把喂药提醒挪到早上六点半
+  label: false
+  tags: [reminder, correction, voice]
+  why: 改提醒
+- msg: cancel the deworming reminder i set earlier
+  label: false
+  tags: [reminder, delete, en, voice]
+  why: 删提醒
+- msg: 把馒头的复诊提醒删了 不去了
+  label: false
+  tags: [reminder, delete, voice]
+  why: 删提醒
+- msg: 帮我把每天两次的喂药任务改成一次
+  label: false
+  tags: [task, correction, voice]
+  why: 改任务
+- msg: 提醒我给豆豆吃药 那个降糖的
+  label: false
+  tags: [reminder, voice]
+  why: 药物提醒
+- msg: 每天早上提醒我给团子打胰岛素针
+  label: false
+  tags: [reminder, task, voice]
+  why: 药物提醒
+- msg: 帮我设个提醒 咪咪的抗生素要连吃五天 每天两次
+  label: false
+  tags: [reminder, task, voice]
+  why: 药物提醒
+- msg: remind me to give bella her insulin shot every morning
+  label: false
+  tags: [reminder, task, en, voice]
+  why: 药物提醒
+- msg: 提醒我明天开始给旺财打消炎针 一共打三天
+  label: false
+  tags: [reminder, task, voice]
+  why: 药物提醒
+- msg: 每天晚上八点提醒我给球球吃心脏病的药
+  label: false
+  tags: [reminder, task, voice]
+  why: 药物提醒
+- msg: 维尼要打胰岛素 一天两次 帮我设提醒
+  label: false
+  tags: [reminder, task, voice]
+  why: 药物提醒
+- msg: set a daily reminder to give max his diabetes medicine
+  label: false
+  tags: [reminder, task, en, voice]
+  why: 药物提醒
+- msg: 提醒我小维的抗过敏药 每天一片 早上吃
+  label: false
+  tags: [reminder, task, voice]
+  why: 药物提醒
+- msg: 那个 提醒我给花花打针 兽医说要连打一周
+  label: false
+  tags: [reminder, task, voice]
+  why: 药物提醒
+- msg: remind me every night to give luna her seizure medication
+  label: false
+  tags: [reminder, task, en, voice, keyword_trap]
+  why: 药物提醒
+- msg: 提醒我团子的止吐药 一天三次 饭后吃
+  label: false
+  tags: [reminder, task, voice]
+  why: 药物提醒
+- msg: 布丁要打胰岛素针 每天早晚各一次 帮我设成任务
+  label: false
+  tags: [reminder, task, voice]
+  why: 药物提醒
+- msg: 汤圆的心脏药 提醒我每天下午五点吃
+  label: false
+  tags: [reminder, task, voice]
+  why: 药物提醒
+- msg: don't let me forget rocky's antibiotics twice a day
+  label: false
+  tags: [reminder, task, en, voice]
+  why: 药物提醒
+- msg: 糯米最近查出来有点糖尿病 医生开了胰岛素 提醒我每天打
+  label: false
+  tags: [reminder, task, voice, keyword_trap]
+  why: 药物提醒
+- msg: 提醒我给黑豆吃驱虫药 就今天晚上
+  label: false
+  tags: [reminder, voice]
+  why: 药物提醒
+- msg: 土豆的抗生素还要吃三天 帮我每天提醒
+  label: false
+  tags: [reminder, task, voice]
+  why: 药物提醒
+- msg: remind me to give charlie his heart medication every day at noon
+  label: false
+  tags: [reminder, task, en, voice]
+  why: 药物提醒
+- msg: 馒头打完针之后医生开了口服药 提醒我一天两次
+  label: false
+  tags: [reminder, task, voice]
+  why: 药物提醒
+- msg: 阿福最近咳嗽 医生开了消炎药 提醒我按时喂
+  label: false
+  tags: [reminder, task, voice]
+  why: 药物提醒
+- msg: 来福那个降压药 提醒我每天早上八点吃
+  label: false
+  tags: [reminder, task, voice]
+  why: 药物提醒
+- msg: 雪球要打驱虫针 提醒我下周三带它去
+  label: false
+  tags: [reminder, voice]
+  why: 药物提醒
+- msg: reminder for daisy's insulin shot twice daily please
+  label: false
+  tags: [reminder, task, en, voice]
+  why: 药物提醒
+- msg: 奶茶吃了七天的药 医生说停药前最后一天提醒我
+  label: false
+  tags: [reminder, voice]
+  why: 药物提醒
+- msg: 芒果打完针了 提醒我一周后带它复查
+  label: false
+  tags: [reminder, voice]
+  why: 药物提醒
+- msg: 柚子每天要吃两种药 提醒我别搞混了时间
+  label: false
+  tags: [reminder, task, voice]
+  why: 药物提醒
+- msg: set reminder to give zoe her epilepsy pills every morning
+  label: false
+  tags: [reminder, task, en, voice, keyword_trap]
+  why: 药物提醒
+- msg: 豆豆被车撞之后现在恢复了 医生说接下来一周每天要换药
+  label: false
+  tags: [task, keyword_trap, voice]
+  why: 术后事件已过去
+- msg: 咪咪上周被车撞了 现在在家休养 每天提醒我换药
+  label: false
+  tags: [reminder, task, keyword_trap, voice]
+  why: 车祸已过去 现照护
+- msg: 团子做完手术回来了 接下来一周每天要提醒我换药
+  label: false
+  tags: [reminder, task, keyword_trap, voice]
+  why: 术后照护
+- msg: 旺财之前中毒抢救过来了 现在每天要吃保肝药 提醒我
+  label: false
+  tags: [reminder, task, keyword_trap, voice]
+  why: 已脱险后续照护
+- msg: 球球骨折做完手术了 医生让接下来两周每天换药 帮我设个任务
+  label: false
+  tags: [task, keyword_trap, voice]
+  why: 术后照护
+- msg: max got hit by a car last week he's stable now need daily bandage reminder
+  label: false
+  tags: [reminder, task, keyword_trap, en, voice]
+  why: 车祸已过去 现照护
+- msg: luna had surgery yesterday remind me to change her dressing daily
+  label: false
+  tags: [reminder, task, keyword_trap, en, voice]
+  why: 术后照护
+- msg: 维尼之前抽搐送医了 现在稳定了 医生让每天定时喂抗癫痫药
+  label: false
+  tags: [reminder, task, keyword_trap, voice]
+  why: 已脱险后续照护
+- msg: 小维中暑那次抢救回来了 现在恢复期每天要量体温 提醒我
+  label: false
+  tags: [reminder, task, keyword_trap, voice]
+  why: 已脱险后续照护
+- msg: 花花上个月做的绝育手术 现在接下来几天每天要检查伤口
+  label: false
+  tags: [task, keyword_trap, voice]
+  why: 术后照护
+- msg: 布丁误食巧克力那次送医洗胃了 现在恢复中 每天喂护肝药提醒我
+  label: false
+  tags: [reminder, task, keyword_trap, voice]
+  why: 已脱险后续照护
+- msg: 汤圆之前难产剖腹产了 接下来一周每天换药 帮我设个提醒
+  label: false
+  tags: [reminder, task, keyword_trap, voice]
+  why: 术后照护
+- msg: rocky's leg surgery was last tuesday need a daily reminder to check the wound
+  label: false
+  tags: [reminder, task, keyword_trap, en, voice]
+  why: 术后照护
+- msg: 糯米那次腹胀送急诊做完手术了 现在稳定 每天要提醒我喂流食
+  label: false
+  tags: [reminder, task, keyword_trap, voice]
+  why: 已脱险后续照护
+- msg: 黑豆之前咬伤流了好多血 缝针了 接下来一周每天换药提醒我
+  label: false
+  tags: [reminder, task, keyword_trap, voice]
+  why: 术后照护
+- msg: 土豆高坠摔断腿治好了 现在恢复期每天要吃消炎药 提醒我
+  label: false
+  tags: [reminder, task, keyword_trap, voice]
+  why: 已脱险后续照护
+- msg: charlie was hit by a car two days ago he's okay now but needs daily wound check reminder
+  label: false
+  tags: [reminder, task, keyword_trap, en, voice]
+  why: 车祸已过去 现照护
+- msg: 馒头之前误食葡萄干送去洗胃了 现在没事了 医生让每天吃护肝药 提醒我
+  label: false
+  tags: [reminder, task, keyword_trap, voice]
+  why: 已脱险后续照护
+- msg: 阿福做完眼部手术 接下来十天每天要点三次眼药水 帮我设个任务
+  label: false
+  tags: [task, keyword_trap, voice]
+  why: 术后照护
+- msg: bella had a seizure last month and is on meds now remind me daily at 8
+  label: false
+  tags: [reminder, task, keyword_trap, en, voice]
+  why: 已脱险后续照护
+- msg: 来福胃扭转做完手术出院了 接下来一周每天提醒我喂少量多餐
+  label: false
+  tags: [reminder, task, keyword_trap, voice]
+  why: 术后照护
+- msg: 雪球之前尿不出去送急诊插了导尿管 现在回家了 每天要提醒我观察排尿
+  label: false
+  tags: [reminder, task, keyword_trap, voice]
+  why: 已脱险后续照护
+- msg: mochi got spayed yesterday need a daily reminder to check the incision
+  label: false
+  tags: [reminder, task, keyword_trap, en, voice]
+  why: 术后照护
+- msg: 奶茶那次消化不良差点脱水 现在恢复了 医生让每天喂益生菌 提醒我
+  label: false
+  tags: [reminder, task, keyword_trap, voice]
+  why: 已脱险后续照护
+- msg: 芒果眼球那次治好了以后 现在每天要点药提醒我三次
+  label: false
+  tags: [reminder, task, keyword_trap, voice]
+  why: 已脱险后续照护
+- msg: 柚子生了一窝小猫 接下来一周每天要给它们量体重 帮我设成任务
+  label: false
+  tags: [task, voice]
+  why: 每日任务
+- msg: daisy just recovered from her surgery need daily meds reminder for the next 10 days
+  label: false
+  tags: [reminder, task, keyword_trap, en, voice]
+  why: 术后照护
+- msg: 那个 呃 提醒我一下 三十号是维尼下次驱虫的日子
+  label: false
+  tags: [reminder, voice]
+  why: 一次性提醒
+- msg: 帮我把喂药提醒的时间从八点改成八点半
+  label: false
+  tags: [reminder, correction, voice]
+  why: 改提醒
+- msg: 团子的每日遛狗任务 呃我是说猫是散养的 帮我取消吧
+  label: false
+  tags: [task, delete, voice, typo]
+  why: 删任务
+- msg: reminder please every day at 6pm feed him his fish oil
+  label: false
+  tags: [reminder, task, en, voice]
+  why: 每日任务
+- msg: 咪咪下周做绝育 提前一天提醒我禁食
+  label: false
+  tags: [reminder, voice]
+  why: 一次性提醒
+- msg: 帮我设个提醒 后天带旺财打狂犬疫苗
+  label: false
+  tags: [reminder, voice]
+  why: 一次性提醒
+- msg: 提醒我今天下午带球球去打第二针幼犬疫苗
+  label: false
+  tags: [reminder, voice]
+  why: 一次性提醒
+- msg: 每天喂药两次 一次半片 帮我设成任务提醒我
+  label: false
+  tags: [reminder, task, voice]
+  why: 每日任务
+- msg: 那个提醒删了吧 计划有变
+  label: false
+  tags: [reminder, delete, voice, gray]
+  why: 删提醒
+- msg: 帮我看看有没有设过给维尼的提醒
+  label: false
+  tags: [reminder, question, voice]
+  why: 查提醒
+- msg: 每天提醒我三次喂药 早八点中午十二点晚八点
+  label: false
+  tags: [reminder, task, voice]
+  why: 重复提醒
+- msg: 帮我把小维的任务改成隔天一次不是每天
+  label: false
+  tags: [task, correction, voice]
+  why: 改任务
+- msg: remind me next month to renew his flea and tick meds
+  label: false
+  tags: [reminder, en, voice]
+  why: 一次性提醒
+- msg: 花花下周复查前一天提醒我把病历带上
+  label: false
+  tags: [reminder, voice]
+  why: 一次性提醒
+- msg: hey delete the walk reminder i set for tomorrow
+  label: false
+  tags: [reminder, delete, en, voice]
+  why: 删提醒
+- msg: 布丁体外驱虫的提醒 我记得是每月一号对吧
+  label: false
+  tags: [reminder, question, voice]
+  why: 查提醒
+- msg: 汤圆下周三要洗牙 提醒我提前禁食十二小时
+  label: false
+  tags: [reminder, voice]
+  why: 一次性提醒
+- msg: 糯米每天喂三顿的任务 帮我改成四顿
+  label: false
+  tags: [task, correction, voice]
+  why: 改任务
+- msg: whats the deworming schedule for max remind me
+  label: false
+  tags: [reminder, question, en, voice]
+  why: 查提醒
+- msg: 黑豆明天体检前提醒我别喂早饭
+  label: false
+  tags: [reminder, voice]
+  why: 一次性提醒
+- msg: 土豆的每日任务都做完了吗 帮我看下
+  label: false
+  tags: [task, question, voice]
+  why: 查任务
+- msg: 馒头下周洗澡的提醒 我要改到周日
+  label: false
+  tags: [reminder, correction, voice]
+  why: 改提醒
+- msg: set a reminder every day at noon to give her eye drops
+  label: false
+  tags: [reminder, task, en, voice]
+  why: 重复提醒
+- msg: 阿福驱虫提醒到期了吗 帮我查一下
+  label: false
+  tags: [reminder, question, voice]
+  why: 查提醒
+- msg: 来福每天要遛两次 早上一次晚上一次 麻烦帮我设一下
+  label: false
+  tags: [task, voice]
+  why: 每日任务
+- msg: cancel the reminder i just set i said the wrong time
+  label: false
+  tags: [reminder, delete, en, voice]
+  why: 删提醒
+- msg: 雪球明天中午提醒我带它去打疫苗
+  label: false
+  tags: [reminder, voice]
+  why: 一次性提醒
+- msg: 那个 呃 帮我把每周三改成每周四 洗澡那个提醒
+  label: false
+  tags: [reminder, correction, voice]
+  why: 改提醒
+- msg: 奶茶每天量体温的任务还要持续几天
+  label: false
+  tags: [task, question, voice]
+  why: 查任务
+- msg: reminder to give bella her medicine wore off need to reset it
+  label: false
+  tags: [reminder, correction, en, voice]
+  why: 改提醒
+- msg: 芒果下周要拔牙 前一天提醒我禁食
+  label: false
+  tags: [reminder, voice]
+  why: 一次性提醒
+- msg: 柚子每天喂猫粮的任务 帮我停掉几天 出差了
+  label: false
+  tags: [task, delete, voice]
+  why: 暂停任务
+- msg: what reminders are set for daisy this week
+  label: false
+  tags: [reminder, question, en, voice]
+  why: 查提醒
+- msg: 明天早上六点提醒我给鹦鹉换水加粮
+  label: false
+  tags: [reminder, voice]
+  why: 一次性提醒
+- msg: 帮我设个提醒 下个月初提醒我续办疫苗证
+  label: false
+  tags: [reminder, voice]
+  why: 一次性提醒
+- msg: 每天晚上九点提醒我 咪咪的抗过敏药
+  label: false
+  tags: [reminder, task, voice]
+  why: 药物提醒
+- msg: 提醒我一下 团子这周三要拆线
+  label: false
+  tags: [reminder, voice]
+  why: 一次性提醒
+- msg: 帮我把驱虫提醒的周期改成两个月一次
+  label: false
+  tags: [reminder, correction, voice]
+  why: 改提醒
+- msg: 旺财每天要吃三次药 帮我设个任务提醒我时间
+  label: false
+  tags: [reminder, task, voice]
+  why: 药物提醒
+- msg: does luna have a vaccine reminder set for this month
+  label: false
+  tags: [reminder, question, en, voice]
+  why: 查提醒
+- msg: 那个 提醒我周五之前把维尼的病历打印出来
+  label: false
+  tags: [reminder, voice]
+  why: 一次性提醒
+- msg: 帮我删掉所有关于洗澡的提醒 我自己记着就行
+  label: false
+  tags: [reminder, delete, voice]
+  why: 删提醒
+- msg: 小维的每日喂药任务 麻烦改到早上七点开始
+  label: false
+  tags: [task, correction, voice]
+  why: 改任务
+- msg: remind me thursday to renew coco's pet insurance
+  label: false
+  tags: [reminder, en, voice]
+  why: 一次性提醒
+- msg: 花花下周复查完提醒我把结果记录一下
+  label: false
+  tags: [reminder, voice]
+  why: 一次性提醒
+- msg: 布丁的每日任务全部取消 它已经完全康复了
+  label: false
+  tags: [task, delete, voice]
+  why: 删任务
+- msg: hey what time is the reminder set for tomorrow
+  label: false
+  tags: [reminder, question, en, voice]
+  why: 查提醒
+- msg: 汤圆明早提醒我带它去量体重
+  label: false
+  tags: [reminder, voice]
+  why: 一次性提醒
+- msg: 糯米这周每天喂两顿的任务 帮我暂停一天 它今天不在家
+  label: false
+  tags: [task, delete, voice]
+  why: 暂停任务
+- msg: 黑豆下周打疫苗前一天提醒我预约
+  label: false
+  tags: [reminder, voice]
+  why: 一次性提醒
+- msg: remove that task i don't need daily reminders anymore
+  label: false
+  tags: [task, delete, en, voice]
+  why: 删任务
+- msg: 土豆每天遛两次的任务 帮我改成三次 它精力太旺盛了
+  label: false
+  tags: [task, correction, voice]
+  why: 改任务

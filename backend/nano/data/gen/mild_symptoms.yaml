@@ -1,0 +1,1676 @@
+- msg: 豆豆刚吐了一口 之后跟没事人一样正常吗
+  label: false
+  tags: [mild, voice, question]
+  why: 单次呕吐精神好
+- msg: 我家狗吐了 就一次 吐的是没消化的粮
+  label: false
+  tags: [mild, voice]
+  why: 单次呕吐
+- msg: 咪咪早上兔了一下 兔的是毛球 之后照常吃饭
+  label: false
+  tags: [mild, typo, voice]
+  why: 毛球呕吐
+- msg: 团子刚才吐了 但是马上又跑去玩了 要紧吗
+  label: false
+  tags: [mild, gray, voice, question]
+  why: 吐后活力好
+- msg: my dog threw up once this morning kinda watery is that normal
+  label: false
+  tags: [mild, en, voice, question]
+  why: 单次呕吐
+- msg: 球球吃太快了 吐了一次 感觉是吃太快的问题
+  label: false
+  tags: [mild, voice]
+  why: 单次呕吐
+- msg: 旺财今天吐了两次 但是精神特别好还想出去玩 咋回事
+  label: false
+  tags: [mild, gray, voice, question]
+  why: 两次呕吐但活跃
+- msg: max threw up twice today but hes acting totally normal running around
+  label: false
+  tags: [mild, gray, en, voice]
+  why: 两次呕吐但活跃
+- msg: 花花刚吐了 里面有点草 应该是吃草了
+  label: false
+  tags: [mild, voice]
+  why: 吃草呕吐
+- msg: 小维吐了一下 然后就去喝水了 正常吗
+  label: false
+  tags: [mild, voice, question]
+  why: 单次呕吐
+- msg: luna threw up her breakfast once she seems fine now playing with her toy
+  label: false
+  tags: [mild, en, voice]
+  why: 单次呕吐
+- msg: 那个 我家猫吐了 就吐了一小滩 没别的事
+  label: false
+  tags: [mild, voice]
+  why: 单次呕吐
+- msg: 饼干吐了 吐的黄色的液体 空腹的时候 要注意啥
+  label: false
+  tags: [mild, voice, question]
+  why: 空腹吐黄水
+- msg: mochi puked once after eating too fast no big deal right
+  label: false
+  tags: [mild, en, voice, question]
+  why: 吃太快呕吐
+- msg: 布丁今天吐了一次 精神吃喝都正常 需要去医院吗
+  label: false
+  tags: [mild, voice, question]
+  why: 单次呕吐精神好
+- msg: 大黄早上吐了一口草 之后没事了
+  label: false
+  tags: [mild, voice]
+  why: 吃草呕吐
+- msg: whiskers threw up a hairball this morning normal cat stuff i think
+  label: false
+  tags: [mild, en, voice]
+  why: 毛球呕吐
+- msg: 我家兔子刚才吐了下 呃 兔子会吐吗 有点担心
+  label: false
+  tags: [mild, edge, voice, question]
+  why: 兔子呕吐关注
+- msg: 栗子换粮之后吐了一次 应该是肠胃不适应
+  label: false
+  tags: [mild, voice]
+  why: 换粮呕吐
+- msg: 奶茶今早吐了一口 吐完就去晒太阳了 没精神差
+  label: false
+  tags: [mild, voice]
+  why: 单次呕吐精神好
+- msg: 糖糖软便了两天 有点担心 但是精神很好 正常吗
+  label: false
+  tags: [mild, gray, voice, question]
+  why: 软便两天精神好
+- msg: 我家狗拉的便便有点软 不是稀 就是不成形
+  label: false
+  tags: [mild, voice]
+  why: 软便
+- msg: my cat had a soft stool this morning otherwise acting normal
+  label: false
+  tags: [mild, en, voice]
+  why: 软便
+- msg: 咪咪便便软软的 好像换粮之后就这样了
+  label: false
+  tags: [mild, voice]
+  why: 换粮软便
+- msg: 维尼今天拉的有点稀软 但是吃的挺欢的 咋办
+  label: false
+  tags: [mild, gray, voice, question]
+  why: 软便食欲好
+- msg: doggo pooped kinda soft today but hes eating fine and playful
+  label: false
+  tags: [mild, gray, en, voice]
+  why: 软便精神好
+- msg: 那个 团子今天便便不太成形 软软的 要不要观察一下
+  label: false
+  tags: [mild, voice, question]
+  why: 软便观察
+- msg: 灰灰拉的便便有点软 就一次 之后就正常了
+  label: false
+  tags: [mild, voice]
+  why: 单次软便
+- msg: 胖胖软便了 精神吃喝正常 需要喂点益生菌吗
+  label: false
+  tags: [mild, voice, question]
+  why: 软便精神好
+- msg: little rabbit had softer poop than usual is that ok
+  label: false
+  tags: [mild, edge, en, voice, question]
+  why: 兔子软便
+- msg: 可乐拉稀了一天 精神吃喝都还行 需要注意啥吗
+  label: false
+  tags: [mild, gray, voice, question]
+  why: 拉稀一天精神好
+- msg: 我家狗今天拉了两次稀 但是没有血 也没吐 精神也可以
+  label: false
+  tags: [mild, gray, voice]
+  why: 拉稀无血精神好
+- msg: my dog has diarrhea today no blood still eating and playing is this ok
+  label: false
+  tags: [mild, gray, en, voice, question]
+  why: 拉稀无血精神好
+- msg: 豆豆拉稀了 就今天一天 明天再看看
+  label: false
+  tags: [mild, voice]
+  why: 拉稀一天
+- msg: 咪咪拉肚子拉西了 一天了 精神还行 用不用带去医院
+  label: false
+  tags: [mild, typo, gray, voice, question]
+  why: 拉稀一天精神好
+- msg: cat has had loose stool for a day but otherwise seems totally fine
+  label: false
+  tags: [mild, gray, en, voice]
+  why: 拉稀一天精神好
+- msg: 那个 小维今天拉稀了两次 但是照样跑跳吃饭 要紧吗
+  label: false
+  tags: [mild, gray, voice, question]
+  why: 拉稀两次无其他症状
+- msg: 花花拉稀两天了 没有血 就是次数多 咋办呀
+  label: false
+  tags: [mild, gray, voice, question]
+  why: 拉稀两天无血
+- msg: 旺财拉的稀软 应该是昨天吃多了 今天精神正常
+  label: false
+  tags: [mild, voice]
+  why: 吃多拉稀
+- msg: max has diarrhea since this morning acting normal though should i worry
+  label: false
+  tags: [mild, gray, en, voice, question]
+  why: 拉稀精神好
+- msg: 大黄一直打喷嚏 好几个了 没有别的症状
+  label: false
+  tags: [mild, voice]
+  why: 打喷嚏
+- msg: 咪咪今天喷嚏打个不停 眼睛鼻子都没啥分泌物 正常吗
+  label: false
+  tags: [mild, voice, question]
+  why: 打喷嚏无其他症状
+- msg: my cat keeps sneezing today no discharge or anything is that normal
+  label: false
+  tags: [mild, en, voice, question]
+  why: 打喷嚏正常
+- msg: 团子打了两个喷嚏 应该是家里灰尘大
+  label: false
+  tags: [mild, voice]
+  why: 灰尘引起打喷嚏
+- msg: 那个我家兔子 呃 打喷嚏了 一两声 要不要紧
+  label: false
+  tags: [mild, edge, voice, question]
+  why: 兔子打喷嚏
+- msg: 灰灰早上起来打喷嚏 一天就那么几下
+  label: false
+  tags: [mild, voice]
+  why: 偶尔打喷嚏
+- msg: luna sneezed a bunch this morning kinda random no other symptoms
+  label: false
+  tags: [mild, en, voice]
+  why: 打喷嚏无其他症状
+- msg: 小狗崽今天老打喷嚏 会不会感冒了呀
+  label: false
+  tags: [mild, voice, question]
+  why: 幼犬打喷嚏
+- msg: 布丁打喷嚏还带点鼻音 别的都挺正常
+  label: false
+  tags: [mild, voice]
+  why: 打喷嚏
+- msg: 老猫最近打喷嚏有点频繁 要注意什么吗
+  label: false
+  tags: [mild, voice, question]
+  why: 老猫打喷嚏
+- msg: 维尼咳嗽了两声 就两声 之后没事了
+  label: false
+  tags: [mild, voice]
+  why: 偶尔咳嗽
+- msg: 我家狗今天咳了几下 感觉像是被口水呛到了
+  label: false
+  tags: [mild, voice]
+  why: 呛咳
+- msg: my dog coughed twice today then seemed totally fine is that normal
+  label: false
+  tags: [mild, en, voice, question]
+  why: 偶尔咳嗽
+- msg: 咪咪偶尔咳一下 跟人清嗓子似的 咋回事
+  label: false
+  tags: [mild, voice, question]
+  why: 偶尔咳嗽
+- msg: 那个 球球早上咳了两声 然后就跑去吃早饭了
+  label: false
+  tags: [mild, voice]
+  why: 咳嗽后正常进食
+- msg: whiskers coughed a couple times this morning no big deal after that
+  label: false
+  tags: [mild, en, voice]
+  why: 偶尔咳嗽
+- msg: 旺财这两天偶尔咳一声 别的都好 要不要去看看
+  label: false
+  tags: [mild, voice, question]
+  why: 偶尔咳嗽
+- msg: 老狗最近老咳两声 但是精神吃喝都正常
+  label: false
+  tags: [mild, voice]
+  why: 老年犬偶咳
+- msg: 豆豆一直挠痒痒 抓耳朵那块
+  label: false
+  tags: [mild, voice]
+  why: 挠痒
+- msg: my cat has been scratching a lot lately mostly around the neck
+  label: false
+  tags: [mild, en, voice]
+  why: 挠痒
+- msg: 咪咪老是挠脖子那 挠得毛都秃了一小块 正常吗
+  label: false
+  tags: [mild, voice, question]
+  why: 挠痒有小秃斑
+- msg: 团子最近爱挠痒 是不是该洗澡了
+  label: false
+  tags: [mild, voice, question]
+  why: 挠痒
+- msg: 花花身上痒 一直用后腿挠 要不要去医院看看
+  label: false
+  tags: [mild, voice, question]
+  why: 挠痒咨询
+- msg: max keeps scratching himself especially at night is that normal
+  label: false
+  tags: [mild, en, voice, question]
+  why: 挠痒
+- msg: 那个 我家狗一直挠 挠得有点频繁 是不是有跳蚤
+  label: false
+  tags: [mild, voice, question]
+  why: 挠痒疑似跳蚤
+- msg: 小维总挠耳朵后面那块 挠了好几天了
+  label: false
+  tags: [mild, voice]
+  why: 持续挠痒
+- msg: 灰灰今天疯狂挠痒 是不是过敏了呀
+  label: false
+  tags: [mild, voice, question]
+  why: 挠痒疑似过敏
+- msg: 大黄最近掉毛特别厉害 满地都是
+  label: false
+  tags: [mild, voice]
+  why: 掉毛
+- msg: my dog has been shedding a ton lately is that just seasonal
+  label: false
+  tags: [mild, en, voice, question]
+  why: 掉毛季节性
+- msg: 咪咪掉毛掉得厉害 沙发上到处都是 正常吗
+  label: false
+  tags: [mild, voice, question]
+  why: 掉毛
+- msg: 那个 我家猫最近掉毛特别多 是不是换季了
+  label: false
+  tags: [mild, voice, question]
+  why: 换季掉毛
+- msg: luna is shedding like crazy this week normal for spring right
+  label: false
+  tags: [mild, en, voice, question]
+  why: 换季掉毛
+- msg: 团子这几天毛掉得有点多 摸一把就一把毛
+  label: false
+  tags: [mild, voice]
+  why: 掉毛
+- msg: 老猫最近掉毛比以前多 要注意啥吗
+  label: false
+  tags: [mild, voice, question]
+  why: 老猫掉毛
+- msg: 旺财掉毛掉的还挺均匀的 没有秃块
+  label: false
+  tags: [mild, voice]
+  why: 均匀掉毛
+- msg: 豆豆早上眼屎有点多 眼睛没有红
+  label: false
+  tags: [mild, voice]
+  why: 眼屎
+- msg: my cat has some eye discharge this morning eye doesnt look red though
+  label: false
+  tags: [mild, en, voice]
+  why: 眼屎
+- msg: 咪咪眼角有点眼屎 是不是上火了
+  label: false
+  tags: [mild, voice, question]
+  why: 眼屎上火
+- msg: 那个 我家狗眼屎有点多 棕色的 要紧吗
+  label: false
+  tags: [mild, voice, question]
+  why: 眼屎
+- msg: 球球早上起来眼屎多了点 擦掉就好了
+  label: false
+  tags: [mild, voice]
+  why: 眼屎
+- msg: max has a bit more eye gunk than usual this morning normal
+  label: false
+  tags: [mild, en, voice, question]
+  why: 眼屎
+- msg: 小猫崽眼睛有点眼屎 该怎么处理呀
+  label: false
+  tags: [mild, voice, question]
+  why: 幼猫眼屎
+- msg: 灰灰眼屎多了 而且有点粘 要不要点眼药水
+  label: false
+  tags: [mild, voice, question]
+  why: 眼屎需处理
+- msg: 布丁最近老流眼屎 眼睛周围毛都染色了
+  label: false
+  tags: [mild, voice]
+  why: 眼屎染色
+- msg: 大黄耳朵有点臭 凑近才能闻到
+  label: false
+  tags: [mild, voice]
+  why: 耳朵臭
+- msg: my dogs ears smell kinda funky lately is that normal
+  label: false
+  tags: [mild, en, voice, question]
+  why: 耳朵臭
+- msg: 咪咪耳朵闻着有点味 是不是该清理了
+  label: false
+  tags: [mild, voice, question]
+  why: 耳朵臭需清理
+- msg: 那个 我家狗耳朵有味道 掀开一看有点脏
+  label: false
+  tags: [mild, voice]
+  why: 耳朵脏臭
+- msg: luna ears smell a bit off is that just wax build up
+  label: false
+  tags: [mild, en, voice, question]
+  why: 耳朵臭
+- msg: 团子耳朵臭臭的 也没见挠 要注意什么吗
+  label: false
+  tags: [mild, voice, question]
+  why: 耳朵臭
+- msg: 旺财耳朵有点味 耳道里看着有点黑
+  label: false
+  tags: [mild, voice]
+  why: 耳朵有异味分泌物
+- msg: 老狗耳朵最近老是有味道 是不是耳螨啊
+  label: false
+  tags: [mild, voice, question]
+  why: 耳朵臭疑似耳螨
+- msg: 豆豆口臭有点重 是不是牙齿的问题
+  label: false
+  tags: [mild, voice, question]
+  why: 口臭
+- msg: my cats breath smells really bad lately is that normal for her age
+  label: false
+  tags: [mild, en, voice, question]
+  why: 口臭
+- msg: 咪咪最近口臭挺明显的 平时也没这样
+  label: false
+  tags: [mild, voice]
+  why: 口臭
+- msg: 那个 我家狗嘴巴味道有点大 需要刷牙吗
+  label: false
+  tags: [mild, voice, question]
+  why: 口臭需护理
+- msg: 老猫口臭挺严重的 要不要去看牙医
+  label: false
+  tags: [mild, voice, question]
+  why: 老猫口臭
+- msg: max has really stinky breath these days should i be worried
+  label: false
+  tags: [mild, en, voice, question]
+  why: 口臭
+- msg: 花花嘴里味道大 吃完东西更明显
+  label: false
+  tags: [mild, voice]
+  why: 口臭
+- msg: 小维口臭有点像鱼腥味 正常吗
+  label: false
+  tags: [mild, voice, question]
+  why: 口臭
+- msg: 大黄走路有点跛 但还是想跑想跳 咋办
+  label: false
+  tags: [mild, gray, voice, question]
+  why: 轻微跛行仍活跃
+- msg: my dog is limping slightly on one leg but still wants to play fetch
+  label: false
+  tags: [mild, gray, en, voice]
+  why: 轻微跛行仍活跃
+- msg: 咪咪走路有点一瘸一拐的 但是照常跳上跳下
+  label: false
+  tags: [mild, gray, voice]
+  why: 轻微跛行仍活跃
+- msg: 那个 团子今天右后腿有点瘸 精神还挺好的 要不要去医院
+  label: false
+  tags: [mild, gray, voice, question]
+  why: 轻微跛行精神好
+- msg: 旺财今天走路一跳一跳的 应该是崴到了
+  label: false
+  tags: [mild, voice]
+  why: 轻微跛行疑似崴脚
+- msg: luna has a slight limp today but still jumping on the couch is that ok
+  label: false
+  tags: [mild, gray, en, voice, question]
+  why: 轻微跛行
+- msg: 灰灰走路一瘸一瘸的 好像是踩到什么了
+  label: false
+  tags: [mild, voice]
+  why: 轻微跛行
+- msg: 幼犬今天有点跛 但是玩得挺欢 正常吗
+  label: false
+  tags: [mild, gray, voice, question]
+  why: 幼犬轻微跛行
+- msg: 老猫最近走路慢了点 有点跛 要注意啥
+  label: false
+  tags: [mild, voice, question]
+  why: 老猫轻微跛行
+- msg: 豆豆今天不太想吃饭 但是精神挺好的
+  label: false
+  tags: [mild, gray, voice]
+  why: 食欲略降精神好
+- msg: my dog didnt finish his food today but hes acting completely normal
+  label: false
+  tags: [mild, gray, en, voice]
+  why: 食欲略降精神好
+- msg: 咪咪今天吃得少了点 就一天 明天再看看
+  label: false
+  tags: [mild, gray, voice]
+  why: 食欲略降一天
+- msg: 那个 团子今天没怎么吃东西 一天没吃了 咋办呀
+  label: false
+  tags: [mild, gray, voice, question]
+  why: 一天不吃精神未提及
+- msg: cat skipped her breakfast today but seems fine otherwise is that normal
+  label: false
+  tags: [mild, gray, en, voice, question]
+  why: 食欲略降
+- msg: 花花食欲有点差 就吃了一半的量
+  label: false
+  tags: [mild, voice]
+  why: 食欲略降
+- msg: 旺财这两天吃得少了点 但是玩耍正常
+  label: false
+  tags: [mild, gray, voice]
+  why: 食欲略降精神好
+- msg: max hasnt been that into his food lately still playful though
+  label: false
+  tags: [mild, gray, en, voice]
+  why: 食欲略降
+- msg: 老猫最近吃得少了 是年纪大了的原因吗
+  label: false
+  tags: [mild, voice, question]
+  why: 老猫食欲略降
+- msg: 大黄最近喝水比平时多 要注意什么吗
+  label: false
+  tags: [mild, voice, question]
+  why: 喝水多
+- msg: my dog has been drinking more water than usual lately is that a concern
+  label: false
+  tags: [mild, en, voice, question]
+  why: 喝水多
+- msg: 咪咪这几天老往水碗那跑 喝得挺多的
+  label: false
+  tags: [mild, voice]
+  why: 喝水多
+- msg: 那个 团子最近喝水量明显多了 是不是天热的原因
+  label: false
+  tags: [mild, voice, question]
+  why: 喝水多天热
+- msg: luna has been drinking a lot more water this week normal or not
+  label: false
+  tags: [mild, en, voice, question]
+  why: 喝水多
+- msg: 老狗最近喝水多了些 该注意什么吗
+  label: false
+  tags: [mild, voice, question]
+  why: 老年犬喝水多
+- msg: 旺财这两天水碗空得特别快
+  label: false
+  tags: [mild, voice]
+  why: 喝水多
+- msg: 灰灰最近特别爱睡觉 一天大部分时间都在睡
+  label: false
+  tags: [mild, voice]
+  why: 睡多
+- msg: my cat has been sleeping way more than usual lately is that normal
+  label: false
+  tags: [mild, en, voice, question]
+  why: 睡多
+- msg: 咪咪最近老睡觉 是不是天冷的关系
+  label: false
+  tags: [mild, voice, question]
+  why: 睡多天冷
+- msg: 那个 团子这几天特别嗜睡 别的都正常
+  label: false
+  tags: [mild, voice]
+  why: 睡多
+- msg: whiskers has been napping a lot more lately should i be concerned
+  label: false
+  tags: [mild, en, voice, question]
+  why: 睡多
+- msg: 老猫最近睡得比以前多很多 是老了吗
+  label: false
+  tags: [mild, voice, question]
+  why: 老猫睡多
+- msg: 幼犬这几天特别能睡 是正常的吗
+  label: false
+  tags: [mild, voice, question]
+  why: 幼犬睡多
+- msg: 豆豆老舔自己的爪子 一直舔
+  label: false
+  tags: [mild, voice]
+  why: 舔爪子
+- msg: my dog keeps licking his paw over and over is that normal behavior
+  label: false
+  tags: [mild, en, voice, question]
+  why: 舔爪子
+- msg: 咪咪最近老舔一只爪子 也没见受伤
+  label: false
+  tags: [mild, voice]
+  why: 舔爪子无外伤
+- msg: 那个 团子一直舔前爪 是不是无聊了
+  label: false
+  tags: [mild, voice, question]
+  why: 舔爪子疑似无聊
+- msg: max keeps licking his paw a lot lately should i worry
+  label: false
+  tags: [mild, en, voice, question]
+  why: 舔爪子
+- msg: 花花最近特别爱舔爪子 是不是过敏
+  label: false
+  tags: [mild, voice, question]
+  why: 舔爪子疑似过敏
+- msg: 灰灰老舔一个地方的爪子 有点担心
+  label: false
+  tags: [mild, voice, question]
+  why: 舔爪子担忧
+- msg: 大黄今天打了好几个嗝
+  label: false
+  tags: [mild, voice]
+  why: 打嗝
+- msg: my dog has been hiccuping a bunch today is that weird
+  label: false
+  tags: [mild, en, voice, question]
+  why: 打嗝
+- msg: 咪咪吃完饭打嗝了 好几声
+  label: false
+  tags: [mild, voice]
+  why: 打嗝
+- msg: 那个 团子今天老打嗝 吃太快了估计
+  label: false
+  tags: [mild, voice]
+  why: 吃太快打嗝
+- msg: luna keeps getting the hiccups after eating fast normal right
+  label: false
+  tags: [mild, en, voice, question]
+  why: 打嗝
+- msg: 幼犬吃完奶老打嗝 正常吗
+  label: false
+  tags: [mild, voice, question]
+  why: 幼犬打嗝
+- msg: 旺财今天放了好几个屁 味道有点大
+  label: false
+  tags: [mild, voice]
+  why: 放屁
+- msg: my dog has been really gassy today is that just from the new food
+  label: false
+  tags: [mild, en, voice, question]
+  why: 放屁换粮
+- msg: 咪咪今天放屁比平时多
+  label: false
+  tags: [mild, voice]
+  why: 放屁
+- msg: 那个 团子这两天老放屁 是不是吃的东西不对
+  label: false
+  tags: [mild, voice, question]
+  why: 放屁
+- msg: max has been super gassy the past couple days
+  label: false
+  tags: [mild, en, voice]
+  why: 放屁
+- msg: 大黄肚子上长了几个小红点 也不痒
+  label: false
+  tags: [mild, voice]
+  why: 皮肤小红点
+- msg: my dog has a few small red spots on his belly not itchy though
+  label: false
+  tags: [mild, en, voice]
+  why: 皮肤小红点
+- msg: 咪咪身上摸到几个小红点 会不会是过敏
+  label: false
+  tags: [mild, voice, question]
+  why: 皮肤小红点疑似过敏
+- msg: 那个 团子肚皮上有几个小红疙瘩 要不要紧
+  label: false
+  tags: [mild, voice, question]
+  why: 皮肤小红点
+- msg: luna has a couple small red bumps on her skin should i be worried
+  label: false
+  tags: [mild, en, voice, question]
+  why: 皮肤小红点
+- msg: 花花身上长了几颗小红点 不知道是不是蚊子咬的
+  label: false
+  tags: [mild, voice, question]
+  why: 皮肤小红点疑似蚊咬
+- msg: 咪咪最近老是发情叫 一直叫一直叫 咋办
+  label: false
+  tags: [mild, voice, question]
+  why: 猫发情
+- msg: my cat is in heat and yowling nonstop what should i do
+  label: false
+  tags: [mild, en, voice, question]
+  why: 猫发情
+- msg: 花花发情了 老在地上打滚 这个正常吗
+  label: false
+  tags: [mild, voice, question]
+  why: 猫发情行为
+- msg: 那个 我家母狗好像发情了 有点出血 是正常的吗
+  label: false
+  tags: [mild, voice, question]
+  why: 狗发情出血
+- msg: luna is going into heat this week acting kinda clingy is that normal
+  label: false
+  tags: [mild, en, voice, question]
+  why: 狗发情
+- msg: 老猫最近发情特别频繁 要不要绝育
+  label: false
+  tags: [mild, voice, question]
+  why: 猫发情咨询
+- msg: 灰灰发情期食欲有点变化 正常吗
+  label: false
+  tags: [mild, voice, question]
+  why: 发情食欲变化
+- msg: 大黄有颗牙齿好像有点松 摸着能晃动
+  label: false
+  tags: [mild, voice]
+  why: 牙齿松
+- msg: my old dog has a loose tooth i noticed today should i see a vet
+  label: false
+  tags: [mild, voice, en, question]
+  why: 牙齿松
+- msg: 老猫牙齿有点松了 吃硬粮的时候能看出来
+  label: false
+  tags: [mild, voice]
+  why: 老猫牙齿松
+- msg: 那个 团子好像掉了一颗牙 是换牙吗 它还小
+  label: false
+  tags: [mild, voice, question]
+  why: 幼犬换牙
+- msg: 幼犬这几天老掉牙 是正常换牙期吗
+  label: false
+  tags: [mild, voice, question]
+  why: 幼犬换牙
+- msg: 旺财一颗后槽牙有点晃 要不要去看牙科
+  label: false
+  tags: [mild, voice, question]
+  why: 牙齿松需检查
+- msg: 咪咪指甲裂了一点 走路好像没受影响
+  label: false
+  tags: [mild, voice]
+  why: 指甲裂
+- msg: my cat cracked one of her nails but doesnt seem to be limping
+  label: false
+  tags: [mild, en, voice]
+  why: 指甲裂
+- msg: 那个 大黄指甲裂了个小口子 有点担心
+  label: false
+  tags: [mild, voice, question]
+  why: 指甲裂担忧
+- msg: 团子指甲裂了 走路一瘸一瘸的 要不要处理
+  label: false
+  tags: [mild, gray, voice, question]
+  why: 指甲裂伴轻微跛
+- msg: max cracked a nail playing outside minor bleeding stopped quick
+  label: false
+  tags: [mild, gray, en, voice]
+  why: 指甲裂轻微出血
+- msg: 灰灰指甲裂了一条缝 需要剪掉吗
+  label: false
+  tags: [mild, voice, question]
+  why: 指甲裂处理
+- msg: 咪咪睡觉呼噜声特别大 是不是感冒了
+  label: false
+  tags: [mild, voice, question]
+  why: 呼噜声大
+- msg: my cat has been snoring really loud lately is that normal
+  label: false
+  tags: [mild, en, voice, question]
+  why: 打呼噜
+- msg: 团子睡着了呼噜呼噜的 一直有响声
+  label: false
+  tags: [mild, voice]
+  why: 打呼噜
+- msg: 那个 花花最近打呼噜声音变大了 要注意吗
+  label: false
+  tags: [mild, voice, question]
+  why: 打呼噜变化
+- msg: whiskers snores so loud at night is that just breed related
+  label: false
+  tags: [mild, en, voice, question]
+  why: 品种性打呼噜
+- msg: 老猫呼噜声比以前大了些
+  label: false
+  tags: [mild, voice]
+  why: 老猫打呼噜
+- msg: 大黄最近老流鼻涕 清鼻涕不黄不绿
+  label: false
+  tags: [mild, voice]
+  why: 流清鼻涕
+- msg: my dog has a bit of a runny nose today clear not colored is that ok
+  label: false
+  tags: [mild, en, voice, question]
+  why: 流清鼻涕
+- msg: 咪咪鼻子有点湿湿的 流了点鼻涕
+  label: false
+  tags: [mild, voice]
+  why: 流鼻涕
+- msg: 那个 团子今天流鼻涕了 就一点点 别的都正常
+  label: false
+  tags: [mild, voice]
+  why: 少量流鼻涕
+- msg: luna has a runny nose this morning otherwise seems fine should i worry
+  label: false
+  tags: [mild, en, voice, question]
+  why: 流鼻涕
+- msg: 幼犬流鼻涕 是不是感冒了 要不要吃药
+  label: false
+  tags: [mild, voice, question]
+  why: 幼犬流鼻涕
+- msg: 旺财最近老打反向喷嚏 像是抽气那种声音 吓我一跳
+  label: false
+  tags: [mild, voice]
+  why: 反向喷嚏
+- msg: my dog makes this weird snorting honking sound sometimes what is that
+  label: false
+  tags: [mild, edge, en, voice, question]
+  why: 反向喷嚏
+- msg: 咪咪突然发出那种呼呼的吸气声 好几秒然后就没了 是啥情况
+  label: false
+  tags: [mild, edge, voice, question]
+  why: 反向喷嚏描述
+- msg: 那个 团子刚才突然像抽筋一样使劲吸气 出声音 然后又好了 正常吗
+  label: false
+  tags: [mild, edge, voice, question]
+  why: 反向喷嚏易误判
+- msg: max does this honking snorting thing randomly is that normal for pugs
+  label: false
+  tags: [mild, edge, en, voice, question]
+  why: 反向喷嚏
+- msg: 老狗最近老是那种打反向喷嚏的样子 要不要去医院
+  label: false
+  tags: [mild, voice, question]
+  why: 反向喷嚏
+- msg: 大黄体重好像轻了一点点 摸着肋骨感觉明显了些
+  label: false
+  tags: [mild, gray, voice]
+  why: 体重略降
+- msg: my dog seems to have lost a tiny bit of weight lately still eating fine
+  label: false
+  tags: [mild, gray, en, voice]
+  why: 体重略降食欲好
+- msg: 咪咪最近称了下体重 轻了一点 别的都正常
+  label: false
+  tags: [mild, gray, voice]
+  why: 体重略降
+- msg: 那个 团子体重好像掉了一点点 是不是我喂少了
+  label: false
+  tags: [mild, gray, voice, question]
+  why: 体重略降
+- msg: luna lost a bit of weight this month but shes still active and eating
+  label: false
+  tags: [mild, gray, en, voice]
+  why: 体重略降精神好
+- msg: 老猫最近瘦了一点 需要注意什么吗
+  label: false
+  tags: [mild, voice, question]
+  why: 老猫体重略降
+- msg: 幼犬体重涨得慢了一点点 正常范围内吗
+  label: false
+  tags: [mild, voice, question]
+  why: 幼犬体重变化
+- msg: 豆豆身上被蚊子咬了个包 红红的
+  label: false
+  tags: [mild, voice]
+  why: 蚊虫叮咬
+- msg: my dog has a mosquito bite bump on his belly is that normal
+  label: false
+  tags: [mild, en, voice, question]
+  why: 蚊虫叮咬
+- msg: 咪咪耳朵上被蚊子咬了 肿了一小块
+  label: false
+  tags: [mild, voice]
+  why: 蚊虫叮咬
+- msg: 那个 团子身上有个包 应该是蚊子咬的 要不要紧
+  label: false
+  tags: [mild, voice, question]
+  why: 蚊虫叮咬
+- msg: max has a bug bite on his nose kinda swollen should i put something on it
+  label: false
+  tags: [mild, en, voice, question]
+  why: 蚊虫叮咬
+- msg: 我家兔子耳朵上有个小包 是不是蚊子咬的
+  label: false
+  tags: [mild, edge, voice, question]
+  why: 兔子蚊虫叮咬
+- msg: 大黄身上好像有跳蚤 挠得挺厉害的
+  label: false
+  tags: [mild, voice]
+  why: 跳蚤挠痒
+- msg: i think my dog has fleas hes scratching a lot lately
+  label: false
+  tags: [mild, en, voice]
+  why: 疑似跳蚤
+- msg: 咪咪身上翻毛看到黑色小点点 是跳蚤屎吗
+  label: false
+  tags: [mild, voice, question]
+  why: 疑似跳蚤
+- msg: 那个 团子最近老挠 掀毛一看好像有跳蚤 咋处理
+  label: false
+  tags: [mild, voice, question]
+  why: 跳蚤处理咨询
+- msg: luna might have fleas i saw some little black specks on her fur
+  label: false
+  tags: [mild, en, voice]
+  why: 疑似跳蚤
+- msg: 旺财挠得厉害 是不是感染跳蚤了 要买驱虫药吗
+  label: false
+  tags: [mild, voice, question]
+  why: 疑似跳蚤驱虫咨询
+- msg: 豆豆今天吐了一次 之后照常吃了晚饭 应该没事吧
+  label: false
+  tags: [mild, gray, voice, question]
+  why: 单次呕吐后正常进食
+- msg: my hamster hasnt been eating much today just sitting in the corner
+  label: false
+  tags: [mild, gray, edge, en, voice]
+  why: 仓鼠食欲降需关注
+- msg: 我家仓鼠今天不怎么动 也不怎么吃 是不是生病了
+  label: false
+  tags: [mild, gray, edge, voice, question]
+  why: 仓鼠状态改变
+- msg: 咪咪拉稀两天了 没有血也没吐 但是有点担心 要不要去医院
+  label: false
+  tags: [mild, gray, voice, question]
+  why: 拉稀两天无血
+- msg: 那个 我家兔子今天拉的便便有点软 平时都是干干的球
+  label: false
+  tags: [mild, edge, voice]
+  why: 兔子软便
+- msg: rabbit pooped softer than the usual pellets today should i be concerned
+  label: false
+  tags: [mild, edge, en, voice, question]
+  why: 兔子软便
+- msg: 团子今天精神有点蔫 但是还吃饭 就是没那么活泼
+  label: false
+  tags: [mild, gray, voice]
+  why: 精神略差食欲正常
+- msg: my cat seems a little less playful today still eating and drinking though
+  label: false
+  tags: [mild, gray, en, voice]
+  why: 精神略差
+- msg: 大黄今天有点没精神 睡得比平时多 吃饭正常
+  label: false
+  tags: [mild, gray, voice]
+  why: 精神略差睡多
+- msg: 那个 我家猫今天有点安静 不怎么叫 别的都正常
+  label: false
+  tags: [mild, voice]
+  why: 行为轻微变化
+- msg: 幼猫这两天有点蔫 但是还是会追逗猫棒玩 要紧吗
+  label: false
+  tags: [mild, gray, voice, question]
+  why: 幼猫轻微精神差
+- msg: 咪咪今天吐了一次毛球 之后活蹦乱跳的 没事吧
+  label: false
+  tags: [mild, gray, voice, question]
+  why: 毛球呕吐精神好
+- msg: 老狗最近走路慢了些 但是还是愿意出门遛
+  label: false
+  tags: [mild, voice]
+  why: 老年犬行动变化
+- msg: 团子今天摸着耳朵有点热 别的都正常 要不要量体温
+  label: false
+  tags: [mild, voice, question]
+  why: 局部发热无其他症状
+- msg: my dog's ears feel a bit warm today nothing else seems off
+  label: false
+  tags: [mild, en, voice]
+  why: 局部发热
+- msg: 那个 花花肚子摸着软软的 没有硬的地方 就是有点鼓
+  label: false
+  tags: [mild, voice]
+  why: 轻微腹部变化
+- msg: 大黄今天鼻子有点干 平时都是湿的 正常吗
+  label: false
+  tags: [mild, voice, question]
+  why: 鼻子干燥
+- msg: is it normal for a dogs nose to be dry sometimes during the day
+  label: false
+  tags: [mild, en, voice, question, hypothetical]
+  why: 鼻子干燥知识性提问
+- msg: 咪咪最近老蹭家具 是不是身上痒
+  label: false
+  tags: [mild, voice, question]
+  why: 蹭痒行为
+- msg: 团子今天打了好几个哈欠 是不是没睡好
+  label: false
+  tags: [mild, voice, question]
+  why: 打哈欠
+- msg: 那个 我家狗今天有点流口水 比平时多一点点
+  label: false
+  tags: [mild, voice]
+  why: 流口水略多
+- msg: my dog has been drooling a little more than usual today anything to worry about
+  label: false
+  tags: [mild, en, voice, question]
+  why: 流口水略多
+- msg: 旺财今天走路慢吞吞的 但是喊它还是会跑过来
+  label: false
+  tags: [mild, voice]
+  why: 行动变慢仍反应正常
+- msg: 幼犬这两天有点便秘 好几天没拉了 咋办
+  label: false
+  tags: [mild, voice, question]
+  why: 轻微便秘
+- msg: my cat hasnt pooped in two days but eating and drinking normally
+  label: false
+  tags: [mild, gray, en, voice]
+  why: 轻微便秘精神好
+- msg: 那个 咪咪今天尿了好多次 但是每次尿量都正常
+  label: false
+  tags: [mild, voice]
+  why: 排尿次数增多
+- msg: 团子今天喝水少了点 别的都还好
+  label: false
+  tags: [mild, voice]
+  why: 喝水略少
+- msg: 老猫这几天有点挑食 只吃它爱吃的那种粮
+  label: false
+  tags: [mild, voice]
+  why: 挑食
+- msg: my old cat has been picky about her food lately just prefers wet food
+  label: false
+  tags: [mild, en, voice]
+  why: 挑食
+- msg: 大黄今天蹭沙发蹭得挺欢的 身上有点痒的样子
+  label: false
+  tags: [mild, voice]
+  why: 蹭痒
+- msg: 那个 我家兔子今天不怎么爱动 是不是天热了
+  label: false
+  tags: [mild, edge, voice, question]
+  why: 兔子活动减少
+- msg: rabbit seems a bit lethargic today but still eating hay is that normal
+  label: false
+  tags: [mild, edge, en, voice, question]
+  why: 兔子精神略差食欲好
+- msg: 仓鼠今天在轮子上跑得没那么欢了
+  label: false
+  tags: [mild, edge, voice]
+  why: 仓鼠活动减少
+- msg: my hamster seems less active on his wheel today should i worry
+  label: false
+  tags: [mild, edge, en, voice, question]
+  why: 仓鼠活动减少
+- msg: 咪咪今天洗完澡之后一直发抖 是冷还是别的原因
+  label: false
+  tags: [mild, voice, question]
+  why: 洗澡后发抖
+- msg: 那个 团子今天有点打喷嚏又有点流鼻涕 应该是感冒了吧
+  label: false
+  tags: [mild, multi, voice, question]
+  why: 打喷嚏合并流鼻涕轻症
+- msg: my dog has both a runny nose and sneezing today just seems like a cold
+  label: false
+  tags: [mild, multi, en, voice]
+  why: 感冒样轻症
+- msg: 花花咳嗽又有点没精神 是不是感冒了 要不要吃药
+  label: false
+  tags: [mild, multi, gray, voice, question]
+  why: 咳嗽伴精神略差
+- msg: 幼猫打喷嚏又流眼泪 是不是猫瘟啊 好担心
+  label: false
+  tags: [mild, multi, keyword_trap, voice, question]
+  why: 轻症被过度联想
+- msg: kitten sneezing and watery eyes could it be something serious im scared
+  label: false
+  tags: [mild, multi, keyword_trap, en, voice, question]
+  why: 轻症关键词陷阱
+- msg: 团子最近老是打哈欠然后又挠痒 是压力大吗
+  label: false
+  tags: [mild, multi, voice, question]
+  why: 组合轻症
+- msg: 大黄今天走路一瘸一瘸的 但还是抢着要出去玩 咋回事
+  label: false
+  tags: [mild, gray, voice, question]
+  why: 跛行仍活跃
+- msg: 那个 我家猫今天呕吐了两次 但是精神特别好 一直想出去
+  label: false
+  tags: [mild, gray, voice]
+  why: 两次呕吐精神好
+- msg: cat threw up twice today but is super playful and hungry after
+  label: false
+  tags: [mild, gray, en, voice]
+  why: 两次呕吐精神好
+- msg: 团子今天不吃早饭 但是中午又正常吃了
+  label: false
+  tags: [mild, gray, voice]
+  why: 单餐不吃后恢复
+- msg: 咪咪最近有点少吃 就一顿没吃完 别的正常
+  label: false
+  tags: [mild, gray, voice]
+  why: 食欲略降
+- msg: 大黄拉肚子拉了两天 没有血 但是有点担心要不要去医院
+  label: false
+  tags: [mild, gray, voice, question]
+  why: 拉稀两天无血
+- msg: my puppy has had loose stools for two days no blood energy still good
+  label: false
+  tags: [mild, gray, en, voice]
+  why: 幼犬拉稀两天精神好
+- msg: 幼犬今天有点软便 是不是奶粉换得太快了
+  label: false
+  tags: [mild, voice, question]
+  why: 幼犬软便
+- msg: 老猫这几天有点跛 走路一瘸一瘸的 但是照样上楼梯
+  label: false
+  tags: [mild, gray, voice]
+  why: 老猫轻微跛行
+- msg: 那个 咪咪今天吐了一次然后就一直趴着不太想动 有点担心
+  label: false
+  tags: [mild, gray, voice, question]
+  why: 单次呕吐后活力略降
+- msg: my cat threw up once and has been a bit quieter since is that concerning
+  label: false
+  tags: [mild, gray, en, voice, question]
+  why: 单次呕吐后精神略差
+- msg: 团子今天有点打喷嚏 眼睛也有点湿 但是照样吃饭玩耍
+  label: false
+  tags: [mild, multi, gray, voice]
+  why: 轻症合并但精神食欲好
+- msg: 豆豆今天软便加上有点挑食 是不是肠胃不舒服
+  label: false
+  tags: [mild, multi, voice, question]
+  why: 软便合并挑食
+- msg: 大黄身上好像被蜜蜂还是啥虫子咬了 肿了一小块 别的都正常
+  label: false
+  tags: [mild, voice]
+  why: 虫咬肿包
+- msg: my dog got stung by something outside theres a small bump but hes fine
+  label: false
+  tags: [mild, en, voice]
+  why: 虫咬肿包
+- msg: 咪咪今天挠耳朵挠得厉害 是不是耳螨啊 要不要滴药
+  label: false
+  tags: [mild, voice, question]
+  why: 挠耳疑似耳螨
+- msg: 那个 团子最近老是甩头 又挠耳朵 是耳朵有问题吗
+  label: false
+  tags: [mild, multi, voice, question]
+  why: 甩头挠耳组合轻症
+- msg: my cat keeps shaking her head and scratching her ear could be an ear issue
+  label: false
+  tags: [mild, multi, en, voice, question]
+  why: 甩头挠耳
+- msg: 老狗最近牙齿掉了一颗 吃饭好像有点小心翼翼的
+  label: false
+  tags: [mild, voice]
+  why: 老年犬掉牙
+- msg: 幼猫这几天一直换牙 地上能捡到小牙齿
+  label: false
+  tags: [mild, voice]
+  why: 幼猫换牙
+- msg: my kitten is losing her baby teeth found a couple on the floor is that normal
+  label: false
+  tags: [mild, en, voice, question]
+  why: 幼猫换牙
+- msg: 团子今天指甲有点长 走路听见咔咔的声音
+  label: false
+  tags: [mild, voice]
+  why: 指甲过长
+- msg: 大黄今天蚊子咬了好几个包 身上红红的一片
+  label: false
+  tags: [mild, voice]
+  why: 多处蚊虫叮咬
+- msg: my dog has multiple mosquito bites on his belly should i put anything on them
+  label: false
+  tags: [mild, en, voice, question]
+  why: 多处蚊虫叮咬
+- msg: 咪咪身上跳蚤挺多的 挠得皮都有点红了 要紧吗
+  label: false
+  tags: [mild, gray, voice, question]
+  why: 跳蚤挠红皮肤
+- msg: 那个 团子今天呼噜声特别大 是不是鼻子堵了
+  label: false
+  tags: [mild, voice, question]
+  why: 呼噜声大疑似鼻塞
+- msg: 老猫最近老是打呼噜 而且体重也轻了点 要注意吗
+  label: false
+  tags: [mild, multi, gray, voice, question]
+  why: 打呼噜合并体重略降
+- msg: my old cat snores more now and lost a little weight is that concerning
+  label: false
+  tags: [mild, multi, gray, en, voice, question]
+  why: 老猫组合轻症
+- msg: 豆豆今天喝水特别多 尿也多 是不是天热了
+  label: false
+  tags: [mild, voice, question]
+  why: 喝水多排尿多天热
+- msg: 团子这几天嗜睡又有点食欲差 是不是压力大
+  label: false
+  tags: [mild, multi, gray, voice, question]
+  why: 睡多食欲降组合
+- msg: my cat has been sleeping a ton and eating less this week worried a little
+  label: false
+  tags: [mild, multi, gray, en, voice, question]
+  why: 睡多食欲降组合
+- msg: 大黄最近一直舔爪子 舔得毛都湿了 是不是无聊
+  label: false
+  tags: [mild, voice, question]
+  why: 舔爪子过度
+- msg: 那个 咪咪今天肚子上摸到几个红点 会不会是跳蚤咬的
+  label: false
+  tags: [mild, voice, question]
+  why: 皮肤红点疑似跳蚤
+- msg: 幼猫今天软便还有点打嗝 是不是喂多了
+  label: false
+  tags: [mild, multi, voice, question]
+  why: 软便打嗝组合
+- msg: my kitten had soft poop and some hiccups today after eating too much
+  label: false
+  tags: [mild, multi, en, voice]
+  why: 软便打嗝组合
+- msg: 团子今天放屁特别臭 是不是吃坏东西了
+  label: false
+  tags: [mild, voice, question]
+  why: 放屁味重
+- msg: 大黄今天有点跛 摸它的脚爪好像有点肿 要不要看看
+  label: false
+  tags: [mild, gray, voice, question]
+  why: 跛行伴轻微肿胀
+- msg: my dog is limping a bit and his paw looks slightly swollen should i check it
+  label: false
+  tags: [mild, gray, en, voice, question]
+  why: 跛行伴轻微肿胀
+- msg: 咪咪最近老打反向喷嚏 有点吓人但是很快就好了
+  label: false
+  tags: [mild, voice]
+  why: 反向喷嚏自行缓解
+- msg: 那个 我家兔子牙齿好像有点长 是不是要磨牙了
+  label: false
+  tags: [mild, edge, voice, question]
+  why: 兔子牙齿咨询
+- msg: rabbit's front teeth look a bit long do i need to get them trimmed
+  label: false
+  tags: [mild, edge, en, voice, question]
+  why: 兔子牙齿咨询
+- msg: 仓鼠指甲好像有点长了 走路听着有响声
+  label: false
+  tags: [mild, edge, voice]
+  why: 仓鼠指甲过长
+- msg: 团子今天体重秤了一下 比上次轻了一点点 食欲一直挺好的
+  label: false
+  tags: [mild, gray, voice]
+  why: 体重略降食欲好
+- msg: 老猫最近皮肤上摸到几个小红点 会不会是过敏
+  label: false
+  tags: [mild, voice, question]
+  why: 老猫皮肤红点
+- msg: my senior cat has a few small red bumps on her skin allergy maybe
+  label: false
+  tags: [mild, en, voice, question]
+  why: 老猫皮肤红点
+- msg: 幼犬今天软便加上有点没精神 是不是肠胃炎啊 要不要去医院
+  label: false
+  tags: [mild, multi, gray, voice, question]
+  why: 幼犬软便伴精神略差
+- msg: my puppy has soft stool and seems a little tired today should i take him in
+  label: false
+  tags: [mild, multi, gray, en, voice, question]
+  why: 幼犬组合轻症
+- msg: 大黄今天呼噜声挺大的 睡觉的时候 白天没事
+  label: false
+  tags: [mild, voice]
+  why: 睡眠呼噜声大
+- msg: 咪咪今天口臭比较明显 而且有点挑食
+  label: false
+  tags: [mild, multi, voice]
+  why: 口臭合并挑食
+- msg: 那个 团子这几天耳朵有味道 而且老甩头 要不要清理一下
+  label: false
+  tags: [mild, multi, voice, question]
+  why: 耳臭合并甩头
+- msg: my cats ears smell and she keeps shaking her head should i clean them
+  label: false
+  tags: [mild, multi, en, voice, question]
+  why: 耳臭合并甩头
+- msg: 旺财今天精神特别好 就是打了几个喷嚏 应该没事吧
+  label: false
+  tags: [mild, voice, question]
+  why: 精神好偶发喷嚏
+- msg: 老狗最近走路慢 牙齿也松了一颗 是不是年纪大了正常的
+  label: false
+  tags: [mild, multi, voice, question]
+  why: 老年犬组合轻症
+- msg: my senior dog walks slower now and has a loose tooth is that just aging
+  label: false
+  tags: [mild, multi, en, voice, question]
+  why: 老年犬组合轻症
+- msg: 团子今天挠痒挠得毛掉了不少 是不是皮肤病啊
+  label: false
+  tags: [mild, multi, keyword_trap, voice, question]
+  why: 挠痒合并掉毛联想过度
+- msg: 幼猫今天打了两个喷嚏 眼睛也有点湿 应该是灰尘吧
+  label: false
+  tags: [mild, multi, voice]
+  why: 幼猫打喷嚏合并眼屎
+- msg: my kitten sneezed twice and eyes looked a little watery probably just dust
+  label: false
+  tags: [mild, multi, en, voice]
+  why: 幼猫组合轻症
+- msg: 大黄今天喝水少了点 也没怎么排尿 天冷的原因吧
+  label: false
+  tags: [mild, voice]
+  why: 喝水少天冷
+- msg: 那个 我家猫今天有点打嗝又放屁 是不是吃太快了
+  label: false
+  tags: [mild, multi, voice, question]
+  why: 打嗝放屁组合
+- msg: my cat has been hiccuping and gassy today probably ate too fast
+  label: false
+  tags: [mild, multi, en, voice]
+  why: 打嗝放屁组合
+- msg: 团子今天有点跛 又老舔那只脚 是不是扎到刺了
+  label: false
+  tags: [mild, multi, voice, question]
+  why: 跛行舔脚组合
+- msg: my dog is limping and keeps licking that paw maybe theres a thorn in it
+  label: false
+  tags: [mild, multi, en, voice, question]
+  why: 跛行舔脚组合
+- msg: 老猫这几天体重轻了点 又老睡觉 是不是身体不行了
+  label: false
+  tags: [mild, multi, gray, voice, question]
+  why: 老猫组合轻症
+- msg: 幼兔今天不怎么吃草了 是不是生病了
+  label: false
+  tags: [mild, gray, edge, voice, question]
+  why: 幼兔食欲降
+- msg: baby rabbit isnt eating as much hay today should i be worried
+  label: false
+  tags: [mild, gray, edge, en, voice, question]
+  why: 幼兔食欲降
+- msg: 团子今天有点咳嗽又有点流鼻涕 是不是感冒了 要吃药吗
+  label: false
+  tags: [mild, multi, voice, question]
+  why: 咳嗽流鼻涕组合
+- msg: my dog is coughing a little and has a runny nose is it a cold
+  label: false
+  tags: [mild, multi, en, voice, question]
+  why: 咳嗽流鼻涕组合
+- msg: 大黄今天挠耳朵挠得厉害 甩头也挺频繁的 会不会是耳朵进水了
+  label: false
+  tags: [mild, multi, voice, question]
+  why: 挠耳甩头疑似进水
+- msg: 咪咪今天软便 而且喝水也多了点 正常吗
+  label: false
+  tags: [mild, multi, voice, question]
+  why: 软便喝水多组合
+- msg: 那个 团子今天有点不爱动 又不太想吃饭 但是摸着也不发烧
+  label: false
+  tags: [mild, gray, multi, voice]
+  why: 精神差食欲降但不发烧
+- msg: 老狗这几天精神差了点 也不太想出门遛了 但是叫它还是会理你
+  label: false
+  tags: [mild, gray, voice]
+  why: 老年犬精神略差
+- msg: my senior dog seems less enthusiastic about walks lately still responsive though
+  label: false
+  tags: [mild, gray, en, voice]
+  why: 老年犬精神略差
+- msg: 团子今天皮肤上有个小红点 挠了一下 应该是蚊子咬的吧
+  label: false
+  tags: [mild, voice, question]
+  why: 皮肤红点疑似蚊咬
+- msg: 幼犬今天有点软便加上打嗝 是不是喂食太多了
+  label: false
+  tags: [mild, multi, voice, question]
+  why: 幼犬软便打嗝
+- msg: 咪咪今天呕吐了一次 里面有点毛 应该是毛球问题
+  label: false
+  tags: [mild, voice]
+  why: 毛球呕吐
+- msg: 那个 团子今天喷嚏打得有点多 而且有点流眼泪 要不要去医院看看
+  label: false
+  tags: [mild, multi, voice, question]
+  why: 喷嚏流泪组合
+- msg: my cat has been sneezing more today with a bit of tearing should i take her in
+  label: false
+  tags: [mild, multi, en, voice, question]
+  why: 喷嚏流泪组合
+- msg: 大黄这几天老是舔肚子 也没看到伤口 是不是痒
+  label: false
+  tags: [mild, voice, question]
+  why: 舔肚子疑似痒
+- msg: 幼猫今天有点软便 精神也稍微差一点 但是还是会玩逗猫棒
+  label: false
+  tags: [mild, gray, voice]
+  why: 幼猫软便精神略差仍玩耍
+- msg: 老猫最近牙齿又松了一颗 吃饭比以前慢一些
+  label: false
+  tags: [mild, voice]
+  why: 老猫牙齿松吃饭慢
+- msg: my senior cat has another loose tooth eating a bit slower now
+  label: false
+  tags: [mild, en, voice]
+  why: 老猫牙齿松
+- msg: 团子今天体重量了下 轻了一点点 食欲和平时一样
+  label: false
+  tags: [mild, gray, voice]
+  why: 体重略降食欲正常
+- msg: 那个 我家狗今天喝水特别多 一晚上喝了两碗 正常吗
+  label: false
+  tags: [mild, voice, question]
+  why: 喝水多
+- msg: 咪咪今天有点跛 但是玩激光笔的时候完全没事
+  label: false
+  tags: [mild, gray, voice]
+  why: 跛行但玩耍无异常
+- msg: my cat has a slight limp but chased the laser pointer just fine
+  label: false
+  tags: [mild, gray, en, voice]
+  why: 跛行但玩耍无异常
+- msg: 团子今天呕吐了一次 好像是吃猫粮太急了
+  label: false
+  tags: [mild, voice]
+  why: 吃太快呕吐
+- msg: 大黄这几天老放屁 而且有点软便 换粮之后开始的
+  label: false
+  tags: [mild, multi, voice]
+  why: 换粮引起放屁软便
+- msg: my dog has been gassy and had soft stool since we switched food brands
+  label: false
+  tags: [mild, multi, en, voice]
+  why: 换粮引起放屁软便
+- msg: 幼犬今天咳嗽了两声 是不是呛到水了
+  label: false
+  tags: [mild, voice, question]
+  why: 幼犬咳嗽疑似呛水
+- msg: 咪咪最近老蹭眼睛 是不是眼屎太多了不舒服
+  label: false
+  tags: [mild, voice, question]
+  why: 蹭眼疑似眼屎多
+- msg: 那个 团子这两天有点跛 但是照样上蹿下跳 要不要去检查一下
+  label: false
+  tags: [mild, gray, voice, question]
+  why: 跛行仍活跃
+- msg: my dog has a slight limp but is still jumping around like normal should i check it out
+  label: false
+  tags: [mild, gray, en, voice, question]
+  why: 跛行仍活跃
+- msg: 老猫最近眼屎多了 而且有点流鼻涕 是感冒吗
+  label: false
+  tags: [mild, multi, voice, question]
+  why: 老猫眼屎流涕组合
+- msg: my old cat has more eye discharge and a runny nose could this be a cold
+  label: false
+  tags: [mild, multi, en, voice, question]
+  why: 老猫组合轻症
+- msg: 团子今天一直挠脖子那块 是不是项圈太紧了
+  label: false
+  tags: [mild, voice, question]
+  why: 挠痒疑似项圈问题
+- msg: 大黄今天有点软便 但是玩得可欢了 应该没事吧
+  label: false
+  tags: [mild, gray, voice, question]
+  why: 软便精神好
+- msg: 咪咪今天体重轻了点 但是食欲喝水都正常 需要担心吗
+  label: false
+  tags: [mild, gray, voice, question]
+  why: 体重略降其余正常
+- msg: my cat lost a little weight but eating and drinking normally is that ok
+  label: false
+  tags: [mild, gray, en, voice, question]
+  why: 体重略降其余正常
+- msg: 团子今天有点耳朵臭 又老甩头 要不要买点洗耳液
+  label: false
+  tags: [mild, multi, voice, question]
+  why: 耳臭甩头组合
+- msg: 老狗这几天牙齿有点松 吃硬粮的时候会躲开
+  label: false
+  tags: [mild, voice]
+  why: 老年犬牙齿松
+- msg: 幼猫今天打了个喷嚏 然后照常玩耍 应该没事吧
+  label: false
+  tags: [mild, voice, question]
+  why: 幼猫单次喷嚏
+- msg: kitten sneezed once and went right back to playing probably fine right
+  label: false
+  tags: [mild, en, voice, question]
+  why: 幼猫单次喷嚏
+- msg: 团子今天皮肤有点小红点 而且老挠 是不是过敏了 要不要吃药
+  label: false
+  tags: [mild, multi, voice, question]
+  why: 皮肤红点挠痒疑似过敏
+- msg: my dog has small red spots and is scratching a lot could it be allergies
+  label: false
+  tags: [mild, multi, en, voice, question]
+  why: 皮肤红点挠痒疑似过敏
+- msg: 大黄这几天睡得特别多 又不太爱动 是不是天冷懒了
+  label: false
+  tags: [mild, multi, voice]
+  why: 睡多活动少天冷
+- msg: 咪咪今天软便一次 之后就正常了 应该没事吧
+  label: false
+  tags: [mild, gray, voice, question]
+  why: 单次软便后恢复
+- msg: 那个 团子今天有点挑食 只吃罐头不吃干粮 是不是牙齿不舒服
+  label: false
+  tags: [mild, voice, question]
+  why: 挑食疑似牙齿问题
+- msg: my cat is being picky only wants wet food today could her teeth hurt
+  label: false
+  tags: [mild, en, voice, question]
+  why: 挑食疑似牙齿问题
+- msg: 幼犬今天拉稀了 就一次 之后就正常了 精神也好
+  label: false
+  tags: [mild, gray, voice]
+  why: 幼犬单次拉稀精神好
+- msg: 大黄今天有点咳嗽 又老想喝水 是不是嗓子不舒服
+  label: false
+  tags: [mild, multi, voice, question]
+  why: 咳嗽喝水多组合
+- msg: 老猫最近跛得比较明显了 但还是能跳上猫爬架
+  label: false
+  tags: [mild, gray, voice]
+  why: 老猫跛行仍能跳跃
+- msg: my senior cat limps more now but can still jump onto the cat tree
+  label: false
+  tags: [mild, gray, en, voice]
+  why: 老猫跛行仍能跳跃
+- msg: 团子今天口臭挺重的 而且有点流口水 要不要看牙医
+  label: false
+  tags: [mild, multi, voice, question]
+  why: 口臭流口水疑似牙齿问题
+- msg: my dog's breath is really bad and hes drooling a bit more should i see a vet
+  label: false
+  tags: [mild, multi, en, voice, question]
+  why: 口臭流口水疑似牙齿问题
+- msg: 咪咪今天蚊子咬了个包 而且有点痒 一直挠
+  label: false
+  tags: [mild, multi, voice]
+  why: 蚊咬伴挠痒
+- msg: 那个 我家狗今天呼噜声特别大 而且体重也重了不少 是不是该减肥了
+  label: false
+  tags: [mild, voice, question]
+  why: 呼噜声大体重增加咨询
+- msg: 团子最近老是打反向喷嚏 这个我查了下说狗狗常见 应该没事吧
+  label: false
+  tags: [mild, knowledge, voice, question]
+  why: 反向喷嚏常见现象
+- msg: is reverse sneezing normal in small dogs or should i get it checked
+  label: false
+  tags: [mild, knowledge, en, voice, question, hypothetical]
+  why: 反向喷嚏知识性提问
+- msg: 大黄今天有点跛 而且指甲好像裂了一点 应该是同一个原因
+  label: false
+  tags: [mild, multi, voice]
+  why: 指甲裂导致跛行
+- msg: my dog is limping and i noticed a cracked nail probably related
+  label: false
+  tags: [mild, multi, en, voice]
+  why: 指甲裂导致跛行
+- msg: 幼猫今天有点软便 又老是打嗝 是不是喂太多猫粮了
+  label: false
+  tags: [mild, multi, voice, question]
+  why: 幼猫软便打嗝
+- msg: 团子这几天体重涨得有点慢 医生说观察就行
+  label: false
+  tags: [mild, managed, voice]
+  why: 已咨询医生观察中
+- msg: 老猫最近吃得少了些 兽医说先观察一周看看
+  label: false
+  tags: [mild, managed, voice]
+  why: 已在观察中
+- msg: my vet said to just monitor my cats reduced appetite for now
+  label: false
+  tags: [mild, managed, en, voice]
+  why: 已在医生指导下观察
+- msg: 大黄挠痒挠得挺频繁的 上次看医生说是轻微皮肤过敏 开了药在吃
+  label: false
+  tags: [mild, managed, voice]
+  why: 已确诊在治疗
+- msg: my dog has mild allergies vet already prescribed something were treating it
+  label: false
+  tags: [mild, managed, en, voice]
+  why: 已确诊在治疗
+- msg: 咪咪之前查出来轻微牙龈炎 现在在用兽医给的漱口水
+  label: false
+  tags: [mild, managed, voice]
+  why: 已确诊在治疗
+- msg: 团子上周耳朵有点味道 去医院说是轻微耳螨 已经在滴药了
+  label: false
+  tags: [mild, managed, voice]
+  why: 已确诊在治疗
+- msg: 幼犬软便去看了医生 说是肠胃菌群失调 在吃益生菌调理
+  label: false
+  tags: [mild, managed, voice]
+  why: 已在医生指导下治疗
+- msg: 老猫最近老打喷嚏 上次体检说是轻微鼻炎 定期在吃药
+  label: false
+  tags: [mild, managed, voice]
+  why: 已确诊在治疗
+- msg: 团子上个月拉稀过一次 后来自己就好了 没吃药
+  label: false
+  tags: [mild, past, voice]
+  why: 过去已自愈的轻症
+- msg: my dog had a bit of diarrhea last month but it resolved on its own
+  label: false
+  tags: [mild, past, en, voice]
+  why: 过去已自愈的轻症
+- msg: 咪咪去年掉毛掉得比较厉害 后来换季就好了
+  label: false
+  tags: [mild, past, voice]
+  why: 过去的轻症
+- msg: 大黄以前有过软便 换了粮之后就没再有过
+  label: false
+  tags: [mild, past, voice]
+  why: 过去的轻症已解决
+- msg: 团子今天喷嚏打得挺多的 会不会传染给我呀
+  label: false
+  tags: [mild, question, voice]
+  why: 打喷嚏关注传染性
+- msg: can i catch a cold from my cat if she keeps sneezing
+  label: false
+  tags: [mild, question, hypothetical, en, voice]
+  why: 假设性提问
+- msg: 幼犬软便正常吗 换粮多久能适应
+  label: false
+  tags: [mild, question, knowledge, voice]
+  why: 换粮适应期知识性提问
+- msg: how long does it take for a puppy to adjust to new food without upset stomach
+  label: false
+  tags: [mild, question, knowledge, hypothetical, en, voice]
+  why: 换粮适应期知识性提问
+- msg: 猫咪打呼噜是不是说明它很舒服呀
+  label: false
+  tags: [mild, question, hypothetical, voice]
+  why: 打呼噜行为知识提问
+- msg: do cats snore when theyre happy or is it always a health thing
+  label: false
+  tags: [mild, question, hypothetical, en, voice]
+  why: 打呼噜知识性提问
+- msg: 狗狗掉毛掉得多是不是缺什么营养
+  label: false
+  tags: [mild, question, hypothetical, voice]
+  why: 掉毛原因假设提问
+- msg: 兔子打喷嚏是正常的吗 还是要马上去医院
+  label: false
+  tags: [mild, edge, question, hypothetical, voice]
+  why: 兔子打喷嚏假设提问
+- msg: is sneezing dangerous for rabbits or is it usually nothing
+  label: false
+  tags: [mild, edge, question, hypothetical, en, voice]
+  why: 兔子打喷嚏假设提问
+- msg: 老狗牙齿松了是不是要拔掉呀 正常年纪都会这样吗
+  label: false
+  tags: [mild, question, hypothetical, voice]
+  why: 老年犬牙齿松知识提问
+- msg: 猫指甲裂了自己会好吗 还是必须剪掉
+  label: false
+  tags: [mild, question, hypothetical, voice]
+  why: 指甲裂处理知识提问
+- msg: will a cracked cat nail heal on its own or does it need to be trimmed
+  label: false
+  tags: [mild, question, hypothetical, en, voice]
+  why: 指甲裂处理知识提问
+- msg: 团子今天一直挠痒 会不会是跳蚤呀 家里没有别的宠物哦
+  label: false
+  tags: [mild, voice, question]
+  why: 挠痒疑似跳蚤
+- msg: 咪咪今天软便 然后又吐了一次 但精神吃喝都好 咋回事呀
+  label: false
+  tags: [mild, multi, gray, voice, question]
+  why: 软便呕吐组合精神好
+- msg: my cat had soft stool and threw up once but is acting completely normal
+  label: false
+  tags: [mild, multi, gray, en, voice]
+  why: 软便呕吐组合精神好
+- msg: 大黄今天体重轻了点 又有点挑食 是不是该换个粮了
+  label: false
+  tags: [mild, multi, gray, voice, question]
+  why: 体重降挑食组合
+- msg: 老猫最近呼噜声变大 又老睡觉 兽医说年纪大了正常
+  label: false
+  tags: [mild, multi, managed, voice]
+  why: 老猫组合已咨询医生
+- msg: 幼兔这几天软便 精神还好 就是有点担心
+  label: false
+  tags: [mild, gray, edge, voice, question]
+  why: 幼兔软便精神好
+- msg: baby rabbit has soft poop today but seems energetic still worried a bit
+  label: false
+  tags: [mild, gray, edge, en, voice, question]
+  why: 幼兔软便精神好
+- msg: 团子今天有点跛 又老是舔那条腿 会不会是拉伤了
+  label: false
+  tags: [mild, multi, voice, question]
+  why: 跛行舔腿疑似拉伤
+- msg: my dog is limping and licking that leg a lot could be a strain
+  label: false
+  tags: [mild, multi, en, voice, question]
+  why: 跛行舔腿疑似拉伤
+- msg: 咪咪今天有点耳朵臭 挠了两下 但没别的症状
+  label: false
+  tags: [mild, voice]
+  why: 耳臭轻微挠痒
+- msg: 大黄最近喝水多了 也没见瘦 别的都挺好的
+  label: false
+  tags: [mild, voice]
+  why: 喝水多无其他症状
+- msg: 团子今天有点没精神 但是喊它名字还是会跑过来 应该没事吧
+  label: false
+  tags: [mild, gray, voice, question]
+  why: 精神略差反应正常
+- msg: my dog seems a little low energy today but still responds when called
+  label: false
+  tags: [mild, gray, en, voice]
+  why: 精神略差反应正常
+- msg: 幼猫今天拉了一次软便 之后就正常了 精神也挺好
+  label: false
+  tags: [mild, gray, voice]
+  why: 幼猫单次软便精神好
+- msg: 团子今天皮肤上有个小红点 摸着不硬也不痛 应该是蚊子吧
+  label: false
+  tags: [mild, voice]
+  why: 皮肤红点疑似蚊咬
+- msg: 老狗这几天口臭比较重 而且牙齿也有点松 是牙周问题吗
+  label: false
+  tags: [mild, multi, voice, question]
+  why: 口臭牙松疑似牙周
+- msg: my senior dog has bad breath and a loose tooth could this be gum disease
+  label: false
+  tags: [mild, multi, en, voice, question]
+  why: 口臭牙松疑似牙周
+- msg: 咪咪今天有点跛 摸了一下没发现伤口 走两步又正常了
+  label: false
+  tags: [mild, gray, voice]
+  why: 短暂跛行无外伤
+- msg: 团子今天又打喷嚏又流鼻涕 但是吃喝玩都正常 应该没事吧
+  label: false
+  tags: [mild, multi, gray, voice, question]
+  why: 组合轻症但精神食欲好
+- msg: my cat has sneezing and a runny nose but eating playing and drinking fine
+  label: false
+  tags: [mild, multi, gray, en, voice]
+  why: 组合轻症但整体正常

@@ -1,0 +1,1200 @@
+- msg: 豆豆肚子鼓的老大了 一直干呕吐不出东西 站不住来回走
+  label: true
+  tags: [gdv, voice, panic]
+  why: 疑似胃扭转
+- msg: 我家狗肚子突然胀的跟球一样 想吐吐不出来 好像很难受
+  label: true
+  tags: [gdv, voice]
+  why: 腹部胀+干呕
+- msg: 金毛肚子鼓鼓的 敲起来梆梆响 一直干呕 流口水
+  label: true
+  tags: [gdv, voice]
+  why: 腹胀干呕
+- msg: 旺财今晚一直想吐但是吐不出来 肚子涨的老大
+  label: true
+  tags: [gdv, voice]
+  why: 干呕腹胀
+- msg: dog's belly is really swollen and hard he keeps trying to throw up but nothing comes out
+  label: true
+  tags: [gdv, en]
+  why: 腹胀干呕
+- msg: 团子肚子突然变得特别大 干呕好几次了 精神也不好
+  label: true
+  tags: [gdv, voice]
+  why: 急性腹胀
+- msg: 大黄不停的在那干呕 肚子敲着咚咚的 走路都晃
+  label: true
+  tags: [gdv, voice, typo]
+  why: 干呕站不稳
+- msg: Max's stomach looks bloated and tight he's retching but nothing's coming up
+  label: true
+  tags: [gdv, en]
+  why: 腹胀干呕
+- msg: 那个 我家拉布拉多 肚子突然鼓起来了 一直哈气流口水 站不稳
+  label: true
+  tags: [gdv, voice, panic]
+  why: 大型犬腹胀
+- msg: 球球肚子鼓的跟气球一样 摸着硬硬的 干呕好几次没吐出东西
+  label: true
+  tags: [gdv, voice]
+  why: 腹胀硬干呕
+- msg: my golden retriever's belly is huge and hard tonight and he keeps gagging with nothing coming out
+  label: true
+  tags: [gdv, en]
+  why: 腹胀干呕
+- msg: 维尼吃完饭没多久肚子就鼓起来了 现在一直干哕 走不稳当
+  label: true
+  tags: [gdv, voice, typo]
+  why: 饭后急性腹胀
+- msg: 大狗肚子胀的厉害 敲着响 一直想吐吐不出来 呼吸也快
+  label: true
+  tags: [gdv, voice]
+  why: 腹胀+急促
+- msg: Buddy is pacing and drooling his stomach is huge and hard as a rock
+  label: true
+  tags: [gdv, en]
+  why: 腹胀焦躁
+- msg: 花花肚子突然鼓的老高 又不吐 就是干呕 精神特别差
+  label: true
+  tags: [gdv, voice]
+  why: 腹胀干呕精神差
+- msg: 我家狗肚子这两个小时鼓的越来越大 一直哈气站不住
+  label: true
+  tags: [gdv, voice]
+  why: 腹胀持续加重
+- msg: big dog belly swelling up fast he's restless and keeps trying to vomit nothing comes out
+  label: true
+  tags: [gdv, en]
+  why: 腹胀干呕
+- msg: 小维吃完就跑跳了一下 现在肚子鼓的硬邦邦一直干呕
+  label: true
+  tags: [gdv, voice]
+  why: 运动后腹胀
+- msg: 旺财这会突然肚子涨的特别大 一直干呕流口水 走路东倒西歪
+  label: true
+  tags: [gdv, voice]
+  why: 腹胀走不稳
+- msg: dog keeps trying to throw up but can't and his stomach is tight and swollen like a drum
+  label: true
+  tags: [gdv, en]
+  why: 腹胀干呕
+- msg: 咪咪不是啊我说的是我家中华田园犬 肚子鼓的跟吹了气一样 一直干呕
+  label: true
+  tags: [gdv, voice, correction]
+  why: 腹胀干呕
+- msg: Charlie's abdomen is really distended and hard he won't lie down and keeps retching
+  label: true
+  tags: [gdv, en]
+  why: 腹胀焦躁干呕
+- msg: 团子突然肚子胀的老大 一直哈气 干呕 精神特别不好
+  label: true
+  tags: [gdv, voice]
+  why: 腹胀精神差
+- msg: 那个大型犬 晚饭后肚子鼓起来了 一直想吐吐不出来 焦躁不安
+  label: true
+  tags: [gdv, voice]
+  why: 饭后腹胀焦躁
+- msg: 大黄肚子涨的跟鼓一样 敲着咚咚响 一直哈欠喘气干呕
+  label: true
+  tags: [gdv, voice, typo]
+  why: 腹胀喘气干呕
+- msg: golden retriever ate then ran around now belly is swollen tight and he's dry heaving
+  label: true
+  tags: [gdv, en]
+  why: 运动后腹胀
+- msg: 小白肚子突然涨的老大 一直干呕不吐东西 走路摇摇晃晃的
+  label: true
+  tags: [gdv, voice]
+  why: 腹胀走不稳
+- msg: 旺财这两小时肚子越来越鼓 干呕好几次 现在趴不下也站不住
+  label: true
+  tags: [gdv, voice]
+  why: 腹胀持续加重
+- msg: dog's stomach ballooned up after dinner he's drooling and retching nonstop
+  label: true
+  tags: [gdv, en]
+  why: 饭后腹胀
+- msg: 我家德牧肚子鼓的跟球一样硬 一直干呕 精神特别差 老在那走来走去
+  label: true
+  tags: [gdv, voice, multi]
+  why: 腹胀精神差
+- msg: 我家公猫在猫砂盆里蹲了好久 一直叫 尿不出来
+  label: true
+  tags: [urinary, voice]
+  why: 公猫尿闭
+- msg: 咪咪一直进出猫砂盆 使劲蹲 就是尿不出一滴
+  label: true
+  tags: [urinary, voice]
+  why: 反复蹲无尿
+- msg: my male cat keeps going to the litter box straining and crying but no pee comes out
+  label: true
+  tags: [urinary, en]
+  why: 公猫尿闭
+- msg: 维尼今天一直舔那个地方 蹲厕所蹲半天没尿出来 叫的可凶了
+  label: true
+  tags: [urinary, voice]
+  why: 舔生殖器尿闭
+- msg: 公猫在那使劲叫唤 蹲砂盆好几次都没尿 肚子看着有点鼓
+  label: true
+  tags: [urinary, voice]
+  why: 尿闭腹胀
+- msg: Whiskers has been straining in the litter box for an hour and nothing's coming out
+  label: true
+  tags: [urinary, en]
+  why: 长时间尿不出
+- msg: 那个 我家橘猫 一直进厕所出厕所 蹲那哼哼唧唧的 尿不出来
+  label: true
+  tags: [urinary, voice]
+  why: 反复如厕无尿
+- msg: 团子一直舔肚子那边 蹲猫砂一直叫 没见他尿出东西来
+  label: true
+  tags: [urinary, voice]
+  why: 舔肚尿闭
+- msg: male cat keeps crying in the litter box straining hard but no urine at all
+  label: true
+  tags: [urinary, en]
+  why: 公猫尿闭
+- msg: 小维今天已经蹲了五六次砂盆了 每次都在那使劲叫 就是没尿
+  label: true
+  tags: [urinary, voice]
+  why: 反复蹲无尿
+- msg: 我家公猫肚子摸着硬硬的 一直想尿尿不出来 叫的很惨
+  label: true
+  tags: [urinary, voice]
+  why: 腹硬尿闭
+- msg: Mochi is a boy cat and he's been squatting and yowling in the box for like an hour with nothing coming out
+  label: true
+  tags: [urinary, en]
+  why: 公猫尿闭
+- msg: 球球一直趴在猫砂盆边上 使劲的样子 叫唤半天没尿
+  label: true
+  tags: [urinary, voice]
+  why: 使劲无尿
+- msg: 公猫这几个小时一直进出厕所 蹲那使劲 尿道那看着有点湿但没尿出来
+  label: true
+  tags: [urinary, voice]
+  why: 长时间尿闭
+- msg: our male cat won't stop going in and out of the litter box straining and crying no urine
+  label: true
+  tags: [urinary, en]
+  why: 公猫尿闭
+- msg: 旺财不是 我说猫猫 一直蹲厕所使劲叫 好几个小时了都没尿出来
+  label: true
+  tags: [urinary, voice, correction]
+  why: 长时间尿闭
+- msg: 咪咪今天一直舔生殖器那块 蹲砂盆老半天 一滴都没有
+  label: true
+  tags: [urinary, voice]
+  why: 舔生殖器尿闭
+- msg: male cat keeps trying to pee nothing's coming out and he's crying really loud
+  label: true
+  tags: [urinary, en]
+  why: 公猫尿闭
+- msg: 大橘一直在猫砂盆里挠 蹲着使劲叫唤 肚子鼓鼓的还没尿
+  label: true
+  tags: [urinary, voice]
+  why: 尿闭腹胀
+- msg: Oreo has been straining to pee for hours nothing comes out and he's meowing nonstop
+  label: true
+  tags: [urinary, en]
+  why: 长时间尿闭
+- msg: 我家猫从早上到现在一直想上厕所 蹲那使劲 没见尿出来过
+  label: true
+  tags: [urinary, voice]
+  why: 全天无尿
+- msg: 团子公猫 一直蹲下又站起来 反反复复的 叫的很痛苦的样子 没尿
+  label: true
+  tags: [urinary, voice]
+  why: 反复蹲无尿
+- msg: tom cat keeps squatting in the box crying loudly and nothing is coming out at all
+  label: true
+  tags: [urinary, en]
+  why: 公猫尿闭
+- msg: 小白使劲蹲在猫砂那 叫的凄惨 摸他肚子他就叫的更凶
+  label: true
+  tags: [urinary, voice]
+  why: 使劲叫腹痛
+- msg: 维尼这猫从下午就开始一直进出砂盆 尿不出来 现在都开始哀嚎了
+  label: true
+  tags: [urinary, voice]
+  why: 长时间尿闭
+- msg: my cat is a boy and he's been unable to pee for hours just crying in the box
+  label: true
+  tags: [urinary, en]
+  why: 公猫尿闭
+- msg: 咪咪蹲在猫砂盆里好久了 使劲的姿势但是没尿出来 还老舔肚子
+  label: true
+  tags: [urinary, voice]
+  why: 使劲无尿舔肚
+- msg: 公猫一直叫唤 蹲马桶边使劲 尿道口看着红红的没尿出来
+  label: true
+  tags: [urinary, voice]
+  why: 尿道红肿尿闭
+- msg: cat keeps going back to the litter tray straining hard no urine coming and crying loud
+  label: true
+  tags: [urinary, en]
+  why: 反复无尿
+- msg: 那个 我家猫 公的 一直蹲那使劲叫唤 都快一天没见他尿了
+  label: true
+  tags: [urinary, voice]
+  why: 一天无尿
+- msg: 豆豆刚吐出来一滩带血的东西 红红的
+  label: true
+  tags: [bleeding, voice]
+  why: 吐血鲜红
+- msg: 我家狗吐了 里面全是血丝 还挺多的
+  label: true
+  tags: [bleeding, voice]
+  why: 吐血量多
+- msg: dog just vomited and there's blood in it looks like coffee grounds
+  label: true
+  tags: [bleeding, en]
+  why: 呕吐咖啡渣色
+- msg: 咪咪吐出来的东西是暗红色的 跟咖啡渣一样
+  label: true
+  tags: [bleeding, voice]
+  why: 咖啡渣样呕吐物
+- msg: 旺财刚吐了 吐出来的全是血 吓死我了
+  label: true
+  tags: [bleeding, voice, panic]
+  why: 吐血
+- msg: cat threw up and it had red blood streaked through it a lot
+  label: true
+  tags: [bleeding, en]
+  why: 吐血量多
+- msg: 团子吐了一口 里面有鲜血 颜色很红
+  label: true
+  tags: [bleeding, voice]
+  why: 吐鲜血
+- msg: 那个 我家狗 刚刚吐了一次 吐出来都是血水
+  label: true
+  tags: [bleeding, voice]
+  why: 吐血水
+- msg: Max just vomited blood it's bright red and there's a lot of it
+  label: true
+  tags: [bleeding, en]
+  why: 吐血量多
+- msg: 大黄吐出来东西里全是血丝 而且量还不小
+  label: true
+  tags: [bleeding, voice]
+  why: 吐血量大
+- msg: 小维吐了 里面混着暗红色的血块
+  label: true
+  tags: [bleeding, voice]
+  why: 吐血块
+- msg: my dog threw up blood just now it's dark and looks like coffee grounds
+  label: true
+  tags: [bleeding, en]
+  why: 咖啡渣样呕吐物
+- msg: 花花刚吐了口东西 全是血 红彤彤的一大摊
+  label: true
+  tags: [bleeding, voice]
+  why: 吐血量大
+- msg: 咪咪吐了两次 每次都带血 颜色很深
+  label: true
+  tags: [bleeding, voice]
+  why: 反复吐血
+- msg: cat vomited and there was fresh red blood mixed in it
+  label: true
+  tags: [bleeding, en]
+  why: 吐鲜血
+- msg: 我家猫刚吐出来的东西是黑红色的 像咖啡渣那种
+  label: true
+  tags: [bleeding, voice]
+  why: 咖啡渣样呕吐物
+- msg: 球球刚吐了 里头有血丝还挺明显的
+  label: true
+  tags: [bleeding, voice]
+  why: 吐血丝
+- msg: dog just threw up and it's got blood in it looks pretty bad
+  label: true
+  tags: [bleeding, en]
+  why: 吐血
+- msg: 大橘吐出来一摊全是血 颜色特别红
+  label: true
+  tags: [bleeding, voice]
+  why: 吐血量大
+- msg: Buddy vomited just now and it had blood mixed in
+  label: true
+  tags: [bleeding, en]
+  why: 吐血
+- msg: 维尼刚吐了口东西出来 里面有血块
+  label: true
+  tags: [bleeding, voice]
+  why: 吐血块
+- msg: 旺财吐出来的东西带着血丝 这是第二次了
+  label: true
+  tags: [bleeding, voice]
+  why: 反复吐血
+- msg: my cat just threw up blood it's a lot and dark colored
+  label: true
+  tags: [bleeding, en]
+  why: 吐血量多
+- msg: 团子刚在那吐 吐出来都是血水 吓人
+  label: true
+  tags: [bleeding, voice, panic]
+  why: 吐血水
+- msg: Whiskers vomited and it looked like blood mixed with food
+  label: true
+  tags: [bleeding, en]
+  why: 吐血
+- msg: 豆豆刚拉的一摊全是血 特别多
+  label: true
+  tags: [bleeding, voice]
+  why: 便血量多
+- msg: 我家狗拉出来的便便里全是血 一大滩
+  label: true
+  tags: [bleeding, voice]
+  why: 便血一大滩
+- msg: dog just had diarrhea and it's all blood a lot of it
+  label: true
+  tags: [bleeding, en]
+  why: 血便量多
+- msg: 咪咪拉出来的是黑色的柏油一样的便便 还挺多
+  label: true
+  tags: [bleeding, voice]
+  why: 柏油样便量多
+- msg: 旺财刚拉的屎里全是鲜血 地上都是
+  label: true
+  tags: [bleeding, voice]
+  why: 便血满地
+- msg: cat's stool is full of blood this time it's a lot
+  label: true
+  tags: [bleeding, en]
+  why: 血便量多
+- msg: 团子拉了一大摊 全是血 颜色特别红
+  label: true
+  tags: [bleeding, voice]
+  why: 便血量多
+- msg: 那个 我家狗 刚拉出来的便便全是血水
+  label: true
+  tags: [bleeding, voice]
+  why: 便血水
+- msg: Max just had bloody diarrhea a lot of blood in it
+  label: true
+  tags: [bleeding, en]
+  why: 血便量多
+- msg: 大黄拉出来的便便是黑色的还带血 量很大
+  label: true
+  tags: [bleeding, voice]
+  why: 黑便量大
+- msg: 小维今天拉了好几次 每次都有很多血
+  label: true
+  tags: [bleeding, voice]
+  why: 反复便血
+- msg: my dog's poop is full of fresh blood a big puddle of it
+  label: true
+  tags: [bleeding, en]
+  why: 血便量多
+- msg: 花花刚拉的粑粑全是血 特别多特别红
+  label: true
+  tags: [bleeding, voice]
+  why: 便血量多
+- msg: 咪咪拉稀拉出一大摊血 颜色很深
+  label: true
+  tags: [bleeding, voice]
+  why: 血便量多
+- msg: cat had a huge amount of bloody diarrhea just now
+  label: true
+  tags: [bleeding, en]
+  why: 血便量多
+- msg: 我家猫拉出来的便便像柏油一样黑还带血
+  label: true
+  tags: [bleeding, voice]
+  why: 柏油样血便
+- msg: 球球刚拉了 屎里全是血水 一大摊
+  label: true
+  tags: [bleeding, voice]
+  why: 便血水
+- msg: dog just pooped and it's mostly blood a lot of it
+  label: true
+  tags: [bleeding, en]
+  why: 血便量多
+- msg: 大橘拉的便便全是血 颜色特别鲜红
+  label: true
+  tags: [bleeding, voice]
+  why: 便血量多
+- msg: Buddy had bloody stool just now a lot of it on the floor
+  label: true
+  tags: [bleeding, en]
+  why: 血便量多
+- msg: 维尼刚拉出来全是血 而且拉了好几次
+  label: true
+  tags: [bleeding, voice]
+  why: 反复便血
+- msg: 旺财今天拉的便便全是血 量特别大
+  label: true
+  tags: [bleeding, voice]
+  why: 便血量大
+- msg: my cat's poop is full of blood this time way more than usual
+  label: true
+  tags: [bleeding, en]
+  why: 血便量多
+- msg: 团子刚拉了一大滩 全是鲜血 吓人
+  label: true
+  tags: [bleeding, voice, panic]
+  why: 便血量多
+- msg: Luna had a big bloody bowel movement just now
+  label: true
+  tags: [bleeding, en]
+  why: 血便量多
+- msg: 豆豆今天吐了一整天了 现在就趴在那不动
+  label: true
+  tags: [multi, voice]
+  why: 持续呕吐+不动
+- msg: 我家狗从早上吐到现在 现在趴着都不愿意起来
+  label: true
+  tags: [multi, voice]
+  why: 全天呕吐+嗜睡
+- msg: dog has been throwing up all day now he's just lying there not moving
+  label: true
+  tags: [multi, en]
+  why: 全天呕吐+不动
+- msg: 咪咪吐了一天了 现在趴在角落一动不动
+  label: true
+  tags: [multi, voice]
+  why: 全天呕吐+不动
+- msg: 旺财一整天都在吐 现在没精神趴着不理人
+  label: true
+  tags: [multi, voice]
+  why: 全天呕吐+萎靡
+- msg: cat's been vomiting all day and now she's just lying flat not moving at all
+  label: true
+  tags: [multi, en]
+  why: 全天呕吐+不动
+- msg: 团子今天吐了好多次了 现在趴那不吃不喝也不动
+  label: true
+  tags: [multi, voice]
+  why: 多次呕吐+不食
+- msg: 那个 我家狗 吐了一天 现在没力气趴着 叫他也不理
+  label: true
+  tags: [multi, voice]
+  why: 全天呕吐+无反应
+- msg: Max has thrown up like five times today and now he won't move at all
+  label: true
+  tags: [multi, en]
+  why: 多次呕吐+不动
+- msg: 大黄从早吐到晚 现在整个人趴着不动 眼睛都没精神
+  label: true
+  tags: [multi, voice]
+  why: 全天呕吐+精神差
+- msg: 小维吐了一天 现在软趴趴的躺那不动弹
+  label: true
+  tags: [multi, voice]
+  why: 全天呕吐+虚弱
+- msg: my dog has been vomiting since morning and now he's just lying there lethargic
+  label: true
+  tags: [multi, en]
+  why: 全天呕吐+嗜睡
+- msg: 花花吐了一整天了 现在趴在窝里一动不动叫都不应
+  label: true
+  tags: [multi, voice]
+  why: 全天呕吐+无反应
+- msg: 咪咪今天吐了好几回 现在瘫在地上不愿意动
+  label: true
+  tags: [multi, voice]
+  why: 多次呕吐+瘫软
+- msg: cat vomited all day and now she's just lying there not responding much
+  label: true
+  tags: [multi, en]
+  why: 全天呕吐+无反应
+- msg: 我家猫吐了一天 现在趴着精神特别差 摸他也没反应
+  label: true
+  tags: [multi, voice]
+  why: 全天呕吐+无反应
+- msg: 球球从早上开始吐 到现在一直趴着不肯起来
+  label: true
+  tags: [multi, voice]
+  why: 全天呕吐+不动
+- msg: dog's been throwing up the whole day and now he's lying flat not moving
+  label: true
+  tags: [multi, en]
+  why: 全天呕吐+不动
+- msg: 大橘吐了一整天了 现在没精神趴那 叫他名字都没反应
+  label: true
+  tags: [multi, voice]
+  why: 全天呕吐+无反应
+- msg: Buddy has vomited all day and now he's just lying there completely still
+  label: true
+  tags: [multi, en]
+  why: 全天呕吐+不动
+- msg: 维尼吐了一天 现在整个趴着不动 也不想吃东西
+  label: true
+  tags: [multi, voice]
+  why: 全天呕吐+不食
+- msg: 旺财今天吐了好多次了 现在趴在地上没力气
+  label: true
+  tags: [multi, voice]
+  why: 多次呕吐+虚弱
+- msg: my cat has been vomiting since this morning and is now just lying motionless
+  label: true
+  tags: [multi, en]
+  why: 全天呕吐+不动
+- msg: 团子吐了一天 现在整个人瘫着 叫他也不理
+  label: true
+  tags: [multi, voice]
+  why: 全天呕吐+无反应
+- msg: Whiskers threw up all day and now he's just lying there lethargic not responding
+  label: true
+  tags: [multi, en]
+  why: 全天呕吐+嗜睡
+- msg: 刚满月的小狗一直吐一直拉 现在软的抱不起来了
+  label: true
+  tags: [multi, voice]
+  why: 幼犬吐拉虚弱
+- msg: 小奶猫拉肚子拉了一天了 又吐 现在没力气了
+  label: true
+  tags: [multi, voice]
+  why: 幼猫吐拉虚弱
+- msg: puppy has been throwing up and having diarrhea all day he's really weak now
+  label: true
+  tags: [multi, en]
+  why: 幼犬吐拉虚弱
+- msg: 两个月大的小猫一直吐一直拉稀 现在都站不起来了
+  label: true
+  tags: [multi, voice]
+  why: 幼猫吐拉虚弱
+- msg: 我家小狗才三个月 一直吐拉吐拉的 现在软趴趴的
+  label: true
+  tags: [multi, voice]
+  why: 幼犬吐拉虚弱
+- msg: kitten keeps vomiting and having diarrhea and now she's too weak to stand
+  label: true
+  tags: [multi, en]
+  why: 幼猫吐拉虚弱
+- msg: 幼犬这两天一直拉稀又吐 现在没精神抱着都是软的
+  label: true
+  tags: [multi, voice]
+  why: 幼犬吐拉虚弱
+- msg: 小猫崽一直拉肚子还吐 现在四肢没力气了
+  label: true
+  tags: [multi, voice]
+  why: 幼猫吐拉虚弱
+- msg: our puppy has had diarrhea and vomiting for two days and now can barely move
+  label: true
+  tags: [multi, en]
+  why: 幼犬吐拉虚弱
+- msg: 两个月大狗狗一直上吐下泻 现在瘫软的很
+  label: true
+  tags: [multi, voice]
+  why: 幼犬吐拉虚弱
+- msg: 小狗崽拉稀拉了好多次 又吐 现在整个人软趴趴不动了
+  label: true
+  tags: [multi, voice]
+  why: 幼犬吐拉虚弱
+- msg: newborn kitten keeps throwing up and has diarrhea now she's limp and weak
+  label: true
+  tags: [multi, en]
+  why: 幼猫吐拉虚弱
+- msg: 幼猫一直吐还拉肚子 现在摸着身体软软的没力气
+  label: true
+  tags: [multi, voice]
+  why: 幼猫吐拉虚弱
+- msg: puppy vomiting and diarrhea nonstop since yesterday and now he's really lethargic
+  label: true
+  tags: [multi, en]
+  why: 幼犬吐拉虚弱
+- msg: 三个月大的狗一直吐一直拉 现在没精神走不动路
+  label: true
+  tags: [multi, voice]
+  why: 幼犬吐拉虚弱
+- msg: 小猫这两天一直吐一直拉稀 现在都不愿意动了软趴趴的
+  label: true
+  tags: [multi, voice]
+  why: 幼猫吐拉虚弱
+- msg: my puppy keeps throwing up and pooping liquid and now he's too weak to stand
+  label: true
+  tags: [multi, en]
+  why: 幼犬吐拉虚弱
+- msg: 幼犬拉肚子拉了一整天又吐 现在软的跟没骨头一样
+  label: true
+  tags: [multi, voice]
+  why: 幼犬吐拉虚弱
+- msg: kitten has diarrhea and vomiting all day and is now extremely weak and floppy
+  label: true
+  tags: [multi, en]
+  why: 幼猫吐拉虚弱
+- msg: 刚出生没多久的小狗一直吐拉 现在软塌塌的抱着没反应
+  label: true
+  tags: [multi, voice]
+  why: 幼犬吐拉虚弱
+- msg: 小奶猫一直拉稀又吐 现在四肢无力站不起来了
+  label: true
+  tags: [multi, voice]
+  why: 幼猫吐拉虚弱
+- msg: our kitten has been vomiting and having watery diarrhea and now can't stand
+  label: true
+  tags: [multi, en]
+  why: 幼猫吐拉虚弱
+- msg: 两个月大猫崽一直吐一直拉 现在整个人软的
+  label: true
+  tags: [multi, voice]
+  why: 幼猫吐拉虚弱
+- msg: puppy's been throwing up and having diarrhea since this morning and is now really weak
+  label: true
+  tags: [multi, en]
+  why: 幼犬吐拉虚弱
+- msg: 幼犬一直拉肚子拉了好多次 又吐了两回 现在没劲了
+  label: true
+  tags: [multi, voice]
+  why: 幼犬吐拉虚弱
+- msg: 小猫一直拉稀吐东西 现在瘫着不愿意站起来
+  label: true
+  tags: [multi, voice]
+  why: 幼猫吐拉虚弱
+- msg: baby kitten keeps vomiting and has diarrhea and is now limp and weak
+  label: true
+  tags: [multi, en]
+  why: 幼猫吐拉虚弱
+- msg: 三个月大的小狗狗一直吐拉吐拉 现在没力气抱着软软的
+  label: true
+  tags: [multi, voice]
+  why: 幼犬吐拉虚弱
+- msg: puppy has diarrhea and keeps throwing up now he's too weak to walk
+  label: true
+  tags: [multi, en]
+  why: 幼犬吐拉虚弱
+- msg: 幼猫拉肚子还吐 一整天了 现在软趴趴叫都不太应
+  label: true
+  tags: [multi, voice]
+  why: 幼猫吐拉虚弱
+- msg: 我家老狗十五岁了 今天突然吃不下东西还一直哆嗦
+  label: true
+  tags: [multi, voice]
+  why: 老年犬急剧恶化
+- msg: 老猫这几天突然不行了 今天连站都站不稳了
+  label: true
+  tags: [multi, voice]
+  why: 老年猫急剧恶化
+- msg: our old dog is fifteen and today he suddenly can't stand and is shaking
+  label: true
+  tags: [multi, en]
+  why: 老年犬急剧恶化
+- msg: 老猫今天突然特别差 走路摇摇晃晃还吐了
+  label: true
+  tags: [multi, voice]
+  why: 老年猫急剧恶化
+- msg: 十四岁的老狗突然精神特别差 今天不吃不喝还一直喘
+  label: true
+  tags: [multi, voice]
+  why: 老年犬急剧恶化
+- msg: our senior cat suddenly got much worse today barely moves and won't eat
+  label: true
+  tags: [multi, en]
+  why: 老年猫急剧恶化
+- msg: 老狗这两天状态一下就不行了 今天躺着都起不来
+  label: true
+  tags: [multi, voice]
+  why: 老年犬急剧恶化
+- msg: 老猫十六岁了 今天突然又吐又拉还站不住
+  label: true
+  tags: [multi, voice]
+  why: 老年猫急剧恶化
+- msg: old dog suddenly declined today he's weak shaking and won't eat
+  label: true
+  tags: [multi, en]
+  why: 老年犬急剧恶化
+- msg: 家里老狗十三岁 今天突然不认人了还站不稳
+  label: true
+  tags: [multi, voice]
+  why: 老年犬急剧恶化
+- msg: 老猫这几天一直不太好 今天突然更差了 一直趴着不动
+  label: true
+  tags: [multi, voice]
+  why: 老年猫急剧恶化
+- msg: our elderly cat suddenly got really bad today weak and won't move
+  label: true
+  tags: [multi, en]
+  why: 老年猫急剧恶化
+- msg: 十七岁老狗今天突然不行了 又吐又喘还站不起来
+  label: true
+  tags: [multi, voice]
+  why: 老年犬急剧恶化
+- msg: 老猫状态突然急转直下 今天不吃不喝还一直哆嗦
+  label: true
+  tags: [multi, voice]
+  why: 老年猫急剧恶化
+- msg: old cat suddenly took a turn for the worse today barely responsive
+  label: true
+  tags: [multi, en]
+  why: 老年猫急剧恶化
+- msg: 老狗十四岁了 这两天突然恶化 今天完全站不起来
+  label: true
+  tags: [multi, voice]
+  why: 老年犬急剧恶化
+- msg: 老猫今天突然特别虚弱 又吐又拉 走路都晃
+  label: true
+  tags: [multi, voice]
+  why: 老年猫急剧恶化
+- msg: our old dog suddenly got much worse he's shaking and can't stand today
+  label: true
+  tags: [multi, en]
+  why: 老年犬急剧恶化
+- msg: 十六岁老狗今天突然不吃不喝 精神特别差还发抖
+  label: true
+  tags: [multi, voice]
+  why: 老年犬急剧恶化
+- msg: 老猫这几天一直走下坡路 今天突然彻底不行了趴着不动
+  label: true
+  tags: [multi, voice]
+  why: 老年猫急剧恶化
+- msg: senior dog declined suddenly today weak trembling and unresponsive
+  label: true
+  tags: [multi, en]
+  why: 老年犬急剧恶化
+- msg: 老狗十五岁 今天突然状态急转直下 又吐又拉不起来了
+  label: true
+  tags: [multi, voice]
+  why: 老年犬急剧恶化
+- msg: 老猫今天突然特别不好 一直哆嗦 也不肯吃东西
+  label: true
+  tags: [multi, voice]
+  why: 老年猫急剧恶化
+- msg: our senior cat is suddenly much worse today lethargic and shaking
+  label: true
+  tags: [multi, en]
+  why: 老年猫急剧恶化
+- msg: 十三岁老狗这两天突然恶化 今天完全没力气站不起来
+  label: true
+  tags: [multi, voice]
+  why: 老年犬急剧恶化
+- msg: 咪咪已经三天没吃东西了 水也不喝
+  label: true
+  tags: [multi, voice]
+  why: 猫三天不吃不喝
+- msg: 我家猫三天了 一口饭都不吃 水也不碰
+  label: true
+  tags: [multi, voice]
+  why: 猫三天不吃不喝
+- msg: my cat hasn't eaten or drunk anything in three days
+  label: true
+  tags: [multi, en]
+  why: 猫三天不吃不喝
+- msg: 团子三天没进食了 也不喝水 一直趴着
+  label: true
+  tags: [multi, voice]
+  why: 猫三天不吃不喝
+- msg: 猫猫已经三天不吃不喝了 精神也很差
+  label: true
+  tags: [multi, voice]
+  why: 猫三天不吃不喝
+- msg: cat has refused food and water for three whole days now
+  label: true
+  tags: [multi, en]
+  why: 猫三天不吃不喝
+- msg: 小白三天没吃过东西了 水也不喝一口
+  label: true
+  tags: [multi, voice]
+  why: 猫三天不吃不喝
+- msg: 那个 我家猫 三天都没吃饭 也不喝水了
+  label: true
+  tags: [multi, voice]
+  why: 猫三天不吃不喝
+- msg: Whiskers hasn't touched food or water in three days now
+  label: true
+  tags: [multi, en]
+  why: 猫三天不吃不喝
+- msg: 大橘已经三天不吃不喝了 整个人瘦了一圈
+  label: true
+  tags: [multi, voice]
+  why: 猫三天不吃不喝
+- msg: 维尼三天没吃东西了 水碗也没动过
+  label: true
+  tags: [multi, voice]
+  why: 猫三天不吃不喝
+- msg: my cat has gone three days without eating or drinking anything
+  label: true
+  tags: [multi, en]
+  why: 猫三天不吃不喝
+- msg: 咪咪这三天一口都没吃 水也不喝 整天趴着
+  label: true
+  tags: [multi, voice]
+  why: 猫三天不吃不喝
+- msg: 团子三天不吃不喝了 现在看着特别没精神
+  label: true
+  tags: [multi, voice]
+  why: 猫三天不吃不喝
+- msg: cat's been refusing all food and water for three days straight
+  label: true
+  tags: [multi, en]
+  why: 猫三天不吃不喝
+- msg: 我家猫三天了 完全不吃不喝 叫他也不理
+  label: true
+  tags: [multi, voice]
+  why: 猫三天不吃不喝
+- msg: Mochi hasn't eaten or drunk water in three days now really worried
+  label: true
+  tags: [multi, en, panic]
+  why: 猫三天不吃不喝
+- msg: 小维三天没进食 水也不碰 整个猫都蔫了
+  label: true
+  tags: [multi, voice]
+  why: 猫三天不吃不喝
+- msg: 猫猫已经三天不吃不喝了 摸着瘦了很多
+  label: true
+  tags: [multi, voice]
+  why: 猫三天不吃不喝
+- msg: my cat has not eaten or drunk anything for three days now
+  label: true
+  tags: [multi, en]
+  why: 猫三天不吃不喝
+- msg: 大黑三天不吃饭不喝水了 现在特别没精神
+  label: true
+  tags: [multi, voice]
+  why: 猫三天不吃不喝
+- msg: Oreo hasn't had any food or water in three days
+  label: true
+  tags: [multi, en]
+  why: 猫三天不吃不喝
+- msg: 咪咪这三天什么都不吃不喝 整天躲起来
+  label: true
+  tags: [multi, voice]
+  why: 猫三天不吃不喝
+- msg: cat has been not eating not drinking for three straight days
+  label: true
+  tags: [multi, en]
+  why: 猫三天不吃不喝
+- msg: 团子三天没吃没喝了 现在瘦的明显
+  label: true
+  tags: [multi, voice]
+  why: 猫三天不吃不喝
+- msg: 豆豆刚吐出来一条虫子 现在整个人软趴趴的没力气
+  label: true
+  tags: [multi, voice]
+  why: 吐虫+虚脱
+- msg: 我家狗吐出来好多虫 跟面条似的 现在瘫着不动了
+  label: true
+  tags: [multi, voice]
+  why: 吐虫+虚脱
+- msg: puppy just vomited up worms and now he's really weak and limp
+  label: true
+  tags: [multi, en]
+  why: 吐虫+虚脱
+- msg: 咪咪吐出来一条长长的虫子 现在没精神趴着
+  label: true
+  tags: [multi, voice]
+  why: 吐虫+虚脱
+- msg: 团子刚吐出蛔虫 现在整只猫软的抱不起来
+  label: true
+  tags: [multi, voice]
+  why: 吐虫+虚脱
+- msg: dog threw up a bunch of worms and now he's totally weak and lethargic
+  label: true
+  tags: [multi, en]
+  why: 吐虫+虚脱
+- msg: 小狗吐出来好几条虫子 现在软趴趴站不起来了
+  label: true
+  tags: [multi, voice]
+  why: 吐虫+虚脱
+- msg: cat vomited worms just now and is now really limp and weak
+  label: true
+  tags: [multi, en]
+  why: 吐虫+虚脱
+- msg: 旺财吐出来一条虫 现在整个人特别没力气 走不动
+  label: true
+  tags: [multi, voice]
+  why: 吐虫+虚脱
+- msg: 那个 我家猫 吐出来好多虫子 现在瘫软在地上
+  label: true
+  tags: [multi, voice]
+  why: 吐虫+虚脱
+- msg: puppy just threw up worms and collapsed he's really weak now
+  label: true
+  tags: [multi, en]
+  why: 吐虫+虚脱
+- msg: 大黄吐出好几条蛔虫 现在没精神趴着不肯起来
+  label: true
+  tags: [multi, voice]
+  why: 吐虫+虚脱
+- msg: 幼猫吐出虫子后就一直软趴趴的 现在都站不稳
+  label: true
+  tags: [multi, voice]
+  why: 吐虫+虚脱
+- msg: kitten vomited worms and now she's completely weak and can't stand
+  label: true
+  tags: [multi, en]
+  why: 吐虫+虚脱
+- msg: 小维吐出来一条挺长的虫 现在整个人虚脱的样子
+  label: true
+  tags: [multi, voice]
+  why: 吐虫+虚脱
+- msg: 豆豆刚吐了一口白色泡沫 现在活蹦乱跳的没事
+  label: false
+  tags: [mild, gray, voice]
+  why: 单次白沫吐
+- msg: 我家狗吐了一次 白色的沫子 现在精神挺好
+  label: false
+  tags: [mild, gray, voice]
+  why: 单次白沫吐
+- msg: dog threw up once white foam but he's totally fine and playful now
+  label: false
+  tags: [mild, gray, en]
+  why: 单次白沫吐
+- msg: 咪咪吐了口白沫 就一次 现在该吃吃该玩玩
+  label: false
+  tags: [mild, gray, voice]
+  why: 单次白沫吐
+- msg: 团子刚吐了一小口白泡沫 现在没事人一样
+  label: false
+  tags: [mild, gray, voice]
+  why: 单次白沫吐
+- msg: cat vomited once it was just white foam she's acting normal now
+  label: false
+  tags: [mild, gray, en]
+  why: 单次白沫吐
+- msg: 旺财吐了一口白色的沫 就一次 现在活力满满
+  label: false
+  tags: [mild, gray, voice]
+  why: 单次白沫吐
+- msg: 小维刚吐了下 白沫子 吐完就跟没事一样蹦跶
+  label: false
+  tags: [mild, gray, voice]
+  why: 单次白沫吐
+- msg: my dog threw up white foam once but seems totally fine now
+  label: false
+  tags: [mild, gray, en]
+  why: 单次白沫吐
+- msg: 豆豆今天拉的便便有点软 别的都挺正常
+  label: false
+  tags: [mild, gray, voice]
+  why: 软便
+- msg: 我家猫今天拉稀了一点点 精神很好
+  label: false
+  tags: [mild, gray, voice]
+  why: 软便
+- msg: dog had a bit of soft stool today but otherwise seems fine
+  label: false
+  tags: [mild, gray, en]
+  why: 软便
+- msg: 咪咪今天便便偏软 没有别的不舒服
+  label: false
+  tags: [mild, gray, voice]
+  why: 软便
+- msg: 团子拉的粑粑有点稀 但吃喝都正常
+  label: false
+  tags: [mild, gray, voice]
+  why: 软便
+- msg: cat's poop was a little soft today nothing else unusual
+  label: false
+  tags: [mild, gray, en]
+  why: 软便
+- msg: 旺财今天拉的便便软软的 精神状态还挺好
+  label: false
+  tags: [mild, gray, voice]
+  why: 软便
+- msg: 小白今天大便有点稀软 但玩的挺欢
+  label: false
+  tags: [mild, gray, voice]
+  why: 软便
+- msg: my dog's stool was slightly soft today but he's acting normal
+  label: false
+  tags: [mild, gray, en]
+  why: 软便
+- msg: 咪咪今天吐了个毛球出来 之后就没事了
+  label: false
+  tags: [mild, gray, voice]
+  why: 毛球
+- msg: 我家猫吐了一个毛球球 现在照常吃饭
+  label: false
+  tags: [mild, gray, voice]
+  why: 毛球
+- msg: cat coughed up a hairball this morning and seems fine after
+  label: false
+  tags: [mild, gray, en]
+  why: 毛球
+- msg: 团子刚吐了个毛团 吐完该玩玩去了
+  label: false
+  tags: [mild, gray, voice]
+  why: 毛球
+- msg: 小维今天吐出来一个毛球 精神挺正常的
+  label: false
+  tags: [mild, gray, voice]
+  why: 毛球
+- msg: my cat threw up a hairball today but she's totally fine now
+  label: false
+  tags: [mild, gray, en]
+  why: 毛球
+- msg: 大橘吐了个毛球 吐完就该吃吃该喝喝
+  label: false
+  tags: [mild, gray, voice]
+  why: 毛球
+- msg: Whiskers coughed up a hairball this morning acting normal now
+  label: false
+  tags: [mild, gray, en]
+  why: 毛球
+- msg: 猫猫今天吐了个毛球 之后精神状态挺好的
+  label: false
+  tags: [mild, gray, voice]
+  why: 毛球
+- msg: 豆豆今天食欲有点低 但是精神挺好还想出去玩
+  label: false
+  tags: [mild, gray, voice]
+  why: 食欲略降精神好
+- msg: 我家狗今天吃的比平时少一点 但是照样撒欢
+  label: false
+  tags: [mild, gray, voice]
+  why: 食欲略降精神好
+- msg: dog ate a bit less today but he's still full of energy
+  label: false
+  tags: [mild, gray, en]
+  why: 食欲略降精神好
+- msg: 咪咪今天不太想吃饭 不过还是跟平常一样爱玩
+  label: false
+  tags: [mild, gray, voice]
+  why: 食欲略降精神好
+- msg: 团子今天食欲不太好 但精神状态挺正常的
+  label: false
+  tags: [mild, gray, voice]
+  why: 食欲略降精神好
+- msg: cat's appetite was a little low today but she's playful as usual
+  label: false
+  tags: [mild, gray, en]
+  why: 食欲略降精神好
+- msg: 旺财今天吃得少了点 但是一点没影响他撒欢
+  label: false
+  tags: [mild, gray, voice]
+  why: 食欲略降精神好
+- msg: 小白今天没怎么吃 但是精神特别好还跳来跳去
+  label: false
+  tags: [mild, gray, voice]
+  why: 食欲略降精神好
+- msg: my dog didn't eat much today but he seems completely normal otherwise
+  label: false
+  tags: [mild, gray, en]
+  why: 食欲略降精神好
+- msg: 咪咪今天吐了两次 但是还是很爱玩很有精神
+  label: false
+  tags: [mild, gray, voice]
+  why: 两次吐但精神好
+- msg: 我家狗今天吐了两回 不过照样活蹦乱跳的
+  label: false
+  tags: [mild, gray, voice]
+  why: 两次吐但精神好
+- msg: cat threw up twice today but she's still playing normally
+  label: false
+  tags: [mild, gray, en]
+  why: 两次吐但精神好
+- msg: 团子今天吐了两次 吐完就跟没事一样接着玩
+  label: false
+  tags: [mild, gray, voice]
+  why: 两次吐但精神好
+- msg: 旺财今天吐了两回 精神一点没受影响还想出去溜达
+  label: false
+  tags: [mild, gray, voice]
+  why: 两次吐但精神好
+- msg: dog vomited twice today but he's still energetic and playful
+  label: false
+  tags: [mild, gray, en]
+  why: 两次吐但精神好
+- msg: 小维今天吐了两次 不过看着精神挺不错的
+  label: false
+  tags: [mild, gray, voice]
+  why: 两次吐但精神好
+- msg: my cat threw up twice today but is acting totally normal and playful
+  label: false
+  tags: [mild, gray, en]
+  why: 两次吐但精神好
+- msg: 大黄今天吐了两回 吐完照样撒欢跑来跑去
+  label: false
+  tags: [mild, gray, voice]
+  why: 两次吐但精神好
+- msg: 豆豆今天拉了个硬便便 上面沾了一点点血丝
+  label: false
+  tags: [bleeding, gray, voice, keyword_trap]
+  why: 硬便带血丝
+- msg: 我家猫拉了次干硬的粑粑 带了一丝血 就那一次
+  label: false
+  tags: [bleeding, gray, voice, keyword_trap]
+  why: 硬便带血丝
+- msg: dog had a hard stool today with just a tiny streak of blood on it
+  label: false
+  tags: [bleeding, gray, en, keyword_trap]
+  why: 硬便带血丝
+- msg: 咪咪今天便便有点干硬 表面有一点血丝 就一点点
+  label: false
+  tags: [bleeding, gray, voice, keyword_trap]
+  why: 硬便带血丝
+- msg: 团子拉了个硬粑粑 上面有一丝血 精神照常
+  label: false
+  tags: [bleeding, gray, voice, keyword_trap]
+  why: 硬便带血丝
+- msg: cat's stool was hard today with a small streak of blood just once
+  label: false
+  tags: [bleeding, gray, en, keyword_trap]
+  why: 硬便带血丝
+- msg: 旺财今天拉的便便有点硬 带了点血丝 之后就正常了
+  label: false
+  tags: [bleeding, gray, voice, keyword_trap]
+  why: 硬便带血丝
+- msg: 小白拉了次干硬的大便 上面有一点点血 精神很好
+  label: false
+  tags: [bleeding, gray, voice, keyword_trap]
+  why: 硬便带血丝
+- msg: my dog's poop was hard with a tiny bit of blood on the surface just once
+  label: false
+  tags: [bleeding, gray, en, keyword_trap]
+  why: 硬便带血丝
+- msg: 咪咪今天好像喝水比平时多了点 别的都正常
+  label: false
+  tags: [mild, gray, voice]
+  why: 喝水略多
+- msg: 我家狗今天喝水多了一些 精神吃饭都挺好
+  label: false
+  tags: [mild, gray, voice]
+  why: 喝水略多
+- msg: cat's been drinking a bit more water today but seems fine otherwise
+  label: false
+  tags: [mild, gray, en]
+  why: 喝水略多
+- msg: 团子今天喝水量比平常多 其他都正常
+  label: false
+  tags: [mild, gray, voice]
+  why: 喝水略多
+- msg: 旺财今天喝的水多了点 没别的异常
+  label: false
+  tags: [mild, gray, voice]
+  why: 喝水略多
+- msg: dog drank more water than usual today but acts totally normal
+  label: false
+  tags: [mild, gray, en]
+  why: 喝水略多
+- msg: 小维今天水碗空的比平时快 精神状态很好
+  label: false
+  tags: [mild, gray, voice]
+  why: 喝水略多
+- msg: my cat is drinking a bit more water today but everything else is normal
+  label: false
+  tags: [mild, gray, en]
+  why: 喝水略多
+- msg: 豆豆今天放屁特别多 别的都挺好
+  label: false
+  tags: [mild, gray, voice]
+  why: 屁多
+- msg: 我家狗今天一直放屁 精神吃饭都正常
+  label: false
+  tags: [mild, gray, voice]
+  why: 屁多
+- msg: dog has been really gassy today but otherwise seems totally fine
+  label: false
+  tags: [mild, gray, en]
+  why: 屁多
+- msg: 咪咪今天屁特别多 一直噗噗的 没别的问题
+  label: false
+  tags: [mild, gray, voice]
+  why: 屁多
+- msg: 团子今天放屁老多了 但是玩的挺开心
+  label: false
+  tags: [mild, gray, voice]
+  why: 屁多
+- msg: my dog has been super gassy today but acting completely normal
+  label: false
+  tags: [mild, gray, en]
+  why: 屁多
+- msg: 旺财今天一直放屁 臭得很 不过精神很好
+  label: false
+  tags: [mild, gray, voice]
+  why: 屁多
+- msg: cat has been extra gassy today but eating and playing normally
+  label: false
+  tags: [mild, gray, en]
+  why: 屁多

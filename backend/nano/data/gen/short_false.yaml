@@ -1,0 +1,2363 @@
+- msg: 小维吐了一次
+  label: false
+  tags:
+  - mild
+  - voice
+  why: 单次呕吐
+- msg: 豆豆软便
+  label: false
+  tags:
+  - mild
+  - voice
+  why: 轻微软便
+- msg: 维尼打喷嚏了
+  label: false
+  tags:
+  - mild
+  - voice
+  why: 打喷嚏
+- msg: 团子一直挠耳朵
+  label: false
+  tags:
+  - mild
+  - voice
+  why: 轻微挠痒
+- msg: 花花舔爪子舔湿了
+  label: false
+  tags:
+  - mild
+  - voice
+  why: 舔爪子
+- msg: 球球没啥胃口
+  label: false
+  tags:
+  - mild
+  - voice
+  why: 食欲略降
+- msg: 旺财喝水有点多
+  label: false
+  tags:
+  - mild
+  - voice
+  why: 喝水多
+- msg: 咪咪有眼屎
+  label: false
+  tags:
+  - mild
+  - voice
+  why: 轻微症状
+- msg: 小维有点瘸
+  label: false
+  tags:
+  - mild
+  - voice
+  why: 轻微跛行
+- msg: 豆豆吐了毛球
+  label: false
+  tags:
+  - mild
+  - voice
+  why: 吐毛球
+- msg: Weiwei vomited once
+  label: false
+  tags:
+  - mild
+  - en
+  why: 单次呕吐
+- msg: Doudou has diarrhea
+  label: false
+  tags:
+  - mild
+  - en
+  why: 轻微腹泻
+- msg: Huahua sneezed twice
+  label: false
+  tags:
+  - mild
+  - en
+  why: 打喷嚏
+- msg: Mochi keeps scratching
+  label: false
+  tags:
+  - mild
+  - en
+  why: 轻微挠痒
+- msg: Luna licking her paw
+  label: false
+  tags:
+  - mild
+  - en
+  why: 舔爪子
+- msg: Max limping a bit
+  label: false
+  tags:
+  - mild
+  - en
+  why: 轻微跛行
+- msg: Whiskers has soft stool
+  label: false
+  tags:
+  - mild
+  - en
+  why: 轻微软便
+- msg: 我家狗吐了口白沫
+  label: false
+  tags:
+  - mild
+  - voice
+  - gray
+  why: 单次吐白沫
+- msg: 猫猫拉稀了
+  label: false
+  tags:
+  - mild
+  - voice
+  why: 轻微腹泻
+- msg: 它今天没精神吃饭
+  label: false
+  tags:
+  - mild
+  - voice
+  why: 食欲略降
+- msg: 他老是挠痒
+  label: false
+  tags:
+  - mild
+  - voice
+  why: 轻微挠痒
+- msg: 小维兔了一次
+  label: false
+  tags:
+  - mild
+  - voice
+  - typo
+  why: 单次呕吐
+- msg: 豆豆拉西了
+  label: false
+  tags:
+  - mild
+  - voice
+  - typo
+  why: 轻微腹泻
+- msg: 团子打了个喷嚏
+  label: false
+  tags:
+  - mild
+  - voice
+  why: 打喷嚏
+- msg: 花花眼睛有眼屎
+  label: false
+  tags:
+  - mild
+  - voice
+  why: 轻微症状
+- msg: 维尼喝水喝得多
+  label: false
+  tags:
+  - mild
+  - voice
+  why: 喝水多
+- msg: 球球走路有点瘸
+  label: false
+  tags:
+  - mild
+  - voice
+  why: 轻微跛行
+- msg: 旺财吐了点毛
+  label: false
+  tags:
+  - mild
+  - voice
+  why: 吐毛球
+- msg: 咪咪软便一次
+  label: false
+  tags:
+  - mild
+  - voice
+  why: 轻微软便
+- msg: 小维今天没胃口
+  label: false
+  tags:
+  - mild
+  - voice
+  why: 食欲略降
+- msg: luna threw up once
+  label: false
+  tags:
+  - mild
+  - en
+  why: 单次呕吐
+- msg: max has diarrhea
+  label: false
+  tags:
+  - mild
+  - en
+  why: 轻微腹泻
+- msg: mochi vomited a hairball
+  label: false
+  tags:
+  - mild
+  - en
+  why: 吐毛球
+- msg: doudou sneezed once
+  label: false
+  tags:
+  - mild
+  - en
+  why: 打喷嚏
+- msg: weiwei licking paw a lot
+  label: false
+  tags:
+  - mild
+  - en
+  why: 舔爪子
+- msg: huahua limping slightly
+  label: false
+  tags:
+  - mild
+  - en
+  why: 轻微跛行
+- msg: 小维吐了白沫 一次
+  label: false
+  tags:
+  - mild
+  - voice
+  - gray
+  why: 单次吐白沫
+- msg: 豆豆拉肚子一次
+  label: false
+  tags:
+  - mild
+  - voice
+  why: 轻微腹泻
+- msg: 团子挠痒挠得厉害
+  label: false
+  tags:
+  - mild
+  - voice
+  why: 轻微挠痒
+- msg: 花花吐了口毛球
+  label: false
+  tags:
+  - mild
+  - voice
+  why: 吐毛球
+- msg: 维尼有点软便
+  label: false
+  tags:
+  - mild
+  - voice
+  why: 轻微软便
+- msg: 球球打喷嚏两声
+  label: false
+  tags:
+  - mild
+  - voice
+  why: 打喷嚏
+- msg: 旺财喝水量变多
+  label: false
+  tags:
+  - mild
+  - voice
+  why: 喝水多
+- msg: 咪咪走路一瘸一拐
+  label: false
+  tags:
+  - mild
+  - voice
+  why: 轻微跛行
+- msg: 小维眼角有眼屎
+  label: false
+  tags:
+  - mild
+  - voice
+  why: 轻微症状
+- msg: 豆豆没胃口一天
+  label: false
+  tags:
+  - mild
+  - voice
+  why: 食欲略降
+- msg: weiwei sneezed a few times
+  label: false
+  tags:
+  - mild
+  - en
+  why: 打喷嚏
+- msg: max drank more water today
+  label: false
+  tags:
+  - mild
+  - en
+  why: 喝水多
+- msg: luna has some eye gunk
+  label: false
+  tags:
+  - mild
+  - en
+  why: 轻微症状
+- msg: mochi seems less hungry
+  label: false
+  tags:
+  - mild
+  - en
+  why: 食欲略降
+- msg: doudou throwing up once
+  label: false
+  tags:
+  - mild
+  - en
+  why: 单次呕吐
+- msg: huahua scratching ears
+  label: false
+  tags:
+  - mild
+  - en
+  why: 轻微挠痒
+- msg: 小维今天吐了一下
+  label: false
+  tags:
+  - mild
+  - voice
+  why: 单次呕吐
+- msg: 豆豆便便有点软
+  label: false
+  tags:
+  - mild
+  - voice
+  why: 轻微软便
+- msg: 团子喷嚏打不停
+  label: false
+  tags:
+  - mild
+  - voice
+  why: 打喷嚏
+- msg: 花花挠脖子挠得凶
+  label: false
+  tags:
+  - mild
+  - voice
+  why: 轻微挠痒
+- msg: 维尼舔前爪
+  label: false
+  tags:
+  - mild
+  - voice
+  why: 舔爪子
+- msg: 球球胃口不太好
+  label: false
+  tags:
+  - mild
+  - voice
+  why: 食欲略降
+- msg: 旺财喝水频繁
+  label: false
+  tags:
+  - mild
+  - voice
+  why: 喝水多
+- msg: 咪咪眼屎有点多
+  label: false
+  tags:
+  - mild
+  - voice
+  why: 轻微症状
+- msg: 小维瘸了一下下
+  label: false
+  tags:
+  - mild
+  - voice
+  why: 轻微跛行
+- msg: 豆豆吐了个毛球
+  label: false
+  tags:
+  - mild
+  - voice
+  why: 吐毛球
+- msg: weiwei is limping today
+  label: false
+  tags:
+  - mild
+  - en
+  why: 轻微跛行
+- msg: max keeps licking his paw
+  label: false
+  tags:
+  - mild
+  - en
+  why: 舔爪子
+- msg: luna sneezing a bit
+  label: false
+  tags:
+  - mild
+  - en
+  why: 打喷嚏
+- msg: mochi has watery stool
+  label: false
+  tags:
+  - mild
+  - en
+  why: 轻微腹泻
+- msg: doudou drank a lot today
+  label: false
+  tags:
+  - mild
+  - en
+  why: 喝水多
+- msg: huahua eyes have discharge
+  label: false
+  tags:
+  - mild
+  - en
+  why: 轻微症状
+- msg: 小维吐了一小口
+  label: false
+  tags:
+  - mild
+  - voice
+  why: 单次呕吐
+- msg: 豆豆稀便一次
+  label: false
+  tags:
+  - mild
+  - voice
+  why: 轻微腹泻
+- msg: 团子打了几个喷嚏
+  label: false
+  tags:
+  - mild
+  - voice
+  why: 打喷嚏
+- msg: 花花老抓耳朵
+  label: false
+  tags:
+  - mild
+  - voice
+  why: 轻微挠痒
+- msg: 维尼今天不太爱吃
+  label: false
+  tags:
+  - mild
+  - voice
+  why: 食欲略降
+- msg: 球球喝水变多了
+  label: false
+  tags:
+  - mild
+  - voice
+  why: 喝水多
+- msg: 旺财走路一瘸
+  label: false
+  tags:
+  - mild
+  - voice
+  why: 轻微跛行
+- msg: 咪咪毛球吐出来了
+  label: false
+  tags:
+  - mild
+  - voice
+  why: 吐毛球
+- msg: 小维软便了
+  label: false
+  tags:
+  - mild
+  - voice
+  why: 轻微软便
+- msg: 豆豆挠痒挠出红印
+  label: false
+  tags:
+  - mild
+  - voice
+  why: 轻微挠痒
+- msg: weiwei threw up a hairball
+  label: false
+  tags:
+  - mild
+  - en
+  why: 吐毛球
+- msg: max sneezed once today
+  label: false
+  tags:
+  - mild
+  - en
+  why: 打喷嚏
+- msg: luna licking paw nonstop
+  label: false
+  tags:
+  - mild
+  - en
+  why: 舔爪子
+- msg: mochi limping on one leg
+  label: false
+  tags:
+  - mild
+  - en
+  why: 轻微跛行
+- msg: doudou eye discharge today
+  label: false
+  tags:
+  - mild
+  - en
+  why: 轻微症状
+- msg: huahua drinking water more
+  label: false
+  tags:
+  - mild
+  - en
+  why: 喝水多
+- msg: 小维今天喷嚏挺多
+  label: false
+  tags:
+  - mild
+  - voice
+  why: 打喷嚏
+- msg: 豆豆吐白沫一次
+  label: false
+  tags:
+  - mild
+  - voice
+  - gray
+  why: 单次吐白沫
+- msg: 团子软便了一点
+  label: false
+  tags:
+  - mild
+  - voice
+  why: 轻微软便
+- msg: 花花没啥食欲
+  label: false
+  tags:
+  - mild
+  - voice
+  why: 食欲略降
+- msg: 维尼喝水喝挺多
+  label: false
+  tags:
+  - mild
+  - voice
+  why: 喝水多
+- msg: 球球有点眼屎
+  label: false
+  tags:
+  - mild
+  - voice
+  why: 轻微症状
+- msg: 旺财瘸了一条腿
+  label: false
+  tags:
+  - mild
+  - voice
+  why: 轻微跛行
+- msg: 咪咪舔爪子舔秃了
+  label: false
+  tags:
+  - mild
+  - voice
+  why: 舔爪子
+- msg: 小维拉稀一次
+  label: false
+  tags:
+  - mild
+  - voice
+  why: 轻微腹泻
+- msg: 豆豆打了个喷嚏
+  label: false
+  tags:
+  - mild
+  - voice
+  why: 打喷嚏
+- msg: weiwei has a runny stool
+  label: false
+  tags:
+  - mild
+  - en
+  why: 轻微腹泻
+- msg: max lost some appetite
+  label: false
+  tags:
+  - mild
+  - en
+  why: 食欲略降
+- msg: luna scratching a lot today
+  label: false
+  tags:
+  - mild
+  - en
+  why: 轻微挠痒
+- msg: mochi has crusty eyes
+  label: false
+  tags:
+  - mild
+  - en
+  why: 轻微症状
+- msg: doudou walking with a limp
+  label: false
+  tags:
+  - mild
+  - en
+  why: 轻微跛行
+- msg: huahua threw up some foam
+  label: false
+  tags:
+  - mild
+  - en
+  - gray
+  why: 单次吐白沫
+- msg: 小维吃了狗粮
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录喂食
+- msg: 豆豆吃了鸡胸肉
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录喂食
+- msg: 团子吃了两顿
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录喂食
+- msg: 花花吃了根胡萝卜
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录喂食
+- msg: 维尼偷吃了猫粮
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录喂食
+- msg: 球球吃了点米饭
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录喂食
+- msg: 旺财吃了骨头零食
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录喂食
+- msg: 咪咪吃了猫条
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录喂食
+- msg: 小维今天吃了南瓜
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录喂食
+- msg: 豆豆吃了苹果片
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录喂食
+- msg: Weiwei ate dog food
+  label: false
+  tags:
+  - record
+  - en
+  why: 记录喂食
+- msg: she ate chicken and rice
+  label: false
+  tags:
+  - record
+  - en
+  why: 记录喂食
+- msg: max ate his dinner
+  label: false
+  tags:
+  - record
+  - en
+  why: 记录喂食
+- msg: doudou had a treat
+  label: false
+  tags:
+  - record
+  - en
+  why: 记录喂食
+- msg: luna ate some kibble
+  label: false
+  tags:
+  - record
+  - en
+  why: 记录喂食
+- msg: mochi ate a bit of egg
+  label: false
+  tags:
+  - record
+  - en
+  why: 记录喂食
+- msg: whiskers had wet food
+  label: false
+  tags:
+  - record
+  - en
+  why: 记录喂食
+- msg: 我家狗吃了红薯
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录喂食
+- msg: 猫猫吃了罐头
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录喂食
+- msg: 它今天吃了两碗饭
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录喂食
+- msg: 团子吃了半根香蕉
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录喂食
+- msg: 花花吃了点蔬菜
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录喂食
+- msg: 维尼吃完一整碗
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录喂食
+- msg: 球球吃了鸡雄肉
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录喂食
+- msg: 旺财吃了几粒零食
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录喂食
+- msg: 咪咪吃了点三文鱼
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录喂食
+- msg: 小维吃了颗鸡蛋
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录喂食
+- msg: 豆豆吃了小半根黄瓜
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录喂食
+- msg: weiwei had breakfast today
+  label: false
+  tags:
+  - record
+  - en
+  why: 记录喂食
+- msg: max snacked on some cheese
+  label: false
+  tags:
+  - record
+  - en
+  why: 记录喂食
+- msg: luna finished her bowl
+  label: false
+  tags:
+  - record
+  - en
+  why: 记录喂食
+- msg: mochi ate a spoon of yogurt
+  label: false
+  tags:
+  - record
+  - en
+  why: 记录喂食
+- msg: doudou ate a slice of apple
+  label: false
+  tags:
+  - record
+  - en
+  why: 记录喂食
+- msg: huahua ate some pumpkin
+  label: false
+  tags:
+  - record
+  - en
+  why: 记录喂食
+- msg: 团子今天胃口好吃了三顿
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录喂食
+- msg: 花花吃了牛肉干
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录喂食
+- msg: 维尼吃了猫薄荷
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录喂食
+- msg: 球球啃了个洁齿骨
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录喂食
+- msg: 旺财吃了狗饼干
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录喂食
+- msg: 咪咪吃了点冻干
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录喂食
+- msg: 小维吃了新口味罐头
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录喂食
+- msg: 豆豆吃完了一整份
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录喂食
+- msg: weiwei tried new kibble today
+  label: false
+  tags:
+  - record
+  - en
+  why: 记录喂食
+- msg: max had a small treat
+  label: false
+  tags:
+  - record
+  - en
+  why: 记录喂食
+- msg: luna ate her wet food
+  label: false
+  tags:
+  - record
+  - en
+  why: 记录喂食
+- msg: mochi ate some chicken breast
+  label: false
+  tags:
+  - record
+  - en
+  why: 记录喂食
+- msg: doudou finished breakfast
+  label: false
+  tags:
+  - record
+  - en
+  why: 记录喂食
+- msg: huahua snacked on carrots
+  label: false
+  tags:
+  - record
+  - en
+  why: 记录喂食
+- msg: 团子吃了点白米饭
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录喂食
+- msg: 花花吃了半个鸡蛋
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录喂食
+- msg: 维尼吃了猫条奖励
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录喂食
+- msg: 球球吃了颗蓝莓
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录喂食
+- msg: 旺财啃了个牛皮骨
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录喂食
+- msg: 咪咪吃了点鸡肝
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录喂食
+- msg: 小维今天多吃了一顿
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录喂食
+- msg: 豆豆吃了半根玉米
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录喂食
+- msg: weiwei ate a bit of rice
+  label: false
+  tags:
+  - record
+  - en
+  why: 记录喂食
+- msg: max had his usual dinner
+  label: false
+  tags:
+  - record
+  - en
+  why: 记录喂食
+- msg: luna nibbled on some fish
+  label: false
+  tags:
+  - record
+  - en
+  why: 记录喂食
+- msg: mochi ate her breakfast
+  label: false
+  tags:
+  - record
+  - en
+  why: 记录喂食
+- msg: doudou had extra kibble today
+  label: false
+  tags:
+  - record
+  - en
+  why: 记录喂食
+- msg: huahua ate a small snack
+  label: false
+  tags:
+  - record
+  - en
+  why: 记录喂食
+- msg: 团子偷吃了点面包
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录喂食
+- msg: 花花吃了狗零食
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录喂食
+- msg: 维尼吃了南瓜泥
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录喂食
+- msg: 球球吃了点全麦面包
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录喂食
+- msg: 旺财吃了肉干
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录喂食
+- msg: 咪咪吃了点蒸蛋
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录喂食
+- msg: 小维今天吃得挺香
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录喂食
+- msg: 豆豆吃了点鸡肉罐头
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录喂食
+- msg: weiwei ate two meals today
+  label: false
+  tags:
+  - record
+  - en
+  why: 记录喂食
+- msg: max had a bite of banana
+  label: false
+  tags:
+  - record
+  - en
+  why: 记录喂食
+- msg: luna ate a treat after walk
+  label: false
+  tags:
+  - record
+  - en
+  why: 记录喂食
+- msg: mochi finished her kibble
+  label: false
+  tags:
+  - record
+  - en
+  why: 记录喂食
+- msg: doudou had wet food tonight
+  label: false
+  tags:
+  - record
+  - en
+  why: 记录喂食
+- msg: huahua ate a cracker
+  label: false
+  tags:
+  - record
+  - en
+  why: 记录喂食
+- msg: 团子吃了两片胡萝卜
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录喂食
+- msg: 花花吃了点鸭肉
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录喂食
+- msg: 维尼吃了猫粮新口味
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录喂食
+- msg: 球球吃了点土豆泥
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录喂食
+- msg: 旺财吃了半根香肠
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录喂食
+- msg: 咪咪吃了鱼肉干
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录喂食
+- msg: 小维吃了一整根黄瓜
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录喂食
+- msg: 豆豆吃了点花生酱
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录喂食
+- msg: weiwei ate his kibble fast
+  label: false
+  tags:
+  - record
+  - en
+  why: 记录喂食
+- msg: max had chicken and rice
+  label: false
+  tags:
+  - record
+  - en
+  why: 记录喂食
+- msg: luna ate a bit of pumpkin
+  label: false
+  tags:
+  - record
+  - en
+  why: 记录喂食
+- msg: mochi snacked on some cheese
+  label: false
+  tags:
+  - record
+  - en
+  why: 记录喂食
+- msg: doudou ate her dinner early
+  label: false
+  tags:
+  - record
+  - en
+  why: 记录喂食
+- msg: huahua had a treat before bed
+  label: false
+  tags:
+  - record
+  - en
+  why: 记录喂食
+- msg: 团子吃了点小饼干
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录喂食
+- msg: 花花吃了猫条零食
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录喂食
+- msg: 维尼吃了个鹌鹑蛋
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录喂食
+- msg: 球球吃了点炖肉
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录喂食
+- msg: 旺财吃了狗粮加餐
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录喂食
+- msg: 咪咪吃了点罐头加餐
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录喂食
+- msg: 小维今天吃了三顿
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录喂食
+- msg: 豆豆吃了半份晚餐
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录喂食
+- msg: weiwei ate some carrots
+  label: false
+  tags:
+  - record
+  - en
+  why: 记录喂食
+- msg: max had a full bowl today
+  label: false
+  tags:
+  - record
+  - en
+  why: 记录喂食
+- msg: 小维遛了半小时
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录遛狗
+- msg: 豆豆洗澡了
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录洗澡
+- msg: 团子称了5公斤
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录体重
+- msg: 花花打疫苗了
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录疫苗
+- msg: 维尼驱虫了
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录驱虫
+- msg: 球球剪指甲了
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录剪甲
+- msg: 旺财去公园了
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录活动
+- msg: 咪咪拆家了
+  label: false
+  tags:
+  - record
+  - voice
+  why: 日常吐槽
+- msg: 小维睡了一天
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录状态
+- msg: luna went to the vet
+  label: false
+  tags:
+  - record
+  - en
+  why: 记录就医
+- msg: 豆豆遛了一圈
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录遛狗
+- msg: 团子洗完澡了
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录洗澡
+- msg: 花花称重6公斤
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录体重
+- msg: 维尼打了疫苗
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录疫苗
+- msg: 球球体内驱虫了
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录驱虫
+- msg: 旺财剪了指甲
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录剪甲
+- msg: 咪咪去了趟公园
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录活动
+- msg: 小维今天拆家了
+  label: false
+  tags:
+  - record
+  - voice
+  why: 日常吐槽
+- msg: 豆豆睡了一整天
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录状态
+- msg: weiwei went for a walk
+  label: false
+  tags:
+  - record
+  - en
+  why: 记录遛狗
+- msg: max got groomed today
+  label: false
+  tags:
+  - record
+  - en
+  why: 记录洗澡
+- msg: luna weighed 4 kilos
+  label: false
+  tags:
+  - record
+  - en
+  why: 记录体重
+- msg: mochi got her vaccine
+  label: false
+  tags:
+  - record
+  - en
+  why: 记录疫苗
+- msg: doudou got dewormed
+  label: false
+  tags:
+  - record
+  - en
+  why: 记录驱虫
+- msg: huahua had a nail trim
+  label: false
+  tags:
+  - record
+  - en
+  why: 记录剪甲
+- msg: 团子去宠物医院体检
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录就医
+- msg: 花花剃毛了
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录洗澡
+- msg: 维尼办了张新证件
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录档案
+- msg: 球球洗了澡还吹毛
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录洗澡
+- msg: 旺财打了驱虫针
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录驱虫
+- msg: 咪咪称重了
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录体重
+- msg: 小维去医院打针
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录就医
+- msg: 豆豆遛了两圈
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录遛狗
+- msg: weiwei had a bath today
+  label: false
+  tags:
+  - record
+  - en
+  why: 记录洗澡
+- msg: max visited the vet
+  label: false
+  tags:
+  - record
+  - en
+  why: 记录就医
+- msg: luna got dewormed today
+  label: false
+  tags:
+  - record
+  - en
+  why: 记录驱虫
+- msg: mochi had her nails clipped
+  label: false
+  tags:
+  - record
+  - en
+  why: 记录剪甲
+- msg: doudou walked around the park
+  label: false
+  tags:
+  - record
+  - en
+  why: 记录活动
+- msg: huahua slept all day
+  label: false
+  tags:
+  - record
+  - en
+  why: 记录状态
+- msg: 团子体重涨了点
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录体重
+- msg: 花花今天理毛了
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录洗澡
+- msg: 维尼去公园撒欢了
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录活动
+- msg: 球球拆了个沙发角
+  label: false
+  tags:
+  - record
+  - voice
+  why: 日常吐槽
+- msg: 旺财打了体外驱虫
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录驱虫
+- msg: 咪咪剪了趾甲
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录剪甲
+- msg: 小维称重五公斤
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录体重
+- msg: 豆豆去宠物店洗澡
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录洗澡
+- msg: weiwei got his shots
+  label: false
+  tags:
+  - record
+  - en
+  why: 记录疫苗
+- msg: max had a nail clip today
+  label: false
+  tags:
+  - record
+  - en
+  why: 记录剪甲
+- msg: luna slept the whole day
+  label: false
+  tags:
+  - record
+  - en
+  why: 记录状态
+- msg: mochi went outside for a walk
+  label: false
+  tags:
+  - record
+  - en
+  why: 记录活动
+- msg: doudou had a checkup
+  label: false
+  tags:
+  - record
+  - en
+  why: 记录就医
+- msg: huahua got bathed today
+  label: false
+  tags:
+  - record
+  - en
+  why: 记录洗澡
+- msg: 团子今天体检了
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录就医
+- msg: 花花打了疫苗针
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录疫苗
+- msg: 维尼驱了体外虫
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录驱虫
+- msg: 球球去公园遛了圈
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录遛狗
+- msg: 旺财今天在家拆家
+  label: false
+  tags:
+  - record
+  - voice
+  why: 日常吐槽
+- msg: 咪咪睡了整整一天
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录状态
+- msg: 小维今天洗了澡
+  label: false
+  tags:
+  - record
+  - voice
+  why: 记录洗澡
+- msg: 小维舔了口巧克力
+  label: false
+  tags:
+  - toxin
+  - gray
+  - keyword_trap
+  - voice
+  why: 剂量极小
+- msg: 豆豆吃了一颗葡萄干
+  label: false
+  tags:
+  - toxin
+  - gray
+  - keyword_trap
+  - voice
+  why: 剂量极小
+- msg: 团子闻了闻百合
+  label: false
+  tags:
+  - toxin
+  - gray
+  - keyword_trap
+  - voice
+  why: 只是闻了闻
+- msg: 花花咬了下洋葱皮
+  label: false
+  tags:
+  - toxin
+  - gray
+  - keyword_trap
+  - voice
+  why: 只咬了外皮
+- msg: max licked some chocolate
+  label: false
+  tags:
+  - toxin
+  - gray
+  - keyword_trap
+  - en
+  why: 剂量极小
+- msg: 维尼昨天吐过
+  label: false
+  tags:
+  - past
+  - keyword_trap
+  - voice
+  why: 过去的事
+- msg: 球球上个月抽过
+  label: false
+  tags:
+  - past
+  - keyword_trap
+  - voice
+  why: 过去的事
+- msg: 旺财舔了下巧克力酱
+  label: false
+  tags:
+  - toxin
+  - gray
+  - keyword_trap
+  - voice
+  why: 剂量极小
+- msg: 咪咪咬了片洋葱丝
+  label: false
+  tags:
+  - toxin
+  - gray
+  - keyword_trap
+  - voice
+  why: 剂量极小
+- msg: 小维碰了下百合花瓣
+  label: false
+  tags:
+  - toxin
+  - gray
+  - keyword_trap
+  - voice
+  why: 只是碰了下
+- msg: weiwei licked a chocolate wrapper
+  label: false
+  tags:
+  - toxin
+  - gray
+  - keyword_trap
+  - en
+  why: 只舔了包装
+- msg: luna smelled some lilies
+  label: false
+  tags:
+  - toxin
+  - gray
+  - keyword_trap
+  - en
+  why: 只是闻了闻
+- msg: mochi nibbled onion skin
+  label: false
+  tags:
+  - toxin
+  - gray
+  - keyword_trap
+  - en
+  why: 只咬了外皮
+- msg: doudou tasted a grape once
+  label: false
+  tags:
+  - toxin
+  - gray
+  - keyword_trap
+  - en
+  why: 剂量极小
+- msg: huahua sniffed a chocolate bar
+  label: false
+  tags:
+  - toxin
+  - gray
+  - keyword_trap
+  - en
+  why: 只是闻了闻
+- msg: 团子上周吐过一次
+  label: false
+  tags:
+  - past
+  - keyword_trap
+  - voice
+  why: 过去的事
+- msg: 花花去年抽过一回
+  label: false
+  tags:
+  - past
+  - keyword_trap
+  - voice
+  why: 过去的事
+- msg: 维尼舔了一小口奶油
+  label: false
+  tags:
+  - gray
+  - keyword_trap
+  - voice
+  why: 剂量极小
+- msg: 球球咬了颗葡萄皮
+  label: false
+  tags:
+  - toxin
+  - gray
+  - keyword_trap
+  - voice
+  why: 只咬了果皮
+- msg: 旺财闻了下洋葱片
+  label: false
+  tags:
+  - toxin
+  - gray
+  - keyword_trap
+  - voice
+  why: 只是闻了闻
+- msg: 咪咪蹭了下百合叶子
+  label: false
+  tags:
+  - toxin
+  - gray
+  - keyword_trap
+  - voice
+  why: 只是蹭了下
+- msg: 小维半年前中过毒
+  label: false
+  tags:
+  - past
+  - keyword_trap
+  - voice
+  why: 过去的事
+- msg: 豆豆咬了颗提子皮
+  label: false
+  tags:
+  - toxin
+  - gray
+  - keyword_trap
+  - voice
+  why: 只咬了果皮
+- msg: max had a taste of grape
+  label: false
+  tags:
+  - toxin
+  - gray
+  - keyword_trap
+  - en
+  why: 剂量极小
+- msg: luna sniffed lily pollen
+  label: false
+  tags:
+  - toxin
+  - gray
+  - keyword_trap
+  - en
+  why: 只是闻了闻
+- msg: mochi tasted chocolate frosting
+  label: false
+  tags:
+  - toxin
+  - gray
+  - keyword_trap
+  - en
+  why: 剂量极小
+- msg: doudou licked an onion ring
+  label: false
+  tags:
+  - toxin
+  - gray
+  - keyword_trap
+  - en
+  why: 剂量极小
+- msg: huahua vomited once last week
+  label: false
+  tags:
+  - past
+  - keyword_trap
+  - en
+  why: 过去的事
+- msg: 团子舔了口巧克力豆
+  label: false
+  tags:
+  - toxin
+  - gray
+  - keyword_trap
+  - voice
+  why: 剂量极小
+- msg: 花花咬了小片洋葱
+  label: false
+  tags:
+  - toxin
+  - gray
+  - keyword_trap
+  - voice
+  why: 剂量极小
+- msg: 维尼吃了一粒葡萄
+  label: false
+  tags:
+  - toxin
+  - gray
+  - keyword_trap
+  - voice
+  why: 剂量极小
+- msg: 球球昨晚拉稀过
+  label: false
+  tags:
+  - past
+  - keyword_trap
+  - voice
+  why: 过去的事
+- msg: 旺财三天前抽搐过
+  label: false
+  tags:
+  - past
+  - keyword_trap
+  - voice
+  why: 过去的事
+- msg: 咪咪闻了闻百合香
+  label: false
+  tags:
+  - toxin
+  - gray
+  - keyword_trap
+  - voice
+  why: 只是闻了闻
+- msg: 小维舔了指甲盖大的巧克力
+  label: false
+  tags:
+  - toxin
+  - gray
+  - keyword_trap
+  - voice
+  why: 剂量极小
+- msg: 豆豆咬了根洋葱丝
+  label: false
+  tags:
+  - toxin
+  - gray
+  - keyword_trap
+  - voice
+  why: 剂量极小
+- msg: weiwei ate one raisin
+  label: false
+  tags:
+  - toxin
+  - gray
+  - keyword_trap
+  - en
+  why: 剂量极小
+- msg: max tasted a bit of chocolate
+  label: false
+  tags:
+  - toxin
+  - gray
+  - keyword_trap
+  - en
+  why: 剂量极小
+- msg: luna had diarrhea last week
+  label: false
+  tags:
+  - past
+  - keyword_trap
+  - en
+  why: 过去的事
+- msg: mochi seized once months ago
+  label: false
+  tags:
+  - past
+  - keyword_trap
+  - en
+  why: 过去的事
+- msg: 小维的疫苗啥时候
+  label: false
+  tags:
+  - question
+  - voice
+  why: 查询疫苗
+- msg: 提醒豆豆吃药
+  label: false
+  tags:
+  - reminder
+  - voice
+  why: 提醒喂药
+- msg: 删掉团子的记录
+  label: false
+  tags:
+  - delete
+  - voice
+  why: 删除操作
+- msg: 花花多大了
+  label: false
+  tags:
+  - question
+  - voice
+  why: 查询年龄
+- msg: 维尼下次驱虫是啥时候
+  label: false
+  tags:
+  - question
+  - voice
+  why: 查询驱虫
+- msg: 球球体重记录在哪
+  label: false
+  tags:
+  - question
+  - voice
+  why: 查询记录
+- msg: 旺财疫苗过期没
+  label: false
+  tags:
+  - question
+  - voice
+  why: 查询疫苗
+- msg: 咪咪上次洗澡是啥时候
+  label: false
+  tags:
+  - question
+  - voice
+  why: 查询记录
+- msg: when is weiwei's vaccine due
+  label: false
+  tags:
+  - question
+  - en
+  why: 查询疫苗
+- msg: remind me to feed max
+  label: false
+  tags:
+  - reminder
+  - en
+  why: 提醒喂食
+- msg: delete luna's record
+  label: false
+  tags:
+  - delete
+  - en
+  why: 删除操作
+- msg: how old is mochi
+  label: false
+  tags:
+  - question
+  - en
+  why: 查询年龄
+- msg: 小维打疫苗提醒一下
+  label: false
+  tags:
+  - reminder
+  - voice
+  why: 提醒疫苗
+- msg: 豆豆的体检记录呢
+  label: false
+  tags:
+  - question
+  - voice
+  why: 查询记录
+- msg: 团子多久没剪指甲了
+  label: false
+  tags:
+  - question
+  - voice
+  why: 查询记录
+- msg: 花花的驱虫周期是啥
+  label: false
+  tags:
+  - question
+  - knowledge
+  why: 查询知识
+- msg: 维尼上次看病是啥时候
+  label: false
+  tags:
+  - question
+  - voice
+  why: 查询记录
+- msg: 球球的档案改一下
+  label: false
+  tags:
+  - profile
+  - voice
+  why: 改档案
+- msg: what breed is doudou
+  label: false
+  tags:
+  - question
+  - en
+  why: 查询品种
+- msg: remind me to walk huahua
+  label: false
+  tags:
+  - reminder
+  - en
+  why: 提醒遛狗
+- msg: 小维吐血了
+  label: true
+  tags:
+  - bleeding
+  - voice
+  why: 呕血
+- msg: 豆豆吐了不动了
+  label: true
+  tags:
+  - shock
+  - voice
+  why: 吐后不动
+- msg: 小维拉血了 趴着
+  label: true
+  tags:
+  - bleeding
+  - shock
+  - voice
+  why: 便血趴着
+- msg: 豆豆吃了老鼠药
+  label: true
+  tags:
+  - toxin
+  - voice
+  why: 误食鼠药
+- msg: Weiwei ate rat poison
+  label: true
+  tags:
+  - toxin
+  - en
+  why: 误食鼠药
+- msg: luna vomited blood
+  label: true
+  tags:
+  - bleeding
+  - en
+  why: 呕血
+- msg: max ate a whole chocolate bar
+  label: true
+  tags:
+  - toxin
+  - en
+  why: 大量巧克力
+- msg: 花花吐了还抽
+  label: true
+  tags:
+  - seizure
+  - voice
+  why: 吐后抽搐
+- msg: 团子吐了叫不醒
+  label: true
+  tags:
+  - shock
+  - voice
+  why: 叫不醒
+- msg: 小维吃了一盒葡萄干
+  label: true
+  tags:
+  - toxin
+  - voice
+  why: 大量葡萄干
+- msg: 豆豆拉血趴着不动
+  label: true
+  tags:
+  - bleeding
+  - shock
+  - voice
+  why: 便血趴着
+- msg: 团子软便还发抖
+  label: true
+  tags:
+  - seizure
+  - voice
+  why: 软便加发抖
+- msg: 花花吐白沫倒地
+  label: true
+  tags:
+  - seizure
+  - voice
+  why: 吐白沫倒地
+- msg: 维尼吃了一整把葡萄
+  label: true
+  tags:
+  - toxin
+  - voice
+  why: 大量葡萄
+- msg: 球球吃了半瓶药
+  label: true
+  tags:
+  - toxin
+  - voice
+  why: 误食大量药
+- msg: 旺财吃了一整块巧克力
+  label: true
+  tags:
+  - toxin
+  - voice
+  why: 大量巧克力
+- msg: 咪咪吐了血还软
+  label: true
+  tags:
+  - bleeding
+  - shock
+  - voice
+  why: 呕血软瘫
+- msg: 小维吃了老鼠药
+  label: true
+  tags:
+  - toxin
+  - voice
+  why: 误食鼠药
+- msg: weiwei ate a lot of grapes
+  label: true
+  tags:
+  - toxin
+  - en
+  why: 大量葡萄
+- msg: max threw up blood
+  label: true
+  tags:
+  - bleeding
+  - en
+  why: 呕血
+- msg: luna wont wake up now
+  label: true
+  tags:
+  - shock
+  - en
+  why: 叫不醒
+- msg: mochi ate rat poison
+  label: true
+  tags:
+  - toxin
+  - en
+  why: 误食鼠药
+- msg: doudou seized after vomiting
+  label: true
+  tags:
+  - seizure
+  - en
+  why: 吐后抽搐
+- msg: huahua collapsed after eating chocolate
+  label: true
+  tags:
+  - toxin
+  - shock
+  - en
+  why: 食巧后倒地
+- msg: 团子拉稀还软瘫
+  label: true
+  tags:
+  - shock
+  - voice
+  why: 腹泻软瘫
+- msg: 花花吃了颗葡萄干不对劲
+  label: true
+  tags:
+  - toxin
+  - gray
+  - voice
+  why: 食后异常
+- msg: 维尼吐了一直吐不停躺着
+  label: true
+  tags:
+  - shock
+  - voice
+  why: 反复吐后瘫
+- msg: 球球吐了软倒不动
+  label: true
+  tags:
+  - shock
+  - voice
+  why: 吐后倒地
+- msg: 旺财吃了半板巧克力软了
+  label: true
+  tags:
+  - toxin
+  - shock
+  - voice
+  why: 食巧后软瘫
+- msg: 咪咪拉血一大摊
+  label: true
+  tags:
+  - bleeding
+  - voice
+  why: 大量便血
+- msg: 小维吐了口吐白沫
+  label: true
+  tags:
+  - seizure
+  - voice
+  why: 吐白沫
+- msg: 豆豆吐了浑身抖
+  label: true
+  tags:
+  - seizure
+  - voice
+  why: 吐后发抖
+- msg: weiwei vomited and wont move
+  label: true
+  tags:
+  - shock
+  - en
+  why: 吐后不动
+- msg: max ate chocolate and collapsed
+  label: true
+  tags:
+  - toxin
+  - shock
+  - en
+  why: 食巧后倒地
+- msg: luna is limp with diarrhea
+  label: true
+  tags:
+  - shock
+  - en
+  why: 腹泻软瘫
+- msg: mochi threw up and seized
+  label: true
+  tags:
+  - seizure
+  - en
+  why: 吐后抽搐
+- msg: doudou ate a whole grape bunch
+  label: true
+  tags:
+  - toxin
+  - en
+  why: 大量葡萄
+- msg: huahua vomited blood twice
+  label: true
+  tags:
+  - bleeding
+  - en
+  why: 反复呕血
+- msg: 团子吃了整包葡萄干
+  label: true
+  tags:
+  - toxin
+  - voice
+  why: 大量葡萄干
+- msg: 花花软便带血
+  label: true
+  tags:
+  - bleeding
+  - voice
+  why: 软便带血
+- msg: 维尼吐了不肯起来
+  label: true
+  tags:
+  - shock
+  - voice
+  why: 吐后不起
+- msg: 球球拉肚子还站不稳
+  label: true
+  tags:
+  - shock
+  - voice
+  why: 腹泻站不稳
+- msg: 旺财吃了老鼠药一口
+  label: true
+  tags:
+  - toxin
+  - voice
+  why: 误食鼠药
+- msg: 咪咪吐了一直趴着
+  label: true
+  tags:
+  - shock
+  - voice
+  why: 吐后趴着
+- msg: 小维喝水多还软瘫
+  label: true
+  tags:
+  - shock
+  - voice
+  why: 喝水多软瘫
+- msg: 豆豆没胃口还抽了一下
+  label: true
+  tags:
+  - seizure
+  - voice
+  why: 食欲降加抽搐
+- msg: weiwei ate poison bait
+  label: true
+  tags:
+  - toxin
+  - en
+  why: 误食毒饵
+- msg: max is limp after vomiting
+  label: true
+  tags:
+  - shock
+  - en
+  why: 吐后软瘫
+- msg: luna diarrhea with blood
+  label: true
+  tags:
+  - bleeding
+  - en
+  why: 腹泻带血
+- msg: mochi collapsed and shaking
+  label: true
+  tags:
+  - seizure
+  - shock
+  - en
+  why: 倒地发抖
+- msg: doudou wont get up after eating
+  label: true
+  tags:
+  - shock
+  - en
+  why: 食后不起
+- msg: huahua ate a chocolate cake slice
+  label: true
+  tags:
+  - toxin
+  - en
+  why: 大量巧克力
+- msg: 团子瘸了还叫不应
+  label: true
+  tags:
+  - shock
+  - voice
+  why: 跛行叫不应
+- msg: 花花吐了毛球带血
+  label: true
+  tags:
+  - bleeding
+  - voice
+  why: 毛球带血
+- msg: 维尼喝水多还抽搐
+  label: true
+  tags:
+  - seizure
+  - voice
+  why: 喝水多抽搐
+- msg: 球球剪指甲后一直抖
+  label: true
+  tags:
+  - seizure
+  - voice
+  why: 剪甲后抽搐
+- msg: 旺财打疫苗后软瘫不动
+  label: true
+  tags:
+  - shock
+  - voice
+  why: 疫苗后软瘫
+- msg: 咪咪驱虫后吐血
+  label: true
+  tags:
+  - bleeding
+  - voice
+  why: 驱虫后吐血
+- msg: 小维洗澡后抽搐了
+  label: true
+  tags:
+  - seizure
+  - voice
+  why: 洗澡后抽搐
+- msg: 豆豆遛完狗后倒地不起
+  label: true
+  tags:
+  - shock
+  - voice
+  why: 遛狗后倒地

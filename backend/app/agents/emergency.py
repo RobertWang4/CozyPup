@@ -99,6 +99,9 @@ def detect_emergency(message: str) -> EmergencyCheckResult:
 
 
 def build_emergency_hint(keywords: list[str], lang: str = "zh") -> str:
-    """Build a prompt hint for the LLM when emergency keywords are detected."""
-    kw_str = ", ".join(keywords)
+    """Build a prompt hint for the LLM when an emergency was detected.
+
+    `keywords` is empty when only the classifier (app.agents.emergency_clf) fired;
+    the hint then names the classifier instead of listing keywords."""
+    kw_str = ", ".join(keywords) or t("emergency_clf_label", lang)
     return t("emergency_hint", lang).format(keywords=kw_str)

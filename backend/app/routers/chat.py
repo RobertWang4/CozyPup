@@ -36,6 +36,7 @@ from app.agents.chat_finalizer import (
     should_run_final_fallback,
 )
 from app.agents.emergency import detect_emergency                        # 紧急关键词检测
+from app.agents import emergency_clf                                     # 紧急分类模型 sidecar（flag 控制 off/shadow/union/clf）
 from app.agents.emergency_router import classify_emergency, render_for_user  # 紧急情况短路路由（跳过 memory + LLM）
 from app.agents.engine import AgentEngine, AgentRunInput
 from app.agents.locale import detect_language                            # 语言检测（中/英）
@@ -342,13 +343,17 @@ async def _event_generator(
 
     # Stage 2: 同步操作（纯 CPU，毫秒级，不需要 await）
     lang = request.language or detect_language(request.message)      # 检测语言（中/英）
-    emergency_result = detect_emergency(request.message)              # 检测紧急关键词（如"中毒""抽搐"）
+    keyword_result = detect_emergency(request.message)                # 检测紧急关键词（如"中毒""抽搐"）
+    emergency_result = keyword_result                                 # 分类模型结果在 Stage 4 之后合并进来
+    # 分类模型和后面的 DB 读写并行跑；off 模式下 classify 立即返回 None
+    clf_mode = emergency_clf.get_mode()
+    clf_task = asyncio.create_task(emergency_clf.classify(request.message)) if clf_mode != "off" else None
     suggested_actions = pre_process(request.message, pets, today=user_today, lang=lang) # 预分析：从文本中提取可能的工具调用
 
     trace.record("language_detect", {"language": lang})
     trace.record("emergency_detect", {
-        "detected": emergency_result.detected,
-        "keywords": emergency_result.keywords if emergency_result.detected else [],
+        "detected": keyword_result.detected,
+        "keywords": keyword_result.keywords if keyword_result.detected else [],
     })
     trace.record("pre_process", [
         {"tool": a.tool_name, "confidence": a.confidence, "args": a.arguments}
@@ -356,11 +361,11 @@ async def _event_generator(
     ])
     trace.record("pets", [{"id": str(p.id), "name": p.name} for p in pets])
 
-    if emergency_result.detected:
+    if keyword_result.detected:
         logger.info("emergency_keywords_detected", extra={
             "session_id": session_id,
             "user_id": str(user_id),
-            "keywords": emergency_result.keywords,
+            "keywords": keyword_result.keywords,
         })
 
     # ========== Emergency short-circuit ==========
@@ -375,6 +380,8 @@ async def _event_generator(
     emergency_match = classify_emergency(request.message)
     if emergency_match is not None:
         audit_is_emergency_route = True
+        if clf_task is not None:
+            clf_task.cancel()
         trace.record("emergency_short_circuit", {
             "category": emergency_match.category,
             "keywords": emergency_match.keywords,
@@ -414,7 +421,7 @@ async def _event_generator(
             session_id=session_id,
             lang=lang,
             tools_called=None,
-            keyword_emergency=bool(emergency_result.detected),
+            keyword_emergency=bool(keyword_result.detected),
             client_version=client_version,
             metadata_extra={
                 "short_circuit": True,
@@ -437,6 +444,23 @@ async def _event_generator(
     )
 
     # ========== Phase 2: 构建 Prompt ==========
+
+    # 合并分类模型结果（shadow 只记日志，union 取或，clf 以模型为准、超时回落关键词）
+    if clf_task is not None:
+        clf_result = await clf_task
+        emergency_result = emergency_clf.resolve(keyword_result, clf_result, clf_mode)
+        _clf_data = {
+            "mode": clf_mode,
+            "keyword_detected": keyword_result.detected,
+            "clf_p_true": round(clf_result.p_true, 4) if clf_result else None,
+            "clf_decided": clf_result.decided if clf_result else None,
+            "clf_latency_ms": clf_result.latency_ms if clf_result else None,
+            "clf_unavailable": clf_result is None,
+            "final_is_emergency": emergency_result.detected,
+            "disagree": clf_result is not None and clf_result.decided != keyword_result.detected,
+        }
+        trace_log("emergency_clf", data=_clf_data)
+        trace.record("emergency_clf", _clf_data)
 
     image_count = len(request.images) if request.images else 0
     prompt_input = await build_agent_prompt_input(
@@ -619,7 +643,7 @@ async def _event_generator(
         session_id=session_id,
         lang=lang,
         tools_called=result.tools_called,
-        keyword_emergency=bool(emergency_result.detected),
+        keyword_emergency=bool(keyword_result.detected),
         client_version=client_version,
     )
 

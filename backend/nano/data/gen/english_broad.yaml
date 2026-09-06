@@ -1,0 +1,1242 @@
+# TRUE - seizure (17)
+- msg: max is shaking all over and cant stand up right now
+  label: true
+  tags: [seizure, panic, en, voice]
+  why: active seizure signs
+- msg: luna just collapsed and her legs are like paddling in the air
+  label: true
+  tags: [seizure, neuro, en, voice]
+  why: paddling collapse
+- msg: omg bella is stiff as a board and drooling everywhere
+  label: true
+  tags: [seizure, panic, en, voice]
+  why: rigid drooling episode
+- msg: charlie fell over and his whole body is jerking
+  label: true
+  tags: [seizure, en, voice]
+  why: whole body jerking
+- msg: milo just went rigid then started twitching non stop
+  label: true
+  tags: [seizure, en, voice]
+  why: rigid then twitching
+- msg: whiskers eyes rolled back and shes not responding
+  label: true
+  tags: [seizure, neuro, en, voice]
+  why: eyes rolled unresponsive
+- msg: mochi keeps convulsing on the kitchen floor rn
+  label: true
+  tags: [seizure, en, voice]
+  why: convulsing now
+- msg: my dog is having a siezure right now what do i do
+  label: true
+  tags: [seizure, panic, en, voice, typo]
+  why: active seizure
+- msg: hes shaking uncontrollably and foaming at the mouth
+  label: true
+  tags: [seizure, en, voice]
+  why: shaking and foaming
+- msg: luna just had a seizure it lasted like a minute
+  label: true
+  tags: [seizure, en, voice]
+  why: just had seizure
+- msg: max collapsed and is twitching all over pls help
+  label: true
+  tags: [seizure, panic, en, voice]
+  why: collapsed twitching
+- msg: charlie is jerking and peed himself just now
+  label: true
+  tags: [seizure, en, voice]
+  why: jerking incontinence
+- msg: bella wont stop shaking and her jaw is clenched
+  label: true
+  tags: [seizure, en, voice]
+  why: shaking jaw clenched
+- msg: milo is convulsing and i dont know what to do
+  label: true
+  tags: [seizure, panic, en, voice]
+  why: convulsing now
+- msg: whiskers just dropped and started thrashing around
+  label: true
+  tags: [seizure, en, voice]
+  why: dropped thrashing
+- msg: my cat is fitting on the floor right now
+  label: true
+  tags: [seizure, en, voice]
+  why: fitting on floor
+- msg: dog just had like a full body spasm and now hes out of it
+  label: true
+  tags: [seizure, neuro, en, voice]
+  why: spasm then unresponsive
+
+# TRUE - breathing (17)
+- msg: max is gasping for air and his gums look kinda blue
+  label: true
+  tags: [breathing, shock, en, voice]
+  why: gasping blue gums
+- msg: luna is breathing so hard and wont stop panting weird
+  label: true
+  tags: [breathing, en, voice]
+  why: labored panting
+- msg: bella is making this awful wheezing sound and cant catch her breath
+  label: true
+  tags: [breathing, en, voice]
+  why: wheezing cant breathe
+- msg: charlie is open mouth breathing and his tongue looks purple
+  label: true
+  tags: [breathing, shock, en, voice]
+  why: open mouth purple tongue
+- msg: milo cant seem to get air in hes making weird noises
+  label: true
+  tags: [breathing, en, voice]
+  why: cant get air in
+- msg: whiskers is struggling to breathe like really labored
+  label: true
+  tags: [breathing, en, voice]
+  why: labored breathing
+- msg: mochi is choking and gasping i dont know whats wrong
+  label: true
+  tags: [breathing, panic, en, voice]
+  why: choking gasping
+- msg: my dog is having trouble breathign right now
+  label: true
+  tags: [breathing, en, voice, typo]
+  why: trouble breathing
+- msg: hes breathing so fast and shallow it scares me
+  label: true
+  tags: [breathing, panic, en, voice]
+  why: fast shallow breathing
+- msg: luna suddenly cant breathe properly and shes panicking
+  label: true
+  tags: [breathing, panic, en, voice]
+  why: sudden breathing distress
+- msg: charlies chest is heaving and he wont lie down
+  label: true
+  tags: [breathing, en, voice]
+  why: chest heaving
+- msg: bella is making this raspy sound every breath
+  label: true
+  tags: [breathing, en, voice]
+  why: raspy breathing sound
+- msg: cat is open mouth breathing thats not normal right
+  label: true
+  tags: [breathing, en, voice]
+  why: cat open mouth breathing
+- msg: milo collapsed and now hes struggling to breathe
+  label: true
+  tags: [breathing, seizure, en, voice]
+  why: collapse plus breathing trouble
+- msg: whiskers tongue turned purple and hes gasping
+  label: true
+  tags: [breathing, shock, en, voice]
+  why: purple tongue gasping
+- msg: my dog is choking cant breathe help
+  label: true
+  tags: [breathing, panic, en, voice]
+  why: choking cant breathe
+- msg: hes wheezing bad and lips look kinda blue
+  label: true
+  tags: [breathing, shock, en, voice]
+  why: wheezing blue lips
+
+# TRUE - toxin (17)
+- msg: max just ate like a whole bar of dark chocolate 5 mins ago
+  label: true
+  tags: [toxin, en, voice]
+  why: large chocolate dose
+- msg: luna got into my grapes and ate a bunch
+  label: true
+  tags: [toxin, en, voice]
+  why: ate several grapes
+- msg: bella swallowed a handful of my moms pills off the floor
+  label: true
+  tags: [toxin, en, voice]
+  why: human meds ingestion
+- msg: charlie ate rat poison i just found the bag chewed open
+  label: true
+  tags: [toxin, en, voice]
+  why: rat poison ingestion
+- msg: milo licked up antifreeze that leaked in the garage
+  label: true
+  tags: [toxin, en, voice]
+  why: antifreeze exposure
+- msg: whiskers got into the lily bouquet and was chewing the leaves
+  label: true
+  tags: [toxin, en, voice]
+  why: lily ingestion cat
+- msg: mochi ate a whole bag of raisins just now
+  label: true
+  tags: [toxin, en, voice]
+  why: large raisin dose
+- msg: my dog just ate my xanax that fell on the floor
+  label: true
+  tags: [toxin, en, voice]
+  why: human medication ingestion
+- msg: luna got into the bleach bottle and drank some
+  label: true
+  tags: [toxin, en, voice]
+  why: bleach ingestion
+- msg: charlie just swallowed a bunch of macadamia nuts
+  label: true
+  tags: [toxin, en, voice]
+  why: macadamia nut ingestion
+- msg: bella ate an entire onion i left on the counter
+  label: true
+  tags: [toxin, en, voice]
+  why: large onion dose
+- msg: dog just chewed through a bottle of ibuprofen
+  label: true
+  tags: [toxin, en, voice]
+  why: ibuprofen ingestion
+- msg: cat drank some of the coolant that spilled
+  label: true
+  tags: [toxin, en, voice]
+  why: coolant ingestion
+- msg: milo ate a big chunk of xylitol gum like the whole pack
+  label: true
+  tags: [toxin, en, voice]
+  why: large xylitol dose
+- msg: whiskers got into my dads heart medication
+  label: true
+  tags: [toxin, en, voice]
+  why: cardiac med ingestion
+- msg: max just downed like half a bag of chocolate chips
+  label: true
+  tags: [toxin, en, voice]
+  why: large chocolate dose
+- msg: luna ate something off the ground on our walk and i think it was a dead mouse with poison in it
+  label: true
+  tags: [toxin, en, voice]
+  why: possible secondary poisoning
+  gray: true
+
+# TRUE - trauma (17)
+- msg: max just got hit by a car outside our house
+  label: true
+  tags: [trauma, en, voice]
+  why: hit by car
+- msg: luna fell off the balcony like 3 floors up
+  label: true
+  tags: [trauma, en, voice]
+  why: high fall
+- msg: bella got attacked by a bigger dog and shes bleeding a lot
+  label: true
+  tags: [trauma, bleeding, en, voice]
+  why: dog attack bleeding
+- msg: charlie jumped out the car window while it was moving
+  label: true
+  tags: [trauma, en, voice]
+  why: jumped from moving car
+- msg: milo got his leg caught in the fence and its bent weird
+  label: true
+  tags: [trauma, en, voice]
+  why: leg possibly fractured
+- msg: whiskers eye is popped out of the socket omg
+  label: true
+  tags: [trauma, panic, en, voice]
+  why: eye proptosis
+- msg: mochi got burned pretty bad on the stove just now
+  label: true
+  tags: [trauma, en, voice]
+  why: bad burn injury
+- msg: dog got hit by a bike and isnt putting weight on his leg
+  label: true
+  tags: [trauma, en, voice]
+  why: hit by bike injury
+- msg: luna cut herself on glass and wont stop bleeding
+  label: true
+  tags: [trauma, bleeding, en, voice]
+  why: uncontrolled bleeding cut
+- msg: charlie fell down the stairs really hard just now
+  label: true
+  tags: [trauma, en, voice]
+  why: hard fall down stairs
+- msg: bella got bit by another dog and theres a deep gash
+  label: true
+  tags: [trauma, en, voice]
+  why: deep bite wound
+- msg: cat jumped from the roof and isnt moving right
+  label: true
+  tags: [trauma, en, voice]
+  why: fall then abnormal movement
+- msg: max got run over by the neighbors car
+  label: true
+  tags: [trauma, en, voice]
+  why: run over by car
+- msg: luna got stepped on by a horse at the barn
+  label: true
+  tags: [trauma, en, voice]
+  why: stepped on by horse
+- msg: whiskers tail got shut in the door and its bleeding a ton
+  label: true
+  tags: [trauma, bleeding, en, voice]
+  why: tail injury heavy bleeding
+- msg: milo got kicked by mistake and now hes limping bad and crying
+  label: true
+  tags: [trauma, en, voice]
+  why: injury after being kicked
+- msg: bella slammed into the glass door running and is out of it now
+  label: true
+  tags: [trauma, neuro, en, voice]
+  why: head impact dazed
+
+# TRUE - gi/urinary (16)
+- msg: max hasnt peed in like 2 days and keeps straining in the litter box
+  label: true
+  tags: [urinary, en, voice]
+  why: prolonged inability to urinate
+- msg: luna threw up blood just now
+  label: true
+  tags: [gdv, en, voice]
+  why: vomiting blood
+- msg: bella has blood in her poop and shes really lethargic
+  label: true
+  tags: [gdv, en, voice]
+  why: bloody stool with lethargy
+- msg: charlie tummy is hard and swollen and he keeps trying to throw up but nothing comes out
+  label: true
+  tags: [gdv, en, voice]
+  why: possible bloat gdv
+- msg: milo cant pee hes crying in the litter box
+  label: true
+  tags: [urinary, panic, en, voice]
+  why: male cat blocked
+- msg: whiskers keeps retching but nothing comes up and his belly looks bloated
+  label: true
+  tags: [gdv, en, voice]
+  why: unproductive retching bloat
+- msg: mochi pooped straight blood twice tonight
+  label: true
+  tags: [gdv, en, voice]
+  why: repeated bloody stool
+- msg: my cat is straining to pee and yowling
+  label: true
+  tags: [urinary, panic, en, voice]
+  why: painful urination straining
+- msg: dog threw up like 5 times and now hes just lying flat not moving
+  label: true
+  tags: [gdv, en, voice]
+  why: repeated vomiting then collapse
+- msg: luna belly is super distended and she wont let me touch it
+  label: true
+  tags: [gdv, en, voice]
+  why: painful distended belly
+- msg: charlie has been trying to pee for an hour with nothing coming out
+  label: true
+  tags: [urinary, en, voice]
+  why: urinary blockage
+- msg: bella vomited blood and is really weak now
+  label: true
+  tags: [gdv, en, voice]
+  why: bloody vomit weakness
+- msg: male cat hasnt peed all day and is crying nonstop
+  label: true
+  tags: [urinary, panic, en, voice]
+  why: male cat blocked
+- msg: milo keeps dry heaving and his stomach is rock hard
+  label: true
+  tags: [gdv, en, voice]
+  why: dry heaving hard belly
+- msg: whiskers pooping blood and just laying there not moving
+  label: true
+  tags: [gdv, en, voice]
+  why: bloody stool lethargy
+- msg: dog belly is huge and tight looks like its gonna pop
+  label: true
+  tags: [gdv, en, voice]
+  why: severe abdominal distension
+
+# TRUE - vague panic (16)
+- msg: somethings really wrong with max i dont know what to do
+  label: true
+  tags: [panic, en, voice]
+  gray: true
+  why: vague severe distress
+- msg: luna is just not right rn shes acting so weird
+  label: true
+  tags: [panic, en, voice]
+  gray: true
+  why: vague severe distress
+- msg: omg bella wont move at all and i dont know why
+  label: true
+  tags: [panic, neuro, en, voice]
+  why: unresponsive not moving
+- msg: i think charlie is dying pls someone help
+  label: true
+  tags: [panic, en, voice]
+  why: owner panic dying
+- msg: milo just collapsed out of nowhere
+  label: true
+  tags: [neuro, panic, en, voice]
+  why: sudden collapse
+- msg: whiskers is acting so strange all of a sudden im freaking out
+  label: true
+  tags: [panic, en, voice]
+  gray: true
+  why: sudden strange behavior panic
+- msg: something is seriously wrong please help me
+  label: true
+  tags: [panic, en, voice]
+  gray: true
+  why: vague severe distress
+- msg: my dog just went limp in my arms
+  label: true
+  tags: [neuro, panic, en, voice]
+  why: went limp
+- msg: luna is unresponsive i cant get her to wake up
+  label: true
+  tags: [neuro, panic, en, voice]
+  why: unresponsive not waking
+- msg: i dont know whats happening to bella shes just not herself at all and scaring me
+  label: true
+  tags: [panic, en, voice]
+  gray: true
+  why: vague severe distress
+- msg: charlie is barely moving and his eyes look weird
+  label: true
+  tags: [panic, neuro, en, voice]
+  why: barely moving abnormal eyes
+- msg: mochi just collapsed and wont get up no matter what
+  label: true
+  tags: [neuro, panic, en, voice]
+  why: collapse cant get up
+- msg: max is acting really off like something is very wrong
+  label: true
+  tags: [panic, en, voice]
+  gray: true
+  why: vague severe distress
+- msg: im panicking milo just went completely limp
+  label: true
+  tags: [neuro, panic, en, voice]
+  why: owner panic limp pet
+- msg: whiskers gums are so pale it doesnt look right
+  label: true
+  tags: [shock, en, voice]
+  why: pale gums shock sign
+- msg: something happened to my dog hes just laying there not responding to anything
+  label: true
+  tags: [panic, neuro, en, voice]
+  why: unresponsive after incident
+
+# FALSE - mild symptoms (50)
+- msg: max threw up once this morning but hes back to normal now
+  label: false
+  tags: [mild, en, voice]
+  why: single vomit resolved
+- msg: luna has a bit of soft poop today
+  label: false
+  tags: [mild, en, voice]
+  why: mild soft stool
+- msg: bella sneezed like twice today thats it
+  label: false
+  tags: [mild, en, voice]
+  why: minor sneezing
+- msg: charlie is limping a little on his front paw
+  label: false
+  tags: [mild, en, voice]
+  why: mild limp
+- msg: milo has been scratching his ear more than usual
+  label: false
+  tags: [mild, en, voice]
+  why: mild itching
+- msg: whiskers has some gunk in his eyes this morning
+  label: false
+  tags: [mild, en, voice]
+  why: minor eye discharge
+- msg: mochi got a hairball stuck and threw it up
+  label: false
+  tags: [mild, en, voice]
+  why: hairball vomit
+- msg: dog seems to be eating less than usual lately
+  label: false
+  tags: [mild, en, voice]
+  why: mild appetite drop
+- msg: cat is drinking a lot more water than normal
+  label: false
+  tags: [mild, en, voice]
+  why: increased thirst
+- msg: max has a small bald patch behind his ear
+  label: false
+  tags: [mild, en, voice]
+  why: minor skin issue
+- msg: luna keeps shaking her head a bit
+  label: false
+  tags: [mild, en, voice]
+  why: mild head shaking
+- msg: bella has dry flaky skin on her back
+  label: false
+  tags: [mild, en, voice]
+  why: dry skin
+- msg: charlie farted like crazy all afternoon lol
+  label: false
+  tags: [mild, chitchat, en, voice]
+  why: minor gas
+- msg: milo has a little bump on his paw not sure what it is
+  label: false
+  tags: [mild, en, voice]
+  why: small unknown bump
+- msg: whiskers sneezed a few times in a row
+  label: false
+  tags: [mild, en, voice]
+  why: minor sneezing
+- msg: dog is shedding way more than usual this week
+  label: false
+  tags: [mild, en, voice]
+  why: extra shedding
+- msg: cat threw up her food right after eating too fast
+  label: false
+  tags: [mild, en, voice]
+  why: fast eating vomit
+- msg: max seems a bit tired today just sleeping more
+  label: false
+  tags: [mild, en, voice]
+  why: mild lethargy
+- msg: luna has some redness between her toes
+  label: false
+  tags: [mild, en, voice]
+  why: minor paw irritation
+- msg: bella is licking her paw a lot lately
+  label: false
+  tags: [mild, en, voice]
+  why: mild licking behavior
+- msg: charlie has bad breath today lol
+  label: false
+  tags: [mild, chitchat, en, voice]
+  why: minor bad breath
+- msg: milo keeps yawning a ton
+  label: false
+  tags: [mild, en, voice]
+  why: excessive yawning
+- msg: whiskers has a little limp after playing rough
+  label: false
+  tags: [mild, en, voice]
+  why: mild play limp
+- msg: dog has some flaky stuff on his coat
+  label: false
+  tags: [mild, en, voice]
+  why: minor dandruff
+- msg: cat sneezed and now theres a bit of snot on her nose
+  label: false
+  tags: [mild, en, voice]
+  why: minor nasal discharge
+- msg: max pooped a little soft today probably from the new food
+  label: false
+  tags: [mild, en, voice]
+  why: mild diet related stool
+- msg: luna is a bit gassy after her walk
+  label: false
+  tags: [mild, en, voice]
+  why: minor gas
+- msg: bella scratched at the door and broke a nail a little
+  label: false
+  tags: [mild, en, voice]
+  why: minor nail injury
+- msg: charlie has some tear staining under his eyes
+  label: false
+  tags: [mild, en, voice]
+  why: cosmetic tear staining
+- msg: milo seems a bit itchy around his tail
+  label: false
+  tags: [mild, en, voice]
+  why: mild itchiness
+- msg: whiskers threw up a hairball and now hes fine
+  label: false
+  tags: [mild, en, voice]
+  why: hairball resolved
+- msg: dog is drooling more than usual todaay
+  label: false
+  tags: [mild, en, voice, typo]
+  why: mild excess drool
+- msg: cat keeps sneezing every few minutes since this morning
+  label: false
+  tags: [mild, en, voice]
+  why: frequent sneezing
+- msg: max has a small scab from playing outside
+  label: false
+  tags: [mild, en, voice]
+  why: minor scrape
+- msg: luna is a little wobbly after running around too much
+  label: false
+  tags: [mild, en, voice]
+  why: mild post exercise wobble
+- msg: bella burped really loud after dinner lol
+  label: false
+  tags: [mild, chitchat, en, voice]
+  why: minor burping
+- msg: charlie skipped breakfast but ate dinner fine
+  label: false
+  tags: [mild, en, voice]
+  why: single meal skipped
+- msg: milo has some dandruff on his back
+  label: false
+  tags: [mild, en, voice]
+  why: minor dandruff
+- msg: whiskers is meowing more than usual today
+  label: false
+  tags: [mild, en, voice]
+  why: mild behavior change
+- msg: dog has a slight cough once in a while
+  label: false
+  tags: [mild, en, voice]
+  why: occasional mild cough
+- msg: cat threw up grass she must have eaten outside
+  label: false
+  tags: [mild, en, voice]
+  why: grass related vomit
+- msg: max nibbled his paw a bit more than normal
+  label: false
+  tags: [mild, en, voice]
+  why: mild paw chewing
+- msg: luna has slightly puffy eyes this morning
+  label: false
+  tags: [mild, en, voice]
+  why: minor eye puffiness
+- msg: bella pooped twice today which is more than usual
+  label: false
+  tags: [mild, en, voice]
+  why: slightly increased stool frequency
+- msg: charlie seems a little stiff getting up from naps
+  label: false
+  tags: [mild, en, voice]
+  why: mild stiffness
+- msg: milo is panting a bit after playing fetch
+  label: false
+  tags: [mild, en, voice]
+  why: normal post exercise panting
+- msg: whiskers has some crust on his nose
+  label: false
+  tags: [mild, en, voice]
+  why: minor nasal crust
+- msg: dog scratched a lot after his bath
+  label: false
+  tags: [mild, en, voice]
+  why: mild post bath itching
+- msg: cat seems a little grumpy today not sure why
+  label: false
+  tags: [mild, chitchat, en, voice]
+  why: mild mood change
+- msg: max has mild diarrhea since this morning but still playful
+  label: false
+  tags: [mild, en, voice]
+  why: mild diarrhea active pet
+
+# FALSE - records (25)
+- msg: took max for his walk this morning
+  label: false
+  tags: [record, en, voice]
+  why: daily activity log
+- msg: gave luna a bath today she smells so good now
+  label: false
+  tags: [record, en, voice]
+  why: grooming log
+- msg: bella went to the vet for her yearly checkup
+  label: false
+  tags: [record, en, voice]
+  why: routine checkup log
+- msg: charlie got his rabies shot today
+  label: false
+  tags: [record, en, voice]
+  why: vaccine log
+- msg: milo got groomed and looks so fluffy now
+  label: false
+  tags: [record, en, voice]
+  why: grooming log
+- msg: weighed whiskers today hes 4.2 kg
+  label: false
+  tags: [record, en, voice]
+  why: weight log
+- msg: mochi finished her deworming pills this week
+  label: false
+  tags: [record, en, voice]
+  why: deworming log
+- msg: switched dog food to the new salmon one today
+  label: false
+  tags: [record, en, voice]
+  why: diet change log
+- msg: took the dog to the park for like 2 hours
+  label: false
+  tags: [record, en, voice]
+  why: activity log
+- msg: cat got her nails trimmed at the groomer
+  label: false
+  tags: [record, en, voice]
+  why: grooming log
+- msg: max ate his whole bowl of food no problem
+  label: false
+  tags: [record, en, voice]
+  why: normal eating log
+- msg: luna played with the neighbors dog all afternoon
+  label: false
+  tags: [record, en, voice]
+  why: activity log
+- msg: gave bella her monthly flea treatment
+  label: false
+  tags: [record, en, voice]
+  why: flea treatment log
+- msg: charlie had his teeth cleaned at the vet
+  label: false
+  tags: [record, en, voice]
+  why: dental cleaning log
+- msg: milo went swimming for the first time today
+  label: false
+  tags: [record, en, voice]
+  why: activity log
+- msg: logging that whiskers had his checkup this morning all good
+  label: false
+  tags: [record, en, voice]
+  why: checkup log
+- msg: dog did great at training class today
+  label: false
+  tags: [record, en, voice]
+  why: training log
+- msg: cat used the new litter box no issues
+  label: false
+  tags: [record, en, voice]
+  why: routine log
+- msg: max got a new collar today he looks cute
+  label: false
+  tags: [record, chitchat, en, voice]
+  why: accessory log
+- msg: luna finished her antibiotics course today
+  label: false
+  tags: [record, en, voice]
+  why: medication course log
+- msg: took bella to daycare for the day
+  label: false
+  tags: [record, en, voice]
+  why: daycare log
+- msg: charlie had a playdate with another puppy
+  label: false
+  tags: [record, en, voice]
+  why: activity log
+- msg: milo got his booster shot at the clinic
+  label: false
+  tags: [record, en, voice]
+  why: vaccine log
+- msg: gave the cat her monthly heartworm chewable
+  label: false
+  tags: [record, en, voice]
+  why: preventive med log
+- msg: dog slept the whole afternoon after the vet visit
+  label: false
+  tags: [record, en, voice]
+  why: post vet log
+
+# FALSE - reminders/tasks (20)
+- msg: remind me to give max his meds every night at 8
+  label: false
+  tags: [reminder, en, voice]
+  why: recurring med reminder
+- msg: set a reminder to walk luna every morning at 7
+  label: false
+  tags: [reminder, en, voice]
+  why: recurring walk reminder
+- msg: remind me to book bellas grooming appointment next week
+  label: false
+  tags: [task, en, voice]
+  why: appointment task
+- msg: can you remind me to buy more cat food this weekend
+  label: false
+  tags: [task, en, voice]
+  why: shopping reminder
+- msg: set a daily reminder for charlies eye drops
+  label: false
+  tags: [reminder, en, voice]
+  why: daily med reminder
+- msg: remind me to take milo to the vet next tuesday
+  label: false
+  tags: [task, en, voice]
+  why: vet appointment reminder
+- msg: need a reminder to refill whiskers flea meds
+  label: false
+  tags: [task, en, voice]
+  why: refill reminder
+- msg: add a reminder for mochis vaccine next month
+  label: false
+  tags: [reminder, en, voice]
+  why: vaccine reminder
+- msg: remind me every morning to give the dog his pill
+  label: false
+  tags: [reminder, en, voice]
+  why: recurring med reminder
+- msg: set a reminder to trim the cats nails next week
+  label: false
+  tags: [task, en, voice]
+  why: grooming task reminder
+- msg: remind me to schedule maxs dental cleaning
+  label: false
+  tags: [task, en, voice]
+  why: dental task reminder
+- msg: add reminder for lunas next deworming in 3 months
+  label: false
+  tags: [reminder, en, voice]
+  why: deworming reminder
+- msg: remind me to pick up bellas prescription tomorrow
+  label: false
+  tags: [task, en, voice]
+  why: pickup reminder
+- msg: set a weekly reminder to check charlies weight
+  label: false
+  tags: [reminder, en, voice]
+  why: recurring weight check
+- msg: remind me to call the vet about milos followup
+  label: false
+  tags: [task, en, voice]
+  why: followup call reminder
+- msg: can you remind me to change the litter every 3 days
+  label: false
+  tags: [reminder, en, voice]
+  why: recurring chore reminder
+- msg: set a reminder for the dogs walk at 6pm daily
+  label: false
+  tags: [reminder, en, voice]
+  why: recurring walk reminder
+- msg: remind me to buy more treats for training
+  label: false
+  tags: [task, en, voice]
+  why: shopping reminder
+- msg: add a task to clean whiskers ears this weekend
+  label: false
+  tags: [task, en, voice]
+  why: grooming task
+- msg: remind me to give mochi her monthly wormer
+  label: false
+  tags: [reminder, en, voice]
+  why: recurring wormer reminder
+
+# FALSE - profile (15)
+- msg: update maxs birthday to march 3rd
+  label: false
+  tags: [profile, en, voice]
+  why: edit birthday
+- msg: change lunas weight to 12kg
+  label: false
+  tags: [profile, en, voice]
+  why: edit weight
+- msg: bella is actually a girl not a boy can you fix that
+  label: false
+  tags: [profile, correction, en, voice]
+  why: fix gender field
+- msg: update charlies breed to golden retriever mix
+  label: false
+  tags: [profile, en, voice]
+  why: edit breed
+- msg: change milos profile picture
+  label: false
+  tags: [profile, en, voice]
+  why: edit avatar
+- msg: set whiskers age to 3 years old
+  label: false
+  tags: [profile, en, voice]
+  why: edit age
+- msg: update the dogs weight from last vet visit
+  label: false
+  tags: [profile, en, voice]
+  why: edit weight
+- msg: add a new pet profile for our new kitten
+  label: false
+  tags: [profile, en, voice]
+  why: create profile
+- msg: change maxs name spelling its max not mac
+  label: false
+  tags: [profile, correction, en, voice]
+  why: fix name spelling
+- msg: update bellas gender in the app
+  label: false
+  tags: [profile, en, voice]
+  why: edit gender
+- msg: set charlies breed correctly hes a lab not a mix
+  label: false
+  tags: [profile, correction, en, voice]
+  why: fix breed field
+- msg: change milos avatar to the new photo i took
+  label: false
+  tags: [profile, en, voice]
+  why: edit avatar
+- msg: update whiskers birthday we got the date wrong
+  label: false
+  tags: [profile, correction, en, voice]
+  why: fix birthday
+- msg: edit lunas profile shes spayed now
+  label: false
+  tags: [profile, en, voice]
+  why: edit spay status
+- msg: create a profile for our new puppy mochi
+  label: false
+  tags: [profile, en, voice]
+  why: create profile
+
+# FALSE - queries (20)
+- msg: whats the vaccine schedule for puppies
+  label: false
+  tags: [question, knowledge, en, voice]
+  why: general vaccine question
+- msg: when was maxs last deworming
+  label: false
+  tags: [question, en, voice]
+  why: query pet history
+- msg: show me lunas calendar for this month
+  label: false
+  tags: [question, en, voice]
+  why: view calendar
+- msg: how often should i walk a senior dog
+  label: false
+  tags: [question, knowledge, en, voice]
+  why: general care question
+- msg: whats a good diet for a cat with sensitive stomach
+  label: false
+  tags: [question, knowledge, en, voice]
+  why: general diet question
+- msg: when is bellas next vet appointment
+  label: false
+  tags: [question, en, voice]
+  why: query upcoming appointment
+- msg: how much should a 6 month old puppy weigh
+  label: false
+  tags: [question, knowledge, en, voice]
+  why: general weight question
+- msg: whats the difference between wet and dry food
+  label: false
+  tags: [question, knowledge, en, voice]
+  why: general food question
+- msg: how often do cats need to be groomed
+  label: false
+  tags: [question, knowledge, en, voice]
+  why: general grooming question
+- msg: when did charlie get his last shot
+  label: false
+  tags: [question, en, voice]
+  why: query vaccine history
+- msg: whats the best age to neuter a dog
+  label: false
+  tags: [question, knowledge, en, voice]
+  why: general neuter question
+- msg: how do i know if my dog is overweight
+  label: false
+  tags: [question, knowledge, en, voice]
+  why: general weight question
+- msg: show me milos vaccine history
+  label: false
+  tags: [question, en, voice]
+  why: query vaccine history
+- msg: whats a normal heart rate for a cat
+  label: false
+  tags: [question, knowledge, en, voice]
+  why: general vitals question
+- msg: how long can dogs go without eating normally
+  label: false
+  tags: [question, knowledge, en, voice]
+  why: general fasting question
+- msg: whats the recommended food amount for whiskers size
+  label: false
+  tags: [question, knowledge, en, voice]
+  why: general feeding question
+- msg: when should kittens start eating solid food
+  label: false
+  tags: [question, knowledge, en, voice]
+  why: general weaning question
+- msg: how do i train my puppy to sit
+  label: false
+  tags: [question, knowledge, en, voice]
+  why: general training question
+- msg: whats the best way to introduce a new cat to the house
+  label: false
+  tags: [question, knowledge, en, voice]
+  why: general introduction question
+- msg: show me all of bellas past checkups
+  label: false
+  tags: [question, en, voice]
+  why: query checkup history
+
+# FALSE - keyword traps: hypothetical (10)
+- msg: whats grapes do to dogs if they eat them
+  label: false
+  tags: [question, hypothetical, keyword_trap, en, voice]
+  why: hypothetical toxin question
+- msg: what happens if a cat eats chocolate
+  label: false
+  tags: [question, hypothetical, keyword_trap, en, voice]
+  why: hypothetical toxin question
+- msg: is it bad if dogs eat onions
+  label: false
+  tags: [question, hypothetical, keyword_trap, en, voice]
+  why: hypothetical toxin question
+- msg: what should i do if my dog eats a bee
+  label: false
+  tags: [question, hypothetical, keyword_trap, en, voice]
+  why: hypothetical scenario question
+- msg: can cats get sick from eating lilies
+  label: false
+  tags: [question, hypothetical, keyword_trap, en, voice]
+  why: hypothetical toxin question
+- msg: whats the danger with dogs eating xylitol
+  label: false
+  tags: [question, hypothetical, keyword_trap, en, voice]
+  why: hypothetical toxin question
+- msg: what if a puppy swallows a small toy would that be bad
+  label: false
+  tags: [question, hypothetical, keyword_trap, en, voice]
+  why: hypothetical scenario question
+- msg: is chocolate really that toxic to dogs
+  label: false
+  tags: [question, hypothetical, keyword_trap, en, voice]
+  why: general toxicity question
+- msg: what symptoms would show up if a dog ate rat poison
+  label: false
+  tags: [question, hypothetical, keyword_trap, en, voice]
+  why: hypothetical toxin question
+- msg: could grapes actually kill a dog
+  label: false
+  tags: [question, hypothetical, keyword_trap, en, voice]
+  why: hypothetical toxin question
+
+# FALSE - keyword traps: past (10)
+- msg: max had a seizure like two years ago it was scary
+  label: false
+  tags: [past, keyword_trap, en, voice]
+  why: past resolved event
+- msg: luna got hit by a car when she was a puppy but shes fine now
+  label: false
+  tags: [past, keyword_trap, en, voice]
+  why: past resolved event
+- msg: bella choked on a toy once a long time ago
+  label: false
+  tags: [past, keyword_trap, en, voice]
+  why: past resolved event
+- msg: charlie ate chocolate a few years back and was ok after the vet
+  label: false
+  tags: [past, keyword_trap, en, voice]
+  why: past resolved event
+- msg: milo used to have breathing issues as a kitten but grew out of it
+  label: false
+  tags: [past, managed, keyword_trap, en, voice]
+  why: past resolved condition
+- msg: whiskers had a really bad allergic reaction last summer
+  label: false
+  tags: [past, keyword_trap, en, voice]
+  why: past resolved event
+- msg: we had a scare with the dog last year eating grapes
+  label: false
+  tags: [past, keyword_trap, en, voice]
+  why: past resolved event
+- msg: cat had bloody stool once before we adopted her
+  label: false
+  tags: [past, keyword_trap, en, voice]
+  why: past unrelated event
+- msg: dog broke his leg years ago before we got him
+  label: false
+  tags: [past, keyword_trap, en, voice]
+  why: past unrelated event
+- msg: our old cat had kidney failure a long time ago
+  label: false
+  tags: [past, keyword_trap, en, voice]
+  why: past unrelated event
+
+# FALSE - keyword traps: managed (10)
+- msg: charlie has epilepsy hes on meds and doing fine
+  label: false
+  tags: [managed, keyword_trap, en, voice]
+  why: managed condition stable
+- msg: luna has diabetes we manage it with insulin shots daily
+  label: false
+  tags: [managed, keyword_trap, en, voice]
+  why: managed condition stable
+- msg: bella has a heart murmur but the vet says its stable
+  label: false
+  tags: [managed, keyword_trap, en, voice]
+  why: managed condition stable
+- msg: max is on seizure meds now and hasnt had one in months
+  label: false
+  tags: [managed, keyword_trap, en, voice]
+  why: managed condition stable
+- msg: milo has kidney disease but hes on the special diet and stable
+  label: false
+  tags: [managed, keyword_trap, en, voice]
+  why: managed condition stable
+- msg: whiskers has asthma and uses an inhaler when needed
+  label: false
+  tags: [managed, keyword_trap, en, voice]
+  why: managed condition stable
+- msg: dog has arthritis and takes his joint supplement every day
+  label: false
+  tags: [managed, keyword_trap, en, voice]
+  why: managed condition stable
+- msg: cat has hyperthyroidism and is on medication thats controlling it
+  label: false
+  tags: [managed, keyword_trap, en, voice]
+  why: managed condition stable
+- msg: charlie has allergies and we manage it with antihistamines
+  label: false
+  tags: [managed, keyword_trap, en, voice]
+  why: managed condition stable
+- msg: luna is diabetic and her blood sugar has been stable lately
+  label: false
+  tags: [managed, keyword_trap, en, voice]
+  why: managed condition stable
+
+# FALSE - keyword traps: other owner (10)
+- msg: my friends dog just got hit by a car she doesnt know what to do
+  label: false
+  tags: [other_owner, keyword_trap, en, voice]
+  why: someone elses pet
+  gray: true
+- msg: my sisters cat ate chocolate what should she do
+  label: false
+  tags: [other_owner, keyword_trap, en, voice]
+  why: someone elses pet
+  gray: true
+- msg: my neighbors dog is having a seizure right now should i tell them to call the vet
+  label: false
+  tags: [other_owner, keyword_trap, en, voice]
+  why: someone elses pet
+  gray: true
+- msg: someone at the park said their dog just collapsed
+  label: false
+  tags: [other_owner, keyword_trap, en, voice]
+  why: someone elses pet secondhand
+- msg: my coworkers cat swallowed a string is that dangerous
+  label: false
+  tags: [other_owner, keyword_trap, en, voice]
+  why: someone elses pet
+- msg: my moms dog has been limping for a week what should she do
+  label: false
+  tags: [other_owner, keyword_trap, en, voice]
+  why: someone elses pet mild
+- msg: a friend just texted saying their puppy ate grapes
+  label: false
+  tags: [other_owner, keyword_trap, en, voice]
+  why: someone elses pet secondhand
+  gray: true
+- msg: my cousins dog got attacked by another dog yesterday hes fine now
+  label: false
+  tags: [other_owner, past, keyword_trap, en, voice]
+  why: someone elses pet resolved
+- msg: my aunt says her cat hasnt eaten in two days
+  label: false
+  tags: [other_owner, keyword_trap, en, voice]
+  why: someone elses pet mild
+- msg: someone in my building said their dog ate rat poison last night and took him to the vet already
+  label: false
+  tags: [other_owner, keyword_trap, en, voice]
+  why: someone elses pet already handled
+
+# FALSE - chitchat/edge/short replies (30)
+- msg: lol max is such a goofball today
+  label: false
+  tags: [chitchat, en, voice]
+  why: casual chitchat
+- msg: thanks so much for the help earlier
+  label: false
+  tags: [chitchat, en, voice]
+  why: gratitude message
+- msg: this app is actually really useful
+  label: false
+  tags: [chitchat, en, voice]
+  why: compliment about app
+- msg: haha bella just stole my sandwich again
+  label: false
+  tags: [chitchat, en, voice]
+  why: casual chitchat
+- msg: can you speak spanish instead
+  label: false
+  tags: [language, en, voice]
+  why: language switch request
+- msg: what can you even do
+  label: false
+  tags: [question, en, voice]
+  why: capability question
+- msg: nvm figured it out myself
+  label: false
+  tags: [edge, en, voice]
+  why: cancels own request
+- msg: "yes"
+  label: false
+  tags: [confirm, en, voice]
+  why: short confirmation
+- msg: no thats not it
+  label: false
+  tags: [correction, en, voice]
+  why: short correction
+- msg: delete that last entry please
+  label: false
+  tags: [delete, en, voice]
+  why: delete request
+- msg: thats wrong please fix it
+  label: false
+  tags: [correction, en, voice]
+  why: correction request
+- msg: ok got it thanks
+  label: false
+  tags: [chitchat, en, voice]
+  why: short acknowledgement
+- msg: testing testing
+  label: false
+  tags: [edge, en, voice]
+  why: testing the bot
+- msg: hello
+  label: false
+  tags: [chitchat, en, voice]
+  why: greeting
+- msg: can you switch to english pls im already in english lol
+  label: false
+  tags: [language, chitchat, en, voice]
+  why: redundant language request
+- msg: never mind ignore that message
+  label: false
+  tags: [edge, en, voice]
+  why: cancels own request
+- msg: confirm
+  label: false
+  tags: [confirm, en, voice]
+  why: short confirmation
+- msg: cancel that
+  label: false
+  tags: [edge, en, voice]
+  why: cancels action
+- msg: lol milo is obsessed with his new toy
+  label: false
+  tags: [chitchat, en, voice]
+  why: casual chitchat
+- msg: saw a video today of a dog surfing so cute
+  label: false
+  tags: [chitchat, en, voice]
+  why: unrelated media mention
+- msg: can you set the language to chinese
+  label: false
+  tags: [language, en, voice]
+  why: language switch request
+- msg: is this a real person or a bot
+  label: false
+  tags: [question, edge, en, voice]
+  why: meta question about bot
+- msg: my friend said this app is amazing
+  label: false
+  tags: [chitchat, en, voice]
+  why: compliment about app
+- msg: charlie just did the funniest thing lol
+  label: false
+  tags: [chitchat, en, voice]
+  why: casual chitchat
+- msg: how do i delete my account
+  label: false
+  tags: [delete, en, voice]
+  why: account deletion question
+- msg: correct that i meant charlie not milo
+  label: false
+  tags: [correction, en, voice]
+  why: correction of pet name
+- msg: sorry wrong chat
+  label: false
+  tags: [edge, en, voice]
+  why: message sent by mistake
+- msg: haha ok
+  label: false
+  tags: [chitchat, en, voice]
+  why: short acknowledgement
+- msg: can you email me a summary of maxs week
+  label: false
+  tags: [email, en, voice]
+  why: request email summary
+- msg: whiskers is snoring so loud right now lol
+  label: false
+  tags: [chitchat, en, voice]
+  why: casual chitchat

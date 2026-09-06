@@ -1,0 +1,2009 @@
+- msg: 没有
+  label: false
+  tags:
+  - confirm
+  - edge
+  why: 简短确认/否认
+- msg: 这个软件怎么用
+  label: false
+  tags:
+  - other
+  why: 问App功能
+- msg: take a look at this photo
+  label: false
+  tags:
+  - other
+  - en
+  why: 看图相关
+- msg: 这附近有宠物用品店吗
+  label: false
+  tags: &id001
+  - places
+  - en
+  why: 只是找店
+- msg: 你怎么又记错了
+  label: false
+  tags:
+  - other
+  - voice
+  why: 反馈/抱怨
+- msg: 换一个
+  label: false
+  tags:
+  - multi
+  - edge
+  why: 无上下文碎片
+- msg: 帮我起草一封给医生的邮件
+  label: false
+  tags:
+  - email
+  why: 写邮件/发送
+- msg: looking for a boarding place nearby
+  label: false
+  tags: *id001
+  why: 只是找店
+- msg: 帮我查一下宠物美容店
+  label: false
+  tags: &id003
+  - places
+  - voice
+  why: 只是找店
+- msg: 怎么还在啊没删掉
+  label: false
+  tags:
+  - other
+  - voice
+  why: 反馈/抱怨
+- msg: 对
+  label: false
+  tags:
+  - confirm
+  - edge
+  why: 简短确认/否认
+- msg: 不是的
+  label: false
+  tags:
+  - confirm
+  - edge
+  why: 简短确认/否认
+- msg: 帮我换成英文界面
+  label: false
+  tags:
+  - language
+  why: 切换语言
+- msg: 那个日期不对 改成十号
+  label: false
+  tags:
+  - correction
+  - voice
+  why: 纠正信息
+- msg: 看下这张照片有没有问题
+  label: false
+  tags:
+  - other
+  - voice
+  why: 看图相关
+- msg: 发个总结给我老婆
+  label: false
+  tags:
+  - email
+  - voice
+  why: 写邮件/发送
+- msg: can you tell what breed my dog is
+  label: false
+  tags:
+  - other
+  - en
+  why: 看图相关
+- msg: 撤销
+  label: false
+  tags:
+  - delete
+  - edge
+  why: 删除/撤销
+- msg: 帮我导航过去
+  label: false
+  tags: &id002
+  - places
+  - gray
+  - voice
+  why: 只是找店
+- msg: 哪里有24小时营业的宠物医院
+  label: false
+  tags: *id002
+  why: 只是找店
+- msg: 怎么用这个东西
+  label: false
+  tags:
+  - other
+  why: 问App功能
+- msg: what is this app for
+  label: false
+  tags:
+  - other
+  why: 问App功能
+- msg: and then what
+  label: false
+  tags:
+  - multi
+  - en
+  why: 无上下文碎片
+- msg: 删掉刚才那个
+  label: false
+  tags:
+  - delete
+  - voice
+  why: 删除/撤销
+- msg: 对的
+  label: false
+  tags:
+  - confirm
+  - edge
+  why: 简短确认/否认
+- msg: 附近哪有宠物医院
+  label: false
+  tags: *id003
+  why: 只是找店
+- msg: 帮我把这些资料整理发邮件
+  label: false
+  tags:
+  - email
+  - voice
+  why: 写邮件/发送
+- msg: 这个app怎么用
+  label: false
+  tags:
+  - other
+  why: 问App功能
+- msg: 看看这个是不是耳螨
+  label: false
+  tags:
+  - other
+  - voice
+  why: 看图相关
+- msg: 把体检记录发邮件给医生
+  label: false
+  tags:
+  - email
+  - voice
+  why: 写邮件/发送
+- msg: 不是这只 是另一只
+  label: false
+  tags:
+  - correction
+  - voice
+  why: 纠正信息
+- msg: 记错了 应该是上周
+  label: false
+  tags:
+  - correction
+  - voice
+  why: 纠正信息
+- msg: 好
+  label: false
+  tags:
+  - confirm
+  - edge
+  why: 简短确认/否认
+- msg: what can you do
+  label: false
+  tags:
+  - other
+  why: 问App功能
+- msg: 刚才那条不要了
+  label: false
+  tags:
+  - delete
+  - voice
+  why: 删除/撤销
+- msg: 帮我找个宠物寄养的地方
+  label: false
+  tags: *id002
+  why: 只是找店
+- msg: 导航去最近的宠物医院
+  label: false
+  tags: *id003
+  why: 只是找店
+- msg: 这不是我要的
+  label: false
+  tags:
+  - other
+  - voice
+  why: 反馈/抱怨
+- msg: 你都有哪些功能
+  label: false
+  tags:
+  - other
+  why: 问App功能
+- msg: next one
+  label: false
+  tags:
+  - multi
+  - en
+  why: 无上下文碎片
+- msg: nearest emergency vet please
+  label: false
+  tags: *id001
+  why: 只是找店
+- msg: 还有呢
+  label: false
+  tags:
+  - multi
+  - edge
+  why: 无上下文碎片
+- msg: what about that one
+  label: false
+  tags:
+  - multi
+  - en
+  why: 无上下文碎片
+- msg: 换个说法
+  label: false
+  tags:
+  - multi
+  - edge
+  why: 无上下文碎片
+- msg: 能帮我发邮件预约体检吗
+  label: false
+  tags:
+  - email
+  - voice
+  why: 写邮件/发送
+- msg: 不用
+  label: false
+  tags:
+  - confirm
+  - edge
+  why: 简短确认/否认
+- msg: 删掉这条
+  label: false
+  tags:
+  - delete
+  - edge
+  why: 删除/撤销
+- msg: 改成明天
+  label: false
+  tags:
+  - correction
+  - voice
+  why: 纠正信息
+- msg: is this rash normal from the picture
+  label: false
+  tags:
+  - other
+  - en
+  why: 看图相关
+- msg: 你能做什么
+  label: false
+  tags:
+  - other
+  why: 问App功能
+- msg: 再看看
+  label: false
+  tags:
+  - multi
+  - edge
+  why: 无上下文碎片
+- msg: you misunderstood me
+  label: false
+  tags:
+  - other
+  - en
+  why: 反馈/抱怨
+- msg: 刚才那个
+  label: false
+  tags:
+  - multi
+  - edge
+  why: 无上下文碎片
+- msg: 离我最近的宠物医院在哪
+  label: false
+  tags: *id002
+  why: 只是找店
+- msg: 帮我把体重记录发给我先生
+  label: false
+  tags:
+  - email
+  - voice
+  why: 写邮件/发送
+- msg: email the vet about the checkup results
+  label: false
+  tags:
+  - email
+  - voice
+  why: 写邮件/发送
+- msg: 刚才那个不对啊
+  label: false
+  tags:
+  - other
+  - voice
+  why: 反馈/抱怨
+- msg: any 24 hour emergency vet nearby
+  label: false
+  tags: *id002
+  why: 只是找店
+- msg: previous one
+  label: false
+  tags:
+  - multi
+  - en
+  why: 无上下文碎片
+- msg: 附近哪个宠物店在营业
+  label: false
+  tags: &id004
+  - places
+  - gray
+  - en
+  why: 只是找店
+- msg: 你能干嘛
+  label: false
+  tags:
+  - other
+  why: 问App功能
+- msg: wrong pet, i meant my cat
+  label: false
+  tags:
+  - correction
+  - en
+  why: 纠正信息
+- msg: 附近有没有夜间急诊的
+  label: false
+  tags: *id003
+  why: 只是找店
+- msg: 这个呢
+  label: false
+  tags:
+  - multi
+  - edge
+  why: 无上下文碎片
+- msg: 帮我看看附近哪里能给狗洗澡
+  label: false
+  tags: *id001
+  why: 只是找店
+- msg: can you email a summary to my wife
+  label: false
+  tags:
+  - email
+  - voice
+  why: 写邮件/发送
+- msg: 删掉这个提醒
+  label: false
+  tags:
+  - delete
+  - voice
+  why: 删除/撤销
+- msg: 不对 是前天不是昨天
+  label: false
+  tags:
+  - correction
+  - voice
+  why: 纠正信息
+- msg: 看看这个是啥狗
+  label: false
+  tags:
+  - other
+  - voice
+  why: 看图相关
+- msg: 把这个删掉吧
+  label: false
+  tags:
+  - delete
+  - voice
+  why: 删除/撤销
+- msg: 再来
+  label: false
+  tags:
+  - multi
+  - edge
+  why: 无上下文碎片
+- msg: that's not right change it to twice
+  label: false
+  tags:
+  - correction
+  - en
+  why: 纠正信息
+- msg: 帮我看看便便正常吗
+  label: false
+  tags:
+  - other
+  - gray
+  - voice
+  why: 看图相关
+- msg: 然后呢
+  label: false
+  tags:
+  - multi
+  - edge
+  why: 无上下文碎片
+- msg: is there a pet store near me
+  label: false
+  tags: *id004
+  why: 只是找店
+- msg: 跟我说中文
+  label: false
+  tags:
+  - language
+  why: 切换语言
+- msg: 打错了 应该是三点不是五点
+  label: false
+  tags:
+  - correction
+  - voice
+  why: 纠正信息
+- msg: 把日历记录导出发给我
+  label: false
+  tags:
+  - email
+  why: 写邮件/发送
+- msg: 帮我看下这照片里的皮肤情况
+  label: false
+  tags:
+  - other
+  - voice
+  why: 看图相关
+- msg: 确认
+  label: false
+  tags:
+  - confirm
+  - edge
+  why: 简短确认/否认
+- msg: nope
+  label: false
+  tags:
+  - confirm
+  - edge
+  why: 简短确认/否认
+- msg: 半夜狗生病去哪个医院
+  label: false
+  tags: *id003
+  why: 只是找店
+- msg: 你没删啊还在
+  label: false
+  tags:
+  - other
+  - voice
+  why: 反馈/抱怨
+- msg: 附近有宠物洗澡店吗
+  label: false
+  tags: *id003
+  why: 只是找店
+- msg: 是
+  label: false
+  tags:
+  - confirm
+  - edge
+  why: 简短确认/否认
+- msg: 写反了
+  label: false
+  tags:
+  - correction
+  - voice
+  why: 纠正信息
+- msg: how much is membership
+  label: false
+  tags:
+  - other
+  why: 问App功能
+- msg: 帮我鉴定一下品种
+  label: false
+  tags:
+  - other
+  - voice
+  why: 看图相关
+- msg: again
+  label: false
+  tags:
+  - multi
+  - en
+  why: 无上下文碎片
+- msg: 'yes'
+  label: false
+  tags:
+  - confirm
+  - edge
+  why: 简短确认/否认
+- msg: 帮我看看这张图
+  label: false
+  tags:
+  - other
+  - voice
+  why: 看图相关
+- msg: 这张照片里毛色正常吗
+  label: false
+  tags:
+  - other
+  - voice
+  why: 看图相关
+- msg: yep
+  label: false
+  tags:
+  - confirm
+  - edge
+  why: 简短确认/否认
+- msg: 好的
+  label: false
+  tags:
+  - confirm
+  - edge
+  why: 简短确认/否认
+- msg: find me a vet that's open right now
+  label: false
+  tags: *id003
+  why: 只是找店
+- msg: 哪打疫苗便宜
+  label: false
+  tags: *id002
+  why: 只是找店
+- msg: 换成英文
+  label: false
+  tags:
+  - language
+  why: 切换语言
+- msg: please speak chinese
+  label: false
+  tags:
+  - language
+  - en
+  why: 切换语言
+- msg: 你没删掉啊
+  label: false
+  tags:
+  - other
+  - voice
+  why: 反馈/抱怨
+- msg: 写一封邮件问问疫苗的事
+  label: false
+  tags:
+  - email
+  - voice
+  why: 写邮件/发送
+- msg: you got it wrong
+  label: false
+  tags:
+  - other
+  - en
+  why: 反馈/抱怨
+- msg: 订阅费用是多少
+  label: false
+  tags:
+  - other
+  why: 问App功能
+- msg: send my pet's records to my email
+  label: false
+  tags:
+  - email
+  - voice
+  why: 写邮件/发送
+- msg: 不用了
+  label: false
+  tags:
+  - confirm
+  - edge
+  why: 简短确认/否认
+- msg: tell me what you can help with
+  label: false
+  tags:
+  - other
+  why: 问App功能
+- msg: where's the nearest vet
+  label: false
+  tags: *id002
+  why: 只是找店
+- msg: who are you
+  label: false
+  tags:
+  - other
+  why: 问App功能
+- msg: 不是昨天是前天
+  label: false
+  tags:
+  - correction
+  - voice
+  why: 纠正信息
+- msg: 不是一次 是两次
+  label: false
+  tags:
+  - correction
+  - voice
+  why: 纠正信息
+- msg: 这是啥品种
+  label: false
+  tags:
+  - other
+  - voice
+  why: 看图相关
+- msg: 有
+  label: false
+  tags:
+  - confirm
+  - edge
+  why: 简短确认/否认
+- msg: say that again
+  label: false
+  tags:
+  - multi
+  - en
+  why: 无上下文碎片
+- msg: 会员多少钱
+  label: false
+  tags:
+  - other
+  why: 问App功能
+- msg: ok
+  label: false
+  tags:
+  - confirm
+  - edge
+  why: 简短确认/否认
+- msg: right
+  label: false
+  tags:
+  - confirm
+  - edge
+  why: 简短确认/否认
+- msg: any cheap deworming clinics around
+  label: false
+  tags: *id001
+  why: 只是找店
+- msg: 嗯嗯
+  label: false
+  tags:
+  - confirm
+  - edge
+  why: 简短确认/否认
+- msg: speak english please
+  label: false
+  tags:
+  - language
+  - en
+  why: 切换语言
+- msg: switch to english
+  label: false
+  tags:
+  - language
+  - en
+  why: 切换语言
+- msg: vip多少钱
+  label: false
+  tags:
+  - other
+  why: 问App功能
+- msg: 取消刚才的
+  label: false
+  tags:
+  - delete
+  - voice
+  why: 删除/撤销
+- msg: check this photo for me
+  label: false
+  tags:
+  - other
+  - en
+  why: 看图相关
+- msg: 那个呢
+  label: false
+  tags:
+  - multi
+  - edge
+  why: 无上下文碎片
+- msg: this is too slow
+  label: false
+  tags:
+  - other
+  - en
+  why: 反馈/抱怨
+- msg: wrong
+  label: false
+  tags:
+  - confirm
+  - edge
+  why: 简短确认/否认
+- msg: 你没听懂我的意思
+  label: false
+  tags:
+  - other
+  - voice
+  why: 反馈/抱怨
+- msg: 不是两斤 是三斤
+  label: false
+  tags:
+  - correction
+  - voice
+  why: 纠正信息
+- msg: 把疫苗那条记录删了
+  label: false
+  tags:
+  - delete
+  - voice
+  why: 删除/撤销
+- msg: 找一家评分高的宠物医院
+  label: false
+  tags: *id002
+  why: 只是找店
+- msg: 帮我搜一下附近的宠物医院评价怎么样
+  label: false
+  tags: *id003
+  why: 只是找店
+- msg: 是的
+  label: false
+  tags:
+  - confirm
+  - edge
+  why: 简短确认/否认
+- msg: you didn't delete it it's still there
+  label: false
+  tags:
+  - other
+  - en
+  why: 反馈/抱怨
+- msg: switch to chinese
+  label: false
+  tags:
+  - language
+  - en
+  why: 切换语言
+- msg: 开会员多少钱一个月
+  label: false
+  tags:
+  - other
+  why: 问App功能
+- msg: 换个别的
+  label: false
+  tags:
+  - multi
+  - edge
+  why: 无上下文碎片
+- msg: 'no'
+  label: false
+  tags:
+  - confirm
+  - edge
+  why: 简短确认/否认
+- msg: 这附近24小时急诊在哪
+  label: false
+  tags: *id002
+  why: 只是找店
+- msg: 撤销刚才的操作
+  label: false
+  tags:
+  - delete
+  - voice
+  why: 删除/撤销
+- msg: 你能帮我做什么事
+  label: false
+  tags:
+  - other
+  why: 问App功能
+- msg: 对啊
+  label: false
+  tags:
+  - confirm
+  - edge
+  why: 简短确认/否认
+- msg: alright
+  label: false
+  tags:
+  - confirm
+  - edge
+  why: 简短确认/否认
+- msg: 嗯
+  label: false
+  tags:
+  - confirm
+  - edge
+  why: 简短确认/否认
+- msg: 这猫是什么品种啊
+  label: false
+  tags:
+  - other
+  - voice
+  why: 看图相关
+- msg: 改成两次
+  label: false
+  tags:
+  - correction
+  - voice
+  why: 纠正信息
+- msg: 看看这张照片
+  label: false
+  tags:
+  - other
+  - voice
+  why: 看图相关
+- msg: help me write an email to the vet
+  label: false
+  tags:
+  - email
+  - voice
+  why: 写邮件/发送
+- msg: 看看这个便便正常不正常
+  label: false
+  tags:
+  - other
+  - gray
+  - voice
+  why: 看图相关
+- msg: 你是什么
+  label: false
+  tags:
+  - other
+  why: 问App功能
+- msg: need to find a grooming place close by
+  label: false
+  tags: *id001
+  why: 只是找店
+- msg: cancel that reminder
+  label: false
+  tags:
+  - delete
+  - voice
+  why: 删除/撤销
+- msg: 把总结发给我媳妇
+  label: false
+  tags:
+  - email
+  why: 写邮件/发送
+- msg: remove the last one
+  label: false
+  tags:
+  - delete
+  - voice
+  why: 删除/撤销
+- msg: 都不要
+  label: false
+  tags:
+  - multi
+  - edge
+  why: 无上下文碎片
+- msg: 附近有宠物医院吗
+  label: false
+  tags: *id003
+  why: 只是找店
+- msg: 撤回
+  label: false
+  tags:
+  - delete
+  - edge
+  why: 删除/撤销
+- msg: what breed is this
+  label: false
+  tags:
+  - other
+  - en
+  why: 看图相关
+- msg: actually it was last week not this week
+  label: false
+  tags:
+  - correction
+  - en
+  why: 纠正信息
+- msg: 你是谁
+  label: false
+  tags:
+  - other
+  why: 问App功能
+- msg: 上一个
+  label: false
+  tags:
+  - multi
+  - edge
+  why: 无上下文碎片
+- msg: how does this app work
+  label: false
+  tags:
+  - other
+  why: 问App功能
+- msg: 记错了吧
+  label: false
+  tags:
+  - other
+  - voice
+  why: 反馈/抱怨
+- msg: 这个也要
+  label: false
+  tags:
+  - multi
+  - edge
+  why: 无上下文碎片
+- msg: where can i get cheap vaccines around here
+  label: false
+  tags: *id003
+  why: 只是找店
+- msg: 帮我找一下最近的宠物医院
+  label: false
+  tags: *id001
+  why: 只是找店
+- msg: 行
+  label: false
+  tags:
+  - confirm
+  - edge
+  why: 简短确认/否认
+- msg: 用中文说
+  label: false
+  tags:
+  - language
+  why: 切换语言
+- msg: 不是
+  label: false
+  tags:
+  - confirm
+  - edge
+  why: 简短确认/否认
+- msg: 删掉上一条记录
+  label: false
+  tags:
+  - delete
+  - voice
+  why: 删除/撤销
+- msg: 都要
+  label: false
+  tags:
+  - multi
+  - edge
+  why: 无上下文碎片
+- msg: 帮我看看这是什么品种
+  label: false
+  tags:
+  - other
+  - voice
+  why: 看图相关
+- msg: 名字写错了 是米米
+  label: false
+  tags:
+  - correction
+  - voice
+  why: 纠正信息
+- msg: 你搞错了
+  label: false
+  tags:
+  - other
+  - voice
+  why: 反馈/抱怨
+- msg: 好吧
+  label: false
+  tags:
+  - confirm
+  - edge
+  why: 简短确认/否认
+- msg: no it was the day before yesterday not yesterday
+  label: false
+  tags:
+  - correction
+  - en
+  why: 纠正信息
+- msg: 把这次的记录发给我
+  label: false
+  tags:
+  - email
+  - voice
+  why: 写邮件/发送
+- msg: yeah
+  label: false
+  tags:
+  - confirm
+  - edge
+  why: 简短确认/否认
+- msg: 能不能帮我给宠物医院发个邮件
+  label: false
+  tags:
+  - email
+  - voice
+  why: 写邮件/发送
+- msg: can you navigate me to the closest pet hospital
+  label: false
+  tags: *id003
+  why: 只是找店
+- msg: 导航去万象城那家宠物店
+  label: false
+  tags: *id002
+  why: 只是找店
+- msg: 找个靠谱的猫舍
+  label: false
+  tags: *id001
+  why: 只是找店
+- msg: delete that
+  label: false
+  tags:
+  - delete
+  - voice
+  why: 删除/撤销
+- msg: delete this entry
+  label: false
+  tags:
+  - delete
+  - voice
+  why: 删除/撤销
+- msg: the second one
+  label: false
+  tags:
+  - multi
+  - en
+  why: 无上下文碎片
+- msg: that's not what i asked
+  label: false
+  tags:
+  - other
+  - en
+  why: 反馈/抱怨
+- msg: how much does the subscription cost
+  label: false
+  tags:
+  - other
+  why: 问App功能
+- msg: 太慢了
+  label: false
+  tags:
+  - other
+  - voice
+  why: 反馈/抱怨
+- msg: 那另一个
+  label: false
+  tags:
+  - multi
+  - edge
+  why: 无上下文碎片
+- msg: wrong name it's luna not max
+  label: false
+  tags:
+  - correction
+  - en
+  why: 纠正信息
+- msg: 是啊
+  label: false
+  tags:
+  - confirm
+  - edge
+  why: 简短确认/否认
+- msg: both please
+  label: false
+  tags:
+  - multi
+  - en
+  why: 无上下文碎片
+- msg: 算了
+  label: false
+  tags:
+  - confirm
+  - edge
+  why: 简短确认/否认
+- msg: 没错
+  label: false
+  tags:
+  - confirm
+  - edge
+  why: 简短确认/否认
+- msg: 再讲讲
+  label: false
+  tags:
+  - multi
+  - edge
+  why: 无上下文碎片
+- msg: 说中文
+  label: false
+  tags:
+  - language
+  why: 切换语言
+- msg: 帮我给医生写封邮件
+  label: false
+  tags:
+  - email
+  why: 写邮件/发送
+- msg: can you talk in english
+  label: false
+  tags:
+  - language
+  - en
+  why: 切换语言
+- msg: 帮我写个邮件发给兽医
+  label: false
+  tags:
+  - email
+  why: 写邮件/发送
+- msg: 把刚才那条删了
+  label: false
+  tags:
+  - delete
+  - voice
+  why: 删除/撤销
+- msg: k
+  label: false
+  tags:
+  - confirm
+  - edge
+  why: 简短确认/否认
+- msg: 改一下 是下午不是上午
+  label: false
+  tags:
+  - correction
+  - voice
+  why: 纠正信息
+- msg: undo that
+  label: false
+  tags:
+  - delete
+  - voice
+  why: 删除/撤销
+- msg: correct
+  label: false
+  tags:
+  - confirm
+  - edge
+  why: 简短确认/否认
+- msg: 反应太慢了
+  label: false
+  tags:
+  - other
+  - voice
+  why: 反馈/抱怨
+- msg: 你答非所问
+  label: false
+  tags:
+  - other
+  - voice
+  why: 反馈/抱怨
+- msg: 那第一个呢
+  label: false
+  tags:
+  - multi
+  why: 无上下文碎片
+- msg: 不了
+  label: false
+  tags:
+  - confirm
+  - edge
+  why: 简短确认/否认
+- msg: send this report to my husband
+  label: false
+  tags:
+  - email
+  - voice
+  why: 写邮件/发送
+- msg: 附近有便宜的驱虫点吗
+  label: false
+  tags: *id004
+  why: 只是找店
+- msg: does this poop look normal
+  label: false
+  tags:
+  - other
+  - gray
+  - en
+  why: 看图相关
+- msg: 不是驱虫是疫苗
+  label: false
+  tags:
+  - correction
+  - voice
+  why: 纠正信息
+- msg: 这个app是干嘛的
+  label: false
+  tags:
+  - other
+  why: 问App功能
+- msg: 你记错了
+  label: false
+  tags:
+  - other
+  - voice
+  why: 反馈/抱怨
+- msg: 哪有能洗澡的店
+  label: false
+  tags: *id004
+  why: 只是找店
+- msg: 怎么这么慢
+  label: false
+  tags:
+  - other
+  - voice
+  why: 反馈/抱怨
+- msg: 切换英文
+  label: false
+  tags:
+  - language
+  why: 切换语言
+- msg: 便宜点的疫苗站在哪
+  label: false
+  tags: *id003
+  why: 只是找店
+- msg: keep going
+  label: false
+  tags:
+  - multi
+  - en
+  why: 无上下文碎片
+- msg: try another one
+  label: false
+  tags:
+  - multi
+  - en
+  why: 无上下文碎片
+- msg: 你理解错了
+  label: false
+  tags:
+  - other
+  - voice
+  why: 反馈/抱怨
+- msg: 介绍一下你自己
+  label: false
+  tags:
+  - other
+  why: 问App功能
+- msg: 继续
+  label: false
+  tags:
+  - multi
+  - edge
+  why: 无上下文碎片
+- msg: 换英文
+  label: false
+  tags:
+  - language
+  why: 切换语言
+- msg: 可以
+  label: false
+  tags:
+  - confirm
+  - edge
+  why: 简短确认/否认
+- msg: 下一个
+  label: false
+  tags:
+  - multi
+  - edge
+  why: 无上下文碎片
+- msg: nah
+  label: false
+  tags:
+  - confirm
+  - edge
+  why: 简短确认/否认
+- msg: 改成英语模式
+  label: false
+  tags:
+  - language
+  why: 切换语言
+- msg: 写错了是咪咪不是豆豆
+  label: false
+  tags:
+  - correction
+  - voice
+  why: 纠正信息
+- msg: 删除
+  label: false
+  tags:
+  - delete
+  - edge
+  why: 删除/撤销
+- msg: 把记录发到我邮箱
+  label: false
+  tags:
+  - email
+  why: 写邮件/发送
+- msg: change language to english
+  label: false
+  tags:
+  - language
+  - en
+  why: 切换语言
+- msg: 接着说
+  label: false
+  tags:
+  - multi
+  - edge
+  why: 无上下文碎片
+- msg: 不对
+  label: false
+  tags:
+  - confirm
+  - edge
+  why: 简短确认/否认
+- msg: 帮我把这个月的记录发一份
+  label: false
+  tags:
+  - email
+  why: 写邮件/发送
+- msg: sure
+  label: false
+  tags:
+  - confirm
+  - edge
+  why: 简短确认/否认
+- msg: 算了吧
+  label: false
+  tags:
+  - confirm
+  - edge
+  why: 简短确认/否认
+- msg: 附近哪里能给猫剪指甲
+  label: false
+  tags: *id004
+  why: 只是找店
+- msg: fine
+  label: false
+  tags:
+  - confirm
+  - edge
+  why: 简短确认/否认
+- msg: 再来一次
+  label: false
+  tags:
+  - multi
+  - edge
+  why: 无上下文碎片
+- msg: 再说一遍
+  label: false
+  tags:
+  - multi
+  - edge
+  why: 无上下文碎片
+- msg: 换语言
+  label: false
+  tags:
+  - language
+  why: 切换语言
+- msg: 第二个
+  label: false
+  tags:
+  - multi
+  - edge
+  why: 无上下文碎片
+- msg: draft an email asking about vaccine schedule
+  label: false
+  tags:
+  - email
+  why: 写邮件/发送
+- msg: 附近有没有给团子洗澡的地方
+  label: false
+  tags: &id005
+  - places
+  - voice
+  why: 只是找店
+- msg: 球球的体检报告发我邮箱一下
+  label: false
+  tags: &id006
+  - email
+  - voice
+  why: 发送记录
+- msg: 把糯米这个月的记录发给我老公
+  label: false
+  tags: &id007
+  - email
+  - voice
+  why: 发送记录
+- msg: 不是球球 是另一只
+  label: false
+  tags: &id008
+  - correction
+  - voice
+  why: 纠正信息
+- msg: 删掉咪咪那条记录
+  label: false
+  tags: &id009
+  - delete
+  - voice
+  why: 删除记录
+- msg: 看看Mochi这张照片是什么品种
+  label: false
+  tags: &id010
+  - other
+  - voice
+  why: 看图相关
+- msg: 帮我看看我家狗的便便照片正常吗
+  label: false
+  tags: &id011
+  - other
+  - gray
+  - voice
+  why: 看图相关
+- msg: Whiskers那个疫苗站便宜的在哪
+  label: false
+  tags: &id012
+  - places
+  - gray
+  - voice
+  why: 只是找店
+- msg: 导航带我去咪咪上次去的那家医院
+  label: false
+  tags: &id013
+  - places
+  - voice
+  why: 找店导航
+- msg: 把我家狗的资料翻译成英文发我
+  label: false
+  tags: &id014
+  - email
+  - language
+  why: 语言+发送
+- msg: 附近有没有给橙子洗澡的地方
+  label: false
+  tags: *id005
+  why: 只是找店
+- msg: 咪咪的体检报告发我邮箱一下
+  label: false
+  tags: *id006
+  why: 发送记录
+- msg: 把咪咪这个月的记录发给我老公
+  label: false
+  tags: *id007
+  why: 发送记录
+- msg: 不是Mochi 是另一只
+  label: false
+  tags: *id008
+  why: 纠正信息
+- msg: 删掉Max那条记录
+  label: false
+  tags: *id009
+  why: 删除记录
+- msg: 看看Luna这张照片是什么品种
+  label: false
+  tags: *id010
+  why: 看图相关
+- msg: 帮我看看我那只的便便照片正常吗
+  label: false
+  tags: *id011
+  why: 看图相关
+- msg: 它那个疫苗站便宜的在哪
+  label: false
+  tags: *id012
+  why: 只是找店
+- msg: 导航带我去Luna上次去的那家医院
+  label: false
+  tags: *id013
+  why: 找店导航
+- msg: 把花花的资料翻译成英文发我
+  label: false
+  tags: *id014
+  why: 语言+发送
+- msg: 附近有没有给咪咪洗澡的地方
+  label: false
+  tags: *id005
+  why: 只是找店
+- msg: Luna的体检报告发我邮箱一下
+  label: false
+  tags: *id006
+  why: 发送记录
+- msg: 把维尼这个月的记录发给我老公
+  label: false
+  tags: *id007
+  why: 发送记录
+- msg: 不是它 是另一只
+  label: false
+  tags: *id008
+  why: 纠正信息
+- msg: 删掉花花那条记录
+  label: false
+  tags: *id009
+  why: 删除记录
+- msg: 看看维尼这张照片是什么品种
+  label: false
+  tags: *id010
+  why: 看图相关
+- msg: 帮我看看Coco的便便照片正常吗
+  label: false
+  tags: *id011
+  why: 看图相关
+- msg: 维尼那个疫苗站便宜的在哪
+  label: false
+  tags: *id012
+  why: 只是找店
+- msg: 导航带我去Rocky上次去的那家医院
+  label: false
+  tags: *id013
+  why: 找店导航
+- msg: 把它的资料翻译成英文发我
+  label: false
+  tags: *id014
+  why: 语言+发送
+- msg: 附近有没有给旺财洗澡的地方
+  label: false
+  tags: *id005
+  why: 只是找店
+- msg: 布丁的体检报告发我邮箱一下
+  label: false
+  tags: *id006
+  why: 发送记录
+- msg: 把小维这个月的记录发给我老公
+  label: false
+  tags: *id007
+  why: 发送记录
+- msg: 不是他 是另一只
+  label: false
+  tags: *id008
+  why: 纠正信息
+- msg: 删掉Mochi那条记录
+  label: false
+  tags: *id009
+  why: 删除记录
+- msg: 看看旺财这张照片是什么品种
+  label: false
+  tags: *id010
+  why: 看图相关
+- msg: 帮我看看Mochi的便便照片正常吗
+  label: false
+  tags: *id011
+  why: 看图相关
+- msg: Coco那个疫苗站便宜的在哪
+  label: false
+  tags: *id012
+  why: 只是找店
+- msg: 把Coco的资料翻译成英文发我
+  label: false
+  tags: *id014
+  why: 语言+发送
+- msg: 附近有没有给维尼洗澡的地方
+  label: false
+  tags: *id005
+  why: 只是找店
+- msg: 阿黄的体检报告发我邮箱一下
+  label: false
+  tags: *id006
+  why: 发送记录
+- msg: 把Rocky这个月的记录发给我老公
+  label: false
+  tags: *id007
+  why: 发送记录
+- msg: 帮我看看橙子的便便照片正常吗
+  label: false
+  tags: *id011
+  why: 看图相关
+- msg: 我那只那个疫苗站便宜的在哪
+  label: false
+  tags: *id012
+  why: 只是找店
+- msg: 导航带我去毛毛上次去的那家医院
+  label: false
+  tags: *id013
+  why: 找店导航
+- msg: 把球球的资料翻译成英文发我
+  label: false
+  tags: *id014
+  why: 语言+发送
+- msg: 附近有没有给Rocky洗澡的地方
+  label: false
+  tags: *id005
+  why: 只是找店
+- msg: Milo的体检报告发我邮箱一下
+  label: false
+  tags: *id006
+  why: 发送记录
+- msg: 把橙子这个月的记录发给我老公
+  label: false
+  tags: *id007
+  why: 发送记录
+- msg: 不是旺财 是另一只
+  label: false
+  tags: *id008
+  why: 纠正信息
+- msg: 删掉毛毛那条记录
+  label: false
+  tags: *id009
+  why: 删除记录
+- msg: 看看布丁这张照片是什么品种
+  label: false
+  tags: *id010
+  why: 看图相关
+- msg: 帮我看看团子的便便照片正常吗
+  label: false
+  tags: *id011
+  why: 看图相关
+- msg: Rocky那个疫苗站便宜的在哪
+  label: false
+  tags: *id012
+  why: 只是找店
+- msg: 导航带我去Bella上次去的那家医院
+  label: false
+  tags: *id013
+  why: 找店导航
+- msg: 把糯米的资料翻译成英文发我
+  label: false
+  tags: *id014
+  why: 语言+发送
+- msg: 附近有没有给小白洗澡的地方
+  label: false
+  tags: *id005
+  why: 只是找店
+- msg: 橙子的体检报告发我邮箱一下
+  label: false
+  tags: *id006
+  why: 发送记录
+- msg: 把我那只这个月的记录发给我老公
+  label: false
+  tags: *id007
+  why: 发送记录
+- msg: 不是我家猫 是另一只
+  label: false
+  tags: *id008
+  why: 纠正信息
+- msg: 删掉我那只那条记录
+  label: false
+  tags: *id009
+  why: 删除记录
+- msg: 帮我看看豆豆的便便照片正常吗
+  label: false
+  tags: *id011
+  why: 看图相关
+- msg: 小白那个疫苗站便宜的在哪
+  label: false
+  tags: *id012
+  why: 只是找店
+- msg: 导航带我去Coco上次去的那家医院
+  label: false
+  tags: *id013
+  why: 找店导航
+- msg: 把Mochi的资料翻译成英文发我
+  label: false
+  tags: *id014
+  why: 语言+发送
+- msg: 附近有没有给小维洗澡的地方
+  label: false
+  tags: *id005
+  why: 只是找店
+- msg: 维尼的体检报告发我邮箱一下
+  label: false
+  tags: *id006
+  why: 发送记录
+- msg: 把Whiskers这个月的记录发给我老公
+  label: false
+  tags: *id007
+  why: 发送记录
+- msg: 删掉Luna那条记录
+  label: false
+  tags: *id009
+  why: 删除记录
+- msg: 看看毛毛这张照片是什么品种
+  label: false
+  tags: *id010
+  why: 看图相关
+- msg: 导航带我去饼干上次去的那家医院
+  label: false
+  tags: *id013
+  why: 找店导航
+- msg: 把他的资料翻译成英文发我
+  label: false
+  tags: *id014
+  why: 语言+发送
+- msg: 他的体检报告发我邮箱一下
+  label: false
+  tags: *id006
+  why: 发送记录
+- msg: 把旺财这个月的记录发给我老公
+  label: false
+  tags: *id007
+  why: 发送记录
+- msg: 不是饼干 是另一只
+  label: false
+  tags: *id008
+  why: 纠正信息
+- msg: 删掉糯米那条记录
+  label: false
+  tags: *id009
+  why: 删除记录
+- msg: 看看花花这张照片是什么品种
+  label: false
+  tags: *id010
+  why: 看图相关
+- msg: 帮我看看小白的便便照片正常吗
+  label: false
+  tags: *id011
+  why: 看图相关
+- msg: 狗狗那个疫苗站便宜的在哪
+  label: false
+  tags: *id012
+  why: 只是找店
+- msg: 导航带我去Whiskers上次去的那家医院
+  label: false
+  tags: *id013
+  why: 找店导航
+- msg: 把Milo的资料翻译成英文发我
+  label: false
+  tags: *id014
+  why: 语言+发送
+- msg: 附近有没有给糯米洗澡的地方
+  label: false
+  tags: *id005
+  why: 只是找店
+- msg: Coco的体检报告发我邮箱一下
+  label: false
+  tags: *id006
+  why: 发送记录
+- msg: 把猫猫这个月的记录发给我老公
+  label: false
+  tags: *id007
+  why: 发送记录
+- msg: 不是Bella 是另一只
+  label: false
+  tags: *id008
+  why: 纠正信息
+- msg: 看看豆豆这张照片是什么品种
+  label: false
+  tags: *id010
+  why: 看图相关
+- msg: 帮我看看Rocky的便便照片正常吗
+  label: false
+  tags: *id011
+  why: 看图相关
+- msg: 附近有没有给我那只洗澡的地方
+  label: false
+  tags: *id005
+  why: 只是找店
+- msg: Rocky的体检报告发我邮箱一下
+  label: false
+  tags: *id006
+  why: 发送记录
+- msg: 删掉团子那条记录
+  label: false
+  tags: *id009
+  why: 删除记录
+- msg: 帮我看看小维的便便照片正常吗
+  label: false
+  tags: *id011
+  why: 看图相关
+- msg: 他那个疫苗站便宜的在哪
+  label: false
+  tags: *id012
+  why: 只是找店
+- msg: 导航带我去小维上次去的那家医院
+  label: false
+  tags: *id013
+  why: 找店导航
+- msg: 附近有没有给Whiskers洗澡的地方
+  label: false
+  tags: *id005
+  why: 只是找店
+- msg: 团子的体检报告发我邮箱一下
+  label: false
+  tags: *id006
+  why: 发送记录
+- msg: 把毛毛这个月的记录发给我老公
+  label: false
+  tags: *id007
+  why: 发送记录
+- msg: 不是糯米 是另一只
+  label: false
+  tags: *id008
+  why: 纠正信息
+- msg: 删掉Coco那条记录
+  label: false
+  tags: *id009
+  why: 删除记录
+- msg: 看看球球这张照片是什么品种
+  label: false
+  tags: *id010
+  why: 看图相关
+- msg: 帮我看看Milo的便便照片正常吗
+  label: false
+  tags: *id011
+  why: 看图相关
+- msg: 橙子那个疫苗站便宜的在哪
+  label: false
+  tags: *id012
+  why: 只是找店
+- msg: 导航带我去球球上次去的那家医院
+  label: false
+  tags: *id013
+  why: 找店导航
+- msg: 把Rocky的资料翻译成英文发我
+  label: false
+  tags: *id014
+  why: 语言+发送
+- msg: 附近有没有给Bella洗澡的地方
+  label: false
+  tags: *id005
+  why: 只是找店
+- msg: 它的体检报告发我邮箱一下
+  label: false
+  tags: *id006
+  why: 发送记录
+- msg: 不是Luna 是另一只
+  label: false
+  tags: *id008
+  why: 纠正信息
+- msg: 帮我看看他的便便照片正常吗
+  label: false
+  tags: *id011
+  why: 看图相关
+- msg: 导航带我去它上次去的那家医院
+  label: false
+  tags: *id013
+  why: 找店导航
+- msg: 把咪咪的资料翻译成英文发我
+  label: false
+  tags: *id014
+  why: 语言+发送
+- msg: Bella的体检报告发我邮箱一下
+  label: false
+  tags: *id006
+  why: 发送记录
+- msg: 把阿黄这个月的记录发给我老公
+  label: false
+  tags: *id007
+  why: 发送记录
+- msg: 不是狗狗 是另一只
+  label: false
+  tags: *id008
+  why: 纠正信息
+- msg: 看看咪咪这张照片是什么品种
+  label: false
+  tags: *id010
+  why: 看图相关
+- msg: 导航带我去我家猫上次去的那家医院
+  label: false
+  tags: *id013
+  why: 找店导航
+- msg: 把团子的资料翻译成英文发我
+  label: false
+  tags: *id014
+  why: 语言+发送
+- msg: 毛毛的体检报告发我邮箱一下
+  label: false
+  tags: *id006
+  why: 发送记录
+- msg: 把花花这个月的记录发给我老公
+  label: false
+  tags: *id007
+  why: 发送记录
+- msg: 不是我家狗 是另一只
+  label: false
+  tags: *id008
+  why: 纠正信息
+- msg: 删掉小白那条记录
+  label: false
+  tags: *id009
+  why: 删除记录
+- msg: 看看Whiskers这张照片是什么品种
+  label: false
+  tags: *id010
+  why: 看图相关
+- msg: 阿黄那个疫苗站便宜的在哪
+  label: false
+  tags: *id012
+  why: 只是找店
+- msg: 把豆豆的资料翻译成英文发我
+  label: false
+  tags: *id014
+  why: 语言+发送
+- msg: 把他这个月的记录发给我老公
+  label: false
+  tags: *id007
+  why: 发送记录
+- msg: 不是Milo 是另一只
+  label: false
+  tags: *id008
+  why: 纠正信息
+- msg: 删掉他那条记录
+  label: false
+  tags: *id009
+  why: 删除记录
+- msg: 看看团子这张照片是什么品种
+  label: false
+  tags: *id010
+  why: 看图相关
+- msg: 帮我看看Whiskers的便便照片正常吗
+  label: false
+  tags: *id011
+  why: 看图相关
+- msg: 咪咪那个疫苗站便宜的在哪
+  label: false
+  tags: *id012
+  why: 只是找店
+- msg: 导航带我去狗狗上次去的那家医院
+  label: false
+  tags: *id013
+  why: 找店导航
+- msg: 把饼干的资料翻译成英文发我
+  label: false
+  tags: *id014
+  why: 语言+发送
+- msg: 附近有没有给Mochi洗澡的地方
+  label: false
+  tags: *id005
+  why: 只是找店
+- msg: Whiskers的体检报告发我邮箱一下
+  label: false
+  tags: *id006
+  why: 发送记录
+- msg: 把团子这个月的记录发给我老公
+  label: false
+  tags: *id007
+  why: 发送记录
+- msg: 不是阿黄 是另一只
+  label: false
+  tags: *id008
+  why: 纠正信息
+- msg: 帮我看看糯米的便便照片正常吗
+  label: false
+  tags: *id011
+  why: 看图相关
+- msg: 饼干那个疫苗站便宜的在哪
+  label: false
+  tags: *id012
+  why: 只是找店
+- msg: 导航带我去他上次去的那家医院
+  label: false
+  tags: *id013
+  why: 找店导航
+- msg: 把我那只的资料翻译成英文发我
+  label: false
+  tags: *id014
+  why: 语言+发送
+- msg: 附近有没有给猫猫洗澡的地方
+  label: false
+  tags: *id005
+  why: 只是找店
+- msg: 删掉饼干那条记录
+  label: false
+  tags: *id009
+  why: 删除记录
+- msg: 旺财那个疫苗站便宜的在哪
+  label: false
+  tags: *id012
+  why: 只是找店
+- msg: 把小维的资料翻译成英文发我
+  label: false
+  tags: *id014
+  why: 语言+发送
+- msg: 附近有没有给饼干洗澡的地方
+  label: false
+  tags: *id005
+  why: 只是找店
+- msg: 我家猫的体检报告发我邮箱一下
+  label: false
+  tags: *id006
+  why: 发送记录
+- msg: 删掉它那条记录
+  label: false
+  tags: *id009
+  why: 删除记录
+- msg: 看看阿黄这张照片是什么品种
+  label: false
+  tags: *id010
+  why: 看图相关
+- msg: 我家狗那个疫苗站便宜的在哪
+  label: false
+  tags: *id012
+  why: 只是找店
+- msg: 导航带我去团子上次去的那家医院
+  label: false
+  tags: *id013
+  why: 找店导航
+- msg: 旺财的体检报告发我邮箱一下
+  label: false
+  tags: *id006
+  why: 发送记录
+- msg: 把它这个月的记录发给我老公
+  label: false
+  tags: *id007
+  why: 发送记录
+- msg: 不是花花 是另一只
+  label: false
+  tags: *id008
+  why: 纠正信息
+- msg: 删掉猫猫那条记录
+  label: false
+  tags: *id009
+  why: 删除记录
+- msg: 看看猫猫这张照片是什么品种
+  label: false
+  tags: *id010
+  why: 看图相关
+- msg: 帮我看看花花的便便照片正常吗
+  label: false
+  tags: *id011
+  why: 看图相关
+- msg: 导航带我去阿黄上次去的那家医院
+  label: false
+  tags: *id013
+  why: 找店导航
+- msg: 附近有没有给花花洗澡的地方
+  label: false
+  tags: *id005
+  why: 只是找店
+- msg: 我家狗的体检报告发我邮箱一下
+  label: false
+  tags: *id006
+  why: 发送记录
+- msg: 不是橙子 是另一只
+  label: false
+  tags: *id008
+  why: 纠正信息

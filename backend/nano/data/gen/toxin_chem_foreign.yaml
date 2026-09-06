@@ -1,0 +1,1124 @@
+- msg: 我血压药掉一地被豆豆叼着舔了好几粒 药瓶都空了
+  label: true
+  tags: [toxin, voice, panic]
+  why: 误食降压药
+- msg: 完了完了 老公的降压药撒了一地 团子刚才在那边舔
+  label: true
+  tags: [toxin, voice, panic]
+  why: 舔了降压药
+- msg: 我家猫跳上桌子把我降压药瓶碰倒了 药撒了一地 它嘴边有白色粉末
+  label: true
+  tags: [toxin, voice]
+  why: 猫接触降压药
+- msg: dad's blood pressure pills fell on the floor and luna was licking them up before i noticed
+  label: true
+  tags: [toxin, en, voice]
+  why: 舔降压药
+- msg: 那个 我妈的药盒开着的 小维刚才叼着跑 现在药盒是空的
+  label: true
+  tags: [toxin, voice]
+  why: 药盒被清空
+- msg: 球球把我爷爷的降压药整板咬开了 地上全是药壳
+  label: true
+  tags: [toxin, voice]
+  why: 咬开药板
+- msg: 我把降压药放茶几上 一转身发现旺财在那咬瓶子 药洒了好多
+  label: true
+  tags: [toxin, voice]
+  why: 药瓶被咬
+- msg: Max got into my mom's pill bottle the cap is off and pills are missing
+  label: true
+  tags: [toxin, en, voice]
+  why: 药瓶被打开
+- msg: 糯米刚才在药盒那边一直舔嘴 药盒里少了好几颗
+  label: true
+  tags: [toxin, voice]
+  why: 药少了几颗
+- msg: 我降压药本来十片 现在数了数少了三片 花花刚才就在那附近
+  label: true
+  tags: [toxin, voice]
+  why: 药数量变少
+- msg: 皮皮把我外婆的药袋叼走了 找到的时候袋子破了药没了
+  label: true
+  tags: [toxin, voice]
+  why: 药袋被叼走
+- msg: 可乐跳上柜子把降压药瓶弄翻了 盖子滚地上 药不见了几颗
+  label: true
+  tags: [toxin, voice]
+  why: 药瓶被弄翻
+- msg: 布洛芬掉地上没捡起来 回头咪咪就在那舔嘴
+  label: true
+  tags: [toxin, voice]
+  why: 舔布洛芬
+- msg: 我家狗把我布洛芬瓶咬开了 药撒了一地 数了数少了五六颗
+  label: true
+  tags: [toxin, voice]
+  why: 咬开药瓶
+- msg: baby aspirin bottle tipped over and my dog was sniffing around the spilled pills
+  label: true
+  tags: [toxin, en, voice]
+  why: 阿司匹林洒地
+- msg: 那个止疼药 我随手放桌角了 团子够着咬开吃了几颗
+  label: true
+  tags: [toxin, voice]
+  why: 咬开止疼药
+- msg: 维尼把我布洛芬整瓶叼走了 找到的时候瓶子空了瓶盖不见了
+  label: true
+  tags: [toxin, voice]
+  why: 整瓶被清空
+- msg: i left ibuprofen on the nightstand and whiskers knocked the bottle over pills everywhere gone
+  label: true
+  tags: [toxin, en, voice]
+  why: 布洛芬洒落
+- msg: 旺财刚才叼着一个药板跑 我追上去发现咬破了里面空了
+  label: true
+  tags: [toxin, voice]
+  why: 药板被咬空
+- msg: 我头疼药放包里 球球把包翻了 药板咬得稀烂
+  label: true
+  tags: [toxin, voice]
+  why: 药板咬烂
+- msg: 家里止痛片本来一整板 现在少了好几粒 豆豆一直在那附近打转
+  label: true
+  tags: [toxin, voice]
+  why: 止痛片变少
+- msg: 大黄把我止疼药瓶盖啃开了 药洒了一地板
+  label: true
+  tags: [toxin, voice]
+  why: 瓶盖被啃开
+- msg: 奶茶跳上桌把布洛芬瓶碰地上了 滚出来好多药它嘴里还叼着一颗
+  label: true
+  tags: [toxin, voice]
+  why: 嘴里叼着药
+- msg: 乐乐叼着我的止痛药跑到床底下 拽出来的时候药板是空的
+  label: true
+  tags: [toxin, voice]
+  why: 药板被掏空
+- msg: 我安眠药盒被咪咪碰倒了 里面的药撒得到处都是 数了下少了几颗
+  label: true
+  tags: [toxin, voice]
+  why: 安眠药洒落
+- msg: sleeping pills fell out of my bag and mochi was right there licking the floor
+  label: true
+  tags: [toxin, en, voice]
+  why: 舔安眠药
+- msg: 那个安定药 我放床头柜的 早上起来发现瓶子倒了药不见了
+  label: true
+  tags: [toxin, voice]
+  why: 安定药不见
+- msg: 花花把我安眠药整瓶叼走藏枕头底下 拿出来瓶盖是开的
+  label: true
+  tags: [toxin, voice]
+  why: 藏走安眠药
+- msg: 我妈的褪黑素加安眠那种 掉了几颗 皮皮好像叼着吃了
+  label: true
+  tags: [toxin, voice]
+  why: 吃了安眠成分
+- msg: 团子刚才在我床头那边舔嘴 我的安眠药瓶盖没盖好 数着少了几颗
+  label: true
+  tags: [toxin, voice]
+  why: 药瓶未盖好
+- msg: dad left his sleep meds open on the desk and luna got up there and knocked them over
+  label: true
+  tags: [toxin, en, voice]
+  why: 安眠药被碰倒
+- msg: 小维把安眠药瓶咬碎了 塑料渣和药混一起 数不清吃了多少
+  label: true
+  tags: [toxin, voice]
+  why: 药瓶咬碎
+- msg: 我随手把安眠药放在沙发上 回来发现球球嘴里还叼着一颗
+  label: true
+  tags: [toxin, voice]
+  why: 嘴里叼着药
+- msg: 旺财翻我包把安眠药翻出来了 药板咬破了好几个洞
+  label: true
+  tags: [toxin, voice]
+  why: 药板被咬破
+- msg: 糯米今天特别安静 一查发现我安眠药瓶开着少了好多
+  label: true
+  tags: [toxin, voice]
+  why: 反常加药少
+- msg: max chewed through my sleeping pill bottle there's pills scattered everywhere and some missing
+  label: true
+  tags: [toxin, en, voice]
+  why: 药瓶被咬穿
+- msg: 我避孕药一板放包里 咪咪把包叼过去咬了 药板破了好几个洞
+  label: true
+  tags: [toxin, voice]
+  why: 避孕药板破损
+- msg: birth control pills fell out of my purse and my cat was licking the blister pack
+  label: true
+  tags: [toxin, en, voice]
+  why: 舔避孕药板
+- msg: 团子把我避孕药盒叼走了 找到时候纸盒都咬烂了药不见几颗
+  label: true
+  tags: [toxin, voice]
+  why: 药盒被咬烂
+- msg: 那个 我的短效避孕药 掉沙发缝里了 球球扒出来嚼了
+  label: true
+  tags: [toxin, voice]
+  why: 嚼避孕药
+- msg: 我妈避孕药随手放茶几 花花跳上去把药板咬破了
+  label: true
+  tags: [toxin, voice]
+  why: 药板被咬破
+- msg: whiskers got into my birth control the foil pack is torn and pills are gone
+  label: true
+  tags: [toxin, en, voice]
+  why: 药片包装破
+- msg: 皮皮叼着一板药跑我房间 追过去一看是我避孕药 咬开了
+  label: true
+  tags: [toxin, voice]
+  why: 叼走避孕药
+- msg: 我避孕药瓶倒地上了 维尼在那舔了好一会儿
+  label: true
+  tags: [toxin, voice]
+  why: 舔药瓶
+- msg: 邻居家放老鼠药我家狗溜达的时候不知道叼了什么回来 嘴里还有点粉
+  label: true
+  tags: [toxin, voice]
+  why: 叼回可疑粉末
+- msg: 完了 楼道里那个灭鼠的东西 豆豆刚才叼了一块回家 我抢下来的时候它已经咬碎了
+  label: true
+  tags: [toxin, voice, panic]
+  why: 咬碎灭鼠饵
+- msg: rat poison pellets were scattered near the trash and my dog ate some before i could stop him
+  label: true
+  tags: [toxin, en, voice]
+  why: 吃了鼠药颗粒
+- msg: 那个绿色的小方块 说是老鼠药 团子叼了一个正在嚼
+  label: true
+  tags: [toxin, voice]
+  why: 嚼老鼠药块
+- msg: 物业撒的那个杀鼠的东西 咪咪不知道舔了没有 反正它一直在那附近转
+  label: true
+  tags: [toxin, voice, gray]
+  why: 疑似接触鼠药
+- msg: 我家球球刚从楼下回来 嘴里叼着一小块蓝色的东西 邻居说楼下放了老鼠药
+  label: true
+  tags: [toxin, voice]
+  why: 叼蓝色药块
+- msg: dog got into the rat bait station in the garage there are chewed pellets everywhere
+  label: true
+  tags: [toxin, en, voice]
+  why: 咬开鼠药站
+- msg: 旺财在院子里叼了个东西回来 我一看是那种老鼠药的颗粒 已经咬碎了
+  label: true
+  tags: [toxin, voice]
+  why: 咬碎鼠药
+- msg: 楼下保安说撒了灭鼠药 我家猫今天在外面待了一会 回来一直流口水
+  label: true
+  tags: [toxin, voice]
+  why: 疑接触加流涎
+- msg: 皮皮叼着一小包老鼠药跑进屋 包装都被咬破了里面空了
+  label: true
+  tags: [toxin, voice]
+  why: 老鼠药被吃空
+- msg: 我发现花花嘴里有蓝绿色的颗粒渣 邻居确认是老鼠药
+  label: true
+  tags: [toxin, voice]
+  why: 嘴里有鼠药渣
+- msg: my cat found a rat poison block someone left near the dumpster and licked it
+  label: true
+  tags: [toxin, en, voice]
+  why: 舔了鼠药块
+- msg: 那种毒鼠强的颗粒 撒在楼道角落 维尼刚才路过叼了一颗
+  label: true
+  tags: [toxin, voice]
+  why: 叼了毒鼠强
+- msg: 大黄不知道从哪叼来一块东西 咬得满地都是 我认出来是灭鼠饵
+  label: true
+  tags: [toxin, voice]
+  why: 咬碎灭鼠饵
+- msg: 小区物业投放的鼠药盒被扒开了 我家狗当时就在旁边嘴里有渣
+  label: true
+  tags: [toxin, voice]
+  why: 鼠药盒被扒开
+- msg: 糯米叼着个纸包跑 撕开一看是老鼠药的包装 里面颗粒撒了它嘴边一圈
+  label: true
+  tags: [toxin, voice]
+  why: 撕开鼠药包装
+- msg: found my dog chewing on something near the fence turns out it was a rat bait block
+  label: true
+  tags: [toxin, en, voice]
+  why: 咬鼠药块
+- msg: 那个蟑螂药盒 咪咪扒开了里面的胶饵舔了不少
+  label: true
+  tags: [toxin, voice]
+  why: 舔蟑螂胶饵
+- msg: cockroach bait station was chewed open and my cat's tongue looks weird color
+  label: true
+  tags: [toxin, en, voice]
+  why: 咬开蟑螂药盒
+- msg: 我家球球把厨房角落那个杀蟑螂的盒子咬碎了 胶状的东西沾了一嘴
+  label: true
+  tags: [toxin, voice]
+  why: 沾满蟑螂胶饵
+- msg: 蟑螂屋被豆豆当玩具叼走了 找到的时候盒子破了里面空了
+  label: true
+  tags: [toxin, voice]
+  why: 蟑螂屋被清空
+- msg: 我放的那种蟑螂胶饵 团子舔了好几个盒子 嘴边都是黏糊糊的
+  label: true
+  tags: [toxin, voice]
+  why: 舔多个胶饵盒
+- msg: dog chewed open the roach bait trap and there's gel all over his mouth
+  label: true
+  tags: [toxin, en, voice]
+  why: 满嘴蟑螂胶饵
+- msg: 旺财把橱柜下的灭蟑药盒扒出来啃了 里面的饵料没了
+  label: true
+  tags: [toxin, voice]
+  why: 饵料被啃空
+- msg: 我家猫今天一直舔嘴 发现厨房那个蟑螂药盒被扒开了
+  label: true
+  tags: [toxin, voice]
+  why: 舔嘴加药盒破
+- msg: 皮皮叼着一个小黑盒子跑 打开一看是杀蟑螂那种胶饵已经空了
+  label: true
+  tags: [toxin, voice]
+  why: 胶饵盒已清空
+- msg: 维尼把卫生间角落的蟑螂药盒咬开了 胶饵沾得满脸都是
+  label: true
+  tags: [toxin, voice]
+  why: 满脸沾胶饵
+- msg: mochi got into the roach trap under the sink it's chewed to pieces
+  label: true
+  tags: [toxin, en, voice]
+  why: 咬碎蟑螂药盒
+- msg: 花花今天在厨房转悠 我发现蟑螂胶饵盒子被扒烂了里面少了大半
+  label: true
+  tags: [toxin, voice]
+  why: 胶饵少了大半
+- msg: 车库地上一滩绿色的液体 我家狗刚才在那舔了好几口
+  label: true
+  tags: [toxin, voice]
+  why: 舔绿色液体
+- msg: antifreeze leaked from the car and my dog was licking it off the garage floor
+  label: true
+  tags: [toxin, en, voice]
+  why: 舔防冻液
+- msg: 那个防冻液漏了一点在地上 甜甜的味 团子凑过去舔了半天
+  label: true
+  tags: [toxin, voice]
+  why: 舔甜味液体
+- msg: 我车底下滴了点绿色的东西 旺财路过舔了几口才被我发现
+  label: true
+  tags: [toxin, voice]
+  why: 舔车底液体
+- msg: 完了 防冻液瓶盖没拧紧漏了一地 咪咪刚才蹲那舔
+  label: true
+  tags: [toxin, voice, panic]
+  why: 瓶盖没拧紧漏液
+- msg: found antifreeze puddle in the driveway and luna's paws and mouth are wet from it
+  label: true
+  tags: [toxin, en, voice]
+  why: 爪嘴沾防冻液
+- msg: 车库那滩绿油油的液体是防冻液 球球今天在那待了一会儿嘴边湿的
+  label: true
+  tags: [toxin, voice]
+  why: 嘴边湿疑接触
+- msg: 我修车的时候防冻液洒了 一转身发现豆豆已经在舔地上那滩了
+  label: true
+  tags: [toxin, voice]
+  why: 舔洒出的防冻液
+- msg: 邻居车漏了防冻液在停车场 我家糯米路过舔了几口
+  label: true
+  tags: [toxin, voice]
+  why: 舔邻居车漏液
+- msg: dog got out and licked something green off the ground next to a parked car
+  label: true
+  tags: [toxin, en, voice]
+  why: 舔绿色液体
+- msg: 那瓶防冻液倒了半瓶在车库地上 我家可乐今天一直在车库待着
+  label: true
+  tags: [toxin, voice]
+  why: 长时间待在漏液处
+- msg: 我家皮皮今天走路有点晃 想起来车库那滩防冻液它去舔过
+  label: true
+  tags: [toxin, voice]
+  why: 走路晃加舔液
+- msg: antifreeze spilled while i was topping off the car and my cat walked through it and licked her paws
+  label: true
+  tags: [toxin, en, voice]
+  why: 踩过舔爪
+- msg: 车库角落一直有股甜味 今早发现防冻液瓶漏了 维尼总在那边转
+  label: true
+  tags: [toxin, voice]
+  why: 甜味加漏液
+- msg: 我家乐乐今天特别爱喝水 一直趴地上不想动 车库那滩绿液体它去舔过
+  label: true
+  tags: [toxin, voice]
+  why: 多饮加接触史
+- msg: found my dog near a puddle of coolant in the parking lot he was licking his lips after
+  label: true
+  tags: [toxin, en, voice]
+  why: 舔嘴唇疑接触
+- msg: 84消毒液瓶子被咪咪打翻了 撒了一地 它当时就在旁边
+  label: true
+  tags: [toxin, voice]
+  why: 打翻消毒液
+- msg: bleach bottle tipped over and my dog was right next to it sniffing the puddle
+  label: true
+  tags: [toxin, en, voice]
+  why: 嗅闻漂白水
+- msg: 我拖地用的84消毒液没盖好 团子跳上去把瓶子碰倒了 撒了一大片
+  label: true
+  tags: [toxin, voice]
+  why: 消毒液大面积洒出
+- msg: 完了 消毒液洒了一地 球球刚才在那边走过去 爪子都湿了
+  label: true
+  tags: [toxin, voice, panic]
+  why: 爪子沾消毒液
+- msg: 那瓶84我随手放地上了 旺财路过给撞翻了 液体流了一地它踩过去了
+  label: true
+  tags: [toxin, voice]
+  why: 踩过消毒液
+- msg: cleaning spray with bleach fell over and the cat walked through the puddle licking her paw after
+  label: true
+  tags: [toxin, en, voice]
+  why: 踩液舔爪
+- msg: 我家花花在卫生间待了一会儿 出来发现84消毒液瓶倒了地上湿的
+  label: true
+  tags: [toxin, voice]
+  why: 疑似接触消毒液
+- msg: 皮皮今天一直咳嗽 想起来早上我拖地用的消毒液它凑过去闻了半天
+  label: true
+  tags: [toxin, voice]
+  why: 咳嗽加接触史
+- msg: bleach spilled on the floor and my dog started licking it before i could clean up
+  label: true
+  tags: [toxin, en, voice]
+  why: 舔漂白水
+- msg: 维尼把消毒液瓶子咬了个洞 液体漏了一地 它嘴边有点发白
+  label: true
+  tags: [toxin, voice]
+  why: 咬破瓶子漏液
+- msg: 我洗手间那瓶84没关紧 早上发现瓶倒了 糯米在那边一直咳
+  label: true
+  tags: [toxin, voice]
+  why: 咳嗽加瓶倒
+- msg: 可乐刚才舔了地上一滩液体 我一看是昨晚拖地剩的84消毒液
+  label: true
+  tags: [toxin, voice]
+  why: 确认舔了消毒液
+- msg: 乐乐今天一直流口水还咳嗽 家里刚用84消毒液拖过地它在那边趴过
+  label: true
+  tags: [toxin, voice]
+  why: 流涎咳嗽接触史
+- msg: 洁厕灵瓶子倒在卫生间地上 我家猫刚从那出来嘴边湿的
+  label: true
+  tags: [toxin, voice]
+  why: 嘴边湿疑接触
+- msg: toilet cleaner bottle fell over in the bathroom and the dog was in there alone for a while
+  label: true
+  tags: [toxin, en, voice]
+  why: 单独待过卫生间
+- msg: 我马桶那瓶洁厕灵被团子碰倒了 液体流了一地它踩过去了
+  label: true
+  tags: [toxin, voice]
+  why: 踩过洁厕灵
+- msg: 球球今天在卫生间待了挺久 出来一直咳嗽 那瓶洁厕灵倒了
+  label: true
+  tags: [toxin, voice]
+  why: 咳嗽加瓶倒
+- msg: 完了 洁厕灵洒地上一滩 旺财刚才路过舔了一下就跑开了
+  label: true
+  tags: [toxin, voice, panic]
+  why: 舔了洁厕灵
+- msg: found bleach based toilet cleaner spilled and my cat's paws were wet standing near it
+  label: true
+  tags: [toxin, en, voice]
+  why: 爪子沾洁厕灵
+- msg: 我卫生间那瓶洁厕灵没拧紧 早上发现倒了 咪咪一直在那附近
+  label: true
+  tags: [toxin, voice]
+  why: 瓶倒疑接触
+- msg: 皮皮把马桶边上那瓶洁厕灵碰翻了 液体流了一地 它嘴边有点红
+  label: true
+  tags: [toxin, voice]
+  why: 嘴边发红
+- msg: 维尼今天一直干呕 想起来卫生间洁厕灵瓶子早上是倒着的
+  label: true
+  tags: [toxin, voice]
+  why: 干呕加接触史
+- msg: 糯米在卫生间待了会儿出来嘴巴一直流口水 那瓶洁厕灵洒了
+  label: true
+  tags: [toxin, voice]
+  why: 流口水加洒液
+- msg: 我家豆豆把遥控器电池抠出来了 找的时候嘴里正叼着一节
+  label: true
+  tags: [toxin, voice]
+  why: 叼着电池
+- msg: dog got into the remote and there's a battery missing i think he swallowed it
+  label: true
+  tags: [toxin, en, voice]
+  why: 疑似吞电池
+- msg: 团子把玩具里的纽扣电池抠出来了 现在数了数少一个
+  label: true
+  tags: [toxin, voice]
+  why: 纽扣电池不见
+- msg: 完了 遥控器电池不见了 球球刚才一直在那玩遥控器
+  label: true
+  tags: [toxin, voice, panic]
+  why: 电池不见
+- msg: 我家猫把体重秤里的纽扣电池弄出来了 现在找不到那颗电池
+  label: true
+  tags: [toxin, voice]
+  why: 电池找不到
+- msg: i think luna swallowed a button battery from the remote it's missing and she was chewing on it
+  label: true
+  tags: [toxin, en, voice]
+  why: 疑吞纽扣电池
+- msg: 旺财把玩具狗里的电池啃出来了 电池现在不见了它嘴里刚才有股怪味
+  label: true
+  tags: [toxin, voice]
+  why: 电池不见有怪味
+- msg: 皮皮玩那个发光小玩具 电池仓被它啃开了 里面的电池不见了
+  label: true
+  tags: [toxin, voice]
+  why: 电池仓被啃开
+- msg: 我数了数遥控器少一节电池 咪咪今天一直在那台遥控器旁边玩
+  label: true
+  tags: [toxin, voice]
+  why: 遥控器少电池
+- msg: mochi chewed open a toy and the tiny battery inside is gone now
+  label: true
+  tags: [toxin, en, voice]
+  why: 玩具电池不见
+- msg: 维尼把闹钟电池仓抠开了 电池不见了 它刚才嘴里叼着个圆片
+  label: true
+  tags: [toxin, voice]
+  why: 叼着圆形电池
+- msg: 花花把我体温计里的纽扣电池弄出来吞了 我看着它一口就咽下去了
+  label: true
+  tags: [toxin, voice]
+  why: 亲眼看到吞下
+- msg: 大黄把玩具车电池盒咬开 里面电池找不着了
+  label: true
+  tags: [toxin, voice]
+  why: 电池盒被咬开
+- msg: 我小孩玩具里的纽扣电池被糯米叼走了 现在到处找不到那颗
+  label: true
+  tags: [toxin, voice]
+  why: 电池被叼走
+- msg: cat pulled the battery out of the smoke detector remote and it's gone now
+  label: true
+  tags: [toxin, en, voice]
+  why: 抠出电池不见
+- msg: 可乐把我耳机充电盒里的小电池抠出来了 现在盒子是空的
+  label: true
+  tags: [toxin, voice]
+  why: 充电盒被掏空
+- msg: 乐乐叼着遥控器啃了半天 我发现电池仓开着少了一节
+  label: true
+  tags: [toxin, voice]
+  why: 电池仓少一节
+- msg: 我家球球刚才嘴里叼着个亮晶晶的圆片 一伸手它就咽下去了 那是纽扣电池
+  label: true
+  tags: [toxin, voice]
+  why: 亲眼看到咽下
+- msg: dog chewed the battery compartment open on a toy and now i can't find the battery
+  label: true
+  tags: [toxin, en, voice]
+  why: 电池找不到
+- msg: 团子把我手表电池后盖抠开了 里面那颗小电池不见了
+  label: true
+  tags: [toxin, voice]
+  why: 手表电池不见
+- msg: 皮皮玩具熊里那颗电池被啃出来 找了半天没找到
+  label: true
+  tags: [toxin, voice]
+  why: 玩具电池找不到
+- msg: 那根针我缝衣服用的 放桌上一转身就找不到了 豆豆刚才在那附近舔嘴
+  label: true
+  tags: [toxin, voice]
+  why: 针不见了
+- msg: 缝衣服的线还挂在团子嘴边 一拽发现里面还有根针
+  label: true
+  tags: [toxin, voice]
+  why: 线挂嘴边带针
+- msg: i was sewing and left a needle on the couch now it's gone and my dog was there
+  label: true
+  tags: [toxin, en, voice]
+  why: 针不见了
+- msg: 我家球球叼着一团毛线跑 拽出来发现线头上还系着根针
+  label: true
+  tags: [toxin, voice]
+  why: 毛线系着针
+- msg: 完了 我的针线盒被咪咪碰翻了 数了数少了一根针
+  label: true
+  tags: [toxin, voice, panic]
+  why: 针线盒少一根
+- msg: 旺财嘴里叼着根线 一直往外拉它就一直往嘴里咽 后来线断了
+  label: true
+  tags: [toxin, voice]
+  why: 边拉边咽线
+- msg: 缝纫用的针我随手放垫子上 现在找不到了 皮皮刚才在那睡觉
+  label: true
+  tags: [toxin, voice]
+  why: 针找不到
+- msg: cat was playing with thread and the needle attached to it is now missing
+  label: true
+  tags: [toxin, en, voice]
+  why: 线上的针不见
+- msg: 我家维尼吐出来一截线 但是感觉还有一截在嘴里没出来
+  label: true
+  tags: [toxin, voice]
+  why: 线吐出一半
+- msg: 花花把我的十字绣针线扒拉到地上 现在少了一根针
+  label: true
+  tags: [toxin, voice]
+  why: 绣花针不见
+- msg: dog swallowed a piece of thread and there's still more hanging out of his mouth
+  label: true
+  tags: [toxin, en, voice]
+  why: 吞线一部分
+- msg: 大黄叼着根缝衣服的线不撒嘴 我一拉它就使劲咽
+  label: true
+  tags: [toxin, voice]
+  why: 拉线它使劲咽
+- msg: 我针线活刚放下 转身糯米就叼着针跑了 现在不知道吞了没
+  label: true
+  tags: [toxin, voice]
+  why: 叼针跑不明去向
+- msg: 可乐嘴角挂着一截白线 拽的时候感觉里面连着东西拉不动
+  label: true
+  tags: [toxin, voice]
+  why: 线拉不动
+- msg: 乐乐今天一直用爪子挠嘴 我发现它嘴边有根线头
+  label: true
+  tags: [toxin, voice]
+  why: 挠嘴加线头
+- msg: 我在缝扣子用的针不见了 团子刚才就趴在旁边那块布上
+  label: true
+  tags: [toxin, voice]
+  why: 针不见
+- msg: found a needle missing from my sewing kit and the cat was sniffing around it earlier
+  label: true
+  tags: [toxin, en, voice]
+  why: 针盒少一根
+- msg: 我家小维叼着一根绣花针在嘴里嚼 我看到的时候已经嚼了一会儿
+  label: true
+  tags: [toxin, voice]
+  why: 嘴里嚼绣花针
+- msg: 我家狗把毛绒玩具的眼睛啃下来了 现在那颗小珠子不见了
+  label: true
+  tags: [toxin, voice]
+  why: 玩具眼珠不见
+- msg: dog chewed off a plastic part from his toy and it's missing now
+  label: true
+  tags: [toxin, en, voice]
+  why: 塑料零件不见
+- msg: 团子把塑料小车的轮子啃掉了 轮子找不到了
+  label: true
+  tags: [toxin, voice]
+  why: 轮子被啃掉
+- msg: 完了 球球把玩具熊鼻子上那颗小圆珠咬下来吞了
+  label: true
+  tags: [toxin, voice, panic]
+  why: 咬下圆珠吞了
+- msg: 我家猫玩的那个小铃铛球被咬破了 里面的铃铛不见了
+  label: true
+  tags: [toxin, voice]
+  why: 铃铛不见
+- msg: cat's toy mouse has a missing button eye and she was chewing it earlier
+  label: true
+  tags: [toxin, en, voice]
+  why: 纽扣眼不见
+- msg: 旺财把积木上那个小塑料零件咬碎吞了一部分
+  label: true
+  tags: [toxin, voice]
+  why: 咬碎吞了一部分
+- msg: 皮皮啃玩具的时候把一小块塑料咬下来了 现在嘴里没有了应该是咽了
+  label: true
+  tags: [toxin, voice]
+  why: 咬下塑料块咽了
+- msg: 维尼把发条玩具的小齿轮部件抠出来了 现在不见了
+  label: true
+  tags: [toxin, voice]
+  why: 齿轮部件不见
+- msg: 大黄把玩具骨头上那个哨子零件咬碎了 一部分不见了
+  label: true
+  tags: [toxin, voice]
+  why: 哨子零件不见
+- msg: dog toy fell apart and a small hard piece is missing after he chewed it
+  label: true
+  tags: [toxin, en, voice]
+  why: 硬质零件不见
+- msg: 糯米把绒毛玩具里塞的小塑料珠咬破咽了几颗
+  label: true
+  tags: [toxin, voice]
+  why: 咽了塑料珠
+- msg: 乐乐叼着玩具积木的一角啃 现在那一小块不见了
+  label: true
+  tags: [toxin, voice]
+  why: 积木一角不见
+- msg: 我家可乐把小飞机模型的螺旋桨啃断了 断的那截找不到了
+  label: true
+  tags: [toxin, voice]
+  why: 断截找不到
+- msg: 我一只袜子不见了 团子今天早上一直在那干呕
+  label: true
+  tags: [toxin, voice]
+  why: 袜子不见加干呕
+- msg: dog ate a whole sock i found the other one but this one's completely gone
+  label: true
+  tags: [toxin, en, voice]
+  why: 整只袜子不见
+- msg: 完了 我袜子被咪咪叼走了现在找不到 它今天没什么精神
+  label: true
+  tags: [toxin, voice, panic]
+  why: 袜子不见精神差
+- msg: 球球把我的袜子叼到床底下 现在袜子只剩个洞
+  label: true
+  tags: [toxin, voice]
+  why: 袜子只剩个洞
+- msg: 我家旺财今天吐了 吐出来一点点棉絮 我这才想起丢了只袜子
+  label: true
+  tags: [toxin, voice]
+  why: 吐棉絮加袜子丢
+- msg: found a sock missing and my dog has been gagging on and off today
+  label: true
+  tags: [toxin, en, voice]
+  why: 袜子丢加干呕
+- msg: 皮皮把我一只袜子整个叼走吃了一部分 剩下的都是牙印
+  label: true
+  tags: [toxin, voice]
+  why: 袜子被吃一部分
+- msg: 维尼今天肚子摸起来有点鼓 我这才想起前两天丢了只袜子没找到
+  label: true
+  tags: [toxin, voice]
+  why: 腹胀加袜子丢
+- msg: 我洗衣服的时候发现少了一只袜子 花花最近老是干呕
+  label: true
+  tags: [toxin, voice]
+  why: 袜子少加干呕
+- msg: dog has been throwing up and won't eat and i just noticed a sock is missing from the laundry
+  label: true
+  tags: [toxin, en, voice]
+  why: 呕吐加袜子丢
+- msg: 糯米叼着我袜子玩了半天 后来袜子就不见了
+  label: true
+  tags: [toxin, voice]
+  why: 玩着玩着袜子不见
+- msg: 大黄今天精神不太好 趴着不太想动 我发现少了一只我的袜子
+  label: true
+  tags: [toxin, voice]
+  why: 精神差加袜子丢
+- msg: 乐乐把袜子叼走了 找了半天没找到 它今天也没什么胃口
+  label: true
+  tags: [toxin, voice]
+  why: 袜子丢加食欲差
+- msg: 团子最近老想吐但吐不出来 我翻遍衣柜发现少了一只小袜子
+  label: true
+  tags: [toxin, voice]
+  why: 干呕加袜子丢
+- msg: 我家狗把塑料袋叼进嘴里嚼了半天 现在袋子破了一个大洞
+  label: true
+  tags: [toxin, voice]
+  why: 塑料袋咬出大洞
+- msg: dog was chewing on a plastic bag and a chunk of it is missing now
+  label: true
+  tags: [toxin, en, voice]
+  why: 塑料袋缺一块
+- msg: 完了 咪咪把一个塑料袋整个吞下去一部分 剩下的都是撕碎的
+  label: true
+  tags: [toxin, voice, panic]
+  why: 吞下一部分袋子
+- msg: 球球把垃圾袋叼走了 找到的时候袋子被咬得只剩一半
+  label: true
+  tags: [toxin, voice]
+  why: 垃圾袋剩一半
+- msg: 我家旺财把外卖塑料袋叼着啃 现在袋子上少了一大块
+  label: true
+  tags: [toxin, voice]
+  why: 外卖袋缺一块
+- msg: cat chewed through a plastic bag and part of it is nowhere to be found
+  label: true
+  tags: [toxin, en, voice]
+  why: 塑料袋部分不见
+- msg: 皮皮把购物袋咬破了 咬下来的那块塑料不见了
+  label: true
+  tags: [toxin, voice]
+  why: 咬下的塑料不见
+- msg: 我垃圾桶里的袋子被维尼扒出来嚼了 一部分咽下去了
+  label: true
+  tags: [toxin, voice]
+  why: 嚼袋子咽下去
+- msg: 花花叼着塑料膜玩 玩着玩着一半就不见了
+  label: true
+  tags: [toxin, voice]
+  why: 塑料膜一半不见
+- msg: dog got into the trash and ate part of a plastic bag before i noticed
+  label: true
+  tags: [toxin, en, voice]
+  why: 翻垃圾吃塑料袋
+- msg: 大黄把快递包装袋撕烂了 一块塑料膜找不到了应该吞了
+  label: true
+  tags: [toxin, voice]
+  why: 撕烂加吞了一块
+- msg: 糯米今天一直咳嗽干呕 我发现它昨天玩的塑料袋少了一块
+  label: true
+  tags: [toxin, voice]
+  why: 咳嗽干呕加缺角
+- msg: 我冰箱上的磁贴不见了两个 团子今天一直在那边转悠
+  label: true
+  tags: [toxin, voice]
+  why: 磁贴不见两个
+- msg: dog swallowed a small magnet off the fridge i think there are two missing
+  label: true
+  tags: [toxin, en, voice]
+  why: 疑吞冰箱磁铁
+- msg: 完了 球球把我磁力片玩具吞了一片 数了数少一片
+  label: true
+  tags: [toxin, voice, panic]
+  why: 吞了磁力片
+- msg: 我家猫把桌上那几个小磁铁扒拉到地上玩 现在少了一颗
+  label: true
+  tags: [toxin, voice]
+  why: 磁铁少了一颗
+- msg: cat was playing with fridge magnets and now one is completely gone
+  label: true
+  tags: [toxin, en, voice]
+  why: 冰箱磁铁不见
+- msg: 旺财把磁力珠玩具当零食吃了几颗 现在盒子里数量不对
+  label: true
+  tags: [toxin, voice]
+  why: 磁力珠数量不对
+- msg: 皮皮把冰箱贴叼下来玩 玩着玩着就找不到了
+  label: true
+  tags: [toxin, voice]
+  why: 冰箱贴找不到
+- msg: 维尼把我孩子的磁力积木咬碎吞了一小块
+  label: true
+  tags: [toxin, voice]
+  why: 咬碎吞下积木块
+- msg: dog got into a box of magnetic building blocks and a couple pieces are missing
+  label: true
+  tags: [toxin, en, voice]
+  why: 磁力积木缺几块
+- msg: 我磁力珠手串放桌上 团子扒拉了一会儿 现在少了两颗珠子
+  label: true
+  tags: [toxin, voice]
+  why: 手串少两颗珠子
+- msg: 糯米把冰箱上贴纸那种磁铁抠下来叼走了 现在找不到
+  label: true
+  tags: [toxin, voice]
+  why: 磁铁被叼走
+- msg: 乐乐玩磁力片的时候咬碎了一片 碎片不见了
+  label: true
+  tags: [toxin, voice]
+  why: 磁力片碎片不见
+- msg: 大黄叼着一个小磁铁跑 一伸手它就咽下去了
+  label: true
+  tags: [toxin, voice]
+  why: 亲眼看到咽下磁铁
+- msg: 可乐把我孩子的磁力笔记本扣咬掉了 那个小磁片不见了
+  label: true
+  tags: [toxin, voice]
+  why: 磁力扣不见
+- msg: 我一包烟被咪咪叼走了 找到的时候烟丝撒了一地嚼过的痕迹
+  label: true
+  tags: [toxin, voice]
+  why: 嚼过整包烟
+- msg: dog got into a pack of cigarettes and chewed several of them
+  label: true
+  tags: [toxin, en, voice]
+  why: 嚼碎几根烟
+- msg: 完了 烟灰缸里的烟头被团子叼走嚼了 现在满嘴烟丝味
+  label: true
+  tags: [toxin, voice, panic]
+  why: 嚼了烟头
+- msg: 我烟包放茶几上 球球把烟抽出来咬得稀烂 好几根都嚼过了
+  label: true
+  tags: [toxin, voice]
+  why: 好几根烟被嚼
+- msg: cat chewed on a cigarette butt from the ashtray and there's tobacco on the floor
+  label: true
+  tags: [toxin, en, voice]
+  why: 嚼烟头
+- msg: 旺财把我一整包烟叼走 找到的时候里面的烟都被咬开了
+  label: true
+  tags: [toxin, voice]
+  why: 整包烟被咬开
+- msg: 皮皮嘴里叼着半根烟 烟丝都散在嘴边
+  label: true
+  tags: [toxin, voice]
+  why: 嘴里叼半根烟
+- msg: 我随手放桌上的烟被维尼当玩具叼着咬 好几根都秃了头
+  label: true
+  tags: [toxin, voice]
+  why: 多根烟被咬
+- msg: dog chewed through a cigarette pack and tobacco is scattered on the carpet
+  label: true
+  tags: [toxin, en, voice]
+  why: 烟丝散落地毯
+- msg: 糯米把我烟盒撕开了 里面好几根烟都被咬烂了
+  label: true
+  tags: [toxin, voice]
+  why: 烟盒被撕开
+- msg: 完了 我朋友落我家的那包东西被团子叼去吃了一点 闻着有股草味
+  label: true
+  tags: [toxin, voice, panic]
+  why: 疑吃大麻制品
+- msg: dog got into a bag of weed edibles at the party and ate a couple pieces
+  label: true
+  tags: [toxin, en, voice]
+  why: 吃了大麻软糖
+- msg: 我那盒吃的软糖 大麻那种 球球叼走吃了一颗
+  label: true
+  tags: [toxin, voice]
+  why: 吃了大麻软糖
+- msg: cat somehow got into my edibles stash a piece is missing
+  label: true
+  tags: [toxin, en, voice]
+  why: 大麻食品少一块
+- msg: 我藏起来的那包草被旺财翻出来嚼了 现在包装都是牙印
+  label: true
+  tags: [toxin, voice]
+  why: 嚼了大麻包装
+- msg: dog found my stash bag and chewed through it there's stuff missing
+  label: true
+  tags: [toxin, en, voice]
+  why: 咬开藏物包
+- msg: 豆豆把药瓶叼着玩了一会 瓶盖没打开 应该没吃到
+  label: false
+  tags: [toxin, gray, voice]
+  why: 瓶盖未开
+- msg: dog was chewing on an empty pill bottle but the cap never came off
+  label: false
+  tags: [toxin, gray, en, voice]
+  why: 空瓶未打开
+- msg: 团子把电池包装盒撕了 但电池好好的在旁边没被咬
+  label: false
+  tags: [toxin, gray, voice]
+  why: 电池完好
+- msg: 我家猫把消毒液瓶子推倒了 瓶盖是紧的 应该没漏
+  label: false
+  tags: [toxin, gray, voice]
+  why: 瓶盖拧紧未漏
+- msg: 球球叼着袜子玩了一下就扔了 袜子还是完整的
+  label: false
+  tags: [toxin, gray, mild, voice]
+  why: 袜子完整
+- msg: cat played with a plastic bag for a bit but didn't tear it or eat any
+  label: false
+  tags: [toxin, gray, en, voice]
+  why: 袋子未破损
+- msg: 旺财把针线盒打开翻了翻 针线都还在没少
+  label: false
+  tags: [toxin, gray, voice]
+  why: 针线都在
+- msg: 皮皮嘴里叼了一小片纸 咽下去一点点 就那么大一点
+  label: false
+  tags: [toxin, gray, mild, keyword_trap, voice]
+  why: 纸片极小
+- msg: dog swallowed a tiny scrap of paper about the size of a fingernail
+  label: false
+  tags: [toxin, gray, mild, keyword_trap, en, voice]
+  why: 纸片极小
+- msg: 维尼舔了一下地上的水渍 后来发现那不是防冻液是普通水洒的
+  label: false
+  tags: [toxin, gray, voice]
+  why: 确认非防冻液
+- msg: 狗吃了降压药会怎么样啊 就是好奇问问
+  label: false
+  tags: [toxin, question, hypothetical, keyword_trap, voice]
+  why: 假设提问
+- msg: what happens if a dog eats a rat poison pellet just asking hypothetically
+  label: false
+  tags: [toxin, question, hypothetical, keyword_trap, en, voice]
+  why: 假设提问
+- msg: 家里哪些东西对猫有毒啊 想提前收拾一下
+  label: false
+  tags: [toxin, question, knowledge, voice]
+  why: 安全知识提问
+- msg: 去年冬天维尼中过一次毒 后来就好了 现在没事
+  label: false
+  tags: [toxin, past, managed, keyword_trap, voice]
+  why: 已是过去的事
+- msg: 我朋友的狗上周误食了巧克力 现在已经好了 就是想跟你说说
+  label: false
+  tags: [toxin, other_owner, past, keyword_trap, voice]
+  why: 别人宠物已处理
+- msg: someone else's dog ate rat poison last month they're fine now already treated
+  label: false
+  tags: [toxin, other_owner, past, keyword_trap, en, voice]
+  why: 别人宠物已处理
+- msg: 我表姐家猫以前吃过洗衣粉 后来医生说没事就是提醒我以后小心
+  label: false
+  tags: [toxin, other_owner, past, keyword_trap, voice]
+  why: 别人宠物过去事
+- msg: 磁铁对宠物有什么危害 就是好奇问问不是真的发生了
+  label: false
+  tags: [toxin, question, hypothetical, knowledge, voice]
+  why: 科普提问
+- msg: 香烟对狗狗有多大毒性啊 就是了解一下知识
+  label: false
+  tags: [toxin, question, knowledge, voice]
+  why: 科普提问
+- msg: 大麻对猫的影响严重吗 只是好奇不是家里有
+  label: false
+  tags: [toxin, question, hypothetical, knowledge, voice]
+  why: 假设科普
+- msg: 我朋友家猫误食了针 已经去医院处理好了 现在没事就是聊聊
+  label: false
+  tags: [toxin, other_owner, past, keyword_trap, voice]
+  why: 别人宠物已处理
+- msg: friend's dog swallowed a needle last year they got it removed at the vet fine now
+  label: false
+  tags: [toxin, other_owner, past, keyword_trap, en, voice]
+  why: 别人宠物已处理
+- msg: 团子今天叼着一节旧电池玩了一下 电池是完好的没咬开
+  label: false
+  tags: [toxin, gray, voice]
+  why: 电池完好未咬开
+- msg: 球球啃了啃磁力片的盒子 盒子有点破但里面磁铁都还在
+  label: false
+  tags: [toxin, gray, voice]
+  why: 磁铁都还在
+- msg: 皮皮咬了咬袜子边角 留了个牙印 袜子还是完整一只
+  label: false
+  tags: [toxin, gray, mild, voice]
+  why: 袜子完整
+- msg: dog chewed the corner of a sock but it's still all there just wet
+  label: false
+  tags: [toxin, gray, mild, en, voice]
+  why: 袜子完整
+- msg: 我家旺财把塑料袋叼着甩了甩就丢一边了 袋子完好没破
+  label: false
+  tags: [toxin, gray, voice]
+  why: 袋子完好
+- msg: cat licked an empty antifreeze jug that had no liquid left in it
+  label: false
+  tags: [toxin, gray, en, voice]
+  why: 容器已空
+- msg: 团子在洁厕灵柜子那边闻了闻 瓶子盖得好好的没打开过
+  label: false
+  tags: [toxin, gray, voice]
+  why: 瓶子未打开
+- msg: 维尼把84消毒液瓶子碰倒了 但瓶盖是拧紧的没漏出来
+  label: false
+  tags: [toxin, gray, voice]
+  why: 瓶盖拧紧未漏
+- msg: 我们家附近有人放老鼠药 我该怎么防止我家狗误食啊
+  label: false
+  tags: [toxin, question, voice]
+  why: 预防性提问
+- msg: what should i do to keep my dog away from rat poison in the yard preventively
+  label: false
+  tags: [toxin, question, en, voice]
+  why: 预防性提问
+- msg: 家里养猫 想问问哪些药物绝对不能让它碰到
+  label: false
+  tags: [toxin, question, knowledge, voice]
+  why: 安全知识提问
+- msg: 之前听说狗吃了葡萄干会怎样 那避孕药呢 就是好奇
+  label: false
+  tags: [toxin, question, hypothetical, keyword_trap, voice]
+  why: 假设提问
+- msg: 我邻居家的狗前几天误食了老鼠药 后来送医院了 现在稳定了
+  label: false
+  tags: [toxin, other_owner, past, keyword_trap, voice]
+  why: 别人宠物已稳定
+- msg: neighbor's cat got into some cleaning chemicals last week already recovered fine
+  label: false
+  tags: [toxin, other_owner, past, keyword_trap, en, voice]
+  why: 别人宠物已恢复
+- msg: 我妈说她小时候养的狗吃过针 也没事 就是听她讲讲
+  label: false
+  tags: [toxin, past, chitchat, keyword_trap, voice]
+  why: 陈年往事
+- msg: 咪咪把一小截线头叼在嘴里玩了一下 后来自己吐出来了完整的
+  label: false
+  tags: [toxin, gray, voice]
+  why: 完整吐出未吞
+- msg: dog had a tiny piece of thread in his mouth but spit it right out intact
+  label: false
+  tags: [toxin, gray, en, voice]
+  why: 完整吐出
+- msg: 糯米叼着玩具零件在那啃了啃 零件没掉下来还连着
+  label: false
+  tags: [toxin, gray, voice]
+  why: 零件仍连着
+- msg: 乐乐咬了咬电池外壳 就是塑料壳有牙印 电芯没破没漏液
+  label: false
+  tags: [toxin, gray, voice]
+  why: 电芯完好
+- msg: cat chewed on the battery compartment cover but the battery itself is untouched
+  label: false
+  tags: [toxin, gray, en, voice]
+  why: 电池未受损
+- msg: 大黄把一片纽扣电池的包装撕了 电池本身还密封着没被咬
+  label: false
+  tags: [toxin, gray, voice]
+  why: 电池仍密封
+- msg: 我在网上看到猫吃磁铁很危险 是真的吗 就是看到文章想确认
+  label: false
+  tags: [toxin, question, knowledge, voice]
+  why: 看文章求证
+- msg: 请问布洛芬对狗的毒性大概是多少 想了解一下知识不是紧急情况
+  label: false
+  tags: [toxin, question, knowledge, voice]
+  why: 科普提问
+- msg: how toxic is ibuprofen for dogs asking out of curiosity for future reference
+  label: false
+  tags: [toxin, question, knowledge, en, voice]
+  why: 科普提问
+- msg: 我家可乐以前误食过塑料袋一小块 后来自己排出来了没事
+  label: false
+  tags: [toxin, past, keyword_trap, voice]
+  why: 过去已自愈
+- msg: dog swallowed a small bit of plastic bag last year it passed on its own fine
+  label: false
+  tags: [toxin, past, keyword_trap, en, voice]
+  why: 过去已自愈
+- msg: 团子舔了舔烟灰缸边缘 但烟头都还在没被叼走
+  label: false
+  tags: [toxin, gray, voice]
+  why: 烟头未被叼走
+- msg: 皮皮闻了闻香烟盒子 没有叼走也没咬开包装
+  label: false
+  tags: [toxin, gray, voice]
+  why: 未咬开包装
+- msg: cat sniffed a cigarette pack but never touched or chewed it
+  label: false
+  tags: [toxin, gray, en, voice]
+  why: 未接触咬合
+- msg: 我表弟家狗上次误食安眠药去医院洗胃了 现在完全好了
+  label: false
+  tags: [toxin, other_owner, past, keyword_trap, voice]
+  why: 别人宠物已痊愈
+- msg: 家里小孩的磁力片玩具 猫要是吃了会很危险吗 提前问问预防
+  label: false
+  tags: [toxin, question, hypothetical, voice]
+  why: 预防性提问
+- msg: 之前听说狗误食袜子要开刀 我家狗只是叼着玩没吃 想确认一下安全知识
+  label: false
+  tags: [toxin, gray, question, keyword_trap, voice]
+  why: 只是叼玩未吃
+- msg: 维尼把塑料袋叼进嘴里又吐出来了 一点没吃
+  label: false
+  tags: [toxin, gray, voice]
+  why: 吐出未吃
+- msg: dog picked up a plastic bag and dropped it right away didn't eat any
+  label: false
+  tags: [toxin, gray, en, voice]
+  why: 放下未吃
+- msg: 我朋友的猫上周吞了个玩具零件 已经手术取出来了 现在恢复得挺好
+  label: false
+  tags: [toxin, other_owner, past, keyword_trap, voice]
+  why: 别人宠物已手术
+- msg: friend's dog ate a magnet toy last month surgery went fine he's recovered now
+  label: false
+  tags: [toxin, other_owner, past, keyword_trap, en, voice]
+  why: 别人宠物已恢复
+- msg: 团子对着老鼠药盒子闻了半天 但没有扒开也没舔到
+  label: false
+  tags: [toxin, gray, voice]
+  why: 未扒开未舔到
+- msg: 请问家里养兔子 哪些日常用品对它有毒需要收起来的
+  label: false
+  tags: [toxin, question, knowledge, voice]
+  why: 安全知识提问

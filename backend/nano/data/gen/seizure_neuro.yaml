@@ -1,0 +1,1200 @@
+- msg: 豆豆突然全身抖起来 眼睛往上翻 嘴角有白沫
+  label: true
+  tags: [neuro, voice]
+  why: 全身抽搐白沫
+- msg: 我家猫刚才躺那一直抽 四条腿硬邦邦的
+  label: true
+  tags: [neuro, voice]
+  why: 抽动四肢僵硬
+- msg: 维尼今天倒在地上手脚一直蹬 完了完了怎么办
+  label: true
+  tags: [neuro, voice, panic]
+  why: 倒地手脚蹬
+- msg: 花花突然僵住了 全身在抖 叫她也没反应
+  label: true
+  tags: [neuro, voice]
+  why: 僵住发抖无反应
+- msg: 球球抽搐了 已经快一分钟了还没停
+  label: true
+  tags: [seizure, voice]
+  why: 抽搐超一分钟
+- msg: luna is shaking really hard and her legs are stiff idk what to do
+  label: true
+  tags: [neuro, en, voice]
+  why: 抖得厉害腿僵硬
+- msg: max just had a seizure like a minute ago he's still out of it
+  label: true
+  tags: [seizure, en]
+  why: 刚发作还没恢复
+- msg: 旺财刚才突然倒地上抖 嘴里流白沫子 眼睛也翻了
+  label: true
+  tags: [neuro, voice]
+  why: 倒地抖白沫翻眼
+- msg: 团子在笼子里一直抽 身体绷得很直
+  label: true
+  tags: [neuro, voice]
+  why: 仓鼠抽动僵直
+- msg: 小维刚才那个 突然就倒了 四肢一直蹬 口吐白沫 已经十几秒了
+  label: true
+  tags: [neuro, voice, panic]
+  why: 倒地蹬腿吐白沫
+- msg: mochi is having like a fit right now shaking all over eyes rolled back
+  label: true
+  tags: [neuro, en]
+  why: 抽动眼睛上翻
+- msg: 咪咪抽搐好久了 都两分钟了还没好 要不要去医院
+  label: true
+  tags: [seizure, voice]
+  why: 抽搐持续两分钟
+- msg: 我狗刚才莫名其妙就倒地上抖成一团 现在还在抖
+  label: true
+  tags: [neuro, voice]
+  why: 倒地抖成一团
+- msg: whiskers just collapsed and is twitching non stop omg
+  label: true
+  tags: [neuro, en]
+  why: 倒地不停抽动
+- msg: 那个 我家狗 突然抽搐发作了 全身僵硬
+  label: true
+  tags: [seizure, voice, panic]
+  why: 抽搐发作全身僵
+- msg: 花花在客厅突然倒了 四条腿一直蹬 眼睛白的 完了咋办呀
+  label: true
+  tags: [neuro, voice, panic]
+  why: 倒地蹬腿翻白眼
+- msg: dog is seizing right now first time this happens what do i do
+  label: true
+  tags: [seizure, en]
+  why: 正在发作中
+- msg: 豆豆嘴巴一直抖 身体也僵硬 叫他也不理人
+  label: true
+  tags: [neuro, voice]
+  why: 嘴抖僵硬无反应
+- msg: coco兔子突然倒地一直抖 眼皮往上翻
+  label: true
+  tags: [neuro, voice]
+  why: 兔子倒地发抖翻眼
+- msg: 皮皮在笼子里扑腾抽搐 站不起来了
+  label: true
+  tags: [seizure, voice]
+  why: 鸟抽搐站不起来
+- msg: 仓鼠一直抖 站都站不稳
+  label: true
+  tags: [neuro, voice]
+  why: 抖得站不住
+- msg: 我家猫抽出来了 就现在 浑身硬邦邦的
+  label: true
+  tags: [neuro, typo, voice]
+  why: 抽动身体僵硬
+- msg: 维尼突然发抖发的很厉害 站不住 眼神也不对 完了怎么办呀
+  label: true
+  tags: [neuro, voice, panic]
+  why: 抖得厉害站不稳
+- msg: bro my dog is literally seizing on the floor right now help
+  label: true
+  tags: [seizure, en, panic]
+  why: 正在抽搐求助
+- msg: 那个 球球 刚才 就是 突然倒地上 一直抖 好几十秒了
+  label: true
+  tags: [neuro, voice]
+  why: 倒地抖几十秒
+- msg: 豆豆抽搐完了 现在软趴趴的不动
+  label: true
+  tags: [seizure, voice]
+  why: 抽搐后软趴不动
+- msg: luna's whole body just locked up and she's twitching like crazy
+  label: true
+  tags: [neuro, en]
+  why: 全身锁住抽动
+- msg: 米米突然口吐白沫 四肢僵直 眼睛往上吊
+  label: true
+  tags: [neuro, voice]
+  why: 白沫僵直翻眼
+- msg: dog just had a seizure lasting over 2 minutes still going omg
+  label: true
+  tags: [seizure, en, panic]
+  why: 持续抽搐超两分
+- msg: 花花刚才在地上一直抖 抖得整个身体都在震 完了完了
+  label: true
+  tags: [neuro, voice, panic]
+  why: 抖得全身震动
+- msg: 咪咪头一直歪着 走路也不稳 转圈圈 完了咋办
+  label: true
+  tags: [neuro, voice, panic]
+  why: 头歪走路转圈
+- msg: 豆豆今天走路歪歪扭扭的 一直往一边倒
+  label: true
+  tags: [neuro, voice]
+  why: 走路歪斜一直倒
+- msg: dog keeps walking in circles and can't keep his head straight
+  label: true
+  tags: [neuro, en]
+  why: 转圈头偏不直
+- msg: 维尼突然不会走路了 一直转圈 叫他也反应很慢
+  label: true
+  tags: [neuro, voice]
+  why: 不会走转圈反应慢
+- msg: my cat's head is tilted to one side and she keeps falling over
+  label: true
+  tags: [neuro, en]
+  why: 头歪一直摔倒
+- msg: 花花走路一瘸一拐还老往墙上撞 眼神也呆呆的
+  label: true
+  tags: [neuro, voice]
+  why: 撞墙眼神呆滞
+- msg: 球球突然间站不稳 走两步就倒 头一直晃
+  label: true
+  tags: [neuro, voice, panic]
+  why: 站不稳头晃
+- msg: luna is stumbling around like she's drunk and her head is tilted
+  label: true
+  tags: [neuro, en]
+  why: 走不稳头歪斜
+- msg: 旺财今天怪怪的 走路撞到桌子腿 反应也很慢
+  label: true
+  tags: [neuro, voice]
+  why: 撞桌反应慢
+- msg: 米米突然眼神涣散 走路东倒西歪的
+  label: true
+  tags: [neuro, voice]
+  why: 眼神涣散走不稳
+- msg: max can't walk straight he's like wobbling and bumping into stuff
+  label: true
+  tags: [neuro, en]
+  why: 走不直撞东西
+- msg: 那个 我家猫 就是突然 走路歪了 一直往左边倒
+  label: true
+  tags: [neuro, voice]
+  why: 走路突然歪斜
+- msg: 小维走着走着就摔了 站起来又摔 头一直偏着
+  label: true
+  tags: [neuro, voice]
+  why: 反复摔头偏着
+- msg: dog is disoriented and walking into furniture nonstop
+  label: true
+  tags: [neuro, en]
+  why: 迷糊撞家具
+- msg: 团子突然反应特别慢 眼睛也不太聚焦 走路歪
+  label: true
+  tags: [neuro, voice]
+  why: 反应慢眼神呆
+- msg: 豆豆脖子一直歪着不能动 走路也不平衡
+  label: true
+  tags: [neuro, voice]
+  why: 脖子歪不平衡
+- msg: whiskers keeps circling in the same spot and won't stop
+  label: true
+  tags: [neuro, en]
+  why: 原地转圈不停
+- msg: 花花今天走路老是往一边偏 感觉平衡不好
+  label: true
+  tags: [neuro, voice]
+  why: 走路偏一边
+- msg: 咪咪突然像喝醉了一样走不稳 头晃来晃去
+  label: true
+  tags: [neuro, voice]
+  why: 走不稳像喝醉
+- msg: mochi has been walking in circles for 10 minutes straight
+  label: true
+  tags: [neuro, en]
+  why: 转圈十分钟
+- msg: 维尼突然眼球一直抖 而且走路很不稳
+  label: true
+  tags: [neuro, voice]
+  why: 眼球抖走不稳
+- msg: 我家狗今天走着走着就撞到门框了 好几次了
+  label: true
+  tags: [neuro, voice]
+  why: 反复撞门框
+- msg: dog's eyes are twitching side to side and he's off balance
+  label: true
+  tags: [neuro, en]
+  why: 眼球抖失平衡
+- msg: 球球脑袋一直往一边偏 走路也拖着腿
+  label: true
+  tags: [neuro, voice]
+  why: 头偏拖腿走
+- msg: 那个 猫猫 就是 反应特别迟钝 走路撞墙了两次
+  label: true
+  tags: [neuro, voice]
+  why: 反应迟钝撞墙
+- msg: luna's balance is completely off she fell over three times
+  label: true
+  tags: [neuro, en]
+  why: 平衡差摔三次
+- msg: 花花头一直点头一样抖 走两步就晕倒似的
+  label: true
+  tags: [neuro, voice]
+  why: 头抖走两步晕
+- msg: 豆豆突然对我完全没反应 眼神空洞 走路乱撞
+  label: true
+  tags: [neuro, voice, panic]
+  why: 眼神空洞乱撞
+- msg: cat is wobbling around and bumping into everything like she's blind
+  label: true
+  tags: [neuro, en]
+  why: 撞东西像失明
+- msg: 米米今天走路一直往右偏 头也歪着 叫她反应很慢
+  label: true
+  tags: [neuro, voice]
+  why: 走路偏头歪反应慢
+- msg: 豆豆突然就倒下去了 现在起不来
+  label: true
+  tags: [neuro, voice]
+  why: 突然倒下起不来
+- msg: dog just collapsed and won't get up
+  label: true
+  tags: [neuro, en]
+  why: 倒下站不起来
+- msg: 维尼在院子里玩着玩着突然倒了 怎么叫都不起来
+  label: true
+  tags: [neuro, voice, panic]
+  why: 倒地叫不起来
+- msg: my cat suddenly collapsed on the floor and can't stand
+  label: true
+  tags: [neuro, en]
+  why: 倒地站不起来
+- msg: 花花刚才走着走着腿一软就倒地上了
+  label: true
+  tags: [neuro, voice]
+  why: 腿软倒地
+- msg: luna just dropped to the ground and isn't moving much
+  label: true
+  tags: [neuro, en]
+  why: 倒地不太动
+- msg: 那个 我家狗 突然 就是 倒地上了 起不来那种
+  label: true
+  tags: [neuro, voice, panic]
+  why: 倒地起不来
+- msg: 球球玩着球突然倒下 现在趴着不动
+  label: true
+  tags: [neuro, voice]
+  why: 倒下趴着不动
+- msg: max collapsed mid walk and he's just laying there
+  label: true
+  tags: [neuro, en]
+  why: 走路中倒下
+- msg: 咪咪从猫爬架上下来突然就倒了 站不起来
+  label: true
+  tags: [neuro, voice]
+  why: 下架突然倒地
+- msg: 旺财刚才在客厅走着走着腿软了直接倒地上
+  label: true
+  tags: [neuro, voice]
+  why: 走着腿软倒地
+- msg: whiskers fell over and can't get back up at all
+  label: true
+  tags: [neuro, en]
+  why: 摔倒爬不起来
+- msg: 小维突然一软就趴下了 叫他也没反应站起来
+  label: true
+  tags: [neuro, voice]
+  why: 一软趴下无反应
+- msg: dog just fainted and dropped right in front of me
+  label: true
+  tags: [neuro, en]
+  why: 昏倒当场摔下
+- msg: 团子在笼子里突然倒下 一直趴着不动
+  label: true
+  tags: [neuro, voice]
+  why: 仓鼠倒下不动
+- msg: 米米刚才在阳台上突然倒了 现在还是趴着
+  label: true
+  tags: [neuro, voice]
+  why: 阳台倒下趴着
+- msg: cat collapsed suddenly and is just lying there limp
+  label: true
+  tags: [neuro, en]
+  why: 倒地软趴无力
+- msg: 花花走两步就倒 倒了好几次了
+  label: true
+  tags: [neuro, voice]
+  why: 走两步就倒好几次
+- msg: 豆豆突然腿一软整个人趴下去了 起不来
+  label: true
+  tags: [neuro, voice]
+  why: 腿软趴下起不来
+- msg: dog suddenly went limp and collapsed on the kitchen floor
+  label: true
+  tags: [neuro, en]
+  why: 软倒厨房地上
+- msg: 那个 维尼 就是 突然倒了 完了完了怎么办
+  label: true
+  tags: [neuro, voice, panic]
+  why: 突然倒了完了
+- msg: 米米一直想站起来但是腿软根本站不住
+  label: true
+  tags: [neuro, voice]
+  why: 想站腿软站不住
+- msg: 球球刚洗完澡出来突然就倒地上了
+  label: true
+  tags: [neuro, voice]
+  why: 洗完澡突然倒地
+- msg: 豆豆跑了一会突然倒地 起不来了
+  label: true
+  tags: [neuro, voice]
+  why: 跑后倒地起不来
+- msg: 咪咪突然软下去趴在地上 一动不动
+  label: true
+  tags: [neuro, voice]
+  why: 软下去一动不动
+- msg: 皮皮从架子上掉下来后一直趴着起不来
+  label: true
+  tags: [neuro, voice]
+  why: 鸟摔落趴着不起
+- msg: coco兔子突然侧倒在笼子里 起不来了
+  label: true
+  tags: [neuro, voice]
+  why: 兔子侧倒起不来
+- msg: 旺财侧着倒下爬不起来
+  label: true
+  tags: [neuro, voice]
+  why: 侧倒爬不起来
+- msg: 米米刚才玩着玩着突然倒了 怎么摸都不动
+  label: true
+  tags: [neuro, voice]
+  why: 倒地怎么摸不动
+- msg: 花花走着走着腿突然软掉整个趴下去了
+  label: true
+  tags: [neuro, voice]
+  why: 腿软整个趴下
+- msg: 豆豆叫他一点反应都没有 摸他也不理
+  label: true
+  tags: [neuro, voice]
+  why: 叫不应摸不理
+- msg: dog won't wake up no matter how much i shake him
+  label: true
+  tags: [neuro, en]
+  why: 怎么摇都不醒
+- msg: 咪咪一直闭着眼睛 怎么叫都没反应
+  label: true
+  tags: [neuro, voice]
+  why: 闭眼无反应
+- msg: my cat is completely unresponsive right now
+  label: true
+  tags: [neuro, en]
+  why: 完全无反应
+- msg: 维尼躺在那眼睛半睁着 叫不醒
+  label: true
+  tags: [neuro, voice]
+  why: 半睁眼叫不醒
+- msg: luna is not responding to anything i do she's just laying there
+  label: true
+  tags: [neuro, en]
+  why: 毫无反应躺着
+- msg: 那个 我家狗 就是 叫不醒那种 一直没反应
+  label: true
+  tags: [neuro, voice, panic]
+  why: 叫不醒无反应
+- msg: 球球现在跟睡着了一样 但是怎么弄都不醒
+  label: true
+  tags: [neuro, voice]
+  why: 像睡着弄不醒
+- msg: max is completely out cold and not responding at all
+  label: true
+  tags: [neuro, en]
+  why: 昏迷无反应
+- msg: 花花摸她也不动 叫她名字也没反应
+  label: true
+  tags: [neuro, voice]
+  why: 摸不动叫不理
+- msg: whiskers is limp and unresponsive i can't wake her up
+  label: true
+  tags: [neuro, en]
+  why: 软瘫叫不醒
+- msg: 米米躺着一动不动 眼睛也没睁开
+  label: true
+  tags: [neuro, voice]
+  why: 一动不动没睁眼
+- msg: dog is basically unconscious right now super scary
+  label: true
+  tags: [neuro, en, panic]
+  why: 几乎昏迷吓人
+- msg: 团子在窝里一直不动 碰他也没反应
+  label: true
+  tags: [neuro, voice]
+  why: 不动碰他没反应
+- msg: 小维突然就没反应了 怎么喊都不理
+  label: true
+  tags: [neuro, voice, panic]
+  why: 突然没反应喊不理
+- msg: cat won't open her eyes and doesn't react to anything
+  label: true
+  tags: [neuro, en]
+  why: 不睁眼不反应
+- msg: 那个 咪咪 就是 昏过去了 完全没反应
+  label: true
+  tags: [neuro, voice, panic]
+  why: 昏过去无反应
+- msg: luna's just lying there completely still not responding
+  label: true
+  tags: [neuro, en]
+  why: 静止不动不反应
+- msg: 豆豆眼睛闭着 拍他脸也没反应
+  label: true
+  tags: [neuro, voice]
+  why: 拍脸没反应
+- msg: dog collapsed and now he's just not waking up at all
+  label: true
+  tags: [neuro, en]
+  why: 倒地叫不醒
+- msg: 旺财倒地后就一直叫不醒
+  label: true
+  tags: [neuro, voice]
+  why: 倒地叫不醒
+- msg: 兔子完全没反应也不动
+  label: true
+  tags: [neuro, voice]
+  why: 兔子无反应不动
+- msg: 花花现在跟死了一样躺着 但是还有呼吸
+  label: true
+  tags: [neuro, voice, panic]
+  why: 跟死了一样有呼吸
+- msg: 猫咪呼吸很弱而且完全没反应
+  label: true
+  tags: [neuro, voice]
+  why: 呼吸弱无反应
+- msg: 维尼摸他身体软软的 叫他完全没反应
+  label: true
+  tags: [neuro, voice]
+  why: 身体软叫无反应
+- msg: 豆豆昏过去好几分钟都没动
+  label: true
+  tags: [neuro, voice]
+  why: 昏过去几分钟不动
+- msg: 球球叫了好几声都没反应 平时叫就跑过来的
+  label: true
+  tags: [neuro, voice]
+  why: 叫多声不理平时会来
+- msg: 摩奇叫她名字完全没反应
+  label: true
+  tags: [neuro, voice]
+  why: 叫名字无反应
+- msg: 米米躺着眼皮都不眨一下 叫不醒
+  label: true
+  tags: [neuro, voice]
+  why: 眼皮不眨叫不醒
+- msg: 那个 我家猫 就是突然 没反应了 摸也不理
+  label: true
+  tags: [neuro, voice, panic]
+  why: 突然没反应摸不理
+- msg: 豆豆眼睛往上翻 只看得到白色的
+  label: true
+  tags: [neuro, voice]
+  why: 眼睛翻白看不到瞳孔
+- msg: dog's eyes are rolled all the way back right now
+  label: true
+  tags: [neuro, en]
+  why: 眼睛翻到底
+- msg: 咪咪眼球一直往上吊 看不到瞳孔了
+  label: true
+  tags: [neuro, voice]
+  why: 眼球上吊无瞳孔
+- msg: my cat's eyes rolled back and she's just staring blank
+  label: true
+  tags: [neuro, en]
+  why: 眼睛翻白发呆
+- msg: 维尼刚才眼睛翻白了一下 现在还怪怪的
+  label: true
+  tags: [neuro, voice]
+  why: 眼睛翻白怪异
+- msg: luna's eyes went completely white i can only see the whites
+  label: true
+  tags: [neuro, en]
+  why: 眼睛全白
+- msg: 那个 花花 就是 眼睛翻上去了 露出白眼球
+  label: true
+  tags: [neuro, voice]
+  why: 眼睛翻上白眼球
+- msg: 球球突然眼睛一直往上翻 吓死我了
+  label: true
+  tags: [neuro, voice, panic]
+  why: 眼睛一直往上翻
+- msg: max's eyes are rolled back and he's not blinking
+  label: true
+  tags: [neuro, en]
+  why: 眼睛翻不眨眼
+- msg: 小维眼睛翻白 身体也僵着
+  label: true
+  tags: [neuro, voice]
+  why: 眼睛翻白身体僵
+- msg: cat's eyeballs rolled up and she looks completely blank
+  label: true
+  tags: [neuro, en]
+  why: 眼球上翻发呆
+- msg: 米米刚才眼睛突然翻白 持续了好几秒
+  label: true
+  tags: [neuro, voice]
+  why: 翻白持续数秒
+- msg: 那个 我家狗 就是 眼睛往上翻 看不见眼珠了
+  label: true
+  tags: [neuro, voice]
+  why: 眼睛往上翻看不见眼珠
+- msg: dog's eyes rolled back into his head just now
+  label: true
+  tags: [neuro, en]
+  why: 眼睛翻进脑袋
+- msg: 旺财眼睛翻着白眼 嘴巴也在抖
+  label: true
+  tags: [neuro, voice]
+  why: 翻白眼嘴巴抖
+- msg: whiskers' eyes have rolled back and she's frozen
+  label: true
+  tags: [neuro, en]
+  why: 眼睛翻僵住
+- msg: 团子突然眼睛往上吊 一直没恢复
+  label: true
+  tags: [neuro, voice]
+  why: 眼睛上吊没恢复
+- msg: rabbit's eyes rolled back and he's not moving
+  label: true
+  tags: [neuro, en]
+  why: 兔子眼睛翻白不动
+- msg: 咪咪眼睛翻白持续了快一分钟 好可怕
+  label: true
+  tags: [neuro, voice, panic]
+  why: 翻白眼将近一分钟
+- msg: 咪咪眼睛翻得只剩眼白 看着瘆人
+  label: true
+  tags: [neuro, voice]
+  why: 眼睛翻只剩眼白
+- msg: 豆豆刚才眼睛一下翻上去了 现在人也迷糊
+  label: true
+  tags: [neuro, voice]
+  why: 眼睛翻上人迷糊
+- msg: dog just rolled his eyes back and went stiff
+  label: true
+  tags: [neuro, en]
+  why: 眼睛翻僵直
+- msg: 花花眼睛翻白同时身体也在抖
+  label: true
+  tags: [neuro, voice]
+  why: 翻白眼同时抖动
+- msg: 维尼眼球往上翻僵在那里不动
+  label: true
+  tags: [neuro, voice]
+  why: 眼球翻僵住
+- msg: 米米突然眼珠不见了只剩白色的
+  label: true
+  tags: [neuro, voice]
+  why: 眼珠不见只剩白色
+- msg: 豆豆眼睛突然变白了 一下子就翻上去了
+  label: true
+  tags: [neuro, voice]
+  why: 眼睛突然变白翻上
+- msg: 那个 维尼 就是 眼睛翻了 白眼球露出来那种
+  label: true
+  tags: [neuro, voice]
+  why: 眼睛翻白眼球外露
+- msg: 猫的瞳孔看不见了 全是白色的
+  label: true
+  tags: [neuro, voice]
+  why: 瞳孔消失全白
+- msg: 球球眼睛往上翻还流口水
+  label: true
+  tags: [neuro, voice]
+  why: 翻白眼流口水
+- msg: 维尼翻白眼之后整个人就倒下了
+  label: true
+  tags: [neuro, voice]
+  why: 翻白眼后倒下
+- msg: 豆豆刚才走路直接撞墙上了 好几次
+  label: true
+  tags: [neuro, voice]
+  why: 撞墙好几次
+- msg: dog keeps walking into walls like he can't see
+  label: true
+  tags: [neuro, en]
+  why: 撞墙像看不见
+- msg: 咪咪走路一直撞到家具 感觉看不见东西
+  label: true
+  tags: [neuro, voice]
+  why: 撞家具像看不见
+- msg: my cat just walked straight into the wall twice
+  label: true
+  tags: [neuro, en]
+  why: 撞墙两次
+- msg: 维尼走着走着一头撞到门上了
+  label: true
+  tags: [neuro, voice]
+  why: 撞门走路异常
+- msg: luna bumped into the couch then the wall she seems lost
+  label: true
+  tags: [neuro, en]
+  why: 撞沙发撞墙迷失
+- msg: 那个 花花 就是走路 一直撞东西 反应很奇怪
+  label: true
+  tags: [neuro, voice]
+  why: 撞东西反应奇怪
+- msg: 球球走路直接撞到我腿上 感觉方向感没了
+  label: true
+  tags: [neuro, voice]
+  why: 撞腿方向感消失
+- msg: max walked face first into the door just now
+  label: true
+  tags: [neuro, en]
+  why: 直接撞门
+- msg: 小维走路老撞墙 眼神也很呆
+  label: true
+  tags: [neuro, voice]
+  why: 老撞墙眼神呆
+- msg: cat is bumping into everything like she's disoriented
+  label: true
+  tags: [neuro, en]
+  why: 撞东西方向感差
+- msg: 米米走着走着撞到桌子腿好几回
+  label: true
+  tags: [neuro, voice]
+  why: 撞桌腿好几回
+- msg: 那个 我家狗 就是 一直撞墙 走路也很奇怪
+  label: true
+  tags: [neuro, voice]
+  why: 一直撞墙走路怪
+- msg: dog just ran into the wall and seems really confused
+  label: true
+  tags: [neuro, en]
+  why: 撞墙很困惑
+- msg: 旺财今天走路撞到好几样东西 平时不会这样
+  label: true
+  tags: [neuro, voice]
+  why: 撞多样东西异常
+- msg: whiskers keeps walking into the same wall over and over
+  label: true
+  tags: [neuro, en]
+  why: 反复撞同一面墙
+- msg: 团子在笼子里一直撞笼子边 转不出方向
+  label: true
+  tags: [neuro, voice]
+  why: 仓鼠撞笼子边转向
+- msg: rabbit keeps bumping into the cage walls
+  label: true
+  tags: [neuro, en]
+  why: 兔子撞笼壁
+- msg: 咪咪走路撞到我 感觉完全没看到我
+  label: true
+  tags: [neuro, voice]
+  why: 撞人像没看到
+- msg: cat walked straight into a chair leg just now
+  label: true
+  tags: [neuro, en]
+  why: 撞椅子腿
+- msg: 豆豆撞墙好几次了 走路完全没方向
+  label: true
+  tags: [neuro, voice]
+  why: 撞墙好几次无方向
+- msg: dog is walking into everything he seems totally lost
+  label: true
+  tags: [neuro, en]
+  why: 撞东西完全迷失
+- msg: 米米撞到椅子腿上了 刚刚的事
+  label: true
+  tags: [neuro, voice]
+  why: 撞椅子腿刚发生
+- msg: 豆豆一直撞东西 完全没有方向感
+  label: true
+  tags: [neuro, voice]
+  why: 一直撞东西无方向
+- msg: 维尼撞到冰箱又撞到沙发 反应很怪
+  label: true
+  tags: [neuro, voice]
+  why: 撞冰箱撞沙发反应怪
+- msg: 豆豆一直用头撞家具 好几次了
+  label: true
+  tags: [neuro, voice]
+  why: 用头撞家具反复
+- msg: 猫咪撞到墙之后就愣住站着不动
+  label: true
+  tags: [neuro, voice]
+  why: 撞墙后愣住不动
+- msg: 旺财撞墙之后整个人呆呆的
+  label: true
+  tags: [neuro, voice]
+  why: 撞墙后发呆
+- msg: 豆豆后腿突然就不能动了 拖着走
+  label: true
+  tags: [neuro, voice]
+  why: 后腿不能动拖着走
+- msg: dog's back legs suddenly stopped working
+  label: true
+  tags: [neuro, en]
+  why: 后腿突然不能用
+- msg: 咪咪后半身突然瘫了 完全站不起来
+  label: true
+  tags: [neuro, voice]
+  why: 后半身瘫站不起
+- msg: my dog's hind legs just gave out completely
+  label: true
+  tags: [neuro, en]
+  why: 后腿完全无力
+- msg: 维尼下半身突然没知觉了 拖着后腿爬
+  label: true
+  tags: [neuro, voice]
+  why: 下半身无知觉拖腿爬
+- msg: luna can't move her back legs at all now
+  label: true
+  tags: [neuro, en]
+  why: 后腿完全不能动
+- msg: 那个 花花 就是 后腿 突然瘫了 拖地走
+  label: true
+  tags: [neuro, voice]
+  why: 后腿突然瘫拖地走
+- msg: 球球刚才跳下沙发后突然后腿不能动了
+  label: true
+  tags: [neuro, voice]
+  why: 跳下后腿不能动
+- msg: max's back half is paralyzed he's dragging himself
+  label: true
+  tags: [neuro, en]
+  why: 后半身瘫拖行
+- msg: 小维后腿完全没力气 站都站不起来
+  label: true
+  tags: [neuro, voice]
+  why: 后腿无力站不起
+- msg: dog suddenly can't use his hind legs at all
+  label: true
+  tags: [neuro, en]
+  why: 突然不能用后腿
+- msg: 米米后腿突然软了 一点力气都没有
+  label: true
+  tags: [neuro, voice]
+  why: 后腿软没力气
+- msg: 那个 我家狗 就是 后半身 突然不能动了
+  label: true
+  tags: [neuro, voice]
+  why: 后半身突然不能动
+- msg: cat's back legs are completely limp right now
+  label: true
+  tags: [neuro, en]
+  why: 后腿完全软瘫
+- msg: 旺财今天早上起来后腿突然瘫痪了
+  label: true
+  tags: [neuro, voice]
+  why: 起床后腿瘫痪
+- msg: whiskers's hind end just stopped moving suddenly
+  label: true
+  tags: [neuro, en]
+  why: 后半身停止移动
+- msg: dog's back legs are dragging he can't feel them
+  label: true
+  tags: [neuro, en]
+  why: 拖后腿无知觉
+- msg: 咪咪跳下来以后后腿就不能走了
+  label: true
+  tags: [neuro, voice]
+  why: 跳下后腿不能走
+- msg: 兔子后腿突然不能动了
+  label: true
+  tags: [neuro, voice]
+  why: 兔子后腿不能动
+- msg: 花花今天早上开始后腿就不能动了
+  label: true
+  tags: [neuro, voice]
+  why: 早上起后腿不能动
+- msg: my cat can't move her hind legs since this morning
+  label: true
+  tags: [neuro, en]
+  why: 今早起后腿不能动
+- msg: 豆豆突然就没办法用后腿了
+  label: true
+  tags: [neuro, voice]
+  why: 突然无法用后腿
+- msg: dog just lost use of his back legs out of nowhere
+  label: true
+  tags: [neuro, en]
+  why: 突然失去后腿功能
+- msg: 团子后腿突然不能动 一直拖着
+  label: true
+  tags: [neuro, voice]
+  why: 仓鼠后腿不能动
+- msg: 米米下半身突然不能动了 尿也失禁了
+  label: true
+  tags: [neuro, voice, panic]
+  why: 下半身瘫伴失禁
+- msg: 猫咪后半身瘫痪 不用猫砂盆了
+  label: true
+  tags: [neuro, voice]
+  why: 后半身瘫不用砂盆
+- msg: 那个 维尼 就是 后腿瘫了 完全拖着走那种
+  label: true
+  tags: [neuro, voice]
+  why: 后腿瘫完全拖着走
+- msg: luna's back legs just gave out while she was walking
+  label: true
+  tags: [neuro, en]
+  why: 走路中后腿软倒
+- msg: 米米走着走着后腿突然软了
+  label: true
+  tags: [neuro, voice]
+  why: 走着走着后腿软
+- msg: dog suddenly dragging his back legs behind him
+  label: true
+  tags: [neuro, en]
+  why: 拖着后腿走
+- msg: 旺财一直拖着后腿走路
+  label: true
+  tags: [neuro, voice]
+  why: 一直拖后腿走路
+- msg: 花花刚生完崽 现在突然抽起来了 全身僵硬
+  label: true
+  tags: [neuro, voice]
+  why: 产后抽动全身僵硬
+- msg: my dog just had puppies and now she's shaking uncontrollably
+  label: true
+  tags: [neuro, en]
+  why: 产后剧烈颤抖
+- msg: 咪咪生完小猫后突然倒地一直抖
+  label: true
+  tags: [neuro, voice]
+  why: 产后倒地发抖
+- msg: mama dog just collapsed and is twitching after giving birth
+  label: true
+  tags: [neuro, en, panic]
+  why: 产后倒地抽动
+- msg: 那个 维尼 就是 生完崽没几天 突然抽搐了
+  label: true
+  tags: [seizure, voice]
+  why: 产后抽搐
+- msg: luna had puppies last week and now she's seizing
+  label: true
+  tags: [seizure, en]
+  why: 产后癫痫样发作
+- msg: 豆豆妈妈刚生完宝宝 现在四肢僵硬走不了路
+  label: true
+  tags: [neuro, voice]
+  why: 产后四肢僵硬
+- msg: dog gave birth 3 days ago and now she's stiff and shaking all over
+  label: true
+  tags: [neuro, en]
+  why: 产后浑身僵硬发抖
+- msg: 球球生完之后突然站不稳 肌肉一直抽
+  label: true
+  tags: [neuro, voice]
+  why: 产后肌肉抽动
+- msg: new mom cat is twitching and can't stand after delivery
+  label: true
+  tags: [neuro, en]
+  why: 产后抽动站不稳
+- msg: 花花产后突然倒下 一直哆嗦 完了怎么办
+  label: true
+  tags: [neuro, voice, panic]
+  why: 产后倒下哆嗦
+- msg: mother dog collapsed suddenly right after nursing the puppies
+  label: true
+  tags: [neuro, en]
+  why: 产后突然倒地
+- msg: 米米生完猫崽后精神很差 现在还抽了一下
+  label: true
+  tags: [neuro, voice]
+  why: 产后精神差有抽动
+- msg: dog just had a litter and now she's having tremors all over
+  label: true
+  tags: [neuro, en]
+  why: 产后全身震颤
+- msg: 那个 我家狗 就是 刚生完 突然全身僵硬发抖
+  label: true
+  tags: [neuro, voice]
+  why: 产后突然僵硬发抖
+- msg: 小狗才两个月大 突然一直发抖 没力气
+  label: true
+  tags: [neuro, voice]
+  why: 幼犬发抖没力气
+- msg: my puppy is tiny and shaking really bad right now
+  label: true
+  tags: [neuro, en]
+  why: 幼犬剧烈发抖
+- msg: 豆豆是小奶狗 今天突然抖得站不住
+  label: true
+  tags: [neuro, voice]
+  why: 小奶狗抖得站不住
+- msg: tiny puppy suddenly weak and trembling nonstop
+  label: true
+  tags: [neuro, en]
+  why: 幼犬突然虚弱发抖
+- msg: 那只小奶狗突然软趴趴的还一直抖
+  label: true
+  tags: [neuro, voice]
+  why: 奶狗软趴还发抖
+- msg: my toy breed puppy is shivering and can't stand up
+  label: true
+  tags: [neuro, en]
+  why: 幼犬发抖站不起
+- msg: 小球球才三个月 突然抖得很厉害还没精神
+  label: true
+  tags: [neuro, voice]
+  why: 幼犬抖得厉害没精神
+- msg: 小狗才三个月大 突然抖得站不住 没精神
+  label: true
+  tags: [neuro, voice]
+  why: 幼犬抖得站不住
+- msg: 刚满月的小狗现在浑身发抖 叫他没反应
+  label: true
+  tags: [neuro, voice]
+  why: 满月幼犬全身发抖
+- msg: 幼犬突然倒下一直发抖 站不起来
+  label: true
+  tags: [neuro, voice]
+  why: 幼犬倒下发抖
+- msg: 小维尼幼犬突然软了 一直抖 没吃东西
+  label: true
+  tags: [neuro, voice]
+  why: 幼犬软了一直抖
+- msg: 刚满月的小狗现在浑身无力还发抖
+  label: true
+  tags: [neuro, voice]
+  why: 满月幼犬无力发抖
+- msg: my small puppy is twitching and won't get up at all
+  label: true
+  tags: [neuro, en]
+  why: 幼犬抽动不起
+- msg: 小奶猫也是 突然一直发抖软绵绵的
+  label: true
+  tags: [neuro, voice]
+  why: 幼猫发抖软绵绵
+- msg: puppy hasn't eaten and now he's shaking and can't stand
+  label: true
+  tags: [neuro, en]
+  why: 未进食发抖站不住
+- msg: 小狗突然软了一直抽动站不起来
+  label: true
+  tags: [neuro, voice]
+  why: 幼犬软了抽动站不起
+- msg: 我家狗去年抽搐过一次 后来就没事了
+  label: false
+  tags: [past, keyword_trap, voice]
+  why: 去年抽搐过一次
+- msg: my dog had a seizure like a year ago but he's been fine since
+  label: false
+  tags: [past, keyword_trap, en]
+  why: 一年前抽搐过
+- msg: 咪咪小时候抽过一次 现在都没再犯过
+  label: false
+  tags: [past, keyword_trap, voice]
+  why: 小时候抽过一次
+- msg: 狗狗小时候抽搐过一次 后来一直没事
+  label: false
+  tags: [past, keyword_trap, voice]
+  why: 小时候抽搐过
+- msg: 那个 维尼 之前 好几个月前 抽搐过一次 现在没事
+  label: false
+  tags: [past, keyword_trap, voice]
+  why: 几个月前抽搐过
+- msg: cat had a seizure episode last summer never happened again
+  label: false
+  tags: [past, keyword_trap, en]
+  why: 去年夏天抽搐过
+- msg: 豆豆两年前抽搐过 后来体检也没查出啥
+  label: false
+  tags: [past, keyword_trap, voice]
+  why: 两年前抽搐过
+- msg: 老狗在2023年抽搐过一次 之后没再犯
+  label: false
+  tags: [past, keyword_trap, voice]
+  why: 2023年抽搐过
+- msg: 花花小时候有一次抽搐 现在完全正常
+  label: false
+  tags: [past, keyword_trap, voice]
+  why: 小时候抽搐一次
+- msg: 幼犬几个月前抽搐过一次 现在完全恢复了
+  label: false
+  tags: [past, keyword_trap, voice]
+  why: 几个月前抽搐过
+- msg: 维尼有癫痫 一直在吃药控制得挺好
+  label: false
+  tags: [managed, keyword_trap, voice]
+  why: 癫痫吃药控制好
+- msg: my dog has epilepsy and is on meds it's managed fine
+  label: false
+  tags: [managed, keyword_trap, en]
+  why: 癫痫用药控制
+- msg: 咪咪确诊癫痫两年了 每天吃药没再发作
+  label: false
+  tags: [managed, keyword_trap, voice]
+  why: 确诊癫痫吃药未犯
+- msg: 咪咪确诊癫痫 每天吃药维持得很好
+  label: false
+  tags: [managed, keyword_trap, voice]
+  why: 确诊癫痫每天吃药
+- msg: 那个 我家狗 就是 有癫痫 一直在吃苯巴比妥
+  label: false
+  tags: [managed, keyword_trap, voice]
+  why: 癫痫吃苯巴比妥
+- msg: dog is on seizure meds and it's been under control for months
+  label: false
+  tags: [managed, keyword_trap, en]
+  why: 抗癫痫药控制数月
+- msg: 球球癫痫在治疗 医生说控制得不错
+  label: false
+  tags: [managed, keyword_trap, voice]
+  why: 癫痫在治疗中
+- msg: 我家狗吃苯巴比妥控制癫痫 效果挺好
+  label: false
+  tags: [managed, keyword_trap, voice]
+  why: 吃药控制癫痫
+- msg: 花花确诊神经系统的病 现在吃药稳定了
+  label: false
+  tags: [managed, keyword_trap, voice]
+  why: 确诊病症吃药稳定
+- msg: 幼犬癫痫用药控制着 最近都没再犯
+  label: false
+  tags: [managed, keyword_trap, voice]
+  why: 幼犬癫痫用药控制
+- msg: 狗抽搐一般是什么原因引起的
+  label: false
+  tags: [question, hypothetical, keyword_trap]
+  why: 假设科普提问
+- msg: what causes seizures in cats generally
+  label: false
+  tags: [question, hypothetical, keyword_trap, en]
+  why: 科普提问病因
+- msg: 如果狗突然瘫痪了是不是就是椎间盘的问题
+  label: false
+  tags: [question, hypothetical, keyword_trap]
+  why: 假设瘫痪原因
+- msg: 幼犬发抖是不是都是低血糖引起的
+  label: false
+  tags: [question, hypothetical, keyword_trap]
+  why: 假设病因提问
+- msg: 猫翻白眼是不是都很严重
+  label: false
+  tags: [question, hypothetical, keyword_trap]
+  why: 科普性提问
+- msg: is walking into walls always a sign of something serious in dogs
+  label: false
+  tags: [question, hypothetical, keyword_trap, en]
+  why: 假设症状提问
+- msg: 产后抽搐一般多久会恢复啊 好奇问问
+  label: false
+  tags: [question, hypothetical, keyword_trap]
+  why: 好奇科普提问
+- msg: 狗突然倒地一般是什么原因 好奇问一下
+  label: false
+  tags: [question, hypothetical, keyword_trap]
+  why: 好奇提问原因
+- msg: 幼犬低血糖抖一般要怎么预防
+  label: false
+  tags: [question, hypothetical, keyword_trap]
+  why: 预防知识提问
+- msg: 狗抽搐是不是都代表得了癫痫 随便问问
+  label: false
+  tags: [question, hypothetical, keyword_trap]
+  why: 假设性提问
+- msg: 我朋友家狗昨天抽搐了 她自己带去医院了
+  label: false
+  tags: [other_owner, keyword_trap, voice]
+  why: 朋友宠物已就医
+- msg: my neighbor's cat had a seizure last week she handled it
+  label: false
+  tags: [other_owner, keyword_trap, en]
+  why: 邻居宠物已处理
+- msg: 隔壁邻居的狗好像瘫痪了 听说他们已经看过医生了
+  label: false
+  tags: [other_owner, keyword_trap, voice]
+  why: 邻居宠物已看医生
+- msg: 朋友家幼犬发抖 后来发现是外面太冷了
+  label: false
+  tags: [other_owner, voice]
+  why: 朋友宠物已解决
+- msg: 同事家猫翻白眼过一次 她说没事了
+  label: false
+  tags: [other_owner, keyword_trap, voice]
+  why: 同事宠物已没事
+- msg: someone in my group chat said their dog collapsed but he's fine now
+  label: false
+  tags: [other_owner, keyword_trap, en]
+  why: 群里人宠物已恢复
+- msg: 表姐家狗生完崽抽搐了 已经去医院处理了
+  label: false
+  tags: [other_owner, keyword_trap, voice]
+  why: 表姐宠物已就医
+- msg: 看到一个视频里别人的狗抽搐了 说已经看过医生了
+  label: false
+  tags: [other_owner, keyword_trap, voice]
+  why: 视频里宠物已就医
+- msg: 朋友家小狗低血糖抖过 她自己喂糖水解决了
+  label: false
+  tags: [other_owner, voice]
+  why: 朋友宠物已自行解决
+- msg: 我姐家猫撞墙 后来发现只是太困了
+  label: false
+  tags: [other_owner, voice]
+  why: 姐姐宠物无大碍
+- msg: 帮我记一下 豆豆今天早上抽搐了一次
+  label: false
+  tags: [record, gray, keyword_trap, voice]
+  why: 事后记录抽搐
+- msg: can you log that my dog had a seizure this morning
+  label: false
+  tags: [record, gray, keyword_trap, en]
+  why: 事后记录发作
+- msg: 记录一下咪咪昨天倒地不起 后来自己好了
+  label: false
+  tags: [record, gray, keyword_trap, voice]
+  why: 事后记录已恢复
+- msg: 帮我记一下露娜昨天抽搐了一次 现在没事了
+  label: false
+  tags: [record, gray, keyword_trap, voice]
+  why: 事后记录已没事
+- msg: 帮我记录下 维尼今天翻白眼了一下 已经恢复了
+  label: false
+  tags: [record, gray, keyword_trap, voice]
+  why: 事后记录已恢复
+- msg: log that the puppy shook from low blood sugar earlier today
+  label: false
+  tags: [record, gray, keyword_trap, en]
+  why: 事后记录低血糖
+- msg: 记一下花花产后那次抽搐 已经处理好了
+  label: false
+  tags: [record, gray, keyword_trap, voice]
+  why: 事后记录已处理
+- msg: 记一下我家猫今天早上倒地了 后来自己好了
+  label: false
+  tags: [record, gray, keyword_trap, voice]
+  why: 事后记录已好转
+- msg: 帮我把球球今天走路撞墙的事记下来
+  label: false
+  tags: [record, gray, voice]
+  why: 事后记录撞墙
+- msg: 记录一下我家狗上周后腿瘫痪过 现在恢复了
+  label: false
+  tags: [record, gray, keyword_trap, voice]
+  why: 事后记录已恢复
+- msg: 豆豆睡觉的时候腿一直抽动 是不是在做梦
+  label: false
+  tags: [gray, voice]
+  why: 睡觉抽动像做梦
+- msg: my dog twitches a lot in his sleep is that normal
+  label: false
+  tags: [gray, en]
+  why: 睡觉抽动询问
+- msg: 咪咪睡着了以后身体会抖一下 醒着就没事
+  label: false
+  tags: [gray, voice]
+  why: 睡着抖醒后没事
+- msg: 猫咪睡觉的时候爪子会抖 正常吗
+  label: false
+  tags: [gray, voice]
+  why: 睡觉爪子抖询问
+- msg: 维尼睡觉时偶尔全身抖一下 醒了就正常
+  label: false
+  tags: [gray, voice]
+  why: 睡觉偶尔抖醒后正常
+- msg: dog jerks his legs while napping like he's running
+  label: false
+  tags: [gray, en]
+  why: 打盹腿抖像跑步
+- msg: 花花打盹的时候嘴巴会动 身体也抽一下
+  label: false
+  tags: [gray, voice]
+  why: 打盹嘴动身体抽动
+- msg: 幼犬睡觉抽动一下 醒了就完全正常
+  label: false
+  tags: [gray, voice]
+  why: 睡觉抽动醒后正常
+- msg: 球球睡觉抽动了一下 叫醒他就没事了
+  label: false
+  tags: [gray, voice]
+  why: 睡觉抽动叫醒没事
+- msg: 猫咪做梦的时候胡须和爪子会动 很正常
+  label: false
+  tags: [gray, voice]
+  why: 做梦胡须爪子动

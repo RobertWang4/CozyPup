@@ -7,3 +7,7 @@ server.log
 .env
 tests/
 uploads/
+nano/data/gen/
+nano/models/
+*.gguf
+!nano/serve/model.gguf

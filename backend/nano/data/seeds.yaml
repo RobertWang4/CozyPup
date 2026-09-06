@@ -1,0 +1,3058 @@
+# 紧急路由分类器 — 种子数据（手工标注，老师模型据此扩展）
+#
+# 任务：给定用户一句话，输出 bool。
+#   true  = 切换到高级模型（十分危急，答错代价高）
+#   false = 留在日常模型
+#
+# 判定标准（只有明确危急才 true）：
+#   true：危及生命的体征（呼吸困难/抽搐/倒地不起/牙龈发白/大量出血/腹部胀硬/公猫尿不出/中暑）、
+#         误食明确有毒或危险物（巧克力大量/葡萄/木糖醇/药片/鼠药/百合/防冻液/针线）、
+#         严重外伤（车撞/坠落/咬伤出血不止/大面积烫伤）、
+#         症状急剧加重（吐血/拉血+精神差、幼崽或老年动物持续恶化）。
+#   false：单一轻微症状、记录、提问、假设、过去的事、别人的宠物（除非正在求助）、闲聊、已在治疗的慢性病。
+#   灰区默认 false，用 tags: [gray] 标出，扩展时老师会重点参考。
+#
+# 风格：大部分是语音转文字或手机随手打的。特征——没标点或标点乱、同音错字、
+#   口头禅（那个/就是/然后/呃）、一句话连着说、说一半改口、宠物名识别错、结尾"怎么办呀"。
+#   扩展时老师必须模仿这种风格，不要写成书面语。
+#
+# 字段：msg 原话 / label / tags（给人和老师看，不进模型）/ why 一句理由
+# tags 词表：seizure breathing toxin trauma bleeding gdv urinary shock heat neuro panic
+#            mild record question past hypothetical other_owner chitchat managed gray typo voice en keyword_trap
+
+# ───────────── true ─────────────
+- msg: 豆豆突然就倒了然后一直抽 嘴里有白沫子 怎么办啊怎么办
+  label: true
+  tags: [seizure, voice, panic]
+  why: 正在发作的抽搐
+
+- msg: 米米一直张着嘴船气 舌头那个颜色有点紫
+  label: true
+  tags: [breathing, voice, typo]
+  why: 猫张口呼吸加发绀，咪咪→米米 喘→船
+
+- msg: 完了完了他把一整板巧克力吃了 就是那种黑的 一百克那种
+  label: true
+  tags: [toxin, voice, panic]
+  why: 大剂量黑巧
+
+- msg: 我降压药掉地上了被狗捡着吃了 就刚刚
+  label: true
+  tags: [toxin, voice]
+  why: 人用药误食
+
+- msg: 家里那个百合 猫把叶子啃了好几片
+  label: true
+  tags: [toxin, voice]
+  why: 百合对猫剧毒
+
+- msg: 豆豆被车碰了 现在还能走就是一直叫 呜呜的那种
+  label: true
+  tags: [trauma, voice]
+  why: 车祸，内伤看不见
+
+- msg: 咪咪从阳台掉下去了 六楼
+  label: true
+  tags: [trauma]
+  why: 高坠
+
+- msg: 狗肚子鼓的跟球一样 一直干呕 吐又吐不出来
+  label: true
+  tags: [gdv, voice]
+  why: 胃扭转典型
+
+- msg: 我家公猫蹲猫砂盆蹲半天了 一直叫 尿不出来
+  label: true
+  tags: [urinary, voice]
+  why: 尿闭
+
+- msg: 豆豆牙龈白的 站都站不起来了
+  label: true
+  tags: [shock]
+  why: 休克体征
+
+- msg: 拉的全是血 垫子整个都红了
+  label: true
+  tags: [bleeding, voice]
+  why: 大量便血
+
+- msg: 被楼下那条大狗咬了 脖子那血止不住
+  label: true
+  tags: [trauma, bleeding, voice]
+  why: 咬伤出血不止
+
+- msg: 刚才车里待了两个小时忘了 现在瘫那船气 舌头伸老长
+  label: true
+  tags: [heat, voice, typo]
+  why: 中暑
+
+- msg: 咪咪把针吞了 线还在嘴边挂着 我要不要拉出来
+  label: true
+  tags: [toxin, question, voice]
+  why: 线性异物，绝不能拉
+
+- msg: 狗吃了老鼠药
+  label: true
+  tags: [toxin]
+  why: 鼠药
+
+- msg: 叫他不理我 身体软软的 眼睛半睁着
+  label: true
+  tags: [neuro, voice]
+  why: 意识丧失
+
+- msg: 我家狗刚偷吃了葡萄 桌上一串 少了十几个
+  label: true
+  tags: [toxin, voice]
+  why: 葡萄致肾衰
+
+- msg: 吐了一天了 刚刚吐的里面有血丝 还挺多的
+  label: true
+  tags: [bleeding, voice]
+  why: 持续呕吐加吐血
+
+- msg: 车库地上那个防冻液狗舔了
+  label: true
+  tags: [toxin, voice]
+  why: 乙二醇
+
+- msg: 猫呼吸特别快 肚子一起一伏的 嘴还张着
+  label: true
+  tags: [breathing, voice]
+  why: 猫张口呼吸
+
+- msg: 豆豆吃了口香糖 木糖醇那种 一整盒
+  label: true
+  tags: [toxin, voice]
+  why: 木糖醇
+
+- msg: 狗眼珠子凸出来了 天哪
+  label: true
+  tags: [trauma, panic]
+  why: 眼球脱出
+
+- msg: 米米后腿突然不能动了 拖着走 叫得特别惨
+  label: true
+  tags: [neuro, voice, typo]
+  why: 猫动脉血栓
+
+- msg: 开水撒他身上了 背上一大片皮都掉了
+  label: true
+  tags: [trauma, voice]
+  why: 大面积烫伤
+
+- msg: 小奶猫不动了 摸着凉凉的 还有气
+  label: true
+  tags: [shock, voice]
+  why: 幼崽低体温
+
+- msg: 他一直抖 站不稳 走路走着走着撞墙上
+  label: true
+  tags: [neuro, voice]
+  why: 急性神经症状
+
+- msg: 被蜜蜂蛰了脸肿的眼睛都看不见了 呼吸声呼哧呼哧的
+  label: true
+  tags: [breathing, voice]
+  why: 过敏累及呼吸
+
+- msg: 吐了三次拉了两次都带血 现在趴那不动了
+  label: true
+  tags: [bleeding, voice]
+  why: 多症状叠加加精神差
+
+- msg: 豆豆生完小狗之后一直抽 浑身抖
+  label: true
+  tags: [seizure, voice]
+  why: 产后低血钙
+
+- msg: 夏威夷果 一整包 狗吃的
+  label: true
+  tags: [toxin, voice]
+  why: 夏威夷果对狗有毒
+
+- msg: 咪咪舔了地上的84 现在一直流口水 吐白沫
+  label: true
+  tags: [toxin, voice]
+  why: 腐蚀性物质加症状
+
+- msg: 米米不对劲 一直嚎 肚子硬邦邦的 我好慌我不知道怎么办
+  label: true
+  tags: [panic, gdv, voice, typo]
+  why: 主人恐慌加腹部体征
+
+- msg: 我朋友家狗刚被车撞了他打电话问我怎么办 我也不知道
+  label: true
+  tags: [other_owner, trauma, gray, voice]
+  why: 别人的狗但正在求助，答错代价一样高
+
+- msg: 豆豆抽出了 全身都在抽 怎么半
+  label: true
+  tags: [seizure, typo, voice]
+  why: 抽搐→抽出 办→半
+
+- msg: 猫猫呼息好快 张嘴
+  label: true
+  tags: [breathing, typo]
+  why: 呼吸→呼息
+
+- msg: 那个 我家狗 就是 突然倒地上了 现在起不来 呃 眼睛翻白
+  label: true
+  tags: [neuro, voice]
+  why: 口头禅打断的倒地不起
+
+- msg: My dog is having a seizure right now what do I do
+  label: true
+  tags: [seizure, en]
+  why: 正在发作
+
+- msg: max ate a whole bag of raisins like an hour ago
+  label: true
+  tags: [toxin, en, voice]
+  why: 葡萄干
+
+- msg: cat is breathing with her mouth open and won't move at all
+  label: true
+  tags: [breathing, en, voice]
+  why: 猫张口呼吸
+
+- msg: her belly is swollen and hard and she keeps trying to throw up but nothing comes out
+  label: true
+  tags: [gdv, en, voice]
+  why: 胃扭转
+
+- msg: got hit by a car he's awake but bleeding from the mouth
+  label: true
+  tags: [trauma, bleeding, en, voice]
+  why: 车祸出血
+
+- msg: whiskers hasn't peed in two days and cries when i touch his belly
+  label: true
+  tags: [urinary, en]
+  why: 尿闭
+
+# ───────────── false ─────────────
+- msg: 狗狗今天有点兔 兔的白色的
+  label: false
+  tags: [mild, typo, voice]
+  why: 单次轻微呕吐，吐→兔
+
+- msg: 豆豆刚吐了一口 没事 精神挺好的
+  label: false
+  tags: [mild, voice]
+  why: 精神好的单次呕吐
+
+- msg: 今天拉西了 有点软
+  label: false
+  tags: [mild, typo, voice]
+  why: 软便，拉稀→拉西
+
+- msg: 咪咪打了好几个喷嚏 阿嚏阿嚏的
+  label: false
+  tags: [mild, voice]
+  why: 喷嚏
+
+- msg: 豆豆今天不咋爱吃 就吃了一半吧
+  label: false
+  tags: [mild, voice]
+  why: 食欲略降
+
+- msg: 狗有点咳 就像卡东西那种 但是精神挺好的能玩
+  label: false
+  tags: [mild, gray, voice]
+  why: 精神好的咳嗽
+
+- msg: 吐了个毛球 正常吧
+  label: false
+  tags: [mild, question, voice]
+  why: 毛球正常
+
+- msg: 豆豆耳朵有点臭 老挠老挠的
+  label: false
+  tags: [mild, voice]
+  why: 耳炎不急
+
+- msg: 狗狗眼睛有点眼屎
+  label: false
+  tags: [mild]
+  why: 轻微
+
+- msg: 走路有点瘸 但是能跑能跳 追球追的可欢了
+  label: false
+  tags: [mild, gray, voice]
+  why: 轻微跛行
+
+- msg: 咪咪今天喝水好像比平时多点
+  label: false
+  tags: [mild]
+  why: 单日观察
+
+- msg: 吐了两次了 但还是活蹦乱跳的
+  label: false
+  tags: [mild, gray, voice]
+  why: 两次但精神好
+
+- msg: 咪咪今天一整天没怎么吃东西 精神还行
+  label: false
+  tags: [mild, gray]
+  why: 猫一天，超过两天才升级
+
+- msg: 拉肚子两天了 便便黏黏的 其他都正常
+  label: false
+  tags: [mild, gray, voice]
+  why: 无血无精神差
+
+- msg: 豆豆刚偷吃了一小口巧克力蛋糕 就指甲盖那么点
+  label: false
+  tags: [toxin, gray, keyword_trap, voice]
+  why: 剂量极小
+
+- msg: 咪咪鼻子干干的 是不是发烧了
+  label: false
+  tags: [mild, question, voice]
+  why: 鼻子干不代表发烧
+
+- msg: 被蚊子咬了个包
+  label: false
+  tags: [mild]
+  why: 蚊虫叮咬
+
+- msg: 被小猫挠了一下 有一点点血 已经不流了
+  label: false
+  tags: [mild, keyword_trap]
+  why: 已止血小伤口
+
+- msg: 从沙发上跳下来落地有点歪 现在又正常了
+  label: false
+  tags: [mild, keyword_trap, voice]
+  why: 低处跳落已正常
+
+- msg: 一直舔爪子 舔的都湿了
+  label: false
+  tags: [mild, voice]
+  why: 行为问题
+
+- msg: 今天特别能睡 睡一天了
+  label: false
+  tags: [mild, voice]
+  why: 单日观察
+
+- msg: 记一下 豆豆今天打了狂犬
+  label: false
+  tags: [record, voice]
+  why: 记录
+
+- msg: 昨天给咪咪洗澡了 帮我记一下
+  label: false
+  tags: [record, voice]
+  why: 记录
+
+- msg: 遛了四十分钟
+  label: false
+  tags: [record]
+  why: 记录
+
+- msg: 咪咪今天吃了两罐 那个金枪鱼的
+  label: false
+  tags: [record, voice]
+  why: 记录
+
+- msg: 狗多久驱一次虫来着
+  label: false
+  tags: [question, voice]
+  why: 常规问题
+
+- msg: 小猫能吃成猫粮吗
+  label: false
+  tags: [question]
+  why: 常规问题
+
+- msg: 豆豆上次体检啥时候
+  label: false
+  tags: [question, voice]
+  why: 查历史
+
+- msg: 狗吃葡萄会咋样
+  label: false
+  tags: [question, hypothetical, keyword_trap, voice]
+  why: 假设性提问
+
+- msg: 巧克力对狗到底有多毒啊
+  label: false
+  tags: [question, hypothetical, keyword_trap, voice]
+  why: 科普
+
+- msg: 猫中暑是啥症状
+  label: false
+  tags: [question, hypothetical, keyword_trap, voice]
+  why: 科普
+
+- msg: 要是狗吃了洋葱会中毒吗
+  label: false
+  tags: [hypothetical, keyword_trap]
+  why: 假设
+
+- msg: 豆豆去年中过一次毒 现在完全好了
+  label: false
+  tags: [past, keyword_trap]
+  why: 过去的事
+
+- msg: 咪咪小时候从楼上摔过 还好没事
+  label: false
+  tags: [past, keyword_trap]
+  why: 过去的事
+
+- msg: 上个月抽搐过一次 医生说是癫痫 现在在吃药
+  label: false
+  tags: [past, managed, keyword_trap]
+  why: 已确诊在治疗
+
+- msg: 刷到一个狗中暑的视频 看的好难受
+  label: false
+  tags: [chitchat, keyword_trap, voice]
+  why: 与自家宠物无关
+
+- msg: 咪咪今天打了胰岛素 早上那针
+  label: false
+  tags: [managed, record, voice]
+  why: 慢性病日常
+
+- msg: 豆豆心脏药快吃完了 提醒我买
+  label: false
+  tags: [managed]
+  why: 提醒
+
+- msg: 今天特别乖 一天没拆家
+  label: false
+  tags: [chitchat, voice]
+  why: 闲聊
+
+- msg: 你好 你能干嘛
+  label: false
+  tags: [chitchat]
+  why: 闲聊
+
+- msg: 换成英文
+  label: false
+  tags: [chitchat]
+  why: 指令
+
+- msg: 附近有啥宠物医院
+  label: false
+  tags: [question, gray, voice]
+  why: 没有症状，只是找地方
+
+- msg: 那个 就是 我想问一下 呃 狗狗一天喂几顿好
+  label: false
+  tags: [question, voice]
+  why: 口头禅打断的常规问题
+
+- msg: max threw up once this morning white foam seems fine now
+  label: false
+  tags: [mild, en, voice]
+  why: 单次呕吐
+
+- msg: how often do i deworm a kitten
+  label: false
+  tags: [question, en]
+  why: 常规问题
+
+- msg: log that max had his rabies shot today
+  label: false
+  tags: [record, en]
+  why: 记录
+
+- msg: is chocolate bad for dogs
+  label: false
+  tags: [question, hypothetical, keyword_trap, en]
+  why: 科普
+
+- msg: my neighbors cat got hit by a car last year so sad
+  label: false
+  tags: [past, other_owner, keyword_trap, en, voice]
+  why: 过去且别人的
+
+- msg: luna's been sneezing all day
+  label: false
+  tags: [mild, en]
+  why: 喷嚏
+
+- msg: max ate like a tiny piece of my chocolate chip cookie
+  label: false
+  tags: [toxin, gray, keyword_trap, en, voice]
+  why: 剂量极小
+
+- msg: remind me to give luna her flea meds sunday
+  label: false
+  tags: [managed, en]
+  why: 提醒
+
+- msg: max is limping a bit on his front paw but still wants to play
+  label: false
+  tags: [mild, gray, en]
+  why: 轻微跛行
+
+# ───────────── false：日常流量（记录/指令/闲聊，完全不涉及健康风险） ─────────────
+- msg: 今天维尼去公园玩了 跑了一下午
+  label: false
+  tags: [record, voice]
+  why: 日常活动
+
+- msg: 维尼今天称了 12.4公斤 记一下
+  label: false
+  tags: [record, voice]
+  why: 体重记录
+
+- msg: 换了新粮 今天开始吃的 皇家的那个
+  label: false
+  tags: [record, voice]
+  why: 换粮记录
+
+- msg: 给维尼剪指甲了 剪了三个就不让剪了
+  label: false
+  tags: [record, chitchat, voice]
+  why: 日常护理
+
+- msg: 今天学会握手了哈哈哈
+  label: false
+  tags: [chitchat, voice]
+  why: 训练闲聊
+
+- msg: 帮我看看这周记了啥
+  label: false
+  tags: [question, voice]
+  why: 查日历
+
+- msg: 下个月几号该驱虫了
+  label: false
+  tags: [question, voice]
+  why: 查提醒
+
+- msg: 把维尼的生日改成三月五号
+  label: false
+  tags: [record, voice]
+  why: 改档案
+
+- msg: 维尼是公的 之前填错了
+  label: false
+  tags: [record, voice]
+  why: 改档案
+
+- msg: 附近哪有能洗澡的宠物店 便宜点的
+  label: false
+  tags: [question, voice]
+  why: 找店
+
+- msg: 帮我写个邮件给医生 就说下周三复查改到周五
+  label: false
+  tags: [record, voice]
+  why: 邮件指令
+
+- msg: 每天提醒我晚上八点喂药
+  label: false
+  tags: [managed, voice]
+  why: 提醒
+
+- msg: 给维尼买了个新窝 他不睡 非要睡纸箱子
+  label: false
+  tags: [chitchat, voice]
+  why: 闲聊
+
+- msg: 又拆家了 拖鞋咬烂了第三双
+  label: false
+  tags: [chitchat, voice]
+  why: 吐槽
+
+- msg: 维尼今天好黏人 一直趴我腿上
+  label: false
+  tags: [chitchat, voice]
+  why: 闲聊
+
+- msg: 我家两只打架了 不严重 就是互相呲牙
+  label: false
+  tags: [chitchat, gray, voice]
+  why: 无伤
+
+- msg: 明天带维尼去打第二针 记得提醒我
+  label: false
+  tags: [managed, voice]
+  why: 提醒
+
+- msg: 今天早上六点就把我叫醒了 要吃的
+  label: false
+  tags: [chitchat, voice]
+  why: 闲聊
+
+- msg: 帮我总结一下维尼最近的情况
+  label: false
+  tags: [question, voice]
+  why: 档案总结指令
+
+- msg: 换个头像 用今天拍的那张
+  label: false
+  tags: [record, voice]
+  why: 指令
+
+- msg: 维尼今天游泳了第一次 有点怕水
+  label: false
+  tags: [record, voice]
+  why: 活动记录
+
+- msg: 狗粮一天喂多少 他现在五个月
+  label: false
+  tags: [question, voice]
+  why: 喂养问题
+
+- msg: 谢谢你
+  label: false
+  tags: [chitchat]
+  why: 闲聊
+
+- msg: 你能帮我做什么
+  label: false
+  tags: [chitchat]
+  why: 产品介绍
+
+- msg: took winnie to the park today he ran for like two hours
+  label: false
+  tags: [record, en, voice]
+  why: 日常活动
+
+- msg: log winnie's weight 12.4 kg
+  label: false
+  tags: [record, en]
+  why: 体重记录
+
+- msg: he learned to sit today so proud
+  label: false
+  tags: [chitchat, en, voice]
+  why: 闲聊
+
+- msg: what did i log this week
+  label: false
+  tags: [question, en]
+  why: 查日历
+
+- msg: any good groomers near me
+  label: false
+  tags: [question, en]
+  why: 找店
+
+- msg: change winnie's birthday to march 5th
+  label: false
+  tags: [record, en]
+  why: 改档案
+
+# ───────────── E2E 测试消息（tests/e2e/test_messages.py，按用例编号定标签） ─────────────
+- msg: "你好"
+  label: false
+  tags: [e2e, case:1.1]
+  why: E2E 用例 1.1
+
+- msg: "Hello"
+  label: false
+  tags: [e2e, case:1.1, en]
+  why: E2E 用例 1.1
+
+- msg: "hi"
+  label: false
+  tags: [e2e, case:1.2]
+  why: E2E 用例 1.2
+
+- msg: "今天天气真好"
+  label: false
+  tags: [e2e, case:1.3_seq]
+  why: E2E 用例 1.3_seq
+
+- msg: "你觉得呢"
+  label: false
+  tags: [e2e, case:1.3_seq]
+  why: E2E 用例 1.3_seq
+
+- msg: "The weather is great today"
+  label: false
+  tags: [e2e, case:1.3_seq, en]
+  why: E2E 用例 1.3_seq
+
+- msg: "What do you think"
+  label: false
+  tags: [e2e, case:1.3_seq, en]
+  why: E2E 用例 1.3_seq
+
+- msg: "你能做什么？"
+  label: false
+  tags: [e2e, case:1.5]
+  why: E2E 用例 1.5
+
+- msg: "What can you do?"
+  label: false
+  tags: [e2e, case:1.5, en]
+  why: E2E 用例 1.5
+
+- msg: "how to use this app"
+  label: false
+  tags: [e2e, case:1.6]
+  why: E2E 用例 1.6
+
+- msg: "小维今天吃了狗粮"
+  label: false
+  tags: [e2e, case:2.1]
+  why: E2E 用例 2.1
+
+- msg: "Weiwei ate dog food today"
+  label: false
+  tags: [e2e, case:2.1, en]
+  why: E2E 用例 2.1
+
+- msg: "昨天去公园散步了"
+  label: false
+  tags: [e2e, case:2.2]
+  why: E2E 用例 2.2
+
+- msg: "We went to the park for a walk yesterday"
+  label: false
+  tags: [e2e, case:2.2, en]
+  why: E2E 用例 2.2
+
+- msg: "上周五打了疫苗"
+  label: false
+  tags: [e2e, case:2.3]
+  why: E2E 用例 2.3
+
+- msg: "Got vaccinated last Friday"
+  label: false
+  tags: [e2e, case:2.3, en]
+  why: E2E 用例 2.3
+
+- msg: "上周带小维去了医院"
+  label: false
+  tags: [e2e, case:2.4]
+  why: E2E 用例 2.4
+
+- msg: "Took Weiwei to the hospital last week"
+  label: false
+  tags: [e2e, case:2.4, en]
+  why: E2E 用例 2.4
+
+- msg: "3月20号做了体检"
+  label: false
+  tags: [e2e, case:2.5]
+  why: E2E 用例 2.5
+
+- msg: "Had a checkup on March 20th"
+  label: false
+  tags: [e2e, case:2.5, en]
+  why: E2E 用例 2.5
+
+- msg: "小维吐了"
+  label: false
+  tags: [e2e, case:2.6]
+  why: E2E 用例 2.6
+
+- msg: "Weiwei vomited"
+  label: false
+  tags: [e2e, case:2.6, en]
+  why: E2E 用例 2.6
+
+- msg: "小维拉肚子了"
+  label: false
+  tags: [e2e, case:2.7]
+  why: E2E 用例 2.7
+
+- msg: "Weiwei has diarrhea"
+  label: false
+  tags: [e2e, case:2.7, en]
+  why: E2E 用例 2.7
+
+- msg: "今天做了驱虫"
+  label: false
+  tags: [e2e, case:2.8]
+  why: E2E 用例 2.8
+
+- msg: "Dewormed today"
+  label: false
+  tags: [e2e, case:2.8, en]
+  why: E2E 用例 2.8
+
+- msg: "小维今天游泳了"
+  label: false
+  tags: [e2e, case:2.9]
+  why: E2E 用例 2.9
+
+- msg: "Weiwei went swimming today"
+  label: false
+  tags: [e2e, case:2.9, en]
+  why: E2E 用例 2.9
+
+- msg: "今天遛了狗还洗了澡"
+  label: false
+  tags: [e2e, case:2.10]
+  why: E2E 用例 2.10
+
+- msg: "Walked the dog and gave a bath today"
+  label: false
+  tags: [e2e, case:2.10, en]
+  why: E2E 用例 2.10
+
+- msg: "记录吃狗粮，提醒打疫苗"
+  label: false
+  tags: [e2e, case:2.11]
+  why: E2E 用例 2.11
+
+- msg: "Record eating dog food, remind me about vaccination"
+  label: false
+  tags: [e2e, case:2.11, en]
+  why: E2E 用例 2.11
+
+- msg: "遛了狗、喂了狗粮、洗了澡"
+  label: false
+  tags: [e2e, case:2.12]
+  why: E2E 用例 2.12
+
+- msg: "Walked the dog, fed dog food, and gave a bath"
+  label: false
+  tags: [e2e, case:2.12, en]
+  why: E2E 用例 2.12
+
+- msg: "带小维去医院花了300"
+  label: false
+  tags: [e2e, case:2.13]
+  why: E2E 用例 2.13
+
+- msg: "Took Weiwei to the hospital, cost 300"
+  label: false
+  tags: [e2e, case:2.13, en]
+  why: E2E 用例 2.13
+
+- msg: "洗澡花了80块"
+  label: false
+  tags: [e2e, case:2.14]
+  why: E2E 用例 2.14
+
+- msg: "Bath cost 80 yuan"
+  label: false
+  tags: [e2e, case:2.14, en]
+  why: E2E 用例 2.14
+
+- msg: "体检花了1500"
+  label: false
+  tags: [e2e, case:2.16]
+  why: E2E 用例 2.16
+
+- msg: "Checkup cost 1500"
+  label: false
+  tags: [e2e, case:2.16, en]
+  why: E2E 用例 2.16
+
+- msg: "遛狗途中买了零食50块"
+  label: false
+  tags: [e2e, case:2.17]
+  why: E2E 用例 2.17
+
+- msg: "Bought snacks for 50 yuan during the walk"
+  label: false
+  tags: [e2e, case:2.17, en]
+  why: E2E 用例 2.17
+
+- msg: "明天下午3点带小维去打疫苗，提醒我"
+  label: false
+  tags: [e2e, case:2.18]
+  why: E2E 用例 2.18
+
+- msg: "Take Weiwei for vaccination tomorrow at 3pm, remind me"
+  label: false
+  tags: [e2e, case:2.18, en]
+  why: E2E 用例 2.18
+
+- msg: "下周二体检别忘了"
+  label: false
+  tags: [e2e, case:2.19]
+  why: E2E 用例 2.19
+
+- msg: "Don't forget the checkup next Tuesday"
+  label: false
+  tags: [e2e, case:2.19, en]
+  why: E2E 用例 2.19
+
+- msg: "小维上次打疫苗是什么时候？"
+  label: false
+  tags: [e2e, case:3.1]
+  why: E2E 用例 3.1
+
+- msg: "When was Weiwei's last vaccination?"
+  label: false
+  tags: [e2e, case:3.1, en]
+  why: E2E 用例 3.1
+
+- msg: "这周记录了什么？"
+  label: false
+  tags: [e2e, case:3.2]
+  why: E2E 用例 3.2
+
+- msg: "What was recorded this week?"
+  label: false
+  tags: [e2e, case:3.2, en]
+  why: E2E 用例 3.2
+
+- msg: "小维最近吃了什么？"
+  label: false
+  tags: [e2e, case:3.3]
+  why: E2E 用例 3.3
+
+- msg: "What has Weiwei eaten recently?"
+  label: false
+  tags: [e2e, case:3.3, en]
+  why: E2E 用例 3.3
+
+- msg: "最近花了多少钱？"
+  label: false
+  tags: [e2e, case:3.4]
+  why: E2E 用例 3.4
+
+- msg: "How much have I spent recently?"
+  label: false
+  tags: [e2e, case:3.4, en]
+  why: E2E 用例 3.4
+
+- msg: "刚才那条记录日期不对，应该是3月25号"
+  label: false
+  tags: [e2e, case:4.1]
+  why: E2E 用例 4.1
+
+- msg: "The date on that last record is wrong, it should be March 25th"
+  label: false
+  tags: [e2e, case:4.1, en]
+  why: E2E 用例 4.1
+
+- msg: "删掉昨天的散步记录"
+  label: false
+  tags: [e2e, case:4.2]
+  why: E2E 用例 4.2
+
+- msg: "Delete yesterday's walk record"
+  label: false
+  tags: [e2e, case:4.2, en]
+  why: E2E 用例 4.2
+
+- msg: "把标题改成'公园散步'"
+  label: false
+  tags: [e2e, case:4.4]
+  why: E2E 用例 4.4
+
+- msg: "Change the title to 'Park Walk'"
+  label: false
+  tags: [e2e, case:4.4, en]
+  why: E2E 用例 4.4
+
+- msg: "其实花了800"
+  label: false
+  tags: [e2e, case:4.5]
+  why: E2E 用例 4.5
+
+- msg: "Actually it cost 800"
+  label: false
+  tags: [e2e, case:4.5, en]
+  why: E2E 用例 4.5
+
+- msg: "我新养了一只猫叫花花"
+  label: false
+  tags: [e2e, case:5.1]
+  why: E2E 用例 5.1
+
+- msg: "I just got a new cat named Huahua"
+  label: false
+  tags: [e2e, case:5.1, en]
+  why: E2E 用例 5.1
+
+- msg: "I just got a new puppy named Buddy"
+  label: false
+  tags: [e2e, case:5.2]
+  why: E2E 用例 5.2
+
+- msg: "花花是母的"
+  label: false
+  tags: [e2e, case:5.3]
+  why: E2E 用例 5.3
+
+- msg: "Huahua is female"
+  label: false
+  tags: [e2e, case:5.3, en]
+  why: E2E 用例 5.3
+
+- msg: "花花其实是公的"
+  label: false
+  tags: [e2e, case:5.4]
+  why: E2E 用例 5.4
+
+- msg: "Actually Huahua is male"
+  label: false
+  tags: [e2e, case:5.4, en]
+  why: E2E 用例 5.4
+
+- msg: "花花体重5公斤"
+  label: false
+  tags: [e2e, case:5.5]
+  why: E2E 用例 5.5
+
+- msg: "Huahua weighs 5 kilograms"
+  label: false
+  tags: [e2e, case:5.5, en]
+  why: E2E 用例 5.5
+
+- msg: "花花生日是2024年3月5号"
+  label: false
+  tags: [e2e, case:5.6]
+  why: E2E 用例 5.6
+
+- msg: "Huahua's birthday is March 5th, 2024"
+  label: false
+  tags: [e2e, case:5.6, en]
+  why: E2E 用例 5.6
+
+- msg: "花花对鸡肉过敏"
+  label: false
+  tags: [e2e, case:5.7]
+  why: E2E 用例 5.7
+
+- msg: "Huahua is allergic to chicken"
+  label: false
+  tags: [e2e, case:5.7, en]
+  why: E2E 用例 5.7
+
+- msg: "把花花名字改成咪咪"
+  label: false
+  tags: [e2e, case:5.8]
+  why: E2E 用例 5.8
+
+- msg: "Change Huahua's name to Mimi"
+  label: false
+  tags: [e2e, case:5.8, en]
+  why: E2E 用例 5.8
+
+- msg: "我养了一只新狗叫小维"
+  label: false
+  tags: [e2e, case:5.9]
+  why: E2E 用例 5.9
+
+- msg: "I got a new dog named Weiwei"
+  label: false
+  tags: [e2e, case:5.9, en]
+  why: E2E 用例 5.9
+
+- msg: "删掉花花"
+  label: false
+  tags: [e2e, case:5.10]
+  why: E2E 用例 5.10
+
+- msg: "Delete Huahua"
+  label: false
+  tags: [e2e, case:5.10, en]
+  why: E2E 用例 5.10
+
+- msg: "我有几只宠物？"
+  label: false
+  tags: [e2e, case:5.11]
+  why: E2E 用例 5.11
+
+- msg: "How many pets do I have?"
+  label: false
+  tags: [e2e, case:5.11, en]
+  why: E2E 用例 5.11
+
+- msg: "用这个当小维的头像"
+  label: false
+  tags: [e2e, case:6.1]
+  why: E2E 用例 6.1
+
+- msg: "Use this as Weiwei's avatar"
+  label: false
+  tags: [e2e, case:6.1, en]
+  why: E2E 用例 6.1
+
+- msg: "这是小维"
+  label: false
+  tags: [e2e, case:6.2]
+  why: E2E 用例 6.2
+
+- msg: "This is Weiwei"
+  label: false
+  tags: [e2e, case:6.2, en]
+  why: E2E 用例 6.2
+
+- msg: "记录一下小维今天"
+  label: false
+  tags: [e2e, case:7.1]
+  why: E2E 用例 7.1
+
+- msg: "Record Weiwei's day today"
+  label: false
+  tags: [e2e, case:7.1, en]
+  why: E2E 用例 7.1
+
+- msg: "记一下"
+  label: false
+  tags: [e2e, case:7.2]
+  why: E2E 用例 7.2
+
+- msg: "Record this"
+  label: false
+  tags: [e2e, case:7.2, en]
+  why: E2E 用例 7.2
+
+- msg: "把这张照片加到刚才的记录"
+  label: false
+  tags: [e2e, case:7.3]
+  why: E2E 用例 7.3
+
+- msg: "Add this photo to the last record"
+  label: false
+  tags: [e2e, case:7.3, en]
+  why: E2E 用例 7.3
+
+- msg: "Add this to the event"
+  label: false
+  tags: [e2e, case:7.4]
+  why: E2E 用例 7.4
+
+- msg: "记录一下"
+  label: false
+  tags: [e2e, case:7.5]
+  why: E2E 用例 7.5
+
+- msg: "刚才那张照片是什么品种？"
+  label: false
+  tags: [e2e, case:7.6]
+  why: E2E 用例 7.6
+
+- msg: "What breed is that in the last photo?"
+  label: false
+  tags: [e2e, case:7.6, en]
+  why: E2E 用例 7.6
+
+- msg: "这是什么品种？"
+  label: false
+  tags: [e2e, case:7.7]
+  why: E2E 用例 7.7
+
+- msg: "What breed is this?"
+  label: false
+  tags: [e2e, case:7.7, en]
+  why: E2E 用例 7.7
+
+- msg: "看看这只狗有什么问题吗？"
+  label: false
+  tags: [e2e, case:7.8]
+  why: E2E 用例 7.8
+
+- msg: "Does this dog have any health issues?"
+  label: false
+  tags: [e2e, case:7.8, en]
+  why: E2E 用例 7.8
+
+- msg: "把那条记录的照片删掉"
+  label: false
+  tags: [e2e, case:7.9]
+  why: E2E 用例 7.9
+
+- msg: "Delete the photo from that record"
+  label: false
+  tags: [e2e, case:7.9, en]
+  why: E2E 用例 7.9
+
+- msg: "每天提醒我遛狗"
+  label: false
+  tags: [e2e, case:8.1]
+  why: E2E 用例 8.1
+
+- msg: "Remind me to walk the dog every day"
+  label: false
+  tags: [e2e, case:8.1, en]
+  why: E2E 用例 8.1
+
+- msg: "这周每天给小维量体温"
+  label: false
+  tags: [e2e, case:8.2]
+  why: E2E 用例 8.2
+
+- msg: "Take Weiwei's temperature every day this week"
+  label: false
+  tags: [e2e, case:8.2, en]
+  why: E2E 用例 8.2
+
+- msg: "每天喂两次药"
+  label: false
+  tags: [e2e, case:8.3]
+  why: E2E 用例 8.3
+
+- msg: "Give medicine twice a day"
+  label: false
+  tags: [e2e, case:8.3, en]
+  why: E2E 用例 8.3
+
+- msg: "我有什么待办？"
+  label: false
+  tags: [e2e, case:8.4]
+  why: E2E 用例 8.4
+
+- msg: "What tasks do I have?"
+  label: false
+  tags: [e2e, case:8.4, en]
+  why: E2E 用例 8.4
+
+- msg: "取消遛狗任务"
+  label: false
+  tags: [e2e, case:8.6]
+  why: E2E 用例 8.6
+
+- msg: "Cancel the dog walking task"
+  label: false
+  tags: [e2e, case:8.6, en]
+  why: E2E 用例 8.6
+
+- msg: "删除所有待办"
+  label: false
+  tags: [e2e, case:8.7]
+  why: E2E 用例 8.7
+
+- msg: "Delete all daily tasks"
+  label: false
+  tags: [e2e, case:8.7, en]
+  why: E2E 用例 8.7
+
+- msg: "把遛狗改成每天2次"
+  label: false
+  tags: [e2e, case:8.8]
+  why: E2E 用例 8.8
+
+- msg: "Change dog walking to twice a day"
+  label: false
+  tags: [e2e, case:8.8, en]
+  why: E2E 用例 8.8
+
+- msg: "提醒我明天给小维喂药"
+  label: false
+  tags: [e2e, case:9.1]
+  why: E2E 用例 9.1
+
+- msg: "Remind me to give Weiwei medicine tomorrow"
+  label: false
+  tags: [e2e, case:9.1, en]
+  why: E2E 用例 9.1
+
+- msg: "下周二带小维去打疫苗别忘了"
+  label: false
+  tags: [e2e, case:9.2]
+  why: E2E 用例 9.2
+
+- msg: "Don't forget to take Weiwei for vaccination next Tuesday"
+  label: false
+  tags: [e2e, case:9.2, en]
+  why: E2E 用例 9.2
+
+- msg: "我有什么提醒？"
+  label: false
+  tags: [e2e, case:9.3]
+  why: E2E 用例 9.3
+
+- msg: "What reminders do I have?"
+  label: false
+  tags: [e2e, case:9.3, en]
+  why: E2E 用例 9.3
+
+- msg: "改成后天下午3点"
+  label: false
+  tags: [e2e, case:9.4]
+  why: E2E 用例 9.4
+
+- msg: "Change it to the day after tomorrow at 3pm"
+  label: false
+  tags: [e2e, case:9.4, en]
+  why: E2E 用例 9.4
+
+- msg: "取消明天的喂药提醒"
+  label: false
+  tags: [e2e, case:9.5]
+  why: E2E 用例 9.5
+
+- msg: "Cancel tomorrow's medicine reminder"
+  label: false
+  tags: [e2e, case:9.5, en]
+  why: E2E 用例 9.5
+
+- msg: "取消所有提醒"
+  label: false
+  tags: [e2e, case:9.6]
+  why: E2E 用例 9.6
+
+- msg: "Cancel all reminders"
+  label: false
+  tags: [e2e, case:9.6, en]
+  why: E2E 用例 9.6
+
+- msg: "附近有宠物医院吗"
+  label: false
+  tags: [e2e, case:10.1]
+  why: E2E 用例 10.1
+
+- msg: "Are there any pet hospitals nearby?"
+  label: false
+  tags: [e2e, case:10.1, en]
+  why: E2E 用例 10.1
+
+- msg: "帮我找最近的狗公园"
+  label: false
+  tags: [e2e, case:10.2]
+  why: E2E 用例 10.2
+
+- msg: "Help me find the nearest dog park"
+  label: false
+  tags: [e2e, case:10.2, en]
+  why: E2E 用例 10.2
+
+- msg: "北京朝阳区宠物医院"
+  label: false
+  tags: [e2e, case:10.3]
+  why: E2E 用例 10.3
+
+- msg: "Pet hospitals in downtown Ottawa"
+  label: false
+  tags: [e2e, case:10.3, en]
+  why: E2E 用例 10.3
+
+- msg: "第一家评价怎么样？"
+  label: false
+  tags: [e2e, case:10.4]
+  why: E2E 用例 10.4
+
+- msg: "How are the reviews for the first one?"
+  label: false
+  tags: [e2e, case:10.4, en]
+  why: E2E 用例 10.4
+
+- msg: "怎么去那里？"
+  label: false
+  tags: [e2e, case:10.5]
+  why: E2E 用例 10.5
+
+- msg: "How do I get there?"
+  label: false
+  tags: [e2e, case:10.5, en]
+  why: E2E 用例 10.5
+
+- msg: "Find a vet near me"
+  label: false
+  tags: [e2e, case:10.6]
+  why: E2E 用例 10.6
+
+- msg: "就是在 Central Park"
+  label: false
+  tags: [e2e, case:10.7]
+  why: E2E 用例 10.7
+
+- msg: "It was at Central Park"
+  label: false
+  tags: [e2e, case:10.7, en]
+  why: E2E 用例 10.7
+
+- msg: "带小维去了 Vanier Animal Hospital 做体检"
+  label: false
+  tags: [e2e, case:10.8]
+  why: E2E 用例 10.8
+
+- msg: "Took Weiwei to Vanier Animal Hospital for a checkup"
+  label: false
+  tags: [e2e, case:10.8, en]
+  why: E2E 用例 10.8
+
+- msg: "帮我写一封邮件给兽医说明小维最近皮肤过敏"
+  label: false
+  tags: [e2e, case:11.1]
+  why: E2E 用例 11.1
+
+- msg: "Help me write an email to the vet about Weiwei's recent skin allergy"
+  label: false
+  tags: [e2e, case:11.1, en]
+  why: E2E 用例 11.1
+
+- msg: "Draft an email to the vet about Weiwei's vaccination history"
+  label: false
+  tags: [e2e, case:11.2]
+  why: E2E 用例 11.2
+
+- msg: "我的猫突然抽搐了！"
+  label: true
+  tags: [e2e, case:12.1, emergency]
+  why: E2E 用例 12.1
+
+- msg: "My cat is suddenly having seizures!"
+  label: true
+  tags: [e2e, case:12.1, en, emergency]
+  why: E2E 用例 12.1
+
+- msg: "小维中毒了快死了"
+  label: true
+  tags: [e2e, case:12.2, emergency]
+  why: E2E 用例 12.2
+
+- msg: "Weiwei has been poisoned and is dying!"
+  label: true
+  tags: [e2e, case:12.2, en, emergency]
+  why: E2E 用例 12.2
+
+- msg: "小维呼吸困难！"
+  label: true
+  tags: [e2e, case:12.3, emergency]
+  why: E2E 用例 12.3
+
+- msg: "My dog is having trouble breathing!"
+  label: true
+  tags: [e2e, case:12.3, en, emergency]
+  why: E2E 用例 12.3
+
+- msg: "My dog is having seizures!"
+  label: true
+  tags: [e2e, case:12.4, emergency]
+  why: E2E 用例 12.4
+
+- msg: "上次中毒是什么时候"
+  label: false
+  tags: [e2e, case:12.5]
+  why: E2E 用例 12.5
+
+- msg: "When was the last poisoning incident?"
+  label: false
+  tags: [e2e, case:12.5, en]
+  why: E2E 用例 12.5
+
+- msg: "小维以前抽搐过吗？"
+  label: false
+  tags: [e2e, case:12.6]
+  why: E2E 用例 12.6
+
+- msg: "Has Weiwei had seizures before?"
+  label: false
+  tags: [e2e, case:12.6, en]
+  why: E2E 用例 12.6
+
+- msg: "switch to English"
+  label: false
+  tags: [e2e, case:13.1]
+  why: E2E 用例 13.1
+
+- msg: "切换成中文"
+  label: false
+  tags: [e2e, case:13.2]
+  why: E2E 用例 13.2
+
+- msg: "说英文"
+  label: false
+  tags: [e2e, case:13.3]
+  why: E2E 用例 13.3
+
+- msg: "Speak English"
+  label: false
+  tags: [e2e, case:13.3, en]
+  why: E2E 用例 13.3
+
+- msg: "speak Chinese"
+  label: false
+  tags: [e2e, case:13.4]
+  why: E2E 用例 13.4
+
+- msg: "吃了狗粮"
+  label: false
+  tags: [e2e, case:14.1]
+  why: E2E 用例 14.1
+
+- msg: "Ate dog food"
+  label: false
+  tags: [e2e, case:14.1, en]
+  why: E2E 用例 14.1
+
+- msg: "小维和花花一起散步了"
+  label: false
+  tags: [e2e, case:14.2]
+  why: E2E 用例 14.2
+
+- msg: "Weiwei and Huahua went for a walk together"
+  label: false
+  tags: [e2e, case:14.2, en]
+  why: E2E 用例 14.2
+
+- msg: "小维吃了狗粮"
+  label: false
+  tags: [e2e, case:14.4]
+  why: E2E 用例 14.4
+
+- msg: "Weiwei ate dog food"
+  label: false
+  tags: [e2e, case:14.4, en]
+  why: E2E 用例 14.4
+
+- msg: "花花吐了"
+  label: false
+  tags: [e2e, case:14.5]
+  why: E2E 用例 14.5
+
+- msg: "Huahua vomited"
+  label: false
+  tags: [e2e, case:14.5, en]
+  why: E2E 用例 14.5
+
+- msg: "小维很怕打雷，性格胆小"
+  label: false
+  tags: [e2e, case:15.1]
+  why: E2E 用例 15.1
+
+- msg: "Weiwei is very afraid of thunder, timid personality"
+  label: false
+  tags: [e2e, case:15.1, en]
+  why: E2E 用例 15.1
+
+- msg: "帮我总结一下小维的档案"
+  label: false
+  tags: [e2e, case:15.2]
+  why: E2E 用例 15.2
+
+- msg: "Help me summarize Weiwei's profile"
+  label: false
+  tags: [e2e, case:15.2, en]
+  why: E2E 用例 15.2
+
+- msg: "小维呕吐了怎么办"
+  label: false
+  tags: [e2e, case:16.1]
+  why: E2E 用例 16.1
+
+- msg: "What should I do if my dog is vomiting?"
+  label: false
+  tags: [e2e, case:16.1, en]
+  why: E2E 用例 16.1
+
+- msg: "小维最近老是拉肚子"
+  label: false
+  tags: [e2e, case:16.2]
+  why: E2E 用例 16.2
+
+- msg: "My dog Weiwei has had diarrhea recently"
+  label: false
+  tags: [e2e, case:16.2, en]
+  why: E2E 用例 16.2
+
+- msg: "My dog has been vomiting, what should I do?"
+  label: false
+  tags: [e2e, case:16.3]
+  why: E2E 用例 16.3
+
+- msg: "帮我记录小维今天吃了狗粮"
+  label: false
+  tags: [e2e, case:16.4]
+  why: E2E 用例 16.4
+
+- msg: "Record that Weiwei ate dog food today"
+  label: false
+  tags: [e2e, case:16.4, en]
+  why: E2E 用例 16.4
+
+- msg: "小维皮肤上有红点，什么情况？"
+  label: false
+  tags: [e2e, case:16.5]
+  why: E2E 用例 16.5
+
+- msg: "Weiwei has red spots on the skin, what's going on?"
+  label: false
+  tags: [e2e, case:16.5, en]
+  why: E2E 用例 16.5
+
+- msg: "还喝了很多水"
+  label: false
+  tags: [e2e, case:17.1_seq]
+  why: E2E 用例 17.1_seq
+
+- msg: "下午去公园散步了"
+  label: false
+  tags: [e2e, case:17.1_seq]
+  why: E2E 用例 17.1_seq
+
+- msg: "遇到了一只金毛"
+  label: false
+  tags: [e2e, case:17.1_seq]
+  why: E2E 用例 17.1_seq
+
+- msg: "它们玩了很久"
+  label: false
+  tags: [e2e, case:17.1_seq]
+  why: E2E 用例 17.1_seq
+
+- msg: "回来之后洗了澡"
+  label: false
+  tags: [e2e, case:17.1_seq]
+  why: E2E 用例 17.1_seq
+
+- msg: "小维最近怎么样？"
+  label: false
+  tags: [e2e, case:17.1_seq]
+  why: E2E 用例 17.1_seq
+
+- msg: "Also drank a lot of water"
+  label: false
+  tags: [e2e, case:17.1_seq, en]
+  why: E2E 用例 17.1_seq
+
+- msg: "Went to the park in the afternoon"
+  label: false
+  tags: [e2e, case:17.1_seq, en]
+  why: E2E 用例 17.1_seq
+
+- msg: "Met a golden retriever"
+  label: false
+  tags: [e2e, case:17.1_seq, en]
+  why: E2E 用例 17.1_seq
+
+- msg: "They played for a long time"
+  label: false
+  tags: [e2e, case:17.1_seq, en]
+  why: E2E 用例 17.1_seq
+
+- msg: "Took a bath after coming back"
+  label: false
+  tags: [e2e, case:17.1_seq, en]
+  why: E2E 用例 17.1_seq
+
+- msg: "How has Weiwei been recently?"
+  label: false
+  tags: [e2e, case:17.1_seq, en]
+  why: E2E 用例 17.1_seq
+
+- msg: "删掉小维"
+  label: false
+  tags: [e2e, case:20.1]
+  why: E2E 用例 20.1
+
+- msg: "Delete Weiwei"
+  label: false
+  tags: [e2e, case:20.1, en]
+  why: E2E 用例 20.1
+
+- msg: "删掉今天的记录"
+  label: false
+  tags: [e2e, case:20.2]
+  why: E2E 用例 20.2
+
+- msg: "Delete today's record"
+  label: false
+  tags: [e2e, case:20.2, en]
+  why: E2E 用例 20.2
+
+- msg: "取消这个提醒"
+  label: false
+  tags: [e2e, case:20.3]
+  why: E2E 用例 20.3
+
+- msg: "Cancel this reminder"
+  label: false
+  tags: [e2e, case:20.3, en]
+  why: E2E 用例 20.3
+
+- msg: "删除遛狗待办"
+  label: false
+  tags: [e2e, case:20.4]
+  why: E2E 用例 20.4
+
+- msg: "Delete the dog walking task"
+  label: false
+  tags: [e2e, case:20.4, en]
+  why: E2E 用例 20.4
+
+- msg: "你好呀"
+  label: false
+  tags: [e2e, case:21.1]
+  why: E2E 用例 21.1
+
+- msg: "Hey there"
+  label: false
+  tags: [e2e, case:21.1, en]
+  why: E2E 用例 21.1
+
+- msg: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  label: false
+  tags: [e2e, case:21.3]
+  why: E2E 用例 21.3
+
+- msg: "记录吃狗粮"
+  label: false
+  tags: [e2e, case:21.5]
+  why: E2E 用例 21.5
+
+- msg: "Record eating dog food"
+  label: false
+  tags: [e2e, case:21.5, en]
+  why: E2E 用例 21.5
+
+- msg: "Delete it"
+  label: false
+  tags: [e2e, case:22.2]
+  why: E2E 用例 22.2
+
+- msg: "删除这个待办"
+  label: false
+  tags: [e2e, case:22.4]
+  why: E2E 用例 22.4
+
+- msg: "Delete this task"
+  label: false
+  tags: [e2e, case:22.4, en]
+  why: E2E 用例 22.4
+
+- msg: "小维中毒了！"
+  label: true
+  tags: [e2e, case:23.3, emergency]
+  why: E2E 用例 23.3
+
+- msg: "Weiwei has been poisoned!"
+  label: true
+  tags: [e2e, case:23.3, en, emergency]
+  why: E2E 用例 23.3
+
+- msg: "日期不对，应该是3月25号"
+  label: false
+  tags: [e2e, case:24.1]
+  why: E2E 用例 24.1
+
+- msg: "The date is wrong, it should be March 25th"
+  label: false
+  tags: [e2e, case:24.1, en]
+  why: E2E 用例 24.1
+
+- msg: "分类应该是 medical 不是 diet"
+  label: false
+  tags: [e2e, case:24.2]
+  why: E2E 用例 24.2
+
+- msg: "The category should be medical not diet"
+  label: false
+  tags: [e2e, case:24.2, en]
+  why: E2E 用例 24.2
+
+- msg: "改成'公园散步'"
+  label: false
+  tags: [e2e, case:24.3]
+  why: E2E 用例 24.3
+
+- msg: "Change it to 'Park Walk'"
+  label: false
+  tags: [e2e, case:24.3, en]
+  why: E2E 用例 24.3
+
+- msg: "你好！"
+  label: false
+  tags: [e2e, case:25_seq]
+  why: E2E 用例 25_seq
+
+- msg: "我养了一只金毛叫小维"
+  label: false
+  tags: [e2e, case:25_seq]
+  why: E2E 用例 25_seq
+
+- msg: "她3岁了，体重30公斤"
+  label: false
+  tags: [e2e, case:25_seq]
+  why: E2E 用例 25_seq
+
+- msg: "她今天吃了鸡肉拌饭"
+  label: false
+  tags: [e2e, case:25_seq]
+  why: E2E 用例 25_seq
+
+- msg: "不对，是昨天的事"
+  label: false
+  tags: [e2e, case:25_seq]
+  why: E2E 用例 25_seq
+
+- msg: "提醒我下周一带她去看兽医"
+  label: false
+  tags: [e2e, case:25_seq]
+  why: E2E 用例 25_seq
+
+- msg: "我到现在记录了什么？"
+  label: false
+  tags: [e2e, case:25_seq]
+  why: E2E 用例 25_seq
+
+- msg: "她很怕打雷，性格胆小"
+  label: false
+  tags: [e2e, case:25_seq]
+  why: E2E 用例 25_seq
+
+- msg: "Hello!"
+  label: false
+  tags: [e2e, case:25_seq, en]
+  why: E2E 用例 25_seq
+
+- msg: "I have a golden retriever named Winnie"
+  label: false
+  tags: [e2e, case:25_seq, en]
+  why: E2E 用例 25_seq
+
+- msg: "She's 3 years old, weighs 30kg"
+  label: false
+  tags: [e2e, case:25_seq, en]
+  why: E2E 用例 25_seq
+
+- msg: "She ate chicken and rice today"
+  label: false
+  tags: [e2e, case:25_seq, en]
+  why: E2E 用例 25_seq
+
+- msg: "Actually that was yesterday"
+  label: false
+  tags: [e2e, case:25_seq, en]
+  why: E2E 用例 25_seq
+
+- msg: "Remind me to take her to the vet next Monday"
+  label: false
+  tags: [e2e, case:25_seq, en]
+  why: E2E 用例 25_seq
+
+- msg: "What have I recorded so far?"
+  label: false
+  tags: [e2e, case:25_seq, en]
+  why: E2E 用例 25_seq
+
+- msg: "She's scared of thunder and very shy"
+  label: false
+  tags: [e2e, case:25_seq, en]
+  why: E2E 用例 25_seq
+
+- msg: "早上给小维喂了狗粮"
+  label: false
+  tags: [e2e, case:26_seq]
+  why: E2E 用例 26_seq
+
+- msg: "花了30块买的新狗粮"
+  label: false
+  tags: [e2e, case:26_seq]
+  why: E2E 用例 26_seq
+
+- msg: "上午带小维去公园散步了"
+  label: false
+  tags: [e2e, case:26_seq]
+  why: E2E 用例 26_seq
+
+- msg: "就是在 Parkdale Park"
+  label: false
+  tags: [e2e, case:26_seq]
+  why: E2E 用例 26_seq
+
+- msg: "拍了张照片"
+  label: false
+  tags: [e2e, case:26_seq]
+  why: E2E 用例 26_seq
+
+- msg: "下午小维吐了"
+  label: false
+  tags: [e2e, case:26_seq]
+  why: E2E 用例 26_seq
+
+- msg: "附近有24小时宠物急诊吗"
+  label: false
+  tags: [e2e, case:26_seq]
+  why: E2E 用例 26_seq
+
+- msg: "第一家怎么走？"
+  label: false
+  tags: [e2e, case:26_seq]
+  why: E2E 用例 26_seq
+
+- msg: "帮我给兽医写一封邮件说明情况"
+  label: false
+  tags: [e2e, case:26_seq]
+  why: E2E 用例 26_seq
+
+- msg: "今天花了多少钱？"
+  label: false
+  tags: [e2e, case:26_seq]
+  why: E2E 用例 26_seq
+
+- msg: "总结一下今天"
+  label: false
+  tags: [e2e, case:26_seq]
+  why: E2E 用例 26_seq
+
+- msg: "Fed Weiwei dog food this morning"
+  label: false
+  tags: [e2e, case:26_seq, en]
+  why: E2E 用例 26_seq
+
+- msg: "Spent 30 yuan on new dog food"
+  label: false
+  tags: [e2e, case:26_seq, en]
+  why: E2E 用例 26_seq
+
+- msg: "Took Weiwei to the park for a walk this morning"
+  label: false
+  tags: [e2e, case:26_seq, en]
+  why: E2E 用例 26_seq
+
+- msg: "It was at Parkdale Park"
+  label: false
+  tags: [e2e, case:26_seq, en]
+  why: E2E 用例 26_seq
+
+- msg: "Took a photo"
+  label: false
+  tags: [e2e, case:26_seq, en]
+  why: E2E 用例 26_seq
+
+- msg: "Weiwei vomited in the afternoon"
+  label: false
+  tags: [e2e, case:26_seq, en]
+  why: E2E 用例 26_seq
+
+- msg: "Is there a 24-hour pet ER nearby?"
+  label: false
+  tags: [e2e, case:26_seq, en]
+  why: E2E 用例 26_seq
+
+- msg: "How do I get to the first one?"
+  label: false
+  tags: [e2e, case:26_seq, en]
+  why: E2E 用例 26_seq
+
+- msg: "Help me write an email to the vet explaining the situation"
+  label: false
+  tags: [e2e, case:26_seq, en]
+  why: E2E 用例 26_seq
+
+- msg: "How much did I spend today?"
+  label: false
+  tags: [e2e, case:26_seq, en]
+  why: E2E 用例 26_seq
+
+- msg: "Summarize today"
+  label: false
+  tags: [e2e, case:26_seq, en]
+  why: E2E 用例 26_seq
+
+- msg: "小维今天打了疫苗"
+  label: false
+  tags: [e2e, case:27_seq]
+  why: E2E 用例 27_seq
+
+- msg: "花了200"
+  label: false
+  tags: [e2e, case:27_seq]
+  why: E2E 用例 27_seq
+
+- msg: "提醒我下次三个月后再打"
+  label: false
+  tags: [e2e, case:27_seq]
+  why: E2E 用例 27_seq
+
+- msg: "那条记录标题改成'第二针疫苗'"
+  label: false
+  tags: [e2e, case:27_seq]
+  why: E2E 用例 27_seq
+
+- msg: "删掉刚才那个提醒"
+  label: false
+  tags: [e2e, case:27_seq]
+  why: E2E 用例 27_seq
+
+- msg: "再帮我记一条：小维今天洗了澡"
+  label: false
+  tags: [e2e, case:27_seq]
+  why: E2E 用例 27_seq
+
+- msg: "Weiwei got vaccinated today"
+  label: false
+  tags: [e2e, case:27_seq, en]
+  why: E2E 用例 27_seq
+
+- msg: "It cost 200"
+  label: false
+  tags: [e2e, case:27_seq, en]
+  why: E2E 用例 27_seq
+
+- msg: "Remind me to get another one in three months"
+  label: false
+  tags: [e2e, case:27_seq, en]
+  why: E2E 用例 27_seq
+
+- msg: "Change that record's title to 'Second vaccination'"
+  label: false
+  tags: [e2e, case:27_seq, en]
+  why: E2E 用例 27_seq
+
+- msg: "Delete that reminder I just made"
+  label: false
+  tags: [e2e, case:27_seq, en]
+  why: E2E 用例 27_seq
+
+- msg: "Also record this: Weiwei had a bath today"
+  label: false
+  tags: [e2e, case:27_seq, en]
+  why: E2E 用例 27_seq
+
+- msg: "我养了一只新猫叫花花"
+  label: false
+  tags: [e2e, case:28_seq]
+  why: E2E 用例 28_seq
+
+- msg: "她是英短蓝猫"
+  label: false
+  tags: [e2e, case:28_seq]
+  why: E2E 用例 28_seq
+
+- msg: "母的，已经绝育了"
+  label: false
+  tags: [e2e, case:28_seq]
+  why: E2E 用例 28_seq
+
+- msg: "体重4公斤，生日2023年6月"
+  label: false
+  tags: [e2e, case:28_seq]
+  why: E2E 用例 28_seq
+
+- msg: "对鸡肉过敏"
+  label: false
+  tags: [e2e, case:28_seq]
+  why: E2E 用例 28_seq
+
+- msg: "用这张当头像"
+  label: false
+  tags: [e2e, case:28_seq]
+  why: E2E 用例 28_seq
+
+- msg: "帮我总结一下花花的档案"
+  label: false
+  tags: [e2e, case:28_seq]
+  why: E2E 用例 28_seq
+
+- msg: "花花有什么记录吗"
+  label: false
+  tags: [e2e, case:28_seq]
+  why: E2E 用例 28_seq
+
+- msg: "I got a new cat named Huahua"
+  label: false
+  tags: [e2e, case:28_seq, en]
+  why: E2E 用例 28_seq
+
+- msg: "She's a British Shorthair blue cat"
+  label: false
+  tags: [e2e, case:28_seq, en]
+  why: E2E 用例 28_seq
+
+- msg: "Female, already spayed"
+  label: false
+  tags: [e2e, case:28_seq, en]
+  why: E2E 用例 28_seq
+
+- msg: "Weighs 4 kg, birthday June 2023"
+  label: false
+  tags: [e2e, case:28_seq, en]
+  why: E2E 用例 28_seq
+
+- msg: "Allergic to chicken"
+  label: false
+  tags: [e2e, case:28_seq, en]
+  why: E2E 用例 28_seq
+
+- msg: "Use this as the avatar"
+  label: false
+  tags: [e2e, case:28_seq, en]
+  why: E2E 用例 28_seq
+
+- msg: "Help me summarize Huahua's profile"
+  label: false
+  tags: [e2e, case:28_seq, en]
+  why: E2E 用例 28_seq
+
+- msg: "Does Huahua have any records?"
+  label: false
+  tags: [e2e, case:28_seq, en]
+  why: E2E 用例 28_seq
+
+- msg: "小维今天去体检了"
+  label: false
+  tags: [e2e, case:29_seq]
+  why: E2E 用例 29_seq
+
+- msg: "不对，是昨天"
+  label: false
+  tags: [e2e, case:29_seq]
+  why: E2E 用例 29_seq
+
+- msg: "分类改成daily"
+  label: false
+  tags: [e2e, case:29_seq]
+  why: E2E 用例 29_seq
+
+- msg: "标题改成'年度体检'"
+  label: false
+  tags: [e2e, case:29_seq]
+  why: E2E 用例 29_seq
+
+- msg: "算了，删掉这条"
+  label: false
+  tags: [e2e, case:29_seq]
+  why: E2E 用例 29_seq
+
+- msg: "重新记一下：小维昨天做了年度体检，花了500"
+  label: false
+  tags: [e2e, case:29_seq]
+  why: E2E 用例 29_seq
+
+- msg: "Weiwei went for a checkup today"
+  label: false
+  tags: [e2e, case:29_seq, en]
+  why: E2E 用例 29_seq
+
+- msg: "No, it was yesterday"
+  label: false
+  tags: [e2e, case:29_seq, en]
+  why: E2E 用例 29_seq
+
+- msg: "Change the category to daily"
+  label: false
+  tags: [e2e, case:29_seq, en]
+  why: E2E 用例 29_seq
+
+- msg: "Change the title to 'Annual checkup'"
+  label: false
+  tags: [e2e, case:29_seq, en]
+  why: E2E 用例 29_seq
+
+- msg: "Never mind, delete this record"
+  label: false
+  tags: [e2e, case:29_seq, en]
+  why: E2E 用例 29_seq
+
+- msg: "Let me re-record: Weiwei had an annual checkup yesterday, cost 500"
+  label: false
+  tags: [e2e, case:29_seq, en]
+  why: E2E 用例 29_seq
+
+- msg: "小维最近拉肚子怎么办？"
+  label: false
+  tags: [e2e, case:30_seq]
+  why: E2E 用例 30_seq
+
+- msg: "提醒我明天去那家医院"
+  label: false
+  tags: [e2e, case:30_seq]
+  why: E2E 用例 30_seq
+
+- msg: "每天提醒我给小维吃益生菌"
+  label: false
+  tags: [e2e, case:30_seq]
+  why: E2E 用例 30_seq
+
+- msg: "小维突然抽搐了！"
+  label: true
+  tags: [e2e, case:30_seq, emergency]
+  why: E2E 用例 30_seq
+
+- msg: "没事了，虚惊一场"
+  label: false
+  tags: [e2e, case:30_seq]
+  why: E2E 用例 30_seq
+
+- msg: "Weiwei has been having diarrhea recently, what should I do?"
+  label: false
+  tags: [e2e, case:30_seq, en]
+  why: E2E 用例 30_seq
+
+- msg: "Remind me to go to that hospital tomorrow"
+  label: false
+  tags: [e2e, case:30_seq, en]
+  why: E2E 用例 30_seq
+
+- msg: "Remind me to give Weiwei probiotics every day"
+  label: false
+  tags: [e2e, case:30_seq, en]
+  why: E2E 用例 30_seq
+
+- msg: "Weiwei is suddenly having seizures!"
+  label: true
+  tags: [e2e, case:30_seq, en, emergency]
+  why: E2E 用例 30_seq
+
+- msg: "It's fine, false alarm"
+  label: false
+  tags: [e2e, case:30_seq, en]
+  why: E2E 用例 30_seq
+
+- msg: "帮我找附近的狗公园"
+  label: false
+  tags: [e2e, case:31_seq]
+  why: E2E 用例 31_seq
+
+- msg: "好，记录一下小维今天去了这个公园"
+  label: false
+  tags: [e2e, case:31_seq]
+  why: E2E 用例 31_seq
+
+- msg: "Help me find a dog park nearby"
+  label: false
+  tags: [e2e, case:31_seq, en]
+  why: E2E 用例 31_seq
+
+- msg: "OK, record that Weiwei went to this park today"
+  label: false
+  tags: [e2e, case:31_seq, en]
+  why: E2E 用例 31_seq
+
+- msg: "小维今天出去玩了"
+  label: false
+  tags: [e2e, case:32_seq]
+  why: E2E 用例 32_seq
+
+- msg: "这张照片是什么品种？"
+  label: false
+  tags: [e2e, case:32_seq]
+  why: E2E 用例 32_seq
+
+- msg: "用刚才那张照片当小维头像"
+  label: false
+  tags: [e2e, case:32_seq]
+  why: E2E 用例 32_seq
+
+- msg: "把这张也加到刚才的记录"
+  label: false
+  tags: [e2e, case:32_seq]
+  why: E2E 用例 32_seq
+
+- msg: "删掉第一张照片"
+  label: false
+  tags: [e2e, case:32_seq]
+  why: E2E 用例 32_seq
+
+- msg: "Weiwei went out to play today"
+  label: false
+  tags: [e2e, case:32_seq, en]
+  why: E2E 用例 32_seq
+
+- msg: "What breed is in this photo?"
+  label: false
+  tags: [e2e, case:32_seq, en]
+  why: E2E 用例 32_seq
+
+- msg: "Use that photo as Weiwei's avatar"
+  label: false
+  tags: [e2e, case:32_seq, en]
+  why: E2E 用例 32_seq
+
+- msg: "Add this one to the earlier record too"
+  label: false
+  tags: [e2e, case:32_seq, en]
+  why: E2E 用例 32_seq
+
+- msg: "Delete the first photo"
+  label: false
+  tags: [e2e, case:32_seq, en]
+  why: E2E 用例 32_seq
+
+- msg: "花花也吃了猫粮"
+  label: false
+  tags: [e2e, case:33_seq]
+  why: E2E 用例 33_seq
+
+- msg: "它们俩一起去公园玩了"
+  label: false
+  tags: [e2e, case:33_seq]
+  why: E2E 用例 33_seq
+
+- msg: "小维在公园吐了"
+  label: false
+  tags: [e2e, case:33_seq]
+  why: E2E 用例 33_seq
+
+- msg: "花花最近吃了什么？"
+  label: false
+  tags: [e2e, case:33_seq]
+  why: E2E 用例 33_seq
+
+- msg: "花花也要喂"
+  label: false
+  tags: [e2e, case:33_seq]
+  why: E2E 用例 33_seq
+
+- msg: "Huahua also ate cat food"
+  label: false
+  tags: [e2e, case:33_seq, en]
+  why: E2E 用例 33_seq
+
+- msg: "They both went to the park together"
+  label: false
+  tags: [e2e, case:33_seq, en]
+  why: E2E 用例 33_seq
+
+- msg: "Weiwei vomited at the park"
+  label: false
+  tags: [e2e, case:33_seq, en]
+  why: E2E 用例 33_seq
+
+- msg: "What has Huahua eaten recently?"
+  label: false
+  tags: [e2e, case:33_seq, en]
+  why: E2E 用例 33_seq
+
+- msg: "Huahua needs it too"
+  label: false
+  tags: [e2e, case:33_seq, en]
+  why: E2E 用例 33_seq
+
+- msg: "再加一个：每天喂两次药"
+  label: false
+  tags: [e2e, case:34_seq]
+  why: E2E 用例 34_seq
+
+- msg: "我有哪些待办？"
+  label: false
+  tags: [e2e, case:34_seq]
+  why: E2E 用例 34_seq
+
+- msg: "把喂药改成每天3次"
+  label: false
+  tags: [e2e, case:34_seq]
+  why: E2E 用例 34_seq
+
+- msg: "取消量体温的任务"
+  label: false
+  tags: [e2e, case:34_seq]
+  why: E2E 用例 34_seq
+
+- msg: "Add another: give medicine twice a day"
+  label: false
+  tags: [e2e, case:34_seq, en]
+  why: E2E 用例 34_seq
+
+- msg: "Change medicine to three times a day"
+  label: false
+  tags: [e2e, case:34_seq, en]
+  why: E2E 用例 34_seq
+
+- msg: "Cancel the temperature task"
+  label: false
+  tags: [e2e, case:34_seq, en]
+  why: E2E 用例 34_seq
+
+- msg: "Delete all tasks"
+  label: false
+  tags: [e2e, case:34_seq, en]
+  why: E2E 用例 34_seq
+
+- msg: "小维突然开始抽搐了！！"
+  label: true
+  tags: [e2e, case:35_seq, emergency]
+  why: E2E 用例 35_seq
+
+- msg: "附近有24小时急诊吗"
+  label: false
+  tags: [e2e, case:35_seq]
+  why: E2E 用例 35_seq
+
+- msg: "怎么去最近的那家？"
+  label: false
+  tags: [e2e, case:35_seq]
+  why: E2E 用例 35_seq
+
+- msg: "帮我记录一下，小维今天抽搐发作了"
+  label: false
+  tags: [e2e, case:35_seq, gray]
+  why: E2E 用例 35_seq
+
+- msg: "帮我写封邮件给兽医说明情况"
+  label: false
+  tags: [e2e, case:35_seq]
+  why: E2E 用例 35_seq
+
+- msg: "提醒我明天带小维复查"
+  label: false
+  tags: [e2e, case:35_seq]
+  why: E2E 用例 35_seq
+
+- msg: "Weiwei suddenly started having seizures!!"
+  label: true
+  tags: [e2e, case:35_seq, en, emergency]
+  why: E2E 用例 35_seq
+
+- msg: "How do I get to the nearest one?"
+  label: false
+  tags: [e2e, case:35_seq, en]
+  why: E2E 用例 35_seq
+
+- msg: "Record this: Weiwei had a seizure episode today"
+  label: false
+  tags: [e2e, case:35_seq, en, gray]
+  why: E2E 用例 35_seq
+
+- msg: "Help me write an email to the vet about the situation"
+  label: false
+  tags: [e2e, case:35_seq, en]
+  why: E2E 用例 35_seq
+
+- msg: "Remind me to take Weiwei for a follow-up tomorrow"
+  label: false
+  tags: [e2e, case:35_seq, en]
+  why: E2E 用例 35_seq
+
+- msg: "Winnie ate dog food today"
+  label: false
+  tags: [e2e, case:36_seq]
+  why: E2E 用例 36_seq
+
+- msg: "Delete that record"
+  label: false
+  tags: [e2e, case:36_seq]
+  why: E2E 用例 36_seq
+
+- msg: "小维今天散步了"
+  label: false
+  tags: [e2e, case:36_seq]
+  why: E2E 用例 36_seq
+
+- msg: "删掉这条"
+  label: false
+  tags: [e2e, case:36_seq]
+  why: E2E 用例 36_seq
+
+- msg: "Weiwei went for a walk today"
+  label: false
+  tags: [e2e, case:36_seq, en]
+  why: E2E 用例 36_seq
+
+- msg: "Delete this record"
+  label: false
+  tags: [e2e, case:36_seq, en]
+  why: E2E 用例 36_seq
+
+- msg: "小维今天去看病了"
+  label: false
+  tags: [e2e, case:37_seq]
+  why: E2E 用例 37_seq
+
+- msg: "在 Vanier Animal Hospital"
+  label: false
+  tags: [e2e, case:37_seq]
+  why: E2E 用例 37_seq
+
+- msg: "花了1500"
+  label: false
+  tags: [e2e, case:37_seq]
+  why: E2E 用例 37_seq
+
+- msg: "这是检查报告"
+  label: false
+  tags: [e2e, case:37_seq]
+  why: E2E 用例 37_seq
+
+- msg: "医生说要每天喂益生菌，连续一周"
+  label: false
+  tags: [e2e, case:37_seq]
+  why: E2E 用例 37_seq
+
+- msg: "提醒我下周复查"
+  label: false
+  tags: [e2e, case:37_seq]
+  why: E2E 用例 37_seq
+
+- msg: "总结一下这次看病的情况"
+  label: false
+  tags: [e2e, case:37_seq]
+  why: E2E 用例 37_seq
+
+- msg: "Weiwei went to the vet today"
+  label: false
+  tags: [e2e, case:37_seq, en]
+  why: E2E 用例 37_seq
+
+- msg: "At Vanier Animal Hospital"
+  label: false
+  tags: [e2e, case:37_seq, en]
+  why: E2E 用例 37_seq
+
+- msg: "It cost 1500"
+  label: false
+  tags: [e2e, case:37_seq, en]
+  why: E2E 用例 37_seq
+
+- msg: "This is the examination report"
+  label: false
+  tags: [e2e, case:37_seq, en]
+  why: E2E 用例 37_seq
+
+- msg: "The doctor said to give probiotics daily for a week"
+  label: false
+  tags: [e2e, case:37_seq, en]
+  why: E2E 用例 37_seq
+
+- msg: "Remind me to follow up next week"
+  label: false
+  tags: [e2e, case:37_seq, en]
+  why: E2E 用例 37_seq
+
+- msg: "Summarize this vet visit"
+  label: false
+  tags: [e2e, case:37_seq, en]
+  why: E2E 用例 37_seq
+
+- msg: "The weather is really nice today"
+  label: false
+  tags: [e2e, case:38.1, en]
+  why: E2E 用例 38.1
+
+- msg: "你觉得金毛好还是拉布拉多好？"
+  label: false
+  tags: [e2e, case:38.2]
+  why: E2E 用例 38.2
+
+- msg: "Do you think Golden Retrievers or Labradors are better?"
+  label: false
+  tags: [e2e, case:38.2, en]
+  why: E2E 用例 38.2
+
+- msg: "小维真可爱"
+  label: false
+  tags: [e2e, case:38.3]
+  why: E2E 用例 38.3
+
+- msg: "Weiwei is so cute"
+  label: false
+  tags: [e2e, case:38.3, en]
+  why: E2E 用例 38.3
+
+- msg: "帮我查一下我的宠物"
+  label: false
+  tags: [e2e, case:38.4]
+  why: E2E 用例 38.4
+
+- msg: "Look up my pets"
+  label: false
+  tags: [e2e, case:38.4, en]
+  why: E2E 用例 38.4
+
+- msg: "我的待办"
+  label: false
+  tags: [e2e, case:38.5]
+  why: E2E 用例 38.5
+
+- msg: "My tasks"
+  label: false
+  tags: [e2e, case:38.5, en]
+  why: E2E 用例 38.5
+
+- msg: "这条记录不对"
+  label: false
+  tags: [e2e, case:38.6]
+  why: E2E 用例 38.6
+
+- msg: "This record is wrong"
+  label: false
+  tags: [e2e, case:38.6, en]
+  why: E2E 用例 38.6
+
+- msg: "小维上次中毒是什么时候？"
+  label: false
+  tags: [e2e, case:38.7]
+  why: E2E 用例 38.7
+
+- msg: "When was Weiwei's last poisoning incident?"
+  label: false
+  tags: [e2e, case:38.7, en]
+  why: E2E 用例 38.7
+
+- msg: "下午散步了"
+  label: false
+  tags: [e2e, case:39_seq]
+  why: E2E 用例 39_seq
+
+- msg: "晚上洗了澡"
+  label: false
+  tags: [e2e, case:39_seq]
+  why: E2E 用例 39_seq
+
+- msg: "小维体重30公斤"
+  label: false
+  tags: [e2e, case:39_seq]
+  why: E2E 用例 39_seq
+
+- msg: "花了50块买了新项圈"
+  label: false
+  tags: [e2e, case:39_seq]
+  why: E2E 用例 39_seq
+
+- msg: "提醒我下周打疫苗"
+  label: false
+  tags: [e2e, case:39_seq]
+  why: E2E 用例 39_seq
+
+- msg: "每天遛狗两次"
+  label: false
+  tags: [e2e, case:39_seq]
+  why: E2E 用例 39_seq
+
+- msg: "小维对鸡肉过敏"
+  label: false
+  tags: [e2e, case:39_seq]
+  why: E2E 用例 39_seq
+
+- msg: "附近有狗公园吗"
+  label: false
+  tags: [e2e, case:39_seq]
+  why: E2E 用例 39_seq
+
+- msg: "今天总共记了什么？"
+  label: false
+  tags: [e2e, case:39_seq]
+  why: E2E 用例 39_seq
+
+- msg: "小维体重多少来着？"
+  label: false
+  tags: [e2e, case:39_seq]
+  why: E2E 用例 39_seq
+
+- msg: "第一条记录是什么？"
+  label: false
+  tags: [e2e, case:39_seq]
+  why: E2E 用例 39_seq
+
+- msg: "Went for a walk in the afternoon"
+  label: false
+  tags: [e2e, case:39_seq, en]
+  why: E2E 用例 39_seq
+
+- msg: "Had a bath in the evening"
+  label: false
+  tags: [e2e, case:39_seq, en]
+  why: E2E 用例 39_seq
+
+- msg: "Weiwei weighs 30 kg"
+  label: false
+  tags: [e2e, case:39_seq, en]
+  why: E2E 用例 39_seq
+
+- msg: "Spent 50 yuan on a new collar"
+  label: false
+  tags: [e2e, case:39_seq, en]
+  why: E2E 用例 39_seq
+
+- msg: "Remind me to get vaccinated next week"
+  label: false
+  tags: [e2e, case:39_seq, en]
+  why: E2E 用例 39_seq
+
+- msg: "Walk the dog twice a day"
+  label: false
+  tags: [e2e, case:39_seq, en]
+  why: E2E 用例 39_seq
+
+- msg: "Weiwei is allergic to chicken"
+  label: false
+  tags: [e2e, case:39_seq, en]
+  why: E2E 用例 39_seq
+
+- msg: "Are there any dog parks nearby?"
+  label: false
+  tags: [e2e, case:39_seq, en]
+  why: E2E 用例 39_seq
+
+- msg: "What did I record in total today?"
+  label: false
+  tags: [e2e, case:39_seq, en]
+  why: E2E 用例 39_seq
+
+- msg: "How much does Weiwei weigh again?"
+  label: false
+  tags: [e2e, case:39_seq, en]
+  why: E2E 用例 39_seq
+
+- msg: "What was the first record?"
+  label: false
+  tags: [e2e, case:39_seq, en]
+  why: E2E 用例 39_seq
+
+- msg: "记录小维今天吃了狗粮，提醒我明天打疫苗"
+  label: false
+  tags: [e2e, case:40.1]
+  why: E2E 用例 40.1
+
+- msg: "Record that Weiwei ate dog food today, remind me about vaccination tomorrow"
+  label: false
+  tags: [e2e, case:40.1, en]
+  why: E2E 用例 40.1
+
+- msg: "小维今天散步了还洗了澡"
+  label: false
+  tags: [e2e, case:40.2]
+  why: E2E 用例 40.2
+
+- msg: "Weiwei went for a walk and had a bath today"
+  label: false
+  tags: [e2e, case:40.2, en]
+  why: E2E 用例 40.2
+
+- msg: "帮我删掉昨天的记录，再记一条今天散步了"
+  label: false
+  tags: [e2e, case:40.3]
+  why: E2E 用例 40.3
+
+- msg: "Delete yesterday's record and add a new one for today's walk"
+  label: false
+  tags: [e2e, case:40.3, en]
+  why: E2E 用例 40.3
+
+- msg: "给小维创建一个每天遛狗的待办，顺便记录今天已经遛了"
+  label: false
+  tags: [e2e, case:40.4]
+  why: E2E 用例 40.4
+
+- msg: "Create a daily dog walking task for Weiwei, and record that I already walked today"
+  label: false
+  tags: [e2e, case:40.4, en]
+  why: E2E 用例 40.4
+
+- msg: "小维体重30公斤，生日2023年3月"
+  label: false
+  tags: [e2e, case:40.5]
+  why: E2E 用例 40.5
+
+- msg: "Weiwei weighs 30 kg, birthday March 2023"
+  label: false
+  tags: [e2e, case:40.5, en]
+  why: E2E 用例 40.5
+
+- msg: "今天遛了狗、喂了猫粮、给花花洗了澡"
+  label: false
+  tags: [e2e, case:40.6]
+  why: E2E 用例 40.6
+
+- msg: "Walked the dog, fed cat food, and gave Huahua a bath today"
+  label: false
+  tags: [e2e, case:40.6, en]
+  why: E2E 用例 40.6
+
+- msg: "记录今天散步、提醒明天打疫苗、创建每天喂药的待办"
+  label: false
+  tags: [e2e, case:40.7]
+  why: E2E 用例 40.7
+
+- msg: "Record today's walk, remind me about vaccination tomorrow, create a daily medicine task"
+  label: false
+  tags: [e2e, case:40.7, en]
+  why: E2E 用例 40.7
+
+- msg: "小维今天吃了狗粮、下午散步了、晚上洗了澡"
+  label: false
+  tags: [e2e, case:40.8]
+  why: E2E 用例 40.8
+
+- msg: "Weiwei ate dog food today, walked in the afternoon, and had a bath in the evening"
+  label: false
+  tags: [e2e, case:40.8, en]
+  why: E2E 用例 40.8
+
+- msg: "小维今天去公园玩了，记录一下"
+  label: false
+  tags: [e2e, case:40.10]
+  why: E2E 用例 40.10
+
+- msg: "Weiwei went to the park today, record it"
+  label: false
+  tags: [e2e, case:40.10, en]
+  why: E2E 用例 40.10
+
+- msg: "带小维去医院花了2000，提醒我下周复查"
+  label: false
+  tags: [e2e, case:40.11]
+  why: E2E 用例 40.11
+
+- msg: "Took Weiwei to the hospital, cost 2000, remind me to follow up next week"
+  label: false
+  tags: [e2e, case:40.11, en]
+  why: E2E 用例 40.11
+
+- msg: "小维和花花今天一起去公园散步了，路上买了零食花了50"
+  label: false
+  tags: [e2e, case:40.12]
+  why: E2E 用例 40.12
+
+- msg: "Weiwei and Huahua went to the park together today, bought snacks for 50 on the way"
+  label: false
+  tags: [e2e, case:40.12, en]
+  why: E2E 用例 40.12
+
+- msg: "遛了狗、喂了猫粮、洗了澡、打了疫苗"
+  label: false
+  tags: [e2e, case:40.13]
+  why: E2E 用例 40.13
+
+- msg: "Walked the dog, fed cat food, gave a bath, and got vaccinated"
+  label: false
+  tags: [e2e, case:40.13, en]
+  why: E2E 用例 40.13
+
+- msg: "记录吃狗粮，记录散步，提醒打疫苗，创建喂药待办"
+  label: false
+  tags: [e2e, case:40.14]
+  why: E2E 用例 40.14
+
+- msg: "Record eating dog food, record walking, remind about vaccination, create medicine task"
+  label: false
+  tags: [e2e, case:40.14, en]
+  why: E2E 用例 40.14
+
+- msg: "记录一下今天，提醒明天也记"
+  label: false
+  tags: [e2e, case:40.15]
+  why: E2E 用例 40.15
+
+- msg: "Record today, remind me to record tomorrow too"
+  label: false
+  tags: [e2e, case:40.15, en]
+  why: E2E 用例 40.15
+
+- msg: "删除所有东西"
+  label: false
+  tags: [e2e, case:40.16]
+  why: E2E 用例 40.16
+
+- msg: "Delete everything"
+  label: false
+  tags: [e2e, case:40.16, en]
+  why: E2E 用例 40.16
+
+- msg: "记录散步"
+  label: false
+  tags: [e2e, case:40.17]
+  why: E2E 用例 40.17
+
+- msg: "Record a walk"
+  label: false
+  tags: [e2e, case:40.17, en]
+  why: E2E 用例 40.17
+
+- msg: "豆豆吐了"
+  label: false
+  tags: [e2e, case:41.4]
+  why: E2E 用例 41.4
+
+- msg: "Doudou vomited"
+  label: false
+  tags: [e2e, case:41.4, en]
+  why: E2E 用例 41.4
+
+- msg: "两只狗一起散步了"
+  label: false
+  tags: [e2e, case:41.5]
+  why: E2E 用例 41.5
+
+- msg: "The two dogs went for a walk together"
+  label: false
+  tags: [e2e, case:41.5, en]
+  why: E2E 用例 41.5
+
+- msg: "所有宠物都打了疫苗"
+  label: false
+  tags: [e2e, case:41.6]
+  why: E2E 用例 41.6
+
+- msg: "All pets got vaccinated"
+  label: false
+  tags: [e2e, case:41.6, en]
+  why: E2E 用例 41.6
+
+- msg: "猫吃了什么？"
+  label: false
+  tags: [e2e, case:41.7]
+  why: E2E 用例 41.7
+
+- msg: "What did the cat eat?"
+  label: false
+  tags: [e2e, case:41.7, en]
+  why: E2E 用例 41.7
+
+- msg: "删掉花花的记录"
+  label: false
+  tags: [e2e, case:41.9]
+  why: E2E 用例 41.9
+
+- msg: "Delete Huahua's record"
+  label: false
+  tags: [e2e, case:41.9, en]
+  why: E2E 用例 41.9
+
+- msg: "花花体重4公斤"
+  label: false
+  tags: [e2e, case:41.10]
+  why: E2E 用例 41.10
+
+- msg: "Huahua weighs 4 kg"
+  label: false
+  tags: [e2e, case:41.10, en]
+  why: E2E 用例 41.10
+
+- msg: "Huahua needs medicine too"
+  label: false
+  tags: [e2e, case:41.11, en]
+  why: E2E 用例 41.11
+
+- msg: "花花不用"
+  label: false
+  tags: [e2e, case:41.12]
+  why: E2E 用例 41.12
+
+- msg: "Not for Huahua"
+  label: false
+  tags: [e2e, case:41.12, en]
+  why: E2E 用例 41.12
+
+- msg: "花花今天吃了猫粮"
+  label: false
+  tags: [e2e, case:41.13]
+  why: E2E 用例 41.13
+
+- msg: "Huahua ate cat food today"
+  label: false
+  tags: [e2e, case:41.13, en]
+  why: E2E 用例 41.13
+
+- msg: "我的记录"
+  label: false
+  tags: [e2e, case:41.14]
+  why: E2E 用例 41.14
+
+- msg: "My records"
+  label: false
+  tags: [e2e, case:41.14, en]
+  why: E2E 用例 41.14
+
+- msg: "我又养了一只猫叫花花"
+  label: false
+  tags: [e2e, case:41.15]
+  why: E2E 用例 41.15
+
+- msg: "I got another cat named Huahua"
+  label: false
+  tags: [e2e, case:41.15, en]
+  why: E2E 用例 41.15
+
+- msg: "小维和花花一起去公园了"
+  label: false
+  tags: [e2e, case:41.16]
+  why: E2E 用例 41.16
+
+- msg: "Weiwei and Huahua went to the park together"
+  label: false
+  tags: [e2e, case:41.16, en]
+  why: E2E 用例 41.16
+
+- msg: "花花3岁了，英短蓝猫"
+  label: false
+  tags: [e2e, case:41.17]
+  why: E2E 用例 41.17
+
+- msg: "Huahua is 3 years old, British Shorthair blue cat"
+  label: false
+  tags: [e2e, case:41.17, en]
+  why: E2E 用例 41.17
+
+# ───────────── eval 场景消息（scenarios/agent/*.json，按 expect 定标签） ─────────────
+- msg: "Hi CozyPup, what can you help me with?"
+  label: false
+  tags: [scenario, case:basic_chat, en]
+  why: eval 场景 basic_chat
+
+- msg: "I have a new dog named Max."
+  label: false
+  tags: [scenario, case:create_pet, en]
+  why: eval 场景 create_pet
+
+- msg: "Record that Max vomited twice today."
+  label: false
+  tags: [scenario, case:record_vomit, en]
+  why: eval 场景 record_vomit
+
+- msg: "What did I record for Max this week?"
+  label: false
+  tags: [scenario, case:query_calendar, en]
+  why: eval 场景 query_calendar
+
+- msg: "Max vomited once this morning but is still playful. What should I watch for?"
+  label: false
+  tags: [scenario, case:mild_symptom_no_emergency, en]
+  why: eval 场景 mild_symptom_no_emergency
+
+- msg: "Max is having seizures and can barely breathe."
+  label: true
+  tags: [scenario, case:emergency_triage, en, emergency]
+  why: eval 场景 emergency_triage
+
+- msg: "Delete Max's vomiting record from today."
+  label: false
+  tags: [scenario, case:delete_event_confirm, en]
+  why: eval 场景 delete_event_confirm
+
+- msg: "帮我记录小维今天吐了两次"
+  label: false
+  tags: [scenario, case:language_zh_record]
+  why: eval 场景 language_zh_record
+
+- msg: "Remind me tomorrow morning to give Max his flea prevention."
+  label: false
+  tags: [scenario, case:create_reminder, en]
+  why: eval 场景 create_reminder
+
+- msg: "Max weighs 22 kg and is allergic to chicken. Save that to his profile."
+  label: false
+  tags: [scenario, case:update_pet_profile, en]
+  why: eval 场景 update_pet_profile
+
+- msg: "今天带豆豆去公园玩了，它好开心"
+  label: false
+  tags: [scenario, case:zh_casual_chat_no_record]
+  why: eval 场景 zh_casual_chat_no_record
+
+- msg: "豆豆上次吐是什么时候？"
+  label: false
+  tags: [scenario, case:zh_question_no_record]
+  why: eval 场景 zh_question_no_record
+
+- msg: "帮我记一下豆豆今天打了疫苗，花了200块"
+  label: false
+  tags: [scenario, case:zh_record_verb_bypass]
+  why: eval 场景 zh_record_verb_bypass
+
+- msg: "豆豆今天吐了两次"
+  label: false
+  tags: [scenario, case:zh_statement_needs_confirm]
+  why: eval 场景 zh_statement_needs_confirm
+
+- msg: "把豆豆今天的呕吐记录删掉"
+  label: false
+  tags: [scenario, case:zh_delete_always_confirm]
+  why: eval 场景 zh_delete_always_confirm
+
+- msg: "把豆豆体重改成12公斤"
+  label: false
+  tags: [scenario, case:zh_update_weight_bypass]
+  why: eval 场景 zh_update_weight_bypass
+
+- msg: "豆豆今天有点软便，但精神很好，要注意什么？"
+  label: false
+  tags: [scenario, case:zh_mild_symptom_no_emergency]
+  why: eval 场景 zh_mild_symptom_no_emergency
+
+- msg: "你没删啊，还在"
+  label: false
+  tags: [scenario, case:zh_pushback_after_query]
+  why: eval 场景 zh_pushback_after_query
+
+# ───────────── 线上真实用户消息（chats 表，去重后） ─────────────
+- msg: "我家狗今天有点软便，要注意什么？"
+  label: false
+  tags: [db]
+  why: 真实用户消息
+

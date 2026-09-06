@@ -165,7 +165,7 @@ ios-app/CozyPup/
 - **Constrained Agent framework**: Schema validation + ownership checks + feedback loop to minimize LLM errors without needing expensive models
 - **Orchestrator + Executor**: LLM decides what to do (function calling), pure code executes it (DB writes, API calls)
 - **Plan tool**: LLM calls `plan(steps=[...])` to decompose multi-step requests before executing. Orchestrator checks plan completion and nags if steps are missed. Single-step requests skip plan entirely.
-- **Dual-model routing**: grok-4-1-fast for daily chat (cheap), Kimi K2.5 for emergencies (accurate). Routed via emergency keyword detection in `agents/emergency.py`
+- **Dual-model routing**: grok-4-1-fast for daily chat (cheap), Kimi K2.5 for emergencies (accurate). Routed via emergency keyword detection in `agents/emergency.py`. A LoRA-fine-tuned Qwen3-0.6B classifier (`backend/nano/`, served as a llama-server sidecar on `localhost:8081`) can take over this decision; `agents/emergency_clf.py` merges both verdicts per the `emergency_clf_mode` flag (`off` / `shadow` / `union` / `clf`, default `shadow` when `EMERGENCY_CLF_URL` is set). Every turn logs an `emergency_clf` trace entry with `disagree=true` when the two disagree. The hotline short-circuit in `emergency_router.py` is unaffected
 - **Debug trace**: `X-Debug: true` header activates per-request TraceCollector that records every pipeline step + parallel non-streaming LLM call for full response JSON. Emitted as `__debug__` SSE event. Zero overhead when inactive.
 - **pet_logs merged into calendar_events**: Added category, raw_text, edited, source fields
 - **Dev auth**: `POST /api/v1/auth/dev` bypasses OAuth for simulator testing

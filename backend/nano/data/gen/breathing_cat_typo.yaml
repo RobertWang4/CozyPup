@@ -1,0 +1,151 @@
+# 补 r1/r2 都漏的形状：猫张嘴呼吸/呼吸很快 但没提舌头发紫；带 呼息/船 等错字。
+# 训练集里 18 条"张嘴"几乎都同时带"舌头紫"，模型学成了"张嘴+紫才算"。猫张嘴呼吸本身就是危急。
+- msg: 猫猫呼息好快 一直张嘴
+  label: true
+  tags: [breathing, typo, voice]
+  why: 猫张口呼吸
+- msg: 咪咪张着嘴呼息
+  label: true
+  tags: [breathing, typo, voice]
+  why: 猫张口呼吸
+- msg: 我家猫呼息好急 嘴张着
+  label: true
+  tags: [breathing, typo, voice]
+  why: 猫张口呼吸
+- msg: 团子像狗一样张嘴船气 它是猫
+  label: true
+  tags: [breathing, typo, voice]
+  why: 猫张口呼吸
+- msg: 猫怎么张嘴呼吸了 呼的特别快
+  label: true
+  tags: [breathing, voice]
+  why: 猫张口呼吸
+- msg: 花花肚子一起一伏特别快 嘴还张着
+  label: true
+  tags: [breathing, voice]
+  why: 猫呼吸急促张口
+- msg: 猫猫一直张嘴哈气不停
+  label: true
+  tags: [breathing, voice]
+  why: 猫张口呼吸
+- msg: 咪咪呼息声好大 张嘴
+  label: true
+  tags: [breathing, typo, voice]
+  why: 猫张口呼吸
+- msg: 猫呼息快的吓人
+  label: true
+  tags: [breathing, typo, voice]
+  why: 猫呼吸急促
+- msg: 猫猫呼息急 脖子伸着
+  label: true
+  tags: [breathing, typo, voice]
+  why: 猫呼吸急促
+- msg: 球球张嘴喘 平时从不张嘴
+  label: true
+  tags: [breathing, voice]
+  why: 猫张口呼吸
+- msg: 它是猫 现在张着嘴喘 正常吗
+  label: true
+  tags: [breathing, voice]
+  why: 猫张口呼吸
+- msg: 猫呼息的时候嘴巴张开 好快
+  label: true
+  tags: [breathing, typo, voice]
+  why: 猫张口呼吸
+- msg: 咪咪呼息一分钟得有七八十下
+  label: true
+  tags: [breathing, typo, voice]
+  why: 猫呼吸急促
+- msg: 猫猫嘴张着呼息 还流口水
+  label: true
+  tags: [breathing, typo, voice]
+  why: 猫张口呼吸
+- msg: cat breathing with mouth open
+  label: true
+  tags: [breathing, en]
+  why: 猫张口呼吸
+- msg: my cat is panting like a dog
+  label: true
+  tags: [breathing, en]
+  why: 猫张口呼吸
+- msg: luna breathing super fast mouth open
+  label: true
+  tags: [breathing, en]
+  why: 猫张口呼吸
+- msg: whiskers open mouth breathing rn
+  label: true
+  tags: [breathing, en]
+  why: 猫张口呼吸
+- msg: cat breathing really fast and shallow
+  label: true
+  tags: [breathing, en]
+  why: 猫呼吸急促
+- msg: mochi is panting and wont settle
+  label: true
+  tags: [breathing, en]
+  why: 猫张口呼吸
+- msg: 狗呼息好快 舌头伸老长 站不稳
+  label: true
+  tags: [breathing, heat, typo, voice]
+  why: 狗呼吸急促站不稳
+- msg: 旺财呼息好费劲 肚子使劲缩
+  label: true
+  tags: [breathing, typo, voice]
+  why: 呼吸费力
+- msg: 狗呼息带呼噜声 嘴张着不合
+  label: true
+  tags: [breathing, typo, voice]
+  why: 呼吸费力
+- msg: 豆豆呼息一顿一顿的
+  label: true
+  tags: [breathing, typo, voice]
+  why: 呼吸异常
+# 对照：狗张嘴喘是正常的，猫玩累了短暂喘几下、过去时、问知识 → false
+- msg: 狗遛完张嘴哈气
+  label: false
+  tags: [mild, record, voice]
+  why: 狗喘气正常
+- msg: 旺财跑完呼息有点快 一会就好了
+  label: false
+  tags: [mild, typo, voice]
+  why: 运动后正常
+- msg: 狗热了张嘴喘正常吗
+  label: false
+  tags: [question, knowledge, voice]
+  why: 知识问答
+- msg: 猫为什么不能张嘴呼吸
+  label: false
+  tags: [question, knowledge, keyword_trap]
+  why: 知识问答
+- msg: 猫呼息多少次一分钟算正常
+  label: false
+  tags: [question, knowledge, typo]
+  why: 知识问答
+- msg: 咪咪上次张嘴喘是去年夏天
+  label: false
+  tags: [past, keyword_trap]
+  why: 过去时
+- msg: 猫睡觉呼息声有点大
+  label: false
+  tags: [mild, typo, voice]
+  why: 睡觉呼吸声
+- msg: 花花打呼噜呼息重
+  label: false
+  tags: [mild, typo, voice]
+  why: 打呼噜
+- msg: dog panting after walk
+  label: false
+  tags: [mild, record, en]
+  why: 狗喘气正常
+- msg: is it normal for cats to pant
+  label: false
+  tags: [question, knowledge, en]
+  why: 知识问答
+- msg: 猫玩逗猫棒玩疯了喘两下
+  label: false
+  tags: [mild, gray, voice]
+  why: 玩耍后短暂
+- msg: 团子呼息平稳 睡得香
+  label: false
+  tags: [record, typo, voice]
+  why: 正常记录

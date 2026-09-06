@@ -1,0 +1,1134 @@
+- msg: 米米一直张着嘴喘 舌头有点发紫 咋办
+  label: true
+  tags: [breathing, voice, gray]
+  why: 猫张口喘舌紫
+- msg: 豆豆趴那不动 嘴巴张着喘 舌头颜色不对 紫的
+  label: true
+  tags: [breathing, voice]
+  why: 张口喘舌头紫
+- msg: 我家猫嘴巴一直张着 喘得厉害 舌头看着发暗
+  label: true
+  tags: [breathing, voice]
+  why: 猫张口喘舌暗
+- msg: 维尼站不稳 嘴巴张开呼哧呼哧的 舌头紫了
+  label: true
+  tags: [breathing, neuro, voice]
+  why: 站不稳张口喘紫舌
+- msg: 花花肚子一起一伏 喘得特别快 嘴唇发青
+  label: true
+  tags: [breathing, voice]
+  why: 腹式呼吸急促唇青
+- msg: 球球躺那 嘴张着 感觉船不上来
+  label: true
+  tags: [breathing, voice, typo]
+  why: 躺地张口喘不上
+- msg: 旺财突然开始张嘴喘 平时不这样的
+  label: true
+  tags: [breathing, voice]
+  why: 突发张口呼吸
+- msg: 团子舌头发紫了 一直张嘴喘 咋回事
+  label: true
+  tags: [breathing, voice]
+  why: 舌紫张口喘
+- msg: 小维趴地上 呼哧呼哧的 嘴巴一直张着
+  label: true
+  tags: [breathing, voice]
+  why: 趴地张口喘粗气
+- msg: 猫猫嘴巴张着 声音特别响 跟拉风箱似的
+  label: true
+  tags: [breathing, voice]
+  why: 张口呼吸声粗重
+- msg: 阿黄舌头都紫了 张着嘴巴不停喘 吓死我了
+  label: true
+  tags: [breathing, panic, voice]
+  why: 舌紫张口喘惊慌
+- msg: 布丁站着不动 嘴一直张开 感觉很费劲的样子
+  label: true
+  tags: [breathing, voice]
+  why: 张口呼吸费力
+- msg: my dog keeps his mouth open and breathing so loud like weird sound
+  label: true
+  tags: [breathing, en, voice]
+  why: 张口呼吸声怪
+- msg: cat won't close her mouth she's just gasping and tongue looks purple
+  label: true
+  tags: [breathing, en, voice]
+  why: 张口喘舌头紫
+- msg: 可乐今天突然张嘴喘气 舌头是紫色的 平时粉粉的
+  label: true
+  tags: [breathing, voice]
+  why: 突发张口舌紫
+- msg: 奶茶趴窝里 嘴张着 一直发出很怪的声音
+  label: true
+  tags: [breathing, voice]
+  why: 张口喘怪声
+- msg: 大白舌头发黑紫色 嘴巴张开合不上
+  label: true
+  tags: [breathing, voice]
+  why: 舌头发黑紫
+- msg: 壮壮喘得跟拉锯一样 嘴巴张老大
+  label: true
+  tags: [breathing, voice]
+  why: 喘息如拉锯
+- msg: 雪球突然不对劲 嘴张开呼哧呼哧的 舌头颜色怪怪的
+  label: true
+  tags: [breathing, panic, voice]
+  why: 突发张口喘舌怪色
+- msg: 咪咪张嘴喘着 感觉每次呼吸都很用力 肚子一起一伏
+  label: true
+  tags: [breathing, voice]
+  why: 用力喘腹式呼吸
+- msg: Luna is panting with her mouth wide open and her tongue looks bluish
+  label: true
+  tags: [breathing, en, voice]
+  why: 张口喘舌发蓝
+- msg: Whiskers just started open mouth breathing never seen her do this
+  label: true
+  tags: [breathing, en, voice]
+  why: 突发张口呼吸
+- msg: Mochi 舌头有点发青 嘴巴一直张着 感觉呼吸很吃力
+  label: true
+  tags: [breathing, en, voice]
+  why: 舌青张口费力
+- msg: Max keeps gasping mouth open tongue kinda purple color
+  label: true
+  tags: [breathing, en, voice]
+  why: 张口喘舌头紫
+- msg: 阿福躺地上嘴巴张开 喘的声音很粗 感觉不太行
+  label: true
+  tags: [breathing, panic, voice]
+  why: 躺地张口粗喘
+- msg: 琪琪突然张开嘴 呼吸声音很粗 舌头发暗
+  label: true
+  tags: [breathing, voice]
+  why: 突发张口粗喘舌暗
+- msg: 我家狗嘴巴张着 一直喘 舌头颜色怪怪的 咋办呀
+  label: true
+  tags: [breathing, voice]
+  why: 张口喘舌色异常
+- msg: 猫今天嘴一直张着不合上 呼吸很用力
+  label: true
+  tags: [breathing, voice]
+  why: 张口合不上用力呼吸
+- msg: 它趴在那嘴张着 一呼一吸都很费劲的样子
+  label: true
+  tags: [breathing, voice]
+  why: 张口呼吸费劲
+- msg: 他刚才嘴巴突然张开喘 舌头有点发紫 吓到我了
+  label: true
+  tags: [breathing, panic, voice]
+  why: 突发张口舌紫
+- msg: 灰灰嘴巴张开一直喘 肚子一鼓一鼓的
+  label: true
+  tags: [breathing, voice]
+  why: 张口喘腹部起伏
+- msg: 团子今天嘴巴张着睡 呼吸声音很响 感觉不对劲
+  label: true
+  tags: [breathing, voice]
+  why: 睡时张口呼吸响
+- msg: 豆豆嘴张着 舌头颜色淡紫 感觉喘的挺费劲
+  label: true
+  tags: [breathing, voice]
+  why: 张口舌淡紫喘费劲
+- msg: 咪咪突然张嘴呼吸 平时都是闭嘴的 舌头发暗紫色
+  label: true
+  tags: [breathing, voice]
+  why: 突发张口舌暗紫
+- msg: 米米躺那不动 嘴一直张开 呼吸声音特别粗
+  label: true
+  tags: [breathing, voice]
+  why: 躺地张口粗喘
+- msg: the cat is breathing with her mouth open and gums look purple ish
+  label: true
+  tags: [breathing, en, voice]
+  why: 张口呼吸牙龈紫
+- msg: 维尼喘得跟拉风箱一样 嘴巴一直合不上
+  label: true
+  tags: [breathing, voice]
+  why: 喘息如拉风箱
+- msg: 花花趴那嘴张着 感觉每口气都很费力
+  label: true
+  tags: [breathing, voice]
+  why: 张口每口气费力
+- msg: 球球突然张嘴喘气 舌头是暗紫色的 完了完了
+  label: true
+  tags: [breathing, panic, voice]
+  why: 突发张口舌暗紫惊慌
+- msg: 旺财一直张着嘴喘 肚子一起一伏喘得特别快
+  label: true
+  tags: [breathing, voice]
+  why: 张口腹式急喘
+- msg: cat mouth open panting nonstop tongue kinda blue color
+  label: true
+  tags: [breathing, en, voice]
+  why: 张口喘舌发蓝
+- msg: dog lying down mouth wide open making weird wheezy sound
+  label: true
+  tags: [breathing, en, voice]
+  why: 躺地张口喘鸣
+- msg: 阿黄一直张嘴呼哧呼哧 舌头颜色不对 有点发紫
+  label: true
+  tags: [breathing, voice]
+  why: 张口喘舌色异常
+- msg: 小维突然趴下嘴巴张开喘 舌头暗紫色的
+  label: true
+  tags: [breathing, panic, voice]
+  why: 突发趴下张口舌紫
+- msg: 猫猫嘴巴张着一直喘 感觉喘不动了 舌头发紫
+  label: true
+  tags: [breathing, voice]
+  why: 张口喘不动舌紫
+
+- msg: 狗狗呼吸困难 一直喘 怎么办
+  label: true
+  tags: [breathing, voice]
+  why: 呼吸困难
+- msg: cat is having trouble breathing right now what do i do
+  label: true
+  tags: [breathing, en, voice]
+  why: 呼吸困难
+- msg: 猫咪呼吸急促 张嘴呼吸了 咋整
+  label: true
+  tags: [breathing, voice]
+  why: 呼吸急促张口
+- msg: 豆豆好像呼吸困难 喘得特别厉害
+  label: true
+  tags: [breathing, voice]
+  why: 呼吸困难喘厉害
+- msg: my dog is struggling to breathe he won't stop panting hard
+  label: true
+  tags: [breathing, en, voice]
+  why: 呼吸困难急喘
+- msg: 米米突然呼吸困难 整个人趴着不敢动
+  label: true
+  tags: [breathing, panic, voice]
+  why: 突发呼吸困难
+- msg: dog breathing really fast and hard like he cant get air in
+  label: true
+  tags: [breathing, en, voice]
+  why: 呼吸急促费力
+- msg: 维尼呼吸困难 嘴巴一直张着 舌头都紫了
+  label: true
+  tags: [breathing, voice]
+  why: 呼吸困难舌紫
+- msg: cat can barely breathe mouth open gasping for air
+  label: true
+  tags: [breathing, en, voice]
+  why: 呼吸困难张口
+- msg: 我家猫呼吸困难 感觉快喘不上气了
+  label: true
+  tags: [breathing, voice]
+  why: 呼吸困难喘不上气
+- msg: 团子呼吸急促 喘得跟拉风箱一样 咋办呀
+  label: true
+  tags: [breathing, voice]
+  why: 呼吸急促
+- msg: 花花突然呼吸困难 整个人软了
+  label: true
+  tags: [breathing, panic, voice]
+  why: 突发呼吸困难瘫软
+- msg: dog is breathing really weird and fast never seen this before scared
+  label: true
+  tags: [breathing, panic, en, voice]
+  why: 呼吸异常惊慌
+- msg: 球球好像呼吸不畅 一直张着嘴 咋回事啊
+  label: true
+  tags: [breathing, voice]
+  why: 呼吸不畅张口
+- msg: 旺财呼吸困难 站都站不稳了
+  label: true
+  tags: [breathing, neuro, voice]
+  why: 呼吸困难站不稳
+- msg: my cat is struggling to breathe and just collapsed
+  label: true
+  tags: [breathing, panic, en, voice]
+  why: 呼吸困难倒地
+- msg: 咪咪呼吸困难 舌头都紫了 完了完了怎么办
+  label: true
+  tags: [breathing, panic, voice]
+  why: 呼吸困难舌紫惊慌
+- msg: 阿黄呼吸急促得厉害 喘的跟人喘不上气一样
+  label: true
+  tags: [breathing, voice]
+  why: 呼吸急促
+- msg: 大白呼吸困难 一直趴着不动 咋整啊
+  label: true
+  tags: [breathing, voice]
+  why: 呼吸困难不动
+- msg: dog can't breathe properly gasping really hard right now
+  label: true
+  tags: [breathing, en, voice]
+  why: 呼吸困难急喘
+- msg: 猫猫呼吸困难 嘴巴张开都合不上了
+  label: true
+  tags: [breathing, voice]
+  why: 呼吸困难张口
+- msg: 壮壮突然呼吸困难 整个人趴地上不动
+  label: true
+  tags: [breathing, panic, voice]
+  why: 突发呼吸困难
+- msg: cat gasping for breath mouth wide open tongue purple
+  label: true
+  tags: [breathing, en, voice]
+  why: 呼吸困难舌紫
+- msg: 雪球呼吸急促 感觉快不行了 咋办
+  label: true
+  tags: [breathing, panic, voice]
+  why: 呼吸急促危急
+- msg: 小维呼吸困难 喘的特别费劲 舌头发紫
+  label: true
+  tags: [breathing, voice]
+  why: 呼吸困难舌紫
+
+- msg: 豆豆感觉喘不上气 一直在那喘 咋整
+  label: true
+  tags: [breathing, voice]
+  why: 喘不上气
+- msg: 我家狗好像喘不上来气 走两步就要停
+  label: true
+  tags: [breathing, voice]
+  why: 走几步喘不上气
+- msg: 米米喘不上气的样子 蹲那不敢动
+  label: true
+  tags: [breathing, voice]
+  why: 喘不上气不敢动
+- msg: 猫猫喘不上气 感觉每口气都费劲
+  label: true
+  tags: [breathing, voice]
+  why: 每口气费劲
+- msg: 维尼跟人喘不上气似的 一直大口喘
+  label: true
+  tags: [breathing, voice]
+  why: 大口喘似上不来气
+- msg: 花花好像上不来气 站那直哆嗦
+  label: true
+  tags: [breathing, panic, voice]
+  why: 上不来气哆嗦
+- msg: 球球突然喘不上来 蹲地上不敢动了
+  label: true
+  tags: [breathing, panic, voice]
+  why: 突发喘不上来
+- msg: 团子好像上气不接下气 一直在那喘
+  label: true
+  tags: [breathing, voice]
+  why: 上气不接下气
+- msg: 旺财走两步就喘不上气 以前不这样的
+  label: true
+  tags: [breathing, voice]
+  why: 走两步喘不上气
+- msg: 咪咪蹲那喘不上来气 感觉快不行了
+  label: true
+  tags: [breathing, panic, voice]
+  why: 喘不上来气危急
+- msg: dog seems like he cant catch his breath at all right now
+  label: true
+  tags: [breathing, en, voice]
+  why: 喘不上气
+- msg: cat looks like she cant get enough air keeps gasping
+  label: true
+  tags: [breathing, en, voice]
+  why: 喘不上气
+- msg: 阿黄一直大口喘气 感觉上不来气 咋办呀
+  label: true
+  tags: [breathing, voice]
+  why: 大口喘上不来气
+- msg: 大白喘的特别费劲 感觉每口气都上不来
+  label: true
+  tags: [breathing, voice]
+  why: 每口气都费劲
+- msg: 壮壮站那不敢动 喘得跟上不来气似的
+  label: true
+  tags: [breathing, voice]
+  why: 不敢动似喘不上气
+- msg: my dog just cant seem to catch his breath something is wrong
+  label: true
+  tags: [breathing, en, voice]
+  why: 喘不上气异常
+- msg: 雪球一直哈哈哈的喘 感觉快喘不过来了
+  label: true
+  tags: [breathing, voice]
+  why: 快喘不过来
+- msg: 小维喘得特别急 感觉上不来气 咋整
+  label: true
+  tags: [breathing, voice]
+  why: 急喘上不来气
+- msg: dog panting way too hard cant seem to catch breath at all
+  label: true
+  tags: [breathing, en, voice]
+  why: 喘不上气
+- msg: 猫今天喘的特别厉害 感觉上不来气那种
+  label: true
+  tags: [breathing, voice]
+  why: 喘厉害上不来气
+- msg: 它一直在那大口喘 感觉很难受的样子
+  label: true
+  tags: [breathing, voice]
+  why: 大口喘难受
+- msg: 他喘得跟人上不来气一样 一直趴着
+  label: true
+  tags: [breathing, voice]
+  why: 趴着似上不来气
+- msg: 灰灰蹲那直喘 感觉气都喘不匀
+  label: true
+  tags: [breathing, voice]
+  why: 喘不匀
+- msg: 团子突然喘的特别急 感觉快接不上气了
+  label: true
+  tags: [breathing, panic, voice]
+  why: 突发急喘接不上气
+- msg: cat is heaving her sides trying to breathe cant seem to get air in
+  label: true
+  tags: [breathing, en, voice]
+  why: 腹侧起伏喘不上气
+- msg: 豆豆一直大口喘气 感觉气都提不上来 咋办
+  label: true
+  tags: [breathing, voice]
+  why: 大口喘提不上气
+- msg: 米米喘的特别急促 蹲那一动不动
+  label: true
+  tags: [breathing, voice]
+  why: 急促喘不动
+- msg: dog seems to be struggling for every breath right now scared
+  label: true
+  tags: [breathing, panic, en, voice]
+  why: 每口气都挣扎
+- msg: 咪咪喘得特别费劲 一直蹲着不敢挪
+  label: true
+  tags: [breathing, voice]
+  why: 喘费劲不敢挪
+- msg: 维尼喘的跟拉锯似的 感觉每口气都很难
+  label: true
+  tags: [breathing, voice]
+  why: 喘息如拉锯
+
+- msg: 豆豆刚才吃骨头卡喉咙了 一直在那抓自己脖子
+  label: true
+  tags: [breathing, panic, voice]
+  why: 骨头卡喉抓脖子
+- msg: 猫咪好像被鱼刺卡住了 一直干呕吐不出来
+  label: true
+  tags: [breathing, voice]
+  why: 鱼刺卡喉干呕
+- msg: 米米吃玩具的时候呛住了 现在一直挠脖子
+  label: true
+  tags: [breathing, voice]
+  why: 呛住挠脖子
+- msg: cat is choking on something cant breathe properly right now
+  label: true
+  tags: [breathing, en, voice]
+  why: 卡喉呼吸不畅
+- msg: 维尼吞了个东西卡喉咙 一直干呕出不来
+  label: true
+  tags: [breathing, voice]
+  why: 卡喉干呕出不来
+- msg: 我家狗吃骨头卡住了 一直用爪子挠嘴巴
+  label: true
+  tags: [breathing, voice]
+  why: 骨头卡喉挠嘴
+- msg: dog choking on a bone right now cant get it out
+  label: true
+  tags: [breathing, en, voice]
+  why: 骨头卡喉
+- msg: 花花被自己的项圈卡到脖子了 挣扎得厉害
+  label: true
+  tags: [breathing, trauma, panic, voice]
+  why: 项圈卡脖挣扎
+- msg: 球球吞了个小玩具 现在一直干呕挣扎
+  label: true
+  tags: [breathing, voice]
+  why: 吞玩具干呕挣扎
+- msg: 旺财吃东西卡住喉咙了 一直咳一直挠嘴
+  label: true
+  tags: [breathing, voice]
+  why: 卡喉咳嗽挠嘴
+- msg: 团子好像卡住了 一直用爪子抓嘴巴周围
+  label: true
+  tags: [breathing, voice]
+  why: 疑似卡住抓嘴
+- msg: my dog is choking on his toy right now what do i do
+  label: true
+  tags: [breathing, panic, en, voice]
+  why: 玩具卡喉
+- msg: 咪咪吃鱼刺卡到了 一直干呕吐不出来
+  label: true
+  tags: [breathing, voice]
+  why: 鱼刺卡喉干呕
+- msg: 阿黄骨头卡喉咙了 一直用前腿挠脸
+  label: true
+  tags: [breathing, voice]
+  why: 骨头卡喉挠脸
+- msg: cat swallowed something and now she is gagging and pawing at mouth
+  label: true
+  tags: [breathing, en, voice]
+  why: 误吞干呕挠嘴
+- msg: 大白吃东西呛到了 一直咳嗽挣扎站不稳
+  label: true
+  tags: [breathing, voice]
+  why: 呛到挣扎站不稳
+- msg: 壮壮好像被什么东西卡住喉咙 一直干呕
+  label: true
+  tags: [breathing, voice]
+  why: 疑似卡喉干呕
+- msg: dog just choked on a chicken bone hes pawing at his mouth
+  label: true
+  tags: [breathing, en, voice]
+  why: 鸡骨卡喉挠嘴
+- msg: 雪球吞了颗珠子 现在一直干呕挣扎
+  label: true
+  tags: [breathing, voice]
+  why: 吞珠子干呕挣扎
+- msg: 小维吃玩具卡到喉咙了 一直挠嘴巴出不了声
+  label: true
+  tags: [breathing, voice]
+  why: 玩具卡喉出不了声
+- msg: 猫猫喉咙好像卡东西了 一直干呕出不来
+  label: true
+  tags: [breathing, voice]
+  why: 卡喉干呕
+- msg: 它刚才吃东西呛到了 一直挣扎抓喉咙
+  label: true
+  tags: [breathing, panic, voice]
+  why: 呛到挣扎抓喉咙
+- msg: 他吞了个东西卡住了 一直干呕站不稳
+  label: true
+  tags: [breathing, voice]
+  why: 卡住干呕站不稳
+- msg: cat choking on a hairball tie or something pawing frantically at face
+  label: true
+  tags: [breathing, panic, en, voice]
+  why: 异物卡喉挣扎
+- msg: 灰灰骨头卡喉咙了 一直咳嗽挣扎不出声
+  label: true
+  tags: [breathing, voice]
+  why: 骨头卡喉挣扎
+
+- msg: 豆豆在车里晒了半小时 现在软趴趴的站不起来
+  label: true
+  tags: [heat, voice]
+  why: 车内暴晒瘫软
+- msg: 我家狗中暑了 瘫在地上一直喘 叫都没反应
+  label: true
+  tags: [heat, breathing, voice]
+  why: 中暑瘫软无反应
+- msg: 米米今天太阳底下待久了 现在软的跟面条一样
+  label: true
+  tags: [heat, voice]
+  why: 暴晒后软瘫
+- msg: dog collapsed after being outside in the heat too long
+  label: true
+  tags: [heat, panic, en, voice]
+  why: 暴晒后倒地
+- msg: 维尼晒了太阳回来就瘫了 叫它也不理
+  label: true
+  tags: [heat, voice]
+  why: 晒后瘫软无反应
+- msg: 花花在阳台晒了一下午 现在全身软瘫叫不醒
+  label: true
+  tags: [heat, panic, voice]
+  why: 长时间暴晒昏迷样
+- msg: 球球外面玩太久 回来就倒地上不起来了
+  label: true
+  tags: [heat, voice]
+  why: 户外过久倒地
+- msg: 旺财今天太热出去溜了一圈 现在瘫软走不动
+  label: true
+  tags: [heat, voice]
+  why: 高温遛后瘫软
+- msg: 团子被锁车里一会 出来就软了站不住
+  label: true
+  tags: [heat, panic, voice]
+  why: 车内闷热瘫软
+- msg: 咪咪在太阳底下趴了好久 现在叫它没反应
+  label: true
+  tags: [heat, voice]
+  why: 暴晒后无反应
+- msg: dog was locked in the car for a bit now he's completely limp
+  label: true
+  tags: [heat, panic, en, voice]
+  why: 车内闷热瘫软
+- msg: 阿黄今天外面太热 回来就瘫地上不动了
+  label: true
+  tags: [heat, voice]
+  why: 高温后瘫地
+- msg: cat was outside all afternoon in the heat now shes limp and unresponsive
+  label: true
+  tags: [heat, panic, en, voice]
+  why: 长时间暴晒瘫软
+- msg: 大白晒了会太阳 现在软趴趴的叫不起来
+  label: true
+  tags: [heat, voice]
+  why: 晒后软叫不起
+- msg: 壮壮今天太热了 遛完就直接躺地上不起来
+  label: true
+  tags: [heat, voice]
+  why: 高温遛后躺地
+- msg: dog just collapsed after playing outside its really hot today
+  label: true
+  tags: [heat, panic, en, voice]
+  why: 高温后倒地
+- msg: 雪球在阳台晒太阳晒久了 现在软的抱不起来的感觉
+  label: true
+  tags: [heat, voice]
+  why: 长时间暴晒软瘫
+- msg: 小维今天车里待了一会 出来就软瘫了
+  label: true
+  tags: [heat, voice]
+  why: 车内待后软瘫
+- msg: 猫猫太热了 现在瘫在地上一动不动叫不应
+  label: true
+  tags: [heat, panic, voice]
+  why: 高温瘫软无反应
+- msg: 它今天在外面晒太久 现在软的站不起来
+  label: true
+  tags: [heat, voice]
+  why: 暴晒后站不起
+- msg: 他中午被拴外面 现在整个人软了 叫也不理
+  label: true
+  tags: [heat, voice]
+  why: 户外拴留后软瘫
+- msg: 灰灰今天出去玩太热了 回来就瘫软不动了
+  label: true
+  tags: [heat, voice]
+  why: 高温后瘫软
+- msg: dog panting heavily then just collapsed on the floor in the heat
+  label: true
+  tags: [heat, breathing, panic, en, voice]
+  why: 急喘后倒地
+- msg: 团子今天特别热 一直趴着不动 摸着软塌塌的
+  label: true
+  tags: [heat, voice]
+  why: 高温软塌塌
+- msg: cat overheated after being outside now completely limp not responding
+  label: true
+  tags: [heat, panic, en, voice]
+  why: 过热瘫软无反应
+- msg: 豆豆今天中暑了吧 一直趴地上软的 叫不动
+  label: true
+  tags: [heat, voice]
+  why: 疑似中暑瘫软
+- msg: 米米被晒了好久 现在软趴趴站不起来 咋办
+  label: true
+  tags: [heat, voice]
+  why: 暴晒后软瘫
+- msg: dog seems to have heatstroke totally limp and not responding to his name
+  label: true
+  tags: [heat, panic, en, voice]
+  why: 中暑瘫软无反应
+- msg: 咪咪今天太阳晒太久了 现在软塌塌叫不醒
+  label: true
+  tags: [heat, voice]
+  why: 暴晒软塌叫不醒
+- msg: 维尼外面待太久中暑了 现在瘫软叫不应
+  label: true
+  tags: [heat, voice]
+  why: 中暑瘫软无反应
+- msg: 花花今天热的直接瘫倒了 叫她也没反应
+  label: true
+  tags: [heat, panic, voice]
+  why: 高温瘫倒无反应
+- msg: 球球中暑了吧 现在软的跟没骨头一样
+  label: true
+  tags: [heat, voice]
+  why: 疑似中暑软瘫
+- msg: 旺财今天出去太热了 现在瘫在地上不起来
+  label: true
+  tags: [heat, voice]
+  why: 高温后瘫地不起
+- msg: cat just went limp after being in a hot car for a while
+  label: true
+  tags: [heat, panic, en, voice]
+  why: 车内闷热瘫软
+- msg: 阿黄今天遛狗回来热瘫了 一直趴着不动
+  label: true
+  tags: [heat, voice]
+  why: 遛狗后热瘫
+- msg: 大白今天中暑软了 叫它一点反应都没有
+  label: true
+  tags: [heat, panic, voice]
+  why: 中暑软瘫无反应
+
+- msg: 豆豆刚才被蜜蜂蛰了 脸肿的老大 喘气也不对劲
+  label: true
+  tags: [shock, breathing, voice]
+  why: 蜂蛰脸肿喘异常
+- msg: 我家狗被蜂蛰了 脸肿起来了 呼吸声音很粗
+  label: true
+  tags: [shock, breathing, voice]
+  why: 蜂蛰脸肿呼吸粗
+- msg: 米米被黄蜂蛰到 嘴巴周围肿了 喘得厉害
+  label: true
+  tags: [shock, breathing, voice]
+  why: 蜂蛰肿喘厉害
+- msg: dog got stung by a bee face is swelling up and breathing heavy
+  label: true
+  tags: [shock, breathing, en, voice]
+  why: 蜂蛰脸肿呼吸重
+- msg: 维尼被蜜蜂蛰了鼻子 现在整个脸肿了喘气怪怪的
+  label: true
+  tags: [shock, breathing, voice]
+  why: 蜂蛰脸肿喘怪
+- msg: 花花不知道被啥虫子蛰了 脸肿的跟包子似的 喘气粗
+  label: true
+  tags: [shock, breathing, voice]
+  why: 虫蛰脸肿喘粗
+- msg: 球球被蜂蛰了 眼睛都肿的睁不开 喘气声音大
+  label: true
+  tags: [shock, breathing, voice]
+  why: 蜂蛰眼肿喘声大
+- msg: 旺财刚才追蜜蜂被蛰了 脸肿起来了 呼吸有点急
+  label: true
+  tags: [shock, breathing, voice]
+  why: 蜂蛰脸肿呼吸急
+- msg: 团子被蜜蜂蛰到嘴 现在嘴唇肿的老大 喘气不对
+  label: true
+  tags: [shock, breathing, voice]
+  why: 蜂蛰唇肿喘异常
+- msg: 咪咪被黄蜂蛰了脸 肿的厉害 感觉喘气也费劲
+  label: true
+  tags: [shock, breathing, voice]
+  why: 蜂蛰脸肿喘费劲
+- msg: cat got stung by a wasp her face is swollen and she's breathing weird
+  label: true
+  tags: [shock, breathing, en, voice]
+  why: 蜂蛰脸肿呼吸异常
+- msg: 阿黄被蜜蜂蛰了 脸肿的跟猪头一样 喘的挺急
+  label: true
+  tags: [shock, breathing, voice]
+  why: 蜂蛰脸肿喘急
+- msg: dog stung by bee on the nose face ballooning up breathing hard
+  label: true
+  tags: [shock, breathing, en, voice]
+  why: 蜂蛰脸肿呼吸重
+- msg: 大白被虫子蛰了脸 肿起来了 喘气声音很粗
+  label: true
+  tags: [shock, breathing, voice]
+  why: 虫蛰脸肿喘粗
+- msg: 壮壮被蜜蜂蛰了嘴巴 整张脸都肿了 呼吸急促
+  label: true
+  tags: [shock, breathing, voice]
+  why: 蜂蛰脸肿呼吸急促
+- msg: cat's face is swelling fast after a bee sting and shes wheezing
+  label: true
+  tags: [shock, breathing, en, voice]
+  why: 蜂蛰脸肿喘鸣
+- msg: 雪球刚被蜂蛰到 脸肿的越来越大 喘气也怪
+  label: true
+  tags: [shock, breathing, voice]
+  why: 蜂蛰脸肿加剧喘怪
+- msg: 小维被蜜蜂蛰了鼻子 现在肿的老高 喘气声音重
+  label: true
+  tags: [shock, breathing, voice]
+  why: 蜂蛰肿高喘声重
+- msg: 猫猫被虫子蛰了脸 肿的厉害 呼吸声音怪怪的
+  label: true
+  tags: [shock, breathing, voice]
+  why: 虫蛰脸肿呼吸怪
+- msg: 它刚才被蜜蜂蛰了一下 脸肿起来了 喘气也不对
+  label: true
+  tags: [shock, breathing, voice]
+  why: 蜂蛰脸肿喘异常
+- msg: 他被黄蜂蛰到嘴唇 肿的跟香肠一样 喘的挺重
+  label: true
+  tags: [shock, breathing, voice]
+  why: 蜂蛰唇肿喘重
+- msg: dog got stung twice face is really puffy and panting hard now
+  label: true
+  tags: [shock, breathing, en, voice]
+  why: 两次蜂蛰脸肿急喘
+- msg: 灰灰被蜜蜂蛰了 眼皮肿的睁不开 呼吸声音粗重
+  label: true
+  tags: [shock, breathing, voice]
+  why: 蜂蛰眼肿呼吸粗重
+- msg: 团子被虫子蛰到脸 越肿越大 感觉呼吸都费劲了
+  label: true
+  tags: [shock, breathing, voice]
+  why: 虫蛰脸肿呼吸费劲
+- msg: cat stung by a bee face swelling up fast breathing sounds off
+  label: true
+  tags: [shock, breathing, en, voice]
+  why: 蜂蛰脸肿呼吸异常
+
+- msg: 豆豆刚才掉游泳池里了 捞上来一直吐水
+  label: true
+  tags: [breathing, panic, voice]
+  why: 溺水吐水
+- msg: 我家狗掉河里了 刚救上来软趴趴的不动
+  label: true
+  tags: [breathing, panic, voice]
+  why: 溺水后瘫软
+- msg: 米米不小心掉浴缸里了 捞出来一直咳水
+  label: true
+  tags: [breathing, voice]
+  why: 溺水咳水
+- msg: dog fell into the pool and we just pulled him out he's not moving right
+  label: true
+  tags: [breathing, panic, en, voice]
+  why: 溺水后异常
+- msg: 维尼掉进池塘了 捞上来一直呛水 站不稳
+  label: true
+  tags: [breathing, voice]
+  why: 溺水呛水站不稳
+- msg: 花花掉水里呛到了 现在一直咳嗽软软的
+  label: true
+  tags: [breathing, voice]
+  why: 溺水呛水软瘫
+- msg: 球球不小心掉进浴缸差点淹了 现在瘫着
+  label: true
+  tags: [breathing, panic, voice]
+  why: 差点溺水瘫软
+- msg: 旺财掉湖里了 刚救上岸一直吐水不动
+  label: true
+  tags: [breathing, panic, voice]
+  why: 溺水吐水不动
+- msg: 团子掉进水桶里了 捞出来软塌塌的不太对劲
+  label: true
+  tags: [breathing, voice]
+  why: 溺水后软塌异常
+- msg: 咪咪不小心掉进鱼缸了 捞出来一直咳
+  label: true
+  tags: [breathing, voice]
+  why: 溺水咳嗽
+- msg: cat fell into the bathtub and almost drowned shes not responding well
+  label: true
+  tags: [breathing, panic, en, voice]
+  why: 差点溺水无反应
+- msg: 阿黄游泳呛水了 上岸就瘫了一直咳
+  label: true
+  tags: [breathing, voice]
+  why: 呛水瘫软咳嗽
+- msg: dog nearly drowned in the pool just pulled him out hes limp
+  label: true
+  tags: [breathing, panic, en, voice]
+  why: 差点溺水瘫软
+- msg: 大白掉水里好一会才捞上来 现在软的不太动
+  label: true
+  tags: [breathing, panic, voice]
+  why: 长时间溺水软瘫
+- msg: 壮壮游泳的时候呛到了 上岸就一直咳不停
+  label: true
+  tags: [breathing, voice]
+  why: 呛水持续咳嗽
+- msg: cat almost drowned in the pond pulled her out shes barely moving
+  label: true
+  tags: [breathing, panic, en, voice]
+  why: 差点溺水几乎不动
+- msg: 雪球不小心掉水缸里 救出来一直吐水不太清醒
+  label: true
+  tags: [breathing, panic, voice]
+  why: 溺水吐水意识不清
+- msg: 小维掉泳池里差点没上来 现在软软的不太对
+  label: true
+  tags: [breathing, panic, voice]
+  why: 差点溺水软瘫
+- msg: 猫猫掉进洗衣机水盆了 捞出来一直咳嗽软瘫
+  label: true
+  tags: [breathing, voice]
+  why: 溺水咳嗽软瘫
+- msg: 它刚掉河里被我捞上来 现在一直呛咳站不稳
+  label: true
+  tags: [breathing, voice]
+  why: 溺水呛咳站不稳
+
+- msg: 豆豆刚才咬电线被电到了 现在软趴趴的不动
+  label: true
+  tags: [shock, voice]
+  why: 咬电线触电瘫软
+- msg: 我家猫咬了充电线 抽了一下然后就瘫那了
+  label: true
+  tags: [shock, neuro, voice]
+  why: 触电抽动后瘫软
+- msg: 米米碰到插座被电到 现在一直发抖站不起来
+  label: true
+  tags: [shock, neuro, voice]
+  why: 触电发抖站不起
+- msg: dog chewed through a cord and got shocked now hes not moving right
+  label: true
+  tags: [shock, en, voice]
+  why: 咬电线触电异常
+- msg: 维尼咬电线被电了一下 现在瘫软叫不应
+  label: true
+  tags: [shock, voice]
+  why: 触电瘫软无反应
+- msg: 花花碰到漏电的东西 抖了一下现在软趴趴的
+  label: true
+  tags: [shock, voice]
+  why: 漏电触电瘫软
+- msg: 球球咬充电器被电到 嘴巴还有点抽动
+  label: true
+  tags: [shock, neuro, voice]
+  why: 触电嘴部抽动
+- msg: 旺财咬了插线板 弹开后就一直趴着不动
+  label: true
+  tags: [shock, voice]
+  why: 触电后趴着不动
+- msg: cat bit through a wire and got shocked shes lying there not moving
+  label: true
+  tags: [shock, en, voice]
+  why: 咬电线触电不动
+- msg: 团子咬电线被电了一下 现在软塌塌叫不醒
+  label: true
+  tags: [shock, voice]
+  why: 触电软塌叫不醒
+- msg: 咪咪碰到电线被电到 嘴角还在抖 站不起来
+  label: true
+  tags: [shock, neuro, voice]
+  why: 触电嘴角抖站不起
+- msg: dog got shocked chewing a charging cable now he's limp on the floor
+  label: true
+  tags: [shock, en, voice]
+  why: 咬电线触电瘫软
+- msg: 阿黄咬了插座旁边的线 被电了一下现在不太对劲
+  label: true
+  tags: [shock, voice]
+  why: 触电后异常
+- msg: 大白碰到裸露电线 抖了一下就瘫倒了
+  label: true
+  tags: [shock, voice]
+  why: 触电瘫倒
+
+- msg: 豆豆刚才连续打了好几个喷嚏 跟抽筋似的 但玩的挺开心
+  label: false
+  tags: [mild, gray, voice]
+  why: 反向喷嚏但精神好
+- msg: 米米突然发出那种倒吸气的怪声 好几下 然后又跑去玩了
+  label: false
+  tags: [mild, gray, voice]
+  why: 反向喷嚏后正常玩
+- msg: dog just did that weird reverse sneeze thing snorting hard but hes fine playing now
+  label: false
+  tags: [mild, gray, en, voice]
+  why: 反向喷嚏无碍
+- msg: 维尼刚才那个反向喷嚏一样的声音 吓我一跳 结果没事继续啃玩具
+  label: false
+  tags: [mild, gray, voice]
+  why: 反向喷嚏无碍
+- msg: 花花打了几个特别夸张的喷嚏 然后接着跟我玩
+  label: false
+  tags: [mild, gray, voice]
+  why: 夸张喷嚏后如常
+- msg: 球球又开始那个咕噜咕噜倒吸气的声音了 跟平时一样 没别的事
+  label: false
+  tags: [mild, gray, voice]
+  why: 惯常反向喷嚏
+- msg: cat made this weird honking sound like reverse sneezing then went back to playing
+  label: false
+  tags: [mild, gray, en, voice]
+  why: 反向喷嚏后照常
+- msg: 旺财兴奋的时候老是发出那种呼噜呼噜倒吸气的声音 没别的症状
+  label: false
+  tags: [mild, gray, voice]
+  why: 兴奋时反向喷嚏
+- msg: 团子刚才那个抽鼻子倒气的怪声又来了 精神好好的
+  label: false
+  tags: [mild, gray, voice]
+  why: 反向喷嚏精神好
+
+- msg: 遛完狗夏天太热了 一直吐着舌头喘 正常吗
+  label: false
+  tags: [mild, heat, gray, voice]
+  why: 遛后喘属正常
+- msg: dog panting a lot after our walk today it's pretty hot outside
+  label: false
+  tags: [mild, heat, gray, en, voice]
+  why: 遛后喘属正常
+- msg: 米米刚遛完弯回来喘的挺厉害 天太热了
+  label: false
+  tags: [mild, heat, gray, voice]
+  why: 遛后喘天热正常
+- msg: 维尼夏天出去跑了一圈回来一直喘气 精神挺好
+  label: false
+  tags: [mild, heat, gray, voice]
+  why: 跑后喘精神好
+- msg: 球球玩了半天回来喘的挺厉害 但还是活蹦乱跳的
+  label: false
+  tags: [mild, heat, gray, voice]
+  why: 玩后喘仍活跃
+- msg: dog is panting hard after playing fetch in the sun but seems totally fine
+  label: false
+  tags: [mild, heat, gray, en, voice]
+  why: 运动后喘正常
+- msg: 旺财遛完弯气喘吁吁的 一会就好了
+  label: false
+  tags: [mild, heat, gray, voice]
+  why: 遛后喘很快恢复
+- msg: 团子在外面追了半天球回来直喘 喝完水就好了
+  label: false
+  tags: [mild, heat, gray, voice]
+  why: 玩后喘喝水即好
+
+- msg: 豆豆睡觉打呼噜特别响 是不是不正常
+  label: false
+  tags: [mild, gray, voice]
+  why: 睡觉打呼噜
+- msg: my cat snores really loud when she sleeps is that normal
+  label: false
+  tags: [mild, gray, en, voice]
+  why: 睡觉打呼噜
+- msg: 米米晚上睡觉呼噜声特别大 白天挺精神的
+  label: false
+  tags: [mild, gray, voice]
+  why: 打呼噜白天正常
+- msg: 维尼睡着了打呼噜跟拖拉机似的 一直都这样
+  label: false
+  tags: [mild, gray, voice]
+  why: 长期打呼噜习惯
+- msg: dog snores loudly every night but acts totally normal during the day
+  label: false
+  tags: [mild, gray, en, voice]
+  why: 打呼噜白天正常
+- msg: 花花睡觉的时候呼噜特别响 已经好几年了
+  label: false
+  tags: [mild, gray, voice]
+  why: 多年打呼噜习惯
+- msg: 球球打呼噜的声音越来越大了 平时没啥事
+  label: false
+  tags: [mild, gray, voice]
+  why: 打呼噜无其他症状
+- msg: cat has been snoring more lately but eating and playing fine
+  label: false
+  tags: [mild, gray, en, voice]
+  why: 打呼噜饮食正常
+
+- msg: 豆豆今天咳了两声 精神状态挺好的 该吃吃该玩玩
+  label: false
+  tags: [mild, gray, voice]
+  why: 轻咳精神好
+- msg: dog coughed a couple times today but otherwise seems totally normal
+  label: false
+  tags: [mild, gray, en, voice]
+  why: 轻咳精神好
+- msg: 米米偶尔咳一下 没别的症状 精神也好
+  label: false
+  tags: [mild, gray, voice]
+  why: 偶尔轻咳精神好
+- msg: 维尼今天咳了几声 还是很有精神地要出去玩
+  label: false
+  tags: [mild, gray, voice]
+  why: 轻咳精神仍佳
+- msg: 花花早上咳了一下 之后就没事了 照常吃饭
+  label: false
+  tags: [mild, gray, voice]
+  why: 轻咳后如常
+- msg: cat coughed once this morning seems fine now eating normally
+  label: false
+  tags: [mild, gray, en, voice]
+  why: 轻咳后进食正常
+- msg: 球球最近偶尔咳一两声 精神食欲都正常
+  label: false
+  tags: [mild, gray, voice]
+  why: 偶尔轻咳状态正常
+- msg: 团子今天咳了下 但是一直在追逗猫棒玩
+  label: false
+  tags: [mild, gray, voice]
+  why: 轻咳仍在玩耍
+
+- msg: 狗中暑一般会有什么症状
+  label: false
+  tags: [question, hypothetical, keyword_trap, gray]
+  why: 假设科普提问
+- msg: what are the signs of heatstroke in dogs
+  label: false
+  tags: [question, hypothetical, keyword_trap, en, gray]
+  why: 假设科普提问
+- msg: 猫咪中暑的表现一般是啥样的
+  label: false
+  tags: [question, hypothetical, keyword_trap, gray]
+  why: 假设科普提问
+- msg: 夏天怎么判断狗狗是不是中暑了
+  label: false
+  tags: [question, hypothetical, keyword_trap, gray]
+  why: 假设科普提问
+- msg: cat heatstroke symptoms what should i look out for
+  label: false
+  tags: [question, hypothetical, keyword_trap, en, gray]
+  why: 假设科普提问
+- msg: 狗狗被蜜蜂蛰了一般会有什么反应
+  label: false
+  tags: [question, hypothetical, keyword_trap, gray]
+  why: 假设科普提问
+- msg: 宠物溺水急救一般要怎么处理
+  label: false
+  tags: [question, hypothetical, keyword_trap, gray]
+  why: 假设科普提问
+- msg: how do you tell if your dog is having trouble breathing
+  label: false
+  tags: [question, hypothetical, keyword_trap, en, gray]
+  why: 假设科普提问
+
+- msg: 去年夏天豆豆中暑过一次 那时候吓死我了 现在没事
+  label: false
+  tags: [past, keyword_trap, gray, voice]
+  why: 去年的事已无碍
+- msg: my dog had heatstroke last summer but he recovered fine
+  label: false
+  tags: [past, keyword_trap, gray, en, voice]
+  why: 去年中暑已恢复
+- msg: 米米以前中暑瘫过一次 后来去医院就好了
+  label: false
+  tags: [past, keyword_trap, gray, voice]
+  why: 过去中暑已治愈
+- msg: 维尼去年被蜜蜂蛰过一次脸肿了 现在早好了
+  label: false
+  tags: [past, keyword_trap, gray, voice]
+  why: 去年蜂蛰已痊愈
+- msg: last year our cat almost drowned in the pool but shes totally fine now
+  label: false
+  tags: [past, keyword_trap, gray, en, voice]
+  why: 去年溺水已无碍
+- msg: 球球小时候差点被电线电到 现在没事了
+  label: false
+  tags: [past, keyword_trap, gray, voice]
+  why: 幼时触电已无碍
+- msg: 团子去年夏天中暑过 现在天热我们都特别小心
+  label: false
+  tags: [past, keyword_trap, gray, voice]
+  why: 去年中暑现今预防
+- msg: 花花以前有次呛水呛的挺厉害 现在完全好了
+  label: false
+  tags: [past, keyword_trap, gray, voice]
+  why: 过去呛水已痊愈
+
+- msg: 我朋友家狗夏天中暑了好几次 他们家没装空调
+  label: false
+  tags: [other_owner, keyword_trap, gray, voice]
+  why: 别人宠物非求助
+- msg: my friend's cat almost choked on a toy last week she said
+  label: false
+  tags: [other_owner, keyword_trap, gray, en, voice]
+  why: 别人宠物非求助
+- msg: 邻居家的狗好像老是打呼噜 睡觉声音特别大
+  label: false
+  tags: [other_owner, keyword_trap, gray, voice]
+  why: 别人宠物非求助
+- msg: 同事说她家猫被蜜蜂蛰过 脸肿了好几天
+  label: false
+  tags: [other_owner, keyword_trap, gray, voice]
+  why: 别人宠物非求助
+- msg: someone in my group chat said their dog got heatstroke last week
+  label: false
+  tags: [other_owner, keyword_trap, gray, en, voice]
+  why: 别人宠物非求助
+- msg: 表姐家狗以前差点溺水 现在她家不让狗去游泳了
+  label: false
+  tags: [other_owner, past, keyword_trap, gray, voice]
+  why: 别人宠物非求助
+- msg: 网上看到个视频 说猫被电线电到了 好吓人
+  label: false
+  tags: [other_owner, keyword_trap, gray, voice]
+  why: 视频内容非求助
+- msg: 朋友家猫总是张着嘴呼吸 她说医生说没事
+  label: false
+  tags: [other_owner, keyword_trap, gray, voice]
+  why: 别人宠物已确认无碍
+- msg: my neighbor's dog snores super loud she was telling me about it
+  label: false
+  tags: [other_owner, keyword_trap, gray, en, voice]
+  why: 别人宠物非求助
+- msg: 听说隔壁老王家狗被蜂蛰了 肿了好大一个包
+  label: false
+  tags: [other_owner, keyword_trap, gray, voice]
+  why: 别人宠物非求助
+- msg: 我表弟家猫夏天总喘气 他说去医院看了没事
+  label: false
+  tags: [other_owner, keyword_trap, gray, voice]
+  why: 别人宠物已确认无碍

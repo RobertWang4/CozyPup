@@ -1,5 +1,5 @@
 steps:
-  # Build Docker image
+  # Build backend image
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'build'
@@ -7,33 +7,65 @@ steps:
       - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_IMAGE}:$COMMIT_SHA'
       - 'backend'
 
-  # Push to Artifact Registry
+  # Fetch the emergency-classifier GGUF (not in git) and build the sidecar image
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gsutil
+    args: ['cp', 'gs://${_MODELS_BUCKET}/emergency-clf/${_CLF_MODEL}', 'backend/nano/serve/model.gguf']
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-f'
+      - 'backend/nano/serve/Dockerfile'
+      - '-t'
+      - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_CLF_IMAGE}:$COMMIT_SHA'
+      - 'backend'
+
+  # Push both to Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'push'
       - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_IMAGE}:$COMMIT_SHA'
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_CLF_IMAGE}:$COMMIT_SHA'
 
-  # Deploy to Cloud Run
+  # Deploy to Cloud Run: backend (ingress) + clf sidecar on localhost:8081.
+  # Existing env vars / secrets on the backend container are preserved by `deploy`.
+  # Routing stays on keywords until the `emergency_clf_mode` flag is moved off `shadow`.
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args:
       - 'run'
       - 'deploy'
       - '${_SERVICE}'
-      - '--image=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_IMAGE}:$COMMIT_SHA'
       - '--region=${_REGION}'
       - '--platform=managed'
       - '--allow-unauthenticated'
-      - '--memory=512Mi'
       - '--timeout=120'
       - '--min-instances=0'
       - '--max-instances=3'
+      - '--container=backend'
+      - '--image=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_IMAGE}:$COMMIT_SHA'
+      - '--port=8000'
+      - '--memory=512Mi'
+      - '--cpu=1'
+      - '--update-env-vars=EMERGENCY_CLF_URL=http://127.0.0.1:8081'
+      - '--depends-on=clf'
+      - '--container=clf'
+      - '--image=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_CLF_IMAGE}:$COMMIT_SHA'
+      - '--memory=1Gi'
+      - '--cpu=1'
+      - '--startup-probe=httpGet.path=/health,httpGet.port=8081,initialDelaySeconds=2,periodSeconds=2,failureThreshold=60'
 
 substitutions:
   _REGION: northamerica-northeast1
   _REPO: cozypup
   _IMAGE: backend
+  _CLF_IMAGE: emergency-clf
   _SERVICE: backend
+  _MODELS_BUCKET: cozypup-models
+  _CLF_MODEL: r3-q8.gguf
 
 options:
   logging: CLOUD_LOGGING_ONLY

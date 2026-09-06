@@ -1,0 +1,1280 @@
+- msg: 豆豆把一整快黑巧克力吃掉了 巴掌那么大 刚发现
+  label: true
+  tags: [toxin, voice, typo]
+  why: 大量黑巧克力
+- msg: 我家狗把年货巧克力礼盒拆了吃了小半盒 大概二十分钟前
+  label: true
+  tags: [toxin, voice]
+  why: 误食一整盒巧克力
+- msg: 维尼偷吃了一整条德芙巧克力 包装纸都撕烂了
+  label: true
+  tags: [toxin, voice]
+  why: 整条巧克力
+- msg: 花花把桌上一整袋巧克力豆全造了 现在直勾勾看着我
+  label: true
+  tags: [toxin, voice]
+  why: 一整袋巧克力豆
+- msg: 那个 我家猫...不对是狗 把烘焙用的可可粉舔了好多 半袋都没了
+  label: true
+  tags: [toxin, voice]
+  why: 大量可可粉
+- msg: max got into a whole box of valentine's chocolates while we were out shopping
+  label: true
+  tags: [toxin, en]
+  why: 整盒巧克力
+- msg: 球球把我妈买的黑巧克力一整板啃了 咬得到处都是碎渣
+  label: true
+  tags: [toxin, voice]
+  why: 一整板黑巧克力
+- msg: 旺财刚才把烤蛋糕用的巧克力磚整块叼走吃了
+  label: true
+  tags: [toxin, voice]
+  why: 整块烘焙巧克力
+- msg: 小维趁我们不注意把巧克力礼盒里三四颗都吞了 就刚才
+  label: true
+  tags: [toxin, voice]
+  why: 吞了几颗巧克力
+- msg: luna ate almost a whole bag of dark chocolate chips i left on the counter
+  label: true
+  tags: [toxin, en]
+  why: 一整袋黑巧克力豆
+- msg: 团子把奶奶给的巧克力棒一整根吃没了
+  label: true
+  tags: [toxin, voice]
+  why: 整根巧克力棒
+- msg: 我家狗刚偷吃了半盒松露巧克力 一颗颗的那种 大概吃了六七颗
+  label: true
+  tags: [toxin, voice]
+  why: 吃了六七颗松露
+- msg: 咪咪把巧克力蛋糕整个啃了一大块 是纯黑巧克力那种蛋糕
+  label: true
+  tags: [toxin, voice]
+  why: 黑巧克力蛋糕
+- msg: 麦兜把可可含量很高的巧克力棒一整根吃了 包装纸都吞了一半
+  label: true
+  tags: [toxin, voice]
+  why: 高可可含量巧克力
+- msg: whiskers somehow got into the pantry and ate a whole bar of baking chocolate
+  label: true
+  tags: [toxin, en]
+  why: 整条烘焙巧克力
+- msg: 豆豆刚把过年送的巧克力礼盒扒开吃了小半盒 大概十几颗
+  label: true
+  tags: [toxin, voice]
+  why: 十几颗巧克力
+- msg: my husky got into a whole pack of chocolate wafers at the office and just standing there dazed now
+  label: true
+  tags: [toxin, en]
+  why: 一整包巧克力威化
+- msg: 小球把巧克力粉直接舔了一大盆 是做慕斯剩下的
+  label: true
+  tags: [toxin, voice]
+  why: 一大盆巧克力粉
+- msg: 花卷把巧克力棒连锡纸一起啃了大半根 刚发生的事
+  label: true
+  tags: [toxin, voice]
+  why: 大半根巧克力棒
+- msg: mochi ate like half a box of chocolate covered raisins just now
+  label: true
+  tags: [toxin, en]
+  why: 半盒巧克力葡萄干
+- msg: 我家狗把巧克力慕斯蛋糕整个盘子舔干净了 那种很浓的黑巧慕斯
+  label: true
+  tags: [toxin, voice]
+  why: 浓黑巧慕斯
+- msg: 豆豆舔了一下我掉在地上的巧克力屑 就那么一点点
+  label: false
+  tags: [toxin, gray, keyword_trap, voice]
+  why: 剂量极小
+- msg: 狗狗吃巧克力到底为什么会中毒啊 一直没搞懂
+  label: false
+  tags: [toxin, question, hypothetical, keyword_trap]
+  why: 科普提问
+- msg: max had a tiny lick of my hot chocolate is that bad
+  label: false
+  tags: [toxin, gray, keyword_trap, en]
+  why: 剂量极小
+- msg: 上次过年他偷吃过一点巧克力 后来也没事就是随口问问
+  label: false
+  tags: [toxin, past, keyword_trap]
+  why: 过去的事已没事
+- msg: 同事说她家狗昨天偷吃了点巧克力 现在活蹦乱跳没事
+  label: false
+  tags: [toxin, other_owner, gray]
+  why: 他人已无恙
+- msg: 花花就啃了一小口巧克力饼干边 巧克力那层基本没动
+  label: false
+  tags: [toxin, gray, keyword_trap]
+  why: 未真正吃到
+- msg: 豆豆把一整串葡萄吃了 大概十几颗 刚刚的事
+  label: true
+  tags: [toxin, voice]
+  why: 一整串葡萄
+- msg: 我家狗把果盘里的葡萄干全叼走吃了 一小盒都空了
+  label: true
+  tags: [toxin, voice]
+  why: 一小盒葡萄干
+- msg: 维尼偷吃了半斤装葡萄干的一大把 现在满地都是葡萄梗
+  label: true
+  tags: [toxin, voice]
+  why: 一大把葡萄干
+- msg: 花花把烘焙用的葡萄干料理包整包啃开吃了不少
+  label: true
+  tags: [toxin, voice]
+  why: 整包葡萄干
+- msg: 那个 我家猫叼走了葡萄干面包上所有的葡萄干挑着吃
+  label: true
+  tags: [toxin, voice]
+  why: 挑吃葡萄干
+- msg: max got into a whole bunch of grapes on the table and ate like ten of them
+  label: true
+  tags: [toxin, en]
+  why: 吃了十颗葡萄
+- msg: 球球把桌上一盘葡萄吃了大半 籽都没吐
+  label: true
+  tags: [toxin, voice]
+  why: 大半盘葡萄
+- msg: 旺财刚把葡萄干燕麦棒整根吃了 里面全是葡萄干
+  label: true
+  tags: [toxin, voice]
+  why: 葡萄干燕麦棒
+- msg: 小维趁我做饭把一串青提叼走啃了七八颗
+  label: true
+  tags: [toxin, voice]
+  why: 七八颗青提
+- msg: luna ate a handful of raisins that fell out of my trail mix bag
+  label: true
+  tags: [toxin, en]
+  why: 一把葡萄干
+- msg: 团子把奶奶做的葡萄干年糕整块啃了 里面葡萄干特别多
+  label: true
+  tags: [toxin, voice, typo]
+  why: 葡萄干年糕
+- msg: 我家狗刚偷吃了半袋葡萄干零食 小孩子的那种 吃了一大把
+  label: true
+  tags: [toxin, voice]
+  why: 半袋葡萄干零食
+- msg: 咪咪叼着葡萄玩着玩着就吞了好几颗
+  label: true
+  tags: [toxin, voice]
+  why: 吞了好几颗葡萄
+- msg: 麦兜把果篮里的红提整串拽下来吃了十几颗
+  label: true
+  tags: [toxin, voice]
+  why: 十几颗红提
+- msg: whiskers knocked over the raisin box and ate a bunch before i noticed
+  label: true
+  tags: [toxin, en]
+  why: 打翻葡萄干盒
+- msg: 豆豆把我们烤面包剩的葡萄干馅料舔了一大坨
+  label: true
+  tags: [toxin, voice]
+  why: 一大坨葡萄干馅
+- msg: my husky ran off with a whole bunch of grapes and by the time i caught him there were just stems left
+  label: true
+  tags: [toxin, en]
+  why: 一整串葡萄
+- msg: 小球把葡萄干巧克力豆混装零食吃了小半包
+  label: true
+  tags: [toxin, voice]
+  why: 混装葡萄干零食
+- msg: 花卷把奶奶晒的葡萄干干货偷吃了一大把
+  label: true
+  tags: [toxin, voice]
+  why: 一大把葡萄干
+- msg: mochi got the grape bunch off the counter and ate a bunch of them
+  label: true
+  tags: [toxin, en]
+  why: 一串葡萄
+- msg: 我家狗把野餐剩的葡萄一整盒吃光了 差不多二十颗
+  label: true
+  tags: [toxin, voice]
+  why: 二十颗葡萄
+- msg: 豆豆就吃了一颗葡萄籽儿掉的那种 很小一颗
+  label: false
+  tags: [toxin, gray, keyword_trap, voice]
+  why: 剂量极小
+- msg: 狗吃葡萄真的会肾衰竭吗 一直很好奇
+  label: false
+  tags: [toxin, question, hypothetical, keyword_trap]
+  why: 假设科普提问
+- msg: does one raisin actually hurt a dog that much
+  label: false
+  tags: [toxin, question, hypothetical, keyword_trap, en]
+  why: 假设提问
+- msg: 去年他偷吃过葡萄干 后来去医院说没事就是吓一跳
+  label: false
+  tags: [toxin, past, keyword_trap]
+  why: 过去的事已没事
+- msg: 邻居家狗前几天吃了葡萄 她说已经好了在群里说的
+  label: false
+  tags: [toxin, other_owner, gray]
+  why: 他人已无恙
+- msg: luna just licked the spot where a grape used to sit no actual grape eaten
+  label: false
+  tags: [toxin, gray, keyword_trap, en]
+  why: 未真正吃到
+- msg: 豆豆把一整盒无糖口香糖嚼了吃了 有木糖醇那种
+  label: true
+  tags: [toxin, voice]
+  why: 整盒无糖口香糖
+- msg: 我家狗把桌上木糖醇薄荷糖一整包造了 大概十几颗
+  label: true
+  tags: [toxin, voice]
+  why: 十几颗木糖醇糖
+- msg: 维尼偷吃了半包无糖口香糖 连包装纸带糖一起吞了几颗
+  label: true
+  tags: [toxin, voice]
+  why: 半包无糖口香糖
+- msg: 花花把我包里木糖醇糖果全倒出来吃了
+  label: true
+  tags: [toxin, voice]
+  why: 一包木糖醇糖果
+- msg: 那个 我家猫...狗 把口香糖罐打翻自己舔了好几颗糖衣
+  label: true
+  tags: [toxin, voice]
+  why: 舔了好几颗糖衣
+- msg: Max ate an entire pack of sugar free gum off the coffee table
+  label: true
+  tags: [toxin, en]
+  why: 整包无糖口香糖
+- msg: 球球把无糖薄荷糖一整盒吃了 都是木糖醇的
+  label: true
+  tags: [toxin, voice]
+  why: 整盒木糖醇薄荷糖
+- msg: 旺财刚把我车里那盒木糖醇口香糖啃烂全吃了
+  label: true
+  tags: [toxin, voice]
+  why: 整盒木糖醇口香糖
+- msg: 小维趁我不注意把口香糖包装撕开吃了七八片
+  label: true
+  tags: [toxin, voice]
+  why: 七八片口香糖
+- msg: luna got into my purse and ate a whole pack of xylitol gum
+  label: true
+  tags: [toxin, en]
+  why: 整包木糖醇口香糖
+- msg: 团子把无糖软糖一整袋吃光了 成分表写着木糖醇
+  label: true
+  tags: [toxin, voice]
+  why: 一整袋无糖软糖
+- msg: 我家狗刚偷吃了半瓶木糖醇糖片 那种小药瓶装的
+  label: true
+  tags: [toxin, voice]
+  why: 半瓶木糖醇糖片
+- msg: 咪咪把薄荷糖罐打翻 舔吃了不少木糖醇糖粒
+  label: true
+  tags: [toxin, voice]
+  why: 舔吃木糖醇糖粒
+- msg: 麦兜把无糖口香糖整盒连纸都嚼了吞了
+  label: true
+  tags: [toxin, voice]
+  why: 整盒无糖口香糖
+- msg: whiskers somehow chewed through a whole pack of sugarless gum
+  label: true
+  tags: [toxin, en]
+  why: 整包无糖口香糖
+- msg: 豆豆把健身房那种无糖能量糖一把都吃了
+  label: true
+  tags: [toxin, voice]
+  why: 一把无糖能量糖
+- msg: my husky ran off with the xylitol mint tin and licked every single one clean
+  label: true
+  tags: [toxin, en]
+  why: 舔光木糖醇薄荷糖
+- msg: 小球把无糖口香糖一整条十片都嚼碎吃了
+  label: true
+  tags: [toxin, voice]
+  why: 十片无糖口香糖
+- msg: 花卷把我随身带的木糖醇糖果全偷吃了
+  label: true
+  tags: [toxin, voice]
+  why: 木糖醇糖果
+- msg: mochi chewed up and swallowed almost a full pack of sugar free gum
+  label: true
+  tags: [toxin, en]
+  why: 一整包无糖口香糖
+- msg: 我家狗把办公室同事的无糖口香糖整盒吃了 说是木糖醇的
+  label: true
+  tags: [toxin, voice]
+  why: 整盒木糖醇口香糖
+- msg: 豆豆就叼了一片口香糖包装纸 糖没吃到
+  label: false
+  tags: [toxin, gray, keyword_trap, voice]
+  why: 未真正吃到
+- msg: 木糖醇为什么对狗那么毒啊 一点点就不行吗
+  label: false
+  tags: [toxin, question, hypothetical, keyword_trap]
+  why: 科普提问
+- msg: is xylitol really that toxic to dogs even in tiny amounts
+  label: false
+  tags: [toxin, question, hypothetical, keyword_trap, en]
+  why: 假设提问
+- msg: 上次他啃过一片无糖糖纸壳 后来没事
+  label: false
+  tags: [toxin, past, keyword_trap]
+  why: 过去的事已没事
+- msg: 朋友说她狗吃了木糖醇口香糖 已经洗胃出来了在观察
+  label: false
+  tags: [toxin, gray, edge, other_owner]
+  why: 已就医等结果
+- msg: 花花闻了闻口香糖盒子 没吃进去
+  label: false
+  tags: [toxin, gray, keyword_trap]
+  why: 未真正吃到
+- msg: 豆豆把一整份洋葱炒牛肉全吃了 洋葱特别多那种
+  label: true
+  tags: [toxin, voice]
+  why: 一整份洋葱炒肉
+- msg: 我家狗把火锅剩的葱蒜料全舔了 一大碗
+  label: true
+  tags: [toxin, voice]
+  why: 一大碗葱蒜料
+- msg: 维尼偷吃了半份蒜香排骨 里面蒜末超多
+  label: true
+  tags: [toxin, voice]
+  why: 蒜末超多排骨
+- msg: 花花把炖牛肉锅里的洋葱块全捞出来吃了 差不多一整个洋葱
+  label: true
+  tags: [toxin, voice]
+  why: 一整个洋葱
+- msg: 那个 我家猫...狗 把大蒜爆炒的菜整盘造了
+  label: true
+  tags: [toxin, voice]
+  why: 大蒜爆炒菜整盘
+- msg: Max ate a whole bowl of onion soup i left cooling on the stove
+  label: true
+  tags: [toxin, en]
+  why: 一整碗洋葱汤
+- msg: 球球把烤肉滩剩的洋葱圈全吃了 一大盘
+  label: true
+  tags: [toxin, voice, typo]
+  why: 一大盘洋葱圈
+- msg: 旺财刚把炒洋葱丝整盘干掉了 我准备做菜用的
+  label: true
+  tags: [toxin, voice]
+  why: 整盘炒洋葱丝
+- msg: 小维趁我切菜把案板上一整颗大蒜偷叼走吃了
+  label: true
+  tags: [toxin, voice]
+  why: 一整颗大蒜
+- msg: luna got into the leftover onion gravy and licked the whole bowl clean
+  label: true
+  tags: [toxin, en]
+  why: 一整碗洋葱肉汁
+- msg: 团子把妈妈做的葱油拌面吃了一大碗 葱花特别多
+  label: true
+  tags: [toxin, voice]
+  why: 大量葱花拌面
+- msg: 我家狗刚偷吃了一整颗生洋葱 啃得就剩皮了
+  label: true
+  tags: [toxin, voice]
+  why: 一整颗生洋葱
+- msg: 咪咪叼着蒜瓣当玩具啃着啃着咽下去好几瓣
+  label: true
+  tags: [toxin, voice]
+  why: 咽下好几瓣蒜
+- msg: 麦兜把火锅蘸料里的蒜末舀着吃了一大勺
+  label: true
+  tags: [toxin, voice]
+  why: 一大勺蒜末
+- msg: whiskers ate a good chunk of the onion i had chopped on the cutting board
+  label: true
+  tags: [toxin, en]
+  why: 一大块切好洋葱
+- msg: 豆豆把烤箱烤的整颗洋葱偷叼下来啃了大半个
+  label: true
+  tags: [toxin, voice]
+  why: 大半个烤洋葱
+- msg: my husky ate a whole chive pancake stuffed with onion and chives
+  label: true
+  tags: [toxin, en]
+  why: 韭菜洋葱馅饼
+- msg: 小球把大蒜炒饭吃了满满一碗
+  label: true
+  tags: [toxin, voice]
+  why: 一碗大蒜炒饭
+- msg: 花卷把炖鸡汤里泡烂的洋葱块全捞出来吃了
+  label: true
+  tags: [toxin, voice]
+  why: 炖汤洋葱块
+- msg: mochi ate a whole grilled onion that fell off the bbq
+  label: true
+  tags: [toxin, en]
+  why: 一整个烤洋葱
+- msg: 我家狗把凉拌洋葱丝那道菜整盘吃光了
+  label: true
+  tags: [toxin, voice]
+  why: 整盘凉拌洋葱丝
+- msg: 豆豆就舔了一下带葱花的汤汁 没吃到葱本身
+  label: false
+  tags: [toxin, gray, keyword_trap, voice]
+  why: 未真正吃到
+- msg: 洋葱对狗为什么那么伤 是破坏红细胞吗 一直没搞明白
+  label: false
+  tags: [toxin, question, hypothetical, keyword_trap]
+  why: 科普提问
+- msg: how much onion is actually dangerous for a dog to eat
+  label: false
+  tags: [toxin, question, hypothetical, keyword_trap, en]
+  why: 假设提问
+- msg: 上个月他偷吃过一点炒饭里的葱 后来也没啥事
+  label: false
+  tags: [toxin, past, keyword_trap]
+  why: 过去的事已没事
+- msg: 同事说她猫舔了蒜末 现在在宠物医院观察血象呢
+  label: false
+  tags: [toxin, gray, edge, other_owner]
+  why: 已就医等结果
+- msg: 花花吃了一根胡萝卜 旁边正好有洋葱皮但没吃
+  label: false
+  tags: [toxin, gray, keyword_trap]
+  why: 吃的是安全食物
+- msg: 豆豆把一整袋夏威夷果啃开壳吃了六七颗
+  label: true
+  tags: [toxin, voice]
+  why: 六七颗夏威夷果
+- msg: 我家狗把年货夏威夷果一大把偷吃了 壳都嚼碎了
+  label: true
+  tags: [toxin, voice]
+  why: 一大把夏威夷果
+- msg: 维尼偷吃了半罐夏威夷果 连壳带肉造了不少
+  label: true
+  tags: [toxin, voice]
+  why: 半罐夏威夷果
+- msg: 花花把桌上一盘夏威夷果全叼走吃了十几棵
+  label: true
+  tags: [toxin, voice, typo]
+  why: 十几颗夏威夷果
+- msg: 那个 我家猫...狗 把坚果罐打翻自己捡着夏威夷果吃了
+  label: true
+  tags: [toxin, voice]
+  why: 捡吃夏威夷果
+- msg: Max got into a whole bag of macadamia nuts on the counter
+  label: true
+  tags: [toxin, en]
+  why: 一整袋夏威夷果
+- msg: 球球把送礼的夏威夷果礼盒偷吃了一大把
+  label: true
+  tags: [toxin, voice]
+  why: 一大把夏威夷果
+- msg: 旺财刚把我妈买的夏威夷果零食嚼了七八颗
+  label: true
+  tags: [toxin, voice]
+  why: 七八颗夏威夷果
+- msg: 小维趁我看电视把茶几上一盘夏威夷果吃了大半
+  label: true
+  tags: [toxin, voice]
+  why: 大半盘夏威夷果
+- msg: luna ate a handful of macadamia nuts that spilled on the floor
+  label: true
+  tags: [toxin, en]
+  why: 一把夏威夷果
+- msg: 团子把奶奶囤的夏威夷果偷吃了小半袋
+  label: true
+  tags: [toxin, voice]
+  why: 小半袋夏威夷果
+- msg: 我家狗刚偷吃了办公室带回来的夏威夷果 差不多十颗
+  label: true
+  tags: [toxin, voice]
+  why: 十颗夏威夷果
+- msg: 咪咪叼着夏威夷果壳玩 结果连壳带肉吞了几颗
+  label: true
+  tags: [toxin, voice]
+  why: 连壳带肉吞下
+- msg: 麦兜把年货礼盒里夏威夷果全啃开吃了
+  label: true
+  tags: [toxin, voice]
+  why: 礼盒夏威夷果全啃
+- msg: whiskers found the macadamia nut jar and ate a bunch before i caught him
+  label: true
+  tags: [toxin, en]
+  why: 一把夏威夷果
+- msg: 豆豆把烘焙用的夏威夷果碎一整袋吃了
+  label: true
+  tags: [toxin, voice]
+  why: 一整袋果碎
+- msg: my husky snuck most of a jar of macadamia nuts a guest brought over
+  label: true
+  tags: [toxin, en]
+  why: 大半罐夏威夷果
+- msg: 小球把混合坚果里的夏威夷果挑着吃了七八颗
+  label: true
+  tags: [toxin, voice]
+  why: 挑吃七八颗
+- msg: 花卷把过节囤的夏威夷果啃了小半斤
+  label: true
+  tags: [toxin, voice]
+  why: 小半斤夏威夷果
+- msg: mochi ate like a dozen macadamia nuts off the coffee table
+  label: true
+  tags: [toxin, en]
+  why: 十几颗夏威夷果
+- msg: 我家狗把夏威夷果巧克力威化整盒吃了
+  label: true
+  tags: [toxin, voice]
+  why: 双重毒物零食
+- msg: 豆豆就叼了一颗夏威夷果壳玩 没吃到果肉
+  label: false
+  tags: [toxin, gray, keyword_trap, voice]
+  why: 未真正吃到
+- msg: 为什么夏威夷果对狗那么毒 别的坚果都没事就它不行吗
+  label: false
+  tags: [toxin, question, hypothetical, keyword_trap]
+  why: 科普提问
+- msg: is it true even one macadamia nut can hurt a small dog
+  label: false
+  tags: [toxin, question, hypothetical, keyword_trap, en]
+  why: 假设提问
+- msg: 上次过年他偷吃过一颗夏威夷果 后来观察了一下没事
+  label: false
+  tags: [toxin, past, keyword_trap]
+  why: 过去的事已没事
+- msg: 朋友家狗吃了夏威夷果现在在医院验血呢 她挺慌的
+  label: false
+  tags: [toxin, gray, edge, other_owner]
+  why: 已就医等结果
+- msg: 花花啃了一颗核桃壳 不是夏威夷果
+  label: false
+  tags: [toxin, gray, keyword_trap]
+  why: 吃的是安全食物
+- msg: 咪咪把花瓶里百合花瓣叼下来嚼了好几片
+  label: true
+  tags: [toxin, voice]
+  why: 嚼了几片百合花瓣
+- msg: 我家猫刚才啃了百合花的花蕊 黄色花粉沾了一嘴
+  label: true
+  tags: [toxin, voice]
+  why: 啃百合花蕊沾花粉
+- msg: 团子把客厅百合插花整枝叼倒了 叶子嚼了好几片
+  label: true
+  tags: [toxin, voice]
+  why: 嚼百合叶子
+- msg: 米米舔了百合花办上的水珠 还咬了一口花办
+  label: true
+  tags: [toxin, voice, typo]
+  why: 咬了一口花瓣
+- msg: 那个 我家猫 把生日花束里的百合啃掉了小半朵
+  label: true
+  tags: [toxin, voice]
+  why: 啃掉小半朵百合
+- msg: luna the cat chewed on a lily petal from the bouquet on the table
+  label: true
+  tags: [toxin, en]
+  why: 啃咬百合花瓣
+- msg: 球球把百合花叶子啃了好几片 花粉也蹭得到处都是
+  label: true
+  tags: [toxin, voice]
+  why: 啃百合叶子
+- msg: 旺财把百合花茎咬断嚼了一截 我家猫叫毛毛
+  label: true
+  tags: [toxin, voice]
+  why: 咬断百合花茎
+- msg: 小咪趁我不注意把整支百合花头咬掉了叼着玩
+  label: true
+  tags: [toxin, voice]
+  why: 咬掉整支花头
+- msg: whiskers knocked over the lily vase and was chewing on the stems
+  label: true
+  tags: [toxin, en]
+  why: 啃咬百合花茎
+- msg: 团子把插花剩水里泡着的百合花瓣捞出来吃了
+  label: true
+  tags: [toxin, voice]
+  why: 捞出花瓣吃掉
+- msg: 我家猫刚把新买的百合花蕊蹭得满脸花粉 还舔了嘴
+  label: true
+  tags: [toxin, voice]
+  why: 舔食百合花粉
+- msg: 咪咪叼着百合花在沙发上啃 叶子掉了一地都吃了点
+  label: true
+  tags: [toxin, voice]
+  why: 啃百合叶子
+- msg: 麦兜把花店送的百合花束啃了好几片叶子
+  label: true
+  tags: [toxin, voice]
+  why: 啃百合花束叶子
+- msg: mochi the cat was chewing on lily leaves i just noticed
+  label: true
+  tags: [toxin, en]
+  why: 啃咬百合叶子
+- msg: 小维猫把妈妈送的百合插花整个撞倒 花瓣嚼了不少
+  label: true
+  tags: [toxin, voice]
+  why: 撞倒插花嚼花瓣
+- msg: my cat's whole mouth is covered in yellow pollen from licking the lily
+  label: true
+  tags: [toxin, en]
+  why: 舔食百合花粉
+- msg: 花花猫叼着百合花瓣满屋子跑 咬掉了好几口
+  label: true
+  tags: [toxin, voice]
+  why: 咬掉好几口花瓣
+- msg: mimi got into the lily arrangement and ate part of a petal
+  label: true
+  tags: [toxin, en]
+  why: 吃掉部分花瓣
+- msg: 我家猫把办公室同事送的百合花啃秃了一小截
+  label: true
+  tags: [toxin, voice]
+  why: 啃秃百合花
+- msg: 团子猫刚才把百合叶子嚼碎吐了一半吃了一半
+  label: true
+  tags: [toxin, voice]
+  why: 嚼碎吃下百合叶
+- msg: 咪咪就闻了闻百合花 没有咬也没有吃
+  label: false
+  tags: [toxin, gray, keyword_trap, voice]
+  why: 未真正吃到
+- msg: 猫为什么碰百合就会肾衰竭啊 花粉沾一点点也不行吗
+  label: false
+  tags: [toxin, question, hypothetical, keyword_trap]
+  why: 科普提问
+- msg: is it true cats can die from just lily pollen on their fur
+  label: false
+  tags: [toxin, question, hypothetical, keyword_trap, en]
+  why: 假设提问
+- msg: 上次她碰过百合花瓣 后来我们观察了几天没事
+  label: false
+  tags: [toxin, past, keyword_trap]
+  why: 过去的事已没事
+- msg: 朋友家猫舔了百合花粉 现在在医院打点滴等结果
+  label: false
+  tags: [toxin, gray, edge, other_owner]
+  why: 已就医等结果
+- msg: 团子啃了一片绿萝叶子 旁边有百合但没碰
+  label: false
+  tags: [toxin, gray, keyword_trap]
+  why: 未碰到百合
+- msg: 豆豆把绿萝叶子咬下来嚼了好几片吞了
+  label: true
+  tags: [toxin, voice]
+  why: 嚼咽绿萝叶子
+- msg: 我家猫把滴水观音的叶子啃了一大口 嘴巴现在一直流口水
+  label: true
+  tags: [toxin, voice]
+  why: 啃滴水观音流涎
+- msg: 维尼偷啃了绿萝藤蔓 叶子掉了一地嚼碎了几片
+  label: true
+  tags: [toxin, voice]
+  why: 啃咬绿萝藤蔓
+- msg: 花花把滴水观音叶柄咬断了 汁水沾了满嘴
+  label: true
+  tags: [toxin, voice]
+  why: 咬断叶柄沾汁
+- msg: 那个 我家猫 把绿萝叶子整片吞了下去
+  label: true
+  tags: [toxin, voice]
+  why: 整片吞下绿萝叶
+- msg: max chewed up a whole pothos leaf and swallowed part of it
+  label: true
+  tags: [toxin, en]
+  why: 嚼吞绿萝叶
+- msg: 球球把客厅那盆绿萝啃得只剩秃杆 吃了不少叶子
+  label: true
+  tags: [toxin, voice]
+  why: 啃秃一整盆绿萝
+- msg: 旺财刚把滴水观音新长的叶芽咬掉吃了
+  label: true
+  tags: [toxin, voice]
+  why: 咬掉新叶芽
+- msg: 小维趁我上班把窗台绿萝夜子叼下来嚼了七八片
+  label: true
+  tags: [toxin, voice, typo]
+  why: 嚼了七八片叶子
+- msg: luna bit into a dieffenbachia leaf and now her mouth is drooling like crazy
+  label: true
+  tags: [toxin, en]
+  why: 咬滴水观音流涎
+- msg: 团子猫把绿萝气根都啃断了 叶子也吃了几口
+  label: true
+  tags: [toxin, voice]
+  why: 啃断气根吃叶子
+- msg: 我家狗刚啃了滴水观音的茎 汁液流得到处都是他还舔了
+  label: true
+  tags: [toxin, voice]
+  why: 啃茎舔汁液
+- msg: 咪咪叼着绿萝叶子玩着玩着就吃了下去
+  label: true
+  tags: [toxin, voice]
+  why: 玩着吃下叶子
+- msg: 麦兜把办公室那盆绿萝啃秃了一半 叶子全嚼碎了
+  label: true
+  tags: [toxin, voice]
+  why: 啃秃半盆绿萝
+- msg: whiskers chewed on the dumb cane plant and is drooling excessively now
+  label: true
+  tags: [toxin, en]
+  why: 啃滴水观音流涎
+- msg: 豆豆把新买的滴水观音整盆扒拉倒了 啃了好几片叶子
+  label: true
+  tags: [toxin, voice]
+  why: 扒倒整盆啃叶子
+- msg: my cat bit off several pieces of pothos leaf tip and swallowed them
+  label: true
+  tags: [toxin, en]
+  why: 咬断绿萝叶尖
+- msg: 小球把滴水观音叶柄啃出汁来了 嘴巴一直流口水
+  label: true
+  tags: [toxin, voice]
+  why: 啃出汁液流涎
+- msg: 花卷把绿萝新叶啃了个精光 咽下去不少
+  label: true
+  tags: [toxin, voice]
+  why: 啃光新叶咽下
+- msg: mochi bit a piece off the pothos plant and swallowed it before i could stop him
+  label: true
+  tags: [toxin, en]
+  why: 咬吞绿萝碎片
+- msg: 我家猫把邻居送的滴水观音啃了好几口叶子
+  label: true
+  tags: [toxin, voice]
+  why: 啃食滴水观音
+- msg: 豆豆就闻了闻绿萝叶子 蹭了一下没咬
+  label: false
+  tags: [toxin, gray, keyword_trap, voice]
+  why: 未真正吃到
+- msg: 绿萝对猫真的那么毒吗 就是含皮肤刺激性那种草酸钙对吧
+  label: false
+  tags: [toxin, question, hypothetical, keyword_trap]
+  why: 科普提问
+- msg: is pothos actually toxic enough to kill a cat or just mildly irritating
+  label: false
+  tags: [toxin, question, hypothetical, keyword_trap, en]
+  why: 假设提问
+- msg: 上次他啃过一点绿萝叶尖 后来嘴巴没事就是随口一说
+  label: false
+  tags: [toxin, past, keyword_trap]
+  why: 过去的事已没事
+- msg: 朋友家猫啃了滴水观音 现在在医院冲洗口腔在等观察结果
+  label: false
+  tags: [toxin, gray, edge, other_owner]
+  why: 已就医等结果
+- msg: 团子闻了闻花盆土 没碰叶子
+  label: false
+  tags: [toxin, gray, keyword_trap]
+  why: 未真正吃到
+- msg: 豆豆把打翻的啤酒舔了一大摊
+  label: true
+  tags: [toxin, voice]
+  why: 舔一大摊啤酒
+- msg: 我家狗把桌上没喝完的一整杯白酒舔光了
+  label: true
+  tags: [toxin, voice]
+  why: 舔光一整杯白酒
+- msg: 维尼偷喝了半杯红酒 是打翻在地上他自己舔的
+  label: true
+  tags: [toxin, voice]
+  why: 舔了半杯红酒
+- msg: 花花把调酒剩的鸡尾酒杯舔了个底朝天
+  label: true
+  tags: [toxin, voice]
+  why: 舔光鸡尾酒
+- msg: 那个 我家猫...狗 把伏特加酒瓶打翻了自己舔了不少
+  label: true
+  tags: [toxin, voice]
+  why: 舔了不少伏特加
+- msg: max got into a spilled glass of whiskey and licked up a bunch of it
+  label: true
+  tags: [toxin, en]
+  why: 舔了洒出的威士忌
+- msg: 球球把聚会剩的果酒一整杯偷喝了
+  label: true
+  tags: [toxin, voice]
+  why: 偷喝一整杯果酒
+- msg: 旺财刚把我们烧烤用的高度白酒碗舔了好几口
+  label: true
+  tags: [toxin, voice]
+  why: 舔高度白酒
+- msg: 小维趁我们聊天把桌角那杯轻酒喝了小半杯
+  label: true
+  tags: [toxin, voice, typo]
+  why: 喝了小半杯清酒
+- msg: luna licked up a good amount of spilled wine off the kitchen floor
+  label: true
+  tags: [toxin, en]
+  why: 舔食洒出的红酒
+- msg: 团子把过年泡药酒的碗舔了不少 那个度数挺高的
+  label: true
+  tags: [toxin, voice]
+  why: 舔食高度药酒
+- msg: 我家狗刚把朋友喝剩的啤酒一整罐舔干净了
+  label: true
+  tags: [toxin, voice]
+  why: 舔光一整罐啤酒
+- msg: 咪咪打翻了我的鸡尾酒杯 舔了地上一大摊
+  label: true
+  tags: [toxin, voice]
+  why: 舔一大摊鸡尾酒
+- msg: 麦兜把烧烤桌上没收走的白酒杯都舔了个遍
+  label: true
+  tags: [toxin, voice]
+  why: 舔遍多杯白酒
+- msg: whiskers knocked over a shot glass and licked up most of the tequila
+  label: true
+  tags: [toxin, en]
+  why: 舔光龙舌兰
+- msg: 豆豆把生日聚会打翻的香槟舔了好一会儿
+  label: true
+  tags: [toxin, voice]
+  why: 舔食洒出香槟
+- msg: my husky grabbed a half bottle of beer off the table and drank a good amount
+  label: true
+  tags: [toxin, en]
+  why: 喝了半瓶啤酒
+- msg: 小球把年夜饭桌上的黄酒碗舔干净了
+  label: true
+  tags: [toxin, voice]
+  why: 舔干净黄酒碗
+- msg: 花卷把调好的鸡尾酒偷喝了小半杯
+  label: true
+  tags: [toxin, voice]
+  why: 偷喝小半杯鸡尾酒
+- msg: mochi lapped up spilled sangria off the floor before we noticed
+  label: true
+  tags: [toxin, en]
+  why: 舔食洒出桑格利亚
+- msg: 我家狗把泡了果酒的果肉连酒带果一起吃了不少
+  label: true
+  tags: [toxin, voice]
+  why: 连酒带果一起吃
+- msg: 豆豆就凑近闻了闻酒杯 没有真的舔到
+  label: false
+  tags: [toxin, gray, keyword_trap, voice]
+  why: 未真正舔到
+- msg: 狗喝一点酒真的会有生命危险吗 一直没搞懂剂量
+  label: false
+  tags: [toxin, question, hypothetical, keyword_trap]
+  why: 科普提问
+- msg: how much alcohol does it actually take to hurt a small dog
+  label: false
+  tags: [toxin, question, hypothetical, keyword_trap, en]
+  why: 假设提问
+- msg: 上次聚会他偷舔过一点啤酒沫 后来也没事
+  label: false
+  tags: [toxin, past, keyword_trap]
+  why: 过去的事已没事
+- msg: 朋友说她狗打翻了半杯酒都喝了 现在去医院观察在等结果
+  label: false
+  tags: [toxin, gray, edge, other_owner]
+  why: 已就医等结果
+- msg: 花花闻了闻空酒瓶 里面已经没酒了
+  label: false
+  tags: [toxin, gray, keyword_trap]
+  why: 未真正喝到
+- msg: 豆豆把没喝完一整杯浓缩咖啡舔光了
+  label: true
+  tags: [toxin, voice]
+  why: 舔光浓缩咖啡
+- msg: 我家狗把咖啡渣桶打翻自己吃了不少湿咖啡渣
+  label: true
+  tags: [toxin, voice]
+  why: 吃了不少湿咖啡渣
+- msg: 维尼偷吃了咖啡豆一大把 是没磨的那种整颗豆子
+  label: true
+  tags: [toxin, voice]
+  why: 一大把生咖啡豆
+- msg: 花花把我早上冲的一整杯美式喝了大半杯
+  label: true
+  tags: [toxin, voice]
+  why: 大半杯美式咖啡
+- msg: 那个 我家猫...狗 把咖啡粉罐打翻自己舔了好多粉末
+  label: true
+  tags: [toxin, voice]
+  why: 舔食咖啡粉末
+- msg: max got into the coffee grounds bin and ate a bunch of used grounds
+  label: true
+  tags: [toxin, en]
+  why: 吃了咖啡渣
+- msg: 球球把桌上一整杯拿铁偷喝了小半杯
+  label: true
+  tags: [toxin, voice]
+  why: 偷喝小半杯拿铁
+- msg: 旺财刚把咖啡豆罐打翻自己啃了十几颗生豆
+  label: true
+  tags: [toxin, voice]
+  why: 啃了十几颗生豆
+- msg: 小维趁我上班把马克杯里剩的咖啡舔干净了
+  label: true
+  tags: [toxin, voice]
+  why: 舔干净剩咖啡
+- msg: luna knocked over a bag of coffee beans and ate a handful of them
+  label: true
+  tags: [toxin, en]
+  why: 一把咖啡豆
+- msg: 团子把咖啡渣当猫砂玩结果吃了不少进去
+  label: true
+  tags: [toxin, voice]
+  why: 吃了不少咖啡渣
+- msg: 我家狗刚偷喝了外卖咖啡整杯 那种大杯的美式
+  label: true
+  tags: [toxin, voice]
+  why: 一整杯外卖咖啡
+- msg: 咪咪把速溶咖啡粉打翻舔了满嘴的粉
+  label: true
+  tags: [toxin, voice, typo]
+  why: 舔满嘴咖啡粉
+- msg: 麦兜把咖啡机接的一整杯浓缩咖啡舔光了
+  label: true
+  tags: [toxin, voice]
+  why: 舔光浓缩咖啡
+- msg: whiskers ate a bunch of coffee grounds that spilled on the counter
+  label: true
+  tags: [toxin, en]
+  why: 吃了洒出的咖啡渣
+- msg: 豆豆把办公室带回来的咖啡渣袋子啃破偷吃了不少
+  label: true
+  tags: [toxin, voice]
+  why: 啃破袋子吃咖啡渣
+- msg: my husky knocked over the cold brew pitcher and drank a bunch of it
+  label: true
+  tags: [toxin, en]
+  why: 打翻冷萃喝了不少
+- msg: 小球把咖啡豆当零食一样啃了一大把
+  label: true
+  tags: [toxin, voice]
+  why: 啃了一大把咖啡豆
+- msg: 花卷把桌上手冲咖啡剩的一整杯喝了个精光
+  label: true
+  tags: [toxin, voice]
+  why: 喝光手冲咖啡
+- msg: mochi got into the coffee bag and ate a handful of whole beans
+  label: true
+  tags: [toxin, en]
+  why: 一把整颗咖啡豆
+- msg: 我家狗把咖啡渣堆肥桶扒拉开吃了不少湿渣
+  label: true
+  tags: [toxin, voice]
+  why: 扒堆肥桶吃咖啡渣
+- msg: 豆豆就闻了闻咖啡杯 舔了下杯沿没喝到
+  label: false
+  tags: [toxin, gray, keyword_trap, voice]
+  why: 未真正喝到
+- msg: 狗喝咖啡为什么会心跳过快啊 咖啡因中毒机制是啥
+  label: false
+  tags: [toxin, question, hypothetical, keyword_trap]
+  why: 科普提问
+- msg: how much coffee would actually be dangerous for a dog to drink
+  label: false
+  tags: [toxin, question, hypothetical, keyword_trap, en]
+  why: 假设提问
+- msg: 上次他偷舔过一点咖啡渍 后来也没什么反应
+  label: false
+  tags: [toxin, past, keyword_trap]
+  why: 过去的事已没事
+- msg: 朋友家猫打翻咖啡舔了不少 现在去医院验心率在等结果
+  label: false
+  tags: [toxin, gray, edge, other_owner]
+  why: 已就医等结果
+- msg: 花花闻了闻空咖啡杯 杯子早就干了没有残留
+  label: false
+  tags: [toxin, gray, keyword_trap]
+  why: 未真正喝到
+- msg: 豆豆把发酵中的一整团生面团偷吃了
+  label: true
+  tags: [toxin, voice]
+  why: 一整团生面团
+- msg: 我家狗把揉好的饺子皮面团整块叼走吃了
+  label: true
+  tags: [toxin, voice]
+  why: 整块饺子皮面团
+- msg: 维尼偷吃了正在发酵的面包生面团 大概一个拳头大
+  label: true
+  tags: [toxin, voice]
+  why: 拳头大生面团
+- msg: 花花把烙饼用的生面剂子一整个吞了
+  label: true
+  tags: [toxin, voice]
+  why: 吞了整个生面剂子
+- msg: 那个 我家猫...狗 把揉面盆里剩的生面团舔着吃了不少
+  label: true
+  tags: [toxin, voice]
+  why: 舔吃不少生面团
+- msg: max got into the bread dough i left rising on the counter and ate a chunk
+  label: true
+  tags: [toxin, en]
+  why: 吃了一块发酵面团
+- msg: 球球把包子生面皮偷吃了好几个
+  label: true
+  tags: [toxin, voice]
+  why: 偷吃好几个生面皮
+- msg: 旺财刚把我做披萨的生面团整块叼下来吃了
+  label: true
+  tags: [toxin, voice]
+  why: 整块披萨生面团
+- msg: 小维趁我接电话把发面盆里的生面团挖了一大驼吃了
+  label: true
+  tags: [toxin, voice, typo]
+  why: 挖了一大坨吃了
+- msg: luna ate a good chunk of pizza dough that was rising on the counter
+  label: true
+  tags: [toxin, en]
+  why: 一大块披萨生面团
+- msg: 团子把包饺子剩的生面团揉成球玩着玩着吃了
+  label: true
+  tags: [toxin, voice]
+  why: 玩着吃了生面团
+- msg: 我家狗刚偷吃了刚发好的馒头生面团 一整个那么大
+  label: true
+  tags: [toxin, voice]
+  why: 一整个馒头生面团
+- msg: 咪咪叼着一小块生面团玩后来吃了下去
+  label: true
+  tags: [toxin, voice]
+  why: 玩后吃下生面团
+- msg: 麦兜把做面包机里正在发酵的生面团挖了一坨吃了
+  label: true
+  tags: [toxin, voice]
+  why: 挖一坨生面团吃了
+- msg: whiskers snuck a piece of raw dough off the counter while i wasn't looking
+  label: true
+  tags: [toxin, en]
+  why: 偷吃一块生面团
+- msg: 豆豆把揉好准备发酵的整块生面团整个偷叼走吃了
+  label: true
+  tags: [toxin, voice]
+  why: 整块生面团被吃
+- msg: my husky snuck several pieces of raw dough leftover from making buns
+  label: true
+  tags: [toxin, en]
+  why: 好几块生面团
+- msg: 小球把发面缸里正在膨胀的面团挖了一大块吃了
+  label: true
+  tags: [toxin, voice]
+  why: 挖一大块面团吃了
+- msg: 花卷把奶奶擀饺子皮剩的生面团吃了不少
+  label: true
+  tags: [toxin, voice]
+  why: 吃了不少生面团
+- msg: mochi ate a chunk of raw pizza dough that was proofing on the stove
+  label: true
+  tags: [toxin, en]
+  why: 一块生披萨面团
+- msg: 我家狗把烤面包用的生面团整个揪下来吃了一大半
+  label: true
+  tags: [toxin, voice]
+  why: 揪下大半生面团
+- msg: 豆豆就舔了舔案板上沾的一点面粉 没吃到生面团
+  label: false
+  tags: [toxin, gray, keyword_trap, voice]
+  why: 未真正吃到
+- msg: 狗吃了生面团为什么会胃胀气啊 是酵母发酵的原理吗
+  label: false
+  tags: [toxin, question, hypothetical, keyword_trap]
+  why: 科普提问
+- msg: why exactly does raw dough expand in a dog's stomach
+  label: false
+  tags: [toxin, question, hypothetical, keyword_trap, en]
+  why: 假设科普提问
+- msg: 上次他偷吃过一小块生面团边角料 后来也没事
+  label: false
+  tags: [toxin, past, keyword_trap]
+  why: 过去的事已没事
+- msg: 朋友家狗吃了发酵的生面团 现在去医院照胃片等结果
+  label: false
+  tags: [toxin, gray, edge, other_owner]
+  why: 已就医等结果
+- msg: 花花啃了一口烤熟的面包 不是生面团
+  label: false
+  tags: [toxin, gray, keyword_trap]
+  why: 吃的是安全食物
+- msg: 豆豆把垃圾桶里发霉的面包翻出来吃了一大块
+  label: true
+  tags: [toxin, voice]
+  why: 一大块发霉面包
+- msg: 我家狗把放坏长毛的剩饭偷吃了不少
+  label: true
+  tags: [toxin, voice]
+  why: 长毛剩饭吃了不少
+- msg: 维尼偷吃了冰箱角落发霉的奶酪一整块
+  label: true
+  tags: [toxin, voice]
+  why: 一整块发霉奶酪
+- msg: 花花把院子里放了好几天发霉的骨头啃了吃了
+  label: true
+  tags: [toxin, voice]
+  why: 啃食发霉骨头
+- msg: 那个 我家猫...狗 把垃圾袋翻开吃了发霉的水果
+  label: true
+  tags: [toxin, voice]
+  why: 吃了发霉水果
+- msg: max got into the trash and ate some moldy bread before i caught him
+  label: true
+  tags: [toxin, en]
+  why: 吃了发霉面包
+- msg: 球球把储藏室发霉的坚果偷吃了一把
+  label: true
+  tags: [toxin, voice]
+  why: 一把发霉坚果
+- msg: 旺财刚把厨房角落放坏发绿毛的馒头吃了半个
+  label: true
+  tags: [toxin, voice]
+  why: 半个发绿毛馒头
+- msg: 小维趁我不注意把垃圾桶翻了吃了发霉的胜菜
+  label: true
+  tags: [toxin, voice, typo]
+  why: 吃了发霉剩菜
+- msg: luna ate some moldy cheese she found in the back of the fridge
+  label: true
+  tags: [toxin, en]
+  why: 发霉奶酪
+- msg: 团子把院子里堆肥桶扒拉开吃了发霉的果皮
+  label: true
+  tags: [toxin, voice]
+  why: 吃了发霉果皮
+- msg: 我家狗刚偷吃了放了一周长毛的米饭一大碗
+  label: true
+  tags: [toxin, voice]
+  why: 一大碗长毛米饭
+- msg: 咪咪叼着发霉的鱼干啃了几口
+  label: true
+  tags: [toxin, voice]
+  why: 啃食发霉鱼干
+- msg: 麦兜把垃圾桶打翻吃了里面发臭发霉的食物残渣
+  label: true
+  tags: [toxin, voice]
+  why: 吃发臭发霉残渣
+- msg: whiskers dug through the compost bin and ate some moldy food scraps
+  label: true
+  tags: [toxin, en]
+  why: 吃发霉食物残渣
+- msg: 豆豆把车库里放坏的坚果罐子偷吃了不少 都长毛了
+  label: true
+  tags: [toxin, en]
+  why: 一把发霉坚果
+- msg: 那个我家二哈把外面垃圾桶掏出来的发霉汉堡吃了大半个
+  label: true
+  tags: [toxin, voice]
+  why: 大半个发霉汉堡
+- msg: 小球把冰箱清理出来扔掉的发霉水果偷吃了几块
+  label: true
+  tags: [toxin, voice]
+  why: 几块发霉水果
+- msg: 花卷把院子里放坏的狗粮长毛了还继续吃了一大把
+  label: true
+  tags: [toxin, voice]
+  why: 一大把发霉狗粮
+- msg: mochi got into the garbage and ate a chunk of moldy pizza crust
+  label: true
+  tags: [toxin, en]
+  why: 一块发霉披萨边
+- msg: 豆豆就闻了闻垃圾桶 被我及时拦住没吃到发霉的东西
+  label: false
+  tags: [toxin, gray, keyword_trap, voice]
+  why: 未真正吃到
+- msg: 食物发霉了对狗到底有多危险啊 是霉菌毒素的问题吗
+  label: false
+  tags: [toxin, question, hypothetical, keyword_trap]
+  why: 科普提问
+- msg: is moldy bread actually that dangerous if a dog eats just a crumb
+  label: false
+  tags: [toxin, question, hypothetical, keyword_trap, en]
+  why: 假设提问
+- msg: 上次他偷吃过一点点发霉的饼干边 后来也没事
+  label: false
+  tags: [toxin, past, keyword_trap]
+  why: 过去的事已没事
+- msg: 朋友家狗吃了发霉的剩饭 现在去医院洗胃在等结果
+  label: false
+  tags: [toxin, gray, edge, other_owner]
+  why: 已就医等结果
+- msg: 豆豆吃鸡骨头卡在喉咙里了 一直用爪子挠嘴巴
+  label: true
+  tags: [toxin, voice]
+  why: 鸡骨头卡喉咙
+- msg: 我家狗啃鸡腿骨头卡住了 现在一直干呕出不来
+  label: true
+  tags: [toxin, voice]
+  why: 骨头卡住干呕
+- msg: 维尼吃烤鸡骨头 好像卡在喉咙那一直伸脖子咳
+  label: true
+  tags: [toxin, voice]
+  why: 卡喉咙伸脖子咳
+- msg: 花花啃了根鸡翅骨头 现在一直用前爪抓嘴巴很难受
+  label: true
+  tags: [toxin, voice]
+  why: 抓嘴巴很难受
+- msg: 那个 我家狗 吃鸡骨头卡住了 嘴巴一直流口水张不上
+  label: true
+  tags: [toxin, voice]
+  why: 卡住嘴张不上
+- msg: max is choking on a chicken bone he swallowed and can't stop pawing at his mouth
+  label: true
+  tags: [toxin, en]
+  why: 骨头卡喉抓嘴
+- msg: 球球啃了鸡架骨头卡在嗓子里 一直干呕吐不出来
+  label: true
+  tags: [toxin, voice]
+  why: 卡嗓子干呕
+- msg: 旺财刚吃鸡腿骨头 现在卡住了脖子一直伸着咳嗽
+  label: true
+  tags: [toxin, voice]
+  why: 卡住伸脖咳嗽
+- msg: 小维吃烤鸡翅骨头卡住了 猴笼里一直发出怪声
+  label: true
+  tags: [toxin, voice, typo]
+  why: 喉咙发出怪声
+- msg: luna is pawing frantically at her mouth after swallowing a chicken bone
+  label: true
+  tags: [toxin, en]
+  why: 咽下骨头抓嘴
+- msg: 团子啃鸡骨头卡住了 一直用前爪挠喉咙的位置
+  label: true
+  tags: [toxin, voice]
+  why: 挠喉咙位置
+- msg: 我家狗刚吃鸡骨头卡在食道那了 一直呕却吐不出来
+  label: true
+  tags: [toxin, voice]
+  why: 卡食道呕不出
+- msg: 咪咪吃鸡骨头卡喉咙了 一直干咳
+  label: true
+  tags: [toxin, voice]
+  why: 卡喉咙一直干咳
+- msg: 麦兜啃鸡腿骨头卡住喉咙了 现在趴着一直咽口水很痛苦的样子
+  label: true
+  tags: [toxin, voice]
+  why: 卡喉咽口水痛苦
+- msg: whiskers got a chicken bone stuck in his throat and is gagging nonstop
+  label: true
+  tags: [toxin, en]
+  why: 骨头卡喉不停干呕
+- msg: 豆豆吃鸡骨头卡住了 嘴巴张着合不上一直流口水
+  label: true
+  tags: [toxin, voice]
+  why: 嘴张合不上流口水
+- msg: my husky choked on a chicken carcass bone stuck in his throat, keeps pawing his face
+  label: true
+  tags: [toxin, en]
+  why: 骨头卡喉抓脸
+- msg: 小球吃鸡翅骨头卡住了 一直干呕脖子伸得老长
+  label: true
+  tags: [toxin, voice]
+  why: 干呕脖子伸长
+- msg: 花卷啃鸡腿骨头卡喉咙了 现在坐立不安一直咳
+  label: true
+  tags: [toxin, voice]
+  why: 卡喉咙坐立不安
+- msg: mochi swallowed a chicken bone wrong and is choking, pawing at his face
+  label: true
+  tags: [toxin, en]
+  why: 骨头卡喉抓脸
+- msg: 豆豆啃鸡骨头 啃完好好的没卡住
+  label: false
+  tags: [toxin, gray, keyword_trap, voice]
+  why: 没有卡住
+- msg: 狗吃鸡骨头为什么容易卡住或者划伤食道啊
+  label: false
+  tags: [toxin, question, hypothetical, keyword_trap]
+  why: 科普提问
+- msg: is it true cooked chicken bones splinter more easily than raw ones
+  label: false
+  tags: [toxin, question, hypothetical, keyword_trap, en]
+  why: 假设提问
+- msg: 上次他啃鸡骨头卡过一次 后来自己吐出来了没事
+  label: false
+  tags: [toxin, past, keyword_trap]
+  why: 过去的事已没事
+- msg: 朋友家狗啃骨头卡喉咙了 已经去医院取出来了在观察
+  label: false
+  tags: [toxin, gray, edge, other_owner]
+  why: 已就医等结果

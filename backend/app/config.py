@@ -9,6 +9,12 @@ class Settings(BaseSettings):
     # Emergency model — only used when emergency keywords are detected (e.g. seizure, poisoning).
     # Typically a more capable/accurate model for safety-critical responses.
     emergency_model: str = "openai/gpt-5"
+    # Emergency classifier sidecar (llama-server serving nano/models/<run>/clf-q8.gguf).
+    # Empty URL = classifier disabled, keyword regex decides alone. Routing behaviour is
+    # controlled at runtime by the `emergency_clf_mode` flag: off | shadow | union | clf.
+    emergency_clf_url: str = ""            # e.g. http://127.0.0.1:8081
+    emergency_clf_timeout_ms: int = 300    # past this we fall back to keywords
+    emergency_clf_threshold: float = 0.5   # P(true) >= threshold → emergency
     # Vision model — used for rounds where images are injected into the message list
     # (after request_images). Must support multimodal input. Falls back to `model` if unset.
     vision_model: str = ""
