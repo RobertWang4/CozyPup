@@ -9,6 +9,11 @@ class Settings(BaseSettings):
     # Emergency model — only used when emergency keywords are detected (e.g. seizure, poisoning).
     # Typically a more capable/accurate model for safety-critical responses.
     emergency_model: str = "openai/gpt-5"
+    # Optional separate API base/key for the emergency model (e.g. chat on DeepSeek
+    # official, emergency GPT only reachable through a proxy). Falls back to
+    # model_api_base / model_api_key.
+    emergency_model_api_base: str = ""
+    emergency_model_api_key: str = ""
     # Emergency classifier sidecar (llama-server serving nano/models/<run>/clf-q8.gguf).
     # Empty URL = classifier disabled, keyword regex decides alone. Routing behaviour is
     # controlled at runtime by the `emergency_clf_mode` flag: off | shadow | union | clf.

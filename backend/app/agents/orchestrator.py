@@ -516,7 +516,7 @@ async def _capture_non_streaming(
                 temperature=0.3,
                 stream=False,
                 drop_params=True,
-                **llm_extra_kwargs(vision=is_vision),
+                **llm_extra_kwargs(vision=is_vision, model=model),
             ),
             timeout=60,
         )
@@ -569,7 +569,7 @@ async def _stream_completion(
                 stream=True,
                 stream_options={"include_usage": True},
                 drop_params=True,
-                **llm_extra_kwargs(vision=is_vision),
+                **llm_extra_kwargs(vision=is_vision, model=model),
             )
 
             async for chunk in response:

@@ -23,7 +23,7 @@ __all__ = [
 ]
 
 
-def llm_extra_kwargs(vision: bool = False) -> dict:
+def llm_extra_kwargs(vision: bool = False, model: str | None = None) -> dict:
     """Return api_base and api_key kwargs for every litellm call.
 
     Centralised so we can point at the LiteLLM proxy (DeepSeek/Grok/Kimi) via
@@ -31,7 +31,9 @@ def llm_extra_kwargs(vision: bool = False) -> dict:
 
     When vision=True and vision_model_api_base/key are set, those override
     the main model_api_base/key (used to route Grok through a proxy while
-    chat stays on DeepSeek official API).
+    chat stays on DeepSeek official API). Likewise, when `model` is the
+    configured emergency model and emergency_model_api_base/key are set,
+    those are used (emergency GPT via proxy, chat on DeepSeek official).
     """
     from app.config import settings
     kw: dict = {}
@@ -42,6 +44,11 @@ def llm_extra_kwargs(vision: bool = False) -> dict:
             api_base = settings.vision_model_api_base
         if settings.vision_model_api_key:
             api_key = settings.vision_model_api_key
+    elif model and model == settings.emergency_model:
+        if settings.emergency_model_api_base:
+            api_base = settings.emergency_model_api_base
+        if settings.emergency_model_api_key:
+            api_key = settings.emergency_model_api_key
     if api_base:
         kw["api_base"] = api_base
     if api_key:
