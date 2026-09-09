@@ -280,7 +280,7 @@ gcloud run services describe backend --region=northamerica-northeast1 --project=
 
 **Public URL**: `https://backend-601329501885.northamerica-northeast1.run.app`
 
-> Note: Previously deployed in asia-east1 (Taiwan). Migrated to northamerica-northeast1 (Montreal) on 2026-03-28. Old asia-east1 service can be deleted.
+> Note: Previously deployed in asia-east1 (Taiwan). Migrated to northamerica-northeast1 (Montreal) on 2026-03-28; the old asia-east1 service was deleted on 2026-09-09.
 
 **Avatars**: GCS bucket `cozypup-avatars` (public read)
 
