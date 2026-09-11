@@ -1,0 +1,3 @@
+# Raw reference pages saved for the knowledge base (Merck Vet Manual etc.) — not project code.
+backend/knowledge/sources/** linguist-vendored
+docs/*.html linguist-documentation
