@@ -2,7 +2,8 @@ import logging
 from datetime import datetime, timedelta, timezone
 
 from appstoreserverlibrary.signed_data_verifier import VerificationException
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Body, Depends, HTTPException
+from fastapi.concurrency import run_in_threadpool
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -10,14 +11,14 @@ from app.auth import get_current_user_id
 from app.config import settings
 from app.database import get_db
 from app.middleware.subscription import billing_enabled
-from app.models import User, Chat, CalendarEvent, Reminder
+from app.models import AppleTransaction, User, Chat, CalendarEvent, Reminder
 from app.schemas.subscription import (
     SubscriptionStatusResponse,
     TrialStatsResponse,
     VerifyRequest,
     VerifyResponse,
 )
-from app.storekit import verify_signed_transaction
+from app.storekit import verify_notification, verify_signed_transaction
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1/subscription", tags=["subscription"])
@@ -120,9 +121,20 @@ async def verify_purchase(
 
     The client sends the raw JWS from StoreKit 2 VerificationResult. We verify
     the chain against Apple's root CAs and trust ONLY the decoded payload.
+    The accepted StoreKit environment is decided server-side; `req.sandbox` is
+    ignored (kept in the schema only so older clients don't 422).
     """
+    result = await db.execute(select(User).where(User.id == user_id))
+    user = result.scalar_one()
+
     try:
-        payload = verify_signed_transaction(req.signed_transaction, sandbox=req.sandbox)
+        # Verification does blocking work (cert chain + OCSP), so keep it off
+        # the event loop.
+        payload = await run_in_threadpool(
+            verify_signed_transaction,
+            req.signed_transaction,
+            is_tester=bool(user.is_admin),
+        )
     except VerificationException as exc:
         logger.warning("storekit_verify_failed", extra={
             "user_id": str(user_id),
@@ -140,14 +152,45 @@ async def verify_purchase(
     if payload.revocationDate is not None:
         raise HTTPException(status_code=400, detail="transaction_revoked")
 
+    # Replay protection: an originalTransactionId belongs to exactly one
+    # account, so a leaked/shared JWS can't activate a second one.
+    original_id = str(payload.originalTransactionId or payload.transactionId or "")
+    if not original_id:
+        raise HTTPException(status_code=400, detail="missing_transaction_id")
+
+    binding_q = await db.execute(
+        select(AppleTransaction).where(
+            AppleTransaction.original_transaction_id == original_id
+        )
+    )
+    binding = binding_q.scalar_one_or_none()
+    if binding is not None and binding.user_id != user_id:
+        logger.warning("storekit_transaction_replay", extra={
+            "user_id": str(user_id),
+            "bound_user_id": str(binding.user_id),
+            "original_transaction_id": original_id,
+        })
+        raise HTTPException(status_code=409, detail="transaction_already_bound")
+
     product_id = payload.productId
     expires_at = None
     if payload.expiresDate is not None:
         # expiresDate is ms since epoch per Apple spec
         expires_at = datetime.fromtimestamp(payload.expiresDate / 1000, tz=timezone.utc)
 
-    result = await db.execute(select(User).where(User.id == user_id))
-    user = result.scalar_one()
+    environment = payload.environment.value if payload.environment else ""
+    if binding is None:
+        db.add(AppleTransaction(
+            original_transaction_id=original_id,
+            user_id=user_id,
+            environment=environment,
+            product_id=product_id,
+            last_transaction_id=str(payload.transactionId or ""),
+        ))
+    else:
+        binding.environment = environment
+        binding.product_id = product_id
+        binding.last_transaction_id = str(payload.transactionId or "")
 
     user.subscription_status = "active"
     user.subscription_product_id = product_id
@@ -183,9 +226,110 @@ async def verify_purchase(
     )
 
 
+
+# ---------------------------------------------------------------------------
+# App Store Server Notifications V2
+# ---------------------------------------------------------------------------
+
+# Notification types that end access.
+_EXPIRING_TYPES = {"EXPIRED", "REFUND", "REVOKE"}
+# Notification types that (re)grant access.
+_ACTIVATING_TYPES = {"SUBSCRIBED", "DID_RENEW"}
+
+
 @router.post("/webhook")
 async def appstore_webhook(
+    body: dict = Body(...),
     db: AsyncSession = Depends(get_db),
 ):
-    """App Store Server Notifications V2 webhook placeholder."""
-    return {"status": "ok"}
+    """App Store Server Notifications V2.
+
+    Apple POSTs `{"signedPayload": "<JWS>"}`. We verify the JWS the same way
+    as a client transaction (server-decided environment, Apple root CAs), find
+    the owner via the originalTransactionId binding written by /verify, then
+    move `subscription_status` / `subscription_expires_at`.
+
+    Always 200 on a verified payload — Apple retries non-2xx, and an unknown
+    or unroutable notification is not something a retry can fix.
+    """
+    signed_payload = body.get("signedPayload")
+    if not isinstance(signed_payload, str) or not signed_payload:
+        raise HTTPException(status_code=400, detail="missing_signed_payload")
+
+    try:
+        notification = await run_in_threadpool(verify_notification, signed_payload)
+    except VerificationException as exc:
+        logger.warning("appstore_webhook_verify_failed", extra={"reason": str(exc)})
+        raise HTTPException(status_code=400, detail="invalid_signed_payload") from exc
+
+    kind = str(notification.rawNotificationType or "")
+    subtype = str(notification.rawSubtype or "")
+    data = notification.data
+    signed_tx = getattr(data, "signedTransactionInfo", None) if data else None
+    if not signed_tx:
+        logger.info("appstore_webhook_no_transaction", extra={"type": kind})
+        return {"status": "ignored", "type": kind}
+
+    try:
+        tx = await run_in_threadpool(verify_signed_transaction, signed_tx)
+    except VerificationException as exc:
+        logger.warning("appstore_webhook_tx_verify_failed", extra={
+            "type": kind,
+            "reason": str(exc),
+        })
+        raise HTTPException(status_code=400, detail="invalid_transaction_info") from exc
+
+    original_id = str(tx.originalTransactionId or tx.transactionId or "")
+    binding_q = await db.execute(
+        select(AppleTransaction).where(
+            AppleTransaction.original_transaction_id == original_id
+        )
+    )
+    binding = binding_q.scalar_one_or_none()
+    if binding is None:
+        # No account ever activated this subscription with us (e.g. a sandbox
+        # tester, or a purchase that never reached /verify). Nothing to do.
+        logger.info("appstore_webhook_unknown_transaction", extra={
+            "type": kind,
+            "original_transaction_id": original_id,
+        })
+        return {"status": "ignored", "type": kind}
+
+    user_q = await db.execute(select(User).where(User.id == binding.user_id))
+    user = user_q.scalar_one_or_none()
+    if user is None:
+        return {"status": "ignored", "type": kind}
+
+    expires_at = None
+    if tx.expiresDate is not None:
+        expires_at = datetime.fromtimestamp(tx.expiresDate / 1000, tz=timezone.utc)
+
+    applied = "ignored"
+    if kind in _ACTIVATING_TYPES:
+        user.subscription_status = "active"
+        user.subscription_product_id = tx.productId
+        user.subscription_expires_at = expires_at
+        applied = "active"
+    elif kind in _EXPIRING_TYPES:
+        user.subscription_status = "expired"
+        user.subscription_expires_at = expires_at
+        applied = "expired"
+    elif kind == "DID_FAIL_TO_RENEW":
+        # In the billing-retry grace period the user still has access; Apple
+        # sends EXPIRED later if it never recovers.
+        if subtype != "GRACE_PERIOD":
+            user.subscription_status = "expired"
+            user.subscription_expires_at = expires_at
+            applied = "expired"
+
+    if applied != "ignored":
+        binding.last_transaction_id = str(tx.transactionId or "")
+        await db.commit()
+
+    logger.info("appstore_webhook_handled", extra={
+        "type": kind,
+        "subtype": subtype,
+        "user_id": str(user.id),
+        "applied": applied,
+    })
+    return {"status": applied, "type": kind}

@@ -21,8 +21,10 @@ class VerifyRequest(BaseModel):
     # Backend verifies the signature chain against Apple's root CAs; we do NOT
     # trust any transaction fields outside of this verified payload.
     signed_transaction: str
-    # Optional hint: client tells us whether it's a sandbox or production build.
-    # True = sandbox (DEBUG/TestFlight), False = production. Missing = use settings default.
+    # Deprecated and IGNORED. The accepted StoreKit environment is decided
+    # server-side (storekit.allowed_environments) — a client must not be able
+    # to talk a production server into accepting a Sandbox transaction.
+    # Still declared so shipped clients that send it don't get a 422.
     sandbox: bool | None = None
 
 

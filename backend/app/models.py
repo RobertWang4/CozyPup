@@ -404,3 +404,30 @@ class TokenRevocation(Base):
     user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)
     revoked_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False, index=True)
     reason: Mapped[str | None] = mapped_column(String(256))
+
+
+class AppleTransaction(Base):
+    """Binds an Apple `originalTransactionId` to exactly one user.
+
+    Two jobs:
+      1. Replay protection — a leaked JWS is worthless to a second account
+         because its originalTransactionId is already bound here.
+      2. Webhook routing — App Store Server Notifications identify the
+         subscription only by originalTransactionId, so this is the lookup.
+    """
+
+    __tablename__ = "apple_transactions"
+
+    original_transaction_id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    environment: Mapped[str] = mapped_column(String(16), nullable=False)
+    product_id: Mapped[str | None] = mapped_column(String(100))
+    last_transaction_id: Mapped[str | None] = mapped_column(String(64))
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False
+    )
