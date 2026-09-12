@@ -7,6 +7,13 @@ types — the values still round-trip as JSON text, which is enough for the
 assertions those tests make.
 """
 
+import os
+
+# Settings.environment defaults to "production" (fail-closed). The suite covers
+# the dev-only surface and imports app.main, which refuses to boot in production
+# with the placeholder JWT_SECRET — so pin dev before anything reads Settings.
+os.environ.setdefault("APP_ENV", "dev")
+
 import pytest
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.ext.compiler import compiles
