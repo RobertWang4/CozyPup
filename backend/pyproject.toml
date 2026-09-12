@@ -34,7 +34,13 @@ agent = "app.agent_harness.cli:cli"
 nano = "nano.cli:cli"
 
 [project.optional-dependencies]
-dev = ["respx>=0.21.0", "pytest-asyncio>=0.23.0"]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.24.0,<0.25",
+    "pytest-cov>=5.0",
+    "respx>=0.21.0",
+    "ruff>=0.16",
+]
 nano = ["torch", "transformers", "accelerate", "peft", "trl", "datasets", "pyyaml"]
 
 [tool.setuptools.packages.find]
@@ -43,3 +49,68 @@ include = ["app*", "nano*"]
 [build-system]
 requires = ["setuptools>=75.0"]
 build-backend = "setuptools.build_meta"
+
+# ---------------------------------------------------------------------------
+# Lint
+# ---------------------------------------------------------------------------
+[tool.ruff]
+target-version = "py312"
+line-length = 120
+extend-exclude = ["alembic/versions", "tests/generated"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+# Pre-existing violations in `app/` (counts from `ruff check app --statistics`,
+# 2026-09-12). They are ignored globally so CI gates *new* code against the rest
+# of E/F/I/UP/B — F821 undefined-name in particular, which has bitten us in
+# production before. Burn this list down a rule at a time; nothing here is
+# load-bearing.
+ignore = [
+    "E501",   # line-too-long (192) — prose-heavy prompt strings
+    "B008",   # function-call-in-default-argument (183) — FastAPI `Depends(...)` idiom
+    "UP017",  # datetime-timezone-utc (59)
+    "I001",   # unsorted-imports (52)
+    "F401",   # unused-import (25)
+    "B904",   # raise-without-from-inside-except (12)
+    "UP035",  # deprecated-import (11)
+    "UP042",  # replace-str-enum (9)
+    "F811",   # redefined-while-unused (7)
+    "E712",   # true-false-comparison (5)
+    "F541",   # f-string-missing-placeholders (4)
+    "E402",   # module-import-not-at-top-of-file (3)
+    "E701",   # multiple-statements-on-one-line-colon (3)
+    "E702",   # multiple-statements-on-one-line-semicolon (3)
+    "UP037",  # quoted-annotation (3)
+    "UP041",  # timeout-error-alias (3)
+    "B007",   # unused-loop-control-variable (2)
+    "F841",   # unused-variable (2)
+    "E711",   # none-comparison (1)
+    "E741",   # ambiguous-variable-name (1)
+    "UP045",  # non-pep604-annotation-optional (1)
+]
+
+# ---------------------------------------------------------------------------
+# Tests
+# ---------------------------------------------------------------------------
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# 84 test modules mark coroutines with @pytest.mark.asyncio explicitly, so the
+# default strict mode is correct — do not switch to "auto".
+asyncio_mode = "strict"
+filterwarnings = [
+    # pytest-asyncio 0.24 calls asyncio APIs deprecated in 3.12+/3.14. These fire
+    # once per test and accounted for ~66k of the ~67k warnings in a full run.
+    "ignore:'asyncio.get_event_loop_policy' is deprecated:DeprecationWarning",
+    "ignore:'asyncio.set_event_loop_policy' is deprecated:DeprecationWarning",
+    "ignore:'asyncio.iscoroutinefunction' is deprecated:DeprecationWarning",
+    "ignore:There is no current event loop:DeprecationWarning",
+]
+
+[tool.coverage.run]
+source = ["app"]
+branch = false
+omit = ["app/uploads/*", "alembic/*"]
+
+[tool.coverage.report]
+show_missing = false
+skip_empty = true
