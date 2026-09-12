@@ -40,7 +40,7 @@ from app.agents import emergency_clf                                     # 紧�
 from app.agents.emergency_router import classify_emergency, render_for_user  # 紧急情况短路路由（跳过 memory + LLM）
 from app.agents.engine import AgentEngine, AgentRunInput
 from app.agents.locale import detect_language                            # 语言检测（中/英）
-from app.agents.orchestrator import OrchestratorResult                   # 统一 Agent Loop
+from app.agents.loop import OrchestratorResult                           # 统一 Agent Loop
 from app.agents.post_processor import execute_suggested_actions           # 后处理：最终兜底执行
 from app.agents.pre_processing import pre_process                        # 预处理：从用户消息中预分析可能的工具调用
 from app.agents.trace_collector import TraceCollector, INACTIVE_TRACE    # Debug trace 收集器

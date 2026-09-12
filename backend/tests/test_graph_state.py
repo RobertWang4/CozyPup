@@ -27,7 +27,7 @@ def _tc(name, args, idx=0):
 
 
 def _fake_stream(rounds):
-    """Fake `_stream_completion` replaying `rounds` = [(text, tool_calls), ...]."""
+    """Fake `stream_completion` replaying `rounds` = [(text, tool_calls), ...]."""
     seen = []
 
     async def _stream(messages, model, on_token, **kwargs):
@@ -61,7 +61,7 @@ def _fake_dispatch(results):
 async def _run(monkeypatch, rounds, tool_results=None, **kwargs):
     """Drive the graph with fakes; return (prompts_per_round, updates, result)."""
     stream, seen = _fake_stream(rounds)
-    monkeypatch.setattr(graph_mod, "_stream_completion", stream)
+    monkeypatch.setattr(graph_mod, "stream_completion", stream)
     monkeypatch.setattr(graph_mod, "dispatch_tool", _fake_dispatch(tool_results or {}))
 
     updates = []
@@ -231,7 +231,7 @@ async def test_prompt_request_images_injection(monkeypatch):
 @pytest.mark.asyncio
 async def test_prompt_pushback_preamble(monkeypatch):
     stream, seen = _fake_stream([("好的", [])])
-    monkeypatch.setattr(graph_mod, "_stream_completion", stream)
+    monkeypatch.setattr(graph_mod, "stream_completion", stream)
     async for _ in stream_agent(
         system_prompt="SYS",
         context_messages=[{"role": "user", "content": "你没删啊"}],
@@ -278,7 +278,7 @@ async def test_updates_are_checkpointable(monkeypatch):
 async def test_non_node_update_chunks_are_ignored(monkeypatch):
     """An `__interrupt__` chunk must not crash the accumulator (Phase 2b)."""
     stream, _ = _fake_stream([("你好", [])])
-    monkeypatch.setattr(graph_mod, "_stream_completion", stream)
+    monkeypatch.setattr(graph_mod, "stream_completion", stream)
     real_astream = graph_mod.get_graph().astream
 
     async def spy_astream(initial, config, **kw):

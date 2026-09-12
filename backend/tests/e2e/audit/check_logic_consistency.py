@@ -48,7 +48,7 @@ def check_tool_definition_vs_execution() -> dict:
 def check_card_type_consistency() -> dict:
     """Find card types backend sends but iOS doesn't handle."""
     tools_path = APP_DIR / "agents" / "tools.py"
-    orchestrator_path = APP_DIR / "agents" / "orchestrator.py"
+    orchestrator_path = APP_DIR / "agents" / "loop.py"
     if not tools_path.exists():
         return {"pass": False, "error": "tools.py not found"}
 
@@ -104,7 +104,7 @@ def check_card_type_consistency() -> dict:
 def check_confirm_tools_consistency() -> dict:
     """Check CONFIRM_TOOLS in constants.py matches usage in orchestrator.py."""
     constants_path = APP_DIR / "agents" / "constants.py"
-    orchestrator_path = APP_DIR / "agents" / "orchestrator.py"
+    orchestrator_path = APP_DIR / "agents" / "loop.py"
     executor_path = APP_DIR / "agents" / "executor.py"
 
     if not constants_path.exists():
@@ -119,7 +119,7 @@ def check_confirm_tools_consistency() -> dict:
 
     # Check orchestrator.py imports and uses CONFIRM_TOOLS
     issues = []
-    for path, name in [(orchestrator_path, "orchestrator.py"), (executor_path, "executor.py")]:
+    for path, name in [(orchestrator_path, "loop.py"), (executor_path, "executor.py")]:
         if not path.exists():
             issues.append(f"{name} not found")
             continue

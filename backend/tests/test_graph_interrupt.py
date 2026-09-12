@@ -89,7 +89,7 @@ def _config(thread_id):
 async def test_non_confirm_tool_runs_once_across_interrupt_and_resume(monkeypatch):
     """[search_knowledge, delete_calendar_event]: search runs and emits once."""
     counts: dict[str, int] = {}
-    monkeypatch.setattr(graph_mod, "_stream_completion", _fake_stream([
+    monkeypatch.setattr(graph_mod, "stream_completion", _fake_stream([
         ("我看看", [_tc("search_knowledge", {"query": "q"}, 0),
                     _tc("delete_calendar_event", {"event_id": "e1"}, 1)]),
         ("找到了，请点确认～", []),
@@ -156,7 +156,7 @@ async def test_sse_event_order_across_confirm(monkeypatch):
     The model stays silent in both rounds, so the fixed-prompt safety net in
     `stream_agent` supplies the reply text.
     """
-    monkeypatch.setattr(graph_mod, "_stream_completion", _fake_stream([
+    monkeypatch.setattr(graph_mod, "stream_completion", _fake_stream([
         ("", [_tc("delete_calendar_event", {"event_id": "e1"}, 0)]),
         ("", []),
     ]))
@@ -216,7 +216,7 @@ async def test_sse_event_order_across_confirm(monkeypatch):
 @pytest.mark.asyncio
 async def test_cancel_skips_the_tool(monkeypatch):
     """`Command(resume=False)` runs nothing and finishes the graph."""
-    monkeypatch.setattr(graph_mod, "_stream_completion", _fake_stream([
+    monkeypatch.setattr(graph_mod, "stream_completion", _fake_stream([
         ("", [_tc("delete_pet", {"pet_id": "p1"}, 0)]),
         ("请点确认", []),
     ]))
@@ -371,7 +371,7 @@ def test_make_pool_constructs_without_connecting():
 @pytest.mark.asyncio
 async def test_interrupt_keeps_model_text_when_present(monkeypatch):
     """If the model spoke before the confirmable call, no synthetic prompt is added."""
-    monkeypatch.setattr(graph_mod, "_stream_completion", _fake_stream([
+    monkeypatch.setattr(graph_mod, "stream_completion", _fake_stream([
         ("好的，这就帮你删～", [_tc("delete_calendar_event", {"event_id": "e1"}, 0)]),
         ("", []),
     ]))
@@ -414,7 +414,7 @@ async def test_deferred_call_still_gets_a_second_model_round(monkeypatch):
         ]),
         ("轻微呕吐先禁食 4 小时，观察精神状态。记录卡片请点确认～", []),
     ])
-    monkeypatch.setattr(graph_mod, "_stream_completion", stream)
+    monkeypatch.setattr(graph_mod, "stream_completion", stream)
     monkeypatch.setattr(
         graph_mod, "dispatch_tool",
         _counting_dispatch(
@@ -506,7 +506,7 @@ async def test_deferred_call_still_gets_a_second_model_round(monkeypatch):
 @pytest.mark.asyncio
 async def test_confirm_card_last_when_round2_only_talks(monkeypatch):
     """Round 2 calls no tools: its text streams first, the card comes last."""
-    monkeypatch.setattr(graph_mod, "_stream_completion", _fake_stream([
+    monkeypatch.setattr(graph_mod, "stream_completion", _fake_stream([
         ("", [_tc("delete_calendar_event", {"event_id": "e1"}, 0)]),
         ("这条记录我准备好了，点卡片确认我就删～", []),
     ]))
@@ -536,7 +536,7 @@ async def test_confirm_card_last_when_round2_only_talks(monkeypatch):
 @pytest.mark.asyncio
 async def test_deferred_confirm_survives_the_round_cap(monkeypatch):
     """Deferred call parked in round 0, MAX_ROUNDS hit: still interrupts."""
-    from app.agents.orchestrator import MAX_ROUNDS
+    from app.agents.loop import MAX_ROUNDS
 
     counts: dict[str, int] = {}
     rounds = [("回合0", [_tc("delete_pet", {"pet_id": "p1"}, 0)])]
@@ -545,7 +545,7 @@ async def test_deferred_confirm_survives_the_round_cap(monkeypatch):
         for i in range(1, MAX_ROUNDS)
     ]
     stream = _fake_stream(rounds)
-    monkeypatch.setattr(graph_mod, "_stream_completion", stream)
+    monkeypatch.setattr(graph_mod, "stream_completion", stream)
     monkeypatch.setattr(
         graph_mod, "dispatch_tool", _counting_dispatch(counts, confirm_tools=("delete_pet",)),
     )

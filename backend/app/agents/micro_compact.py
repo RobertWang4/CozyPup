@@ -1,6 +1,6 @@
 """micro_compact — compress old tool_result payloads to save prompt tokens.
 
-Called between rounds in `orchestrator.run_orchestrator`. The most recent
+Called between rounds by the graph's `model` node. The most recent
 round's results stay intact (the LLM needs them to decide what to do
 next), but earlier rounds' verbose results get replaced with a minimal
 summary (success / error / status / card_type).
