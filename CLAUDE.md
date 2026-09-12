@@ -471,7 +471,7 @@ if name == "my_new_tool":
 
 ### 5. Handle in orchestrator (if special)
 
-大部分工具不需要改 orchestrator。但如果工具需要特殊处理（如 `plan` 不走 DB，`request_images` 注入图片），在 `orchestrator.py` 的 `dispatch_tool` 里加分支。
+大部分工具不需要改 orchestrator。但如果工具需要特殊处理（如 `plan` 不走 DB，`request_images` 注入图片），在 `agents/loop.py` 的 `dispatch_tool` 里加分支。
 
 需要用户确认的破坏性工具，加到 `agents/constants.py` 的 `CONFIRM_TOOLS` 集合里。
 

@@ -2,7 +2,7 @@
 
 `POST /api/v1/chat` 收到一句话之后发生的事，按代码顺序。
 Agent loop 自 2026-09 起跑在 LangGraph 上（`app/agents/graph.py`），
-不再是手写的 `while` 循环；节点仍然调用 `orchestrator.py` 里原有的 helper，
+不再是手写的 `while` 循环；节点调用 `loop.py` 里的共享 helper，
 所以行为等价，但多出了 checkpoint、可恢复的 `interrupt`，和显式的状态机。
 
 ---
@@ -239,7 +239,7 @@ yield "event: done"         iOS 收到后停 loading
 | 12 | `backend/app/agents/prompts_v2.py` | `build_system_prompt()` |
 | 13 | `backend/app/agents/graph.py` | `stream_agent()` + 六个节点 |
 | 14 | `backend/app/agents/checkpointer.py` | `AsyncPostgresSaver` + `RedactingSerializer` |
-| 15 | `backend/app/agents/orchestrator.py` | `dispatch_tool()`、`_stream_completion()` |
+| 15 | `backend/app/agents/loop.py` | `dispatch_tool()`、`stream_completion()` |
 | 16 | `backend/app/agents/validation.py` | `validate_tool_args()` |
 | 17 | `backend/app/agents/tools/registry.py` | `execute_tool()` |
 | 18 | `backend/app/agents/context_agent.py` | `trigger_summary_if_needed()` |
