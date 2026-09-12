@@ -11,3 +11,9 @@ nano/data/gen/
 nano/models/
 *.gguf
 !nano/serve/model.gguf
+
+# Secrets / credentials — never bake into the image
+.env*
+*.p8
+AuthKey_*.p8
+GoogleService-Info.plist
