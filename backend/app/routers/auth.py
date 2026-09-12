@@ -82,13 +82,20 @@ def _make_tokens(user: User) -> AuthResponse:
     )
 
 
+def _require_dev_env():
+    """Gate for every /dev/* route. Primary check is the deployment environment,
+    which defaults to "production" so a missing APP_ENV fails closed. The
+    auth_dev_enabled flag is an extra kill switch on top of that."""
+    from fastapi import status
+    from app.flags import get_bool_flag
+    if settings.is_production or not get_bool_flag("auth_dev_enabled", default=True):
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Not Found")
+
+
 @router.post("/dev", response_model=AuthResponse)
 async def login_dev(req: DevAuthRequest, db: AsyncSession = Depends(get_db)):
     """Dev-only login — no OAuth verification, just creates/finds user and returns tokens."""
-    from app.flags import get_bool_flag
-    from fastapi import status
-    if not get_bool_flag("auth_dev_enabled", default=True):
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Not Found")
+    _require_dev_env()
     user = await _find_or_create_user(db, req.email, req.name, "dev")
     return _make_tokens(user)
 
@@ -101,6 +108,7 @@ async def dev_expire_me(
     """DEV ONLY — force current user's subscription to expired so the free-user
     chat gate can be tested. Do not expose once the app is public.
     """
+    _require_dev_env()
     from datetime import datetime, timezone, timedelta
     result = await db.execute(select(User).where(User.id == user_id))
     user = result.scalar_one_or_none()
@@ -123,6 +131,7 @@ async def dev_restore_me(
     """DEV ONLY — reverse of /dev/expire-me. Puts the current user back into a
     fresh 7-day trial.
     """
+    _require_dev_env()
     from datetime import datetime, timezone
     result = await db.execute(select(User).where(User.id == user_id))
     user = result.scalar_one_or_none()
@@ -146,10 +155,7 @@ async def dev_set_subscription(
 
     Body: {"status": "active", "product_id": "com.cozypup.duo.monthly"}
     """
-    from app.flags import get_bool_flag
-    from fastapi import status as http_status
-    if not get_bool_flag("auth_dev_enabled", default=True):
-        raise HTTPException(status_code=http_status.HTTP_404_NOT_FOUND, detail="Not Found")
+    _require_dev_env()
     result = await db.execute(select(User).where(User.id == user_id))
     user = result.scalar_one_or_none()
     if user is None:

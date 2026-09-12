@@ -1,10 +1,9 @@
-import os
-
 from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from app.config import settings
 from app.debug.logging_config import setup_logging
 from app.routers.auth import router as auth_router
 from app.routers.calendar import router as calendar_router
@@ -33,19 +32,37 @@ from app.debug.exception_handlers import register_exception_handlers
 # Set up JSON logging first
 setup_logging()
 
+# Fail fast rather than serve production traffic with the placeholder signing key.
+if settings.is_production and settings.jwt_secret == "change-me-in-production":
+    raise RuntimeError(
+        "JWT_SECRET is still the placeholder value while APP_ENV=production. "
+        "Set a real secret before starting the server."
+    )
+
 app = FastAPI(title="PetPal API", version="0.1.0")
 
 # Register exception handlers (logs 4xx/5xx with module context)
 register_exception_handlers(app)
 
-# CORS — allow all origins during development
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# CORS — explicit allowlist from CORS_ORIGINS. Wildcard is only used outside
+# production, and never together with credentials.
+_cors_origins = settings.cors_origin_list
+if _cors_origins:
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=_cors_origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+elif not settings.is_production:
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=False,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
 # Register routers
 app.include_router(auth_router)
@@ -129,7 +146,7 @@ async def health():
 
 
 # Only register dev-only routes outside production
-if os.getenv("APP_ENV") != "production":
+if not settings.is_production:
 
     @app.get("/debug/test-error")
     async def test_error():

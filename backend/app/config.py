@@ -1,3 +1,4 @@
+from pydantic import AliasChoices, Field
 from pydantic_settings import BaseSettings
 
 
@@ -104,9 +105,25 @@ class Settings(BaseSettings):
     doubao_resource_id: str = "volc.seedasr.sauc.duration"  # 2.0 小时版
     doubao_ws_url: str = "wss://openspeech.bytedance.com/api/v3/sauc/bigmodel_async"
 
-    # Deployment environment — "dev" enables unsafe endpoints (e.g. /admin/auth/dev-login).
-    # Set via ENVIRONMENT env var in Cloud Run. Defaults to "dev" locally.
-    environment: str = "dev"
+    # Deployment environment — "dev" enables unsafe endpoints (e.g. /auth/dev,
+    # /admin/auth/dev-login). Read from APP_ENV (legacy alias: ENVIRONMENT).
+    # Defaults to "production" so a missing env var fails closed.
+    environment: str = Field(
+        default="production",
+        validation_alias=AliasChoices("APP_ENV", "ENVIRONMENT"),
+    )
+
+    # Allowed CORS origins, comma-separated (env CORS_ORIGINS). Empty in dev falls
+    # back to "*" without credentials; empty in production means no cross-origin access.
+    cors_origins: str = ""
+
+    @property
+    def is_production(self) -> bool:
+        return (self.environment or "").strip().lower() == "production"
+
+    @property
+    def cors_origin_list(self) -> list[str]:
+        return [o.strip() for o in self.cors_origins.split(",") if o.strip()]
 
     class Config:
         env_file = ".env"

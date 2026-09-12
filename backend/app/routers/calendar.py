@@ -155,10 +155,18 @@ async def list_events(
 
 @router.get("/photos/{filename}")
 async def get_photo(filename: str):
-    path = PHOTO_DIR / filename
-    if not path.exists():
+    # Unauthenticated on purpose: iOS loads these through a plain URLSession
+    # (CachedAsyncImage) with no Authorization header. Filenames are uuid4 +
+    # extension, so they are unguessable capability URLs. Adding auth requires
+    # an iOS change first — see the security follow-up note.
+    if Path(filename).name != filename or not filename or filename.startswith("."):
         raise HTTPException(status_code=404, detail="Photo not found")
-    ext = filename.rsplit(".", 1)[-1]
+    path = (PHOTO_DIR / filename).resolve()
+    if path.parent != PHOTO_DIR.resolve() or not path.is_file():
+        raise HTTPException(status_code=404, detail="Photo not found")
+    ext = filename.rsplit(".", 1)[-1].lower()
+    if ext not in ("jpg", "jpeg", "png", "webp"):
+        raise HTTPException(status_code=404, detail="Photo not found")
     media_type = f"image/{'jpeg' if ext == 'jpg' else ext}"
     return FileResponse(path, media_type=media_type)
 
