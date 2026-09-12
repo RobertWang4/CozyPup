@@ -12,7 +12,8 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 
 from app.agents.emergency import EmergencyCheckResult, build_emergency_hint, detect_emergency
-from app.agents.orchestrator import OrchestratorResult, run_orchestrator
+from app.agents.loop import OrchestratorResult
+from tests.loop_driver import run_loop
 from app.agents.locale import t
 from app.agents.pre_processing import (
     SuggestedAction,
@@ -101,11 +102,11 @@ async def test_pure_chat_no_tools():
         cards.append(c)
 
     with patch(
-        "app.agents.orchestrator.litellm.acompletion",
+        "app.agents.loop.litellm.acompletion",
         new_callable=AsyncMock,
         return_value=MockAsyncIterator(chunks),
     ):
-        result = await run_orchestrator(
+        result = await run_loop(
             message="你好",
             system_prompt="test prompt",
             context_messages=[{"role": "user", "content": "你好"}],
@@ -162,13 +163,13 @@ async def test_single_task_creates_event():
         tokens.append(t)
 
     with patch(
-        "app.agents.orchestrator.litellm.acompletion",
+        "app.agents.loop.litellm.acompletion",
         new_callable=AsyncMock,
         side_effect=mock_completion,
-    ), patch("app.agents.orchestrator.validate_tool_args", return_value=[]), patch(
-        "app.agents.orchestrator.execute_tool", mock_execute
+    ), patch("app.agents.loop.validate_tool_args", return_value=[]), patch(
+        "app.agents.loop.execute_tool", mock_execute
     ):
-        result = await run_orchestrator(
+        result = await run_loop(
             message="三妹吃了狗粮",
             system_prompt="test",
             context_messages=[{"role": "user", "content": "三妹吃了狗粮"}],
@@ -233,13 +234,13 @@ async def test_multi_tool_sequential_execution():
         cards.append(c)
 
     with patch(
-        "app.agents.orchestrator.litellm.acompletion",
+        "app.agents.loop.litellm.acompletion",
         new_callable=AsyncMock,
         side_effect=mock_completion,
-    ), patch("app.agents.orchestrator.validate_tool_args", return_value=[]), patch(
-        "app.agents.orchestrator.execute_tool", mock_execute
+    ), patch("app.agents.loop.validate_tool_args", return_value=[]), patch(
+        "app.agents.loop.execute_tool", mock_execute
     ):
-        result = await run_orchestrator(
+        result = await run_loop(
             message="三妹吃了狗粮，豆豆打了疫苗",
             system_prompt="test",
             context_messages=[
@@ -310,13 +311,13 @@ async def test_emergency_triggers_tool():
     )
 
     with patch(
-        "app.agents.orchestrator.litellm.acompletion",
+        "app.agents.loop.litellm.acompletion",
         new_callable=AsyncMock,
         side_effect=mock_completion,
-    ), patch("app.agents.orchestrator.validate_tool_args", return_value=[]), patch(
-        "app.agents.orchestrator.execute_tool", mock_execute
+    ), patch("app.agents.loop.validate_tool_args", return_value=[]), patch(
+        "app.agents.loop.execute_tool", mock_execute
     ):
-        result = await run_orchestrator(
+        result = await run_loop(
             message="我家猫中毒了",
             system_prompt=system_prompt,
             context_messages=[{"role": "user", "content": "我家猫中毒了"}],
@@ -370,13 +371,13 @@ async def test_emergency_false_positive_blocked():
     system_prompt = build_system_prompt(emergency_hint=hint, today="2026-03-24")
 
     with patch(
-        "app.agents.orchestrator.litellm.acompletion",
+        "app.agents.loop.litellm.acompletion",
         new_callable=AsyncMock,
         side_effect=mock_completion,
-    ), patch("app.agents.orchestrator.validate_tool_args", return_value=[]), patch(
-        "app.agents.orchestrator.execute_tool", mock_execute
+    ), patch("app.agents.loop.validate_tool_args", return_value=[]), patch(
+        "app.agents.loop.execute_tool", mock_execute
     ):
-        result = await run_orchestrator(
+        result = await run_loop(
             message="上次中毒是什么时候",
             system_prompt=system_prompt,
             context_messages=[{"role": "user", "content": "上次中毒是什么时候"}],
@@ -409,13 +410,13 @@ async def test_confirm_flow_delete_pet():
     mock_execute = AsyncMock()
 
     with patch(
-        "app.agents.orchestrator.litellm.acompletion",
+        "app.agents.loop.litellm.acompletion",
         new_callable=AsyncMock,
         return_value=MockAsyncIterator(chunks),
-    ), patch("app.agents.orchestrator.validate_tool_args", return_value=[]), patch(
-        "app.agents.orchestrator.execute_tool", mock_execute
+    ), patch("app.agents.loop.validate_tool_args", return_value=[]), patch(
+        "app.agents.loop.execute_tool", mock_execute
     ):
-        result = await run_orchestrator(
+        result = await run_loop(
             message="删除三妹",
             system_prompt="test",
             context_messages=[{"role": "user", "content": "删除三妹"}],
@@ -638,13 +639,13 @@ async def test_full_pipeline_preprocessor_to_orchestrator():
     cards = []
 
     with patch(
-        "app.agents.orchestrator.litellm.acompletion",
+        "app.agents.loop.litellm.acompletion",
         new_callable=AsyncMock,
         side_effect=mock_completion,
-    ), patch("app.agents.orchestrator.validate_tool_args", return_value=[]), patch(
-        "app.agents.orchestrator.execute_tool", mock_execute
+    ), patch("app.agents.loop.validate_tool_args", return_value=[]), patch(
+        "app.agents.loop.execute_tool", mock_execute
     ):
-        result = await run_orchestrator(
+        result = await run_loop(
             message=message,
             system_prompt=system_prompt,
             context_messages=[{"role": "user", "content": message}],
@@ -666,11 +667,11 @@ async def test_orchestrator_error_recovery():
     tokens = []
 
     with patch(
-        "app.agents.orchestrator.litellm.acompletion",
+        "app.agents.loop.litellm.acompletion",
         new_callable=AsyncMock,
         side_effect=Exception("API rate limit exceeded"),
     ):
-        result = await run_orchestrator(
+        result = await run_loop(
             message="test",
             system_prompt="test",
             context_messages=[{"role": "user", "content": "test"}],
@@ -719,10 +720,10 @@ async def test_nudge_fires_when_llm_skips_tools():
         confidence=0.9,
     )]
 
-    with patch("app.agents.orchestrator.litellm.acompletion", new_callable=AsyncMock, side_effect=mock_completion), \
-         patch("app.agents.orchestrator.validate_tool_args", return_value=[]), \
-         patch("app.agents.orchestrator.execute_tool", mock_execute):
-        result = await run_orchestrator(
+    with patch("app.agents.loop.litellm.acompletion", new_callable=AsyncMock, side_effect=mock_completion), \
+         patch("app.agents.loop.validate_tool_args", return_value=[]), \
+         patch("app.agents.loop.execute_tool", mock_execute):
+        result = await run_loop(
             message="附近哪里有宠物医院",
             system_prompt="test",
             context_messages=[{"role": "user", "content": "附近哪里有宠物医院"}],

@@ -1,5 +1,5 @@
 from app.agents.control_tools import handle_control_tool
-from app.agents.orchestrator import OrchestratorResult
+from app.agents.loop import OrchestratorResult
 from app.agents.tool_context import ToolDispatchContext
 from app.agents.tool_invocation import ToolInvocation
 

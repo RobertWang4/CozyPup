@@ -1,10 +1,10 @@
 """LangGraph version of the unified agent loop.
 
-Same behavior as the hand-written `while` loop in orchestrator.py — the nodes
-call the orchestrator's existing helpers rather than reimplementing them:
+The nodes are thin wiring over the shared helpers in `agents/loop.py`
+rather than reimplementations:
 
     prepare   → seed messages + pushback preamble
-    model     → micro_compact + vision switch + _stream_completion
+    model     → micro_compact + vision switch + stream_completion
     tools     → dispatch_tool per tool_call (+ image injection, skip_round2);
                 calls needing user confirmation are deferred, not executed —
                 they get a `waiting_confirm` tool message so the next model
@@ -16,7 +16,7 @@ call the orchestrator's existing helpers rather than reimplementing them:
 
 The confirm gate fires at the END of the turn, never mid-round: a deferred
 call forces one more model round (exactly like the old loop's
-`_can_skip_round2 == False` path), and only where the turn would otherwise
+`can_skip_round2 == False` path), and only where the turn would otherwise
 finalize does the graph interrupt. So SSE order is tokens/thinking/other
 cards … then the confirm card last, and `finalize` runs exactly once per
 turn — after the resume.
@@ -33,7 +33,7 @@ Edges (MAX_ROUNDS is checked on both back-edges, round increments in `model`):
 
 Streaming: token / thinking / card events are pushed from inside the nodes via
 `get_stream_writer()` as {"event": ..., "data": ...} dicts. `stream_agent()`
-below is the entry point used by `AgentEngine` and by `run_orchestrator`.
+below is the entry point used by `AgentEngine`.
 
 Non-serializable per-request context (db, trace, model names, ids) travels in
 `config["configurable"]`; conversation state travels in `AgentState`.
@@ -56,19 +56,19 @@ from langgraph.types import interrupt
 
 from app.agents.locale import t
 from app.agents.micro_compact import micro_compact
-from app.agents.orchestrator import (
+from app.agents.loop import (
     MAX_ROUNDS,
     OrchestratorResult,
-    _can_skip_round2,
-    _detect_pushback,
-    _find_missed_tools,
-    _inject_nudge,
-    _inject_pushback_preamble,
-    _inject_write_claim_nag,
-    _stream_completion,
-    _text_claims_write,
-    _WRITE_TOOLS,
+    WRITE_TOOLS,
+    can_skip_round2,
+    detect_pushback,
     dispatch_tool,
+    find_missed_tools,
+    inject_nudge,
+    inject_pushback_preamble,
+    inject_write_claim_nag,
+    stream_completion,
+    text_claims_write,
 )
 from app.agents.tool_context import ToolDispatchContext
 from app.agents.tool_execution import handle_tool_execution
@@ -194,7 +194,7 @@ def _round_result(state: AgentState) -> OrchestratorResult:
 
     cards/confirm_cards start empty so whatever the round appends is exactly
     the delta the reducers need; the accumulating sets/lists are seeded so
-    `_can_skip_round2` and the guards see the full run so far.
+    `can_skip_round2` and the guards see the full run so far.
     """
     return OrchestratorResult(
         tools_called=set(state.get("tools_called") or set()),
@@ -226,8 +226,8 @@ def prepare_node(state: AgentState) -> dict:
                     part.get("text", "") for part in c if isinstance(part, dict)
                 )
             break
-    if _detect_pushback(latest_user_text, lang):
-        _inject_pushback_preamble(messages, lang)
+    if detect_pushback(latest_user_text, lang):
+        inject_pushback_preamble(messages, lang)
         logger.info("pushback_preamble_injected", extra={
             "user_text_sample": latest_user_text[:120],
         })
@@ -265,7 +265,7 @@ async def model_node(state: AgentState, config: RunnableConfig) -> dict:
         "is_vision": is_vision,
     })
 
-    round_text, tool_calls, usage = await _stream_completion(
+    round_text, tool_calls, usage = await stream_completion(
         messages, round_model, _emit_token, on_thinking=_emit_thinking, lang=lang,
         trace=trace, round_num=round_num, is_vision=is_vision,
     )
@@ -435,7 +435,7 @@ async def tools_node(state: AgentState, config: RunnableConfig) -> dict:
             continue
 
         # Strip internal markers (keys starting with _) before serialising
-        # back to the LLM — those are private to the orchestrator.
+        # back to the LLM — those are private to the agent loop.
         serializable = {k: v for k, v in tool_result.items() if not k.startswith("_")}
         _append({
             "role": "tool",
@@ -464,7 +464,7 @@ async def tools_node(state: AgentState, config: RunnableConfig) -> dict:
     # not consulted at all in that case.
     skip = (
         False if deferred
-        else _can_skip_round2(tool_calls, tool_results_map, result, round_text)
+        else can_skip_round2(tool_calls, tool_results_map, result, round_text)
     )
     if skip:
         trace.record("skip_round2", {
@@ -638,9 +638,9 @@ def review_node(state: AgentState, config: RunnableConfig) -> dict:
     # this whole run (only queries, or everything was deferred behind
     # confirm cards, or tools errored). Force one more round.
     if not state.get("write_claim_nag_used"):
-        has_write = bool((state.get("tools_executed") or set()) & _WRITE_TOOLS)
+        has_write = bool((state.get("tools_executed") or set()) & WRITE_TOOLS)
         accumulated_text = "".join(state.get("text_parts") or []) + round_text
-        if not has_write and _text_claims_write(accumulated_text, lang):
+        if not has_write and text_claims_write(accumulated_text, lang):
             trace.record("write_claim_nag_triggered", {
                 "round": round_num,
                 "tools_called": list(tools_called),
@@ -650,7 +650,7 @@ def review_node(state: AgentState, config: RunnableConfig) -> dict:
                 "round": round_num,
                 "tools_called": list(tools_called),
             })
-            _inject_write_claim_nag(new_messages, round_text, lang)
+            inject_write_claim_nag(new_messages, round_text, lang)
             # Drop the fabricated text (never enters text_parts) so the final
             # response reflects the real (next-round) outcome.
             return {
@@ -663,7 +663,7 @@ def review_node(state: AgentState, config: RunnableConfig) -> dict:
     # *some* tool (even a different one than suggested) it's clearly
     # working — don't second-guess it.
     if not state.get("nudge_used") and not tools_called and state.get("suggested_actions"):
-        missed = _find_missed_tools(state["suggested_actions"], tools_called)
+        missed = find_missed_tools(state["suggested_actions"], tools_called)
         if missed:
             trace.record("nudge_triggered", {
                 "round": round_num,
@@ -673,7 +673,7 @@ def review_node(state: AgentState, config: RunnableConfig) -> dict:
                 "round": round_num,
                 "missed_tools": [a["tool_name"] for a in missed],
             })
-            _inject_nudge(new_messages, round_text, missed, lang)
+            inject_nudge(new_messages, round_text, missed, lang)
             return {
                 "messages": new_messages,
                 "text_parts": [round_text],
@@ -706,12 +706,12 @@ def finalize_node(state: AgentState, config: RunnableConfig) -> dict:
     # pending (the card itself would signal "pending" correctly), replace the
     # fabricated text with an honest failure message and emit a warning card.
     # This is Level 2 "UI truth" — users should never see a lie.
-    has_real_write = bool(tools_executed & _WRITE_TOOLS)
+    has_real_write = bool(tools_executed & WRITE_TOOLS)
     has_pending_confirm = bool(confirm_cards)
     if (
         not has_real_write
         and not has_pending_confirm
-        and _text_claims_write(response_text, lang)
+        and text_claims_write(response_text, lang)
     ):
         logger.warning("fabrication_blocked", extra={
             "tools_called": list(tools_called),
@@ -773,7 +773,7 @@ def _after_tools(state: AgentState) -> str:
     at_cap = state["round"] >= MAX_ROUNDS
     if state.get("deferred_confirms"):
         # Deferred calls always buy one more model round (the old loop's
-        # `_can_skip_round2 == False` path) so the LLM can use the other
+        # `can_skip_round2 == False` path) so the LLM can use the other
         # tools' results; the card is shown at the end of the turn.
         return "confirm" if at_cap else "model"
     if state.get("skip_round2") or at_cap:

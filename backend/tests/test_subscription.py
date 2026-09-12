@@ -32,12 +32,13 @@ def _fake_jws_payload(
     expires_in_days: int,
     bundle_id: str,
     revoked: bool = False,
+    original_transaction_id: str | None = None,
 ):
     """Build a MagicMock mimicking JWSTransactionDecodedPayload.
 
     Fields mirror what app.routers.subscription.verify_purchase reads:
     productId, bundleId, expiresDate (ms since epoch), revocationDate,
-    transactionId, environment.
+    transactionId, originalTransactionId, environment.
     """
     payload = MagicMock()
     payload.productId = product_id
@@ -48,10 +49,20 @@ def _fake_jws_payload(
     payload.expiresDate = expires_ms
     payload.revocationDate = 1 if revoked else None
     payload.transactionId = f"txn_{uuid.uuid4().hex[:8]}"
+    payload.originalTransactionId = original_transaction_id or f"orig_{uuid.uuid4().hex[:8]}"
     env = MagicMock()
     env.value = "Sandbox"
     payload.environment = env
     return payload
+
+
+def _verify_db_results(user, binding=None):
+    """db.execute side effects for verify_purchase: user, then the binding."""
+    user_result = MagicMock()
+    user_result.scalar_one.return_value = user
+    binding_result = MagicMock()
+    binding_result.scalar_one_or_none.return_value = binding
+    return [user_result, binding_result]
 
 
 def _make_user(
@@ -66,6 +77,7 @@ def _make_user(
     user.trial_start_date = trial_start_date
     user.subscription_expires_at = subscription_expires_at
     user.subscription_product_id = product_id
+    user.is_admin = False
     return user
 
 
@@ -258,11 +270,8 @@ class TestVerifyEndpoint:
         user = _make_user(status="trial")
         user.family_role = None
 
-        mock_result = MagicMock()
-        mock_result.scalar_one.return_value = user
-
         db = AsyncMock()
-        db.execute.return_value = mock_result
+        db.execute.side_effect = _verify_db_results(user)
         db.commit = AsyncMock()
 
         payload = _fake_jws_payload(
@@ -294,11 +303,8 @@ class TestVerifyEndpoint:
         user = _make_user(status="trial")
         user.family_role = None
 
-        mock_result = MagicMock()
-        mock_result.scalar_one.return_value = user
-
         db = AsyncMock()
-        db.execute.return_value = mock_result
+        db.execute.side_effect = _verify_db_results(user)
         db.commit = AsyncMock()
 
         payload = _fake_jws_payload(
@@ -314,6 +320,128 @@ class TestVerifyEndpoint:
         assert response.status == "active"
         delta = response.expires_at - datetime.now(timezone.utc)
         assert 364 <= delta.days <= 365
+
+
+class TestVerifyReplayProtection:
+    @pytest.mark.asyncio
+    async def test_transaction_bound_to_another_user_is_rejected(self):
+        """A JWS whose originalTransactionId already belongs to someone else → 409."""
+        from app.config import settings
+        from app.routers.subscription import verify_purchase
+        from app.schemas.subscription import VerifyRequest
+        from fastapi import HTTPException
+
+        user = _make_user(status="trial")
+        user.family_role = None
+
+        existing = MagicMock()
+        existing.user_id = uuid.uuid4()  # someone else
+
+        db = AsyncMock()
+        db.execute.side_effect = _verify_db_results(user, binding=existing)
+        db.commit = AsyncMock()
+
+        payload = _fake_jws_payload(
+            product_id="com.cozypup.monthly",
+            expires_in_days=30,
+            bundle_id=settings.apple_bundle_id,
+        )
+        req = VerifyRequest(signed_transaction="fake_jws")
+
+        with patch("app.routers.subscription.verify_signed_transaction", return_value=payload):
+            with pytest.raises(HTTPException) as exc:
+                await verify_purchase(req=req, user_id=user.id, db=db)
+
+        assert exc.value.status_code == 409
+        assert exc.value.detail == "transaction_already_bound"
+        db.commit.assert_not_awaited()
+
+    @pytest.mark.asyncio
+    async def test_reverify_by_same_user_updates_binding(self):
+        """Re-verifying my own transaction is fine and refreshes the binding."""
+        from app.config import settings
+        from app.routers.subscription import verify_purchase
+        from app.schemas.subscription import VerifyRequest
+
+        user = _make_user(status="expired")
+        user.family_role = None
+
+        existing = MagicMock()
+        existing.user_id = user.id
+
+        db = AsyncMock()
+        db.execute.side_effect = _verify_db_results(user, binding=existing)
+        db.commit = AsyncMock()
+
+        payload = _fake_jws_payload(
+            product_id="com.cozypup.monthly",
+            expires_in_days=30,
+            bundle_id=settings.apple_bundle_id,
+        )
+        req = VerifyRequest(signed_transaction="fake_jws")
+
+        with patch("app.routers.subscription.verify_signed_transaction", return_value=payload):
+            response = await verify_purchase(req=req, user_id=user.id, db=db)
+
+        assert response.status == "active"
+        assert existing.last_transaction_id == str(payload.transactionId)
+        db.add.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_client_sandbox_flag_is_ignored(self):
+        """`sandbox` in the request body must not reach the verifier."""
+        from app.config import settings
+        from app.routers.subscription import verify_purchase
+        from app.schemas.subscription import VerifyRequest
+
+        user = _make_user(status="trial")
+        user.family_role = None
+
+        db = AsyncMock()
+        db.execute.side_effect = _verify_db_results(user)
+        db.commit = AsyncMock()
+
+        payload = _fake_jws_payload(
+            product_id="com.cozypup.monthly",
+            expires_in_days=30,
+            bundle_id=settings.apple_bundle_id,
+        )
+        req = VerifyRequest(signed_transaction="fake_jws", sandbox=True)
+
+        with patch(
+            "app.routers.subscription.verify_signed_transaction", return_value=payload
+        ) as verifier:
+            await verify_purchase(req=req, user_id=user.id, db=db)
+
+        assert "sandbox" not in verifier.call_args.kwargs
+
+
+class TestAllowedEnvironments:
+    """Environment policy is server-side, never client-supplied."""
+
+    def test_production_deployment_rejects_sandbox(self):
+        from appstoreserverlibrary.models.Environment import Environment
+        from app.storekit import allowed_environments
+
+        with patch("app.storekit.settings") as s:
+            s.environment = "production"
+            assert allowed_environments() == (Environment.PRODUCTION,)
+
+    def test_production_deployment_allows_sandbox_for_tester(self):
+        from appstoreserverlibrary.models.Environment import Environment
+        from app.storekit import allowed_environments
+
+        with patch("app.storekit.settings") as s:
+            s.environment = "production"
+            assert Environment.SANDBOX in allowed_environments(is_tester=True)
+
+    def test_dev_deployment_allows_sandbox(self):
+        from appstoreserverlibrary.models.Environment import Environment
+        from app.storekit import allowed_environments
+
+        with patch("app.storekit.settings") as s:
+            s.environment = "dev"
+            assert Environment.SANDBOX in allowed_environments()
 
 
 # ---------------------------------------------------------------------------
@@ -556,5 +684,171 @@ class TestBillingDisabled:
         try:
             response = client.post("/api/v1/family/invite", json={})
             assert response.status_code == 400
+        finally:
+            app.dependency_overrides.clear()
+
+
+# ---------------------------------------------------------------------------
+# App Store Server Notifications V2 webhook
+# ---------------------------------------------------------------------------
+
+
+def _fake_notification(kind: str, subtype: str | None = None):
+    n = MagicMock()
+    n.rawNotificationType = kind
+    n.rawSubtype = subtype
+    n.data = MagicMock()
+    n.data.signedTransactionInfo = "fake_tx_jws"
+    return n
+
+
+async def _bind_transaction(db: AsyncSession, user: User, original_id: str):
+    from app.models import AppleTransaction
+
+    db.add(AppleTransaction(
+        original_transaction_id=original_id,
+        user_id=user.id,
+        environment="Sandbox",
+        product_id="com.cozypup.monthly",
+        last_transaction_id="txn_old",
+    ))
+    await db.commit()
+
+
+class TestAppStoreWebhook:
+    @pytest.mark.asyncio
+    async def test_missing_signed_payload_is_400(self, _db):
+        user = await _create_user(_db, status="active")
+        client = _http_client(_db, user.id)
+        try:
+            response = client.post("/api/v1/subscription/webhook", json={})
+            assert response.status_code == 400
+        finally:
+            app.dependency_overrides.clear()
+
+    @pytest.mark.asyncio
+    async def test_bad_signature_is_400(self, _db):
+        from appstoreserverlibrary.signed_data_verifier import (
+            VerificationException,
+            VerificationStatus,
+        )
+
+        user = await _create_user(_db, status="active")
+        client = _http_client(_db, user.id)
+        try:
+            with patch(
+                "app.routers.subscription.verify_notification",
+                side_effect=VerificationException(VerificationStatus.INVALID_ENVIRONMENT),
+            ):
+                response = client.post(
+                    "/api/v1/subscription/webhook", json={"signedPayload": "nope"}
+                )
+            assert response.status_code == 400
+        finally:
+            app.dependency_overrides.clear()
+
+    @pytest.mark.asyncio
+    async def test_unknown_notification_type_returns_200_ignored(self, _db):
+        from app.config import settings
+
+        user = await _create_user(_db, status="active")
+        await _bind_transaction(_db, user, "orig_unknown")
+        client = _http_client(_db, user.id)
+        tx = _fake_jws_payload(
+            product_id="com.cozypup.monthly",
+            expires_in_days=30,
+            bundle_id=settings.apple_bundle_id,
+            original_transaction_id="orig_unknown",
+        )
+        try:
+            with patch(
+                "app.routers.subscription.verify_notification",
+                return_value=_fake_notification("CONSUMPTION_REQUEST"),
+            ), patch(
+                "app.routers.subscription.verify_signed_transaction", return_value=tx
+            ):
+                response = client.post(
+                    "/api/v1/subscription/webhook", json={"signedPayload": "jws"}
+                )
+            assert response.status_code == 200
+            assert response.json()["status"] == "ignored"
+            await _db.refresh(user)
+            assert user.subscription_status == "active"
+        finally:
+            app.dependency_overrides.clear()
+
+    @pytest.mark.asyncio
+    async def test_unbound_transaction_returns_200_ignored(self, _db):
+        """A subscription no account ever activated with us is not ours to touch."""
+        from app.config import settings
+
+        user = await _create_user(_db, status="active")
+        client = _http_client(_db, user.id)
+        tx = _fake_jws_payload(
+            product_id="com.cozypup.monthly",
+            expires_in_days=30,
+            bundle_id=settings.apple_bundle_id,
+            original_transaction_id="orig_nobody",
+        )
+        try:
+            with patch(
+                "app.routers.subscription.verify_notification",
+                return_value=_fake_notification("EXPIRED"),
+            ), patch(
+                "app.routers.subscription.verify_signed_transaction", return_value=tx
+            ):
+                response = client.post(
+                    "/api/v1/subscription/webhook", json={"signedPayload": "jws"}
+                )
+            assert response.status_code == 200
+            assert response.json()["status"] == "ignored"
+            await _db.refresh(user)
+            assert user.subscription_status == "active"
+        finally:
+            app.dependency_overrides.clear()
+
+    @pytest.mark.parametrize(
+        "kind,subtype,start,expected",
+        [
+            # Each case starts from the opposite state, so a silent no-op fails.
+            ("EXPIRED", None, "active", "expired"),
+            ("REFUND", None, "active", "expired"),
+            ("REVOKE", None, "active", "expired"),
+            ("DID_FAIL_TO_RENEW", None, "active", "expired"),
+            # Billing-retry grace period: access is kept until Apple gives up.
+            ("DID_FAIL_TO_RENEW", "GRACE_PERIOD", "active", "active"),
+            ("DID_RENEW", None, "expired", "active"),
+            ("SUBSCRIBED", None, "expired", "active"),
+        ],
+    )
+    @pytest.mark.asyncio
+    async def test_notification_moves_subscription_status(
+        self, _db, kind, subtype, start, expected
+    ):
+        from app.config import settings
+
+        user = await _create_user(_db, status=start)
+        original_id = f"orig_{kind}_{subtype}"
+        await _bind_transaction(_db, user, original_id)
+        client = _http_client(_db, user.id)
+        tx = _fake_jws_payload(
+            product_id="com.cozypup.monthly",
+            expires_in_days=30,
+            bundle_id=settings.apple_bundle_id,
+            original_transaction_id=original_id,
+        )
+        try:
+            with patch(
+                "app.routers.subscription.verify_notification",
+                return_value=_fake_notification(kind, subtype),
+            ), patch(
+                "app.routers.subscription.verify_signed_transaction", return_value=tx
+            ):
+                response = client.post(
+                    "/api/v1/subscription/webhook", json={"signedPayload": "jws"}
+                )
+            assert response.status_code == 200
+            await _db.refresh(user)
+            assert user.subscription_status == expected
         finally:
             app.dependency_overrides.clear()

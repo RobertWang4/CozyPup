@@ -10,7 +10,7 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from app.agents.orchestrator import _can_skip_round2, _text_claims_write, OrchestratorResult
+from app.agents.loop import can_skip_round2, text_claims_write, OrchestratorResult
 from app.agents.pre_processing import pre_process
 from app.agents.tool_context import ToolDispatchContext
 from app.agents.tool_execution import handle_tool_execution
@@ -107,7 +107,7 @@ def test_all_registered_handlers_accept_standard_positional_args():
 ])
 def test_write_claim_ignores_negations(text):
     lang = "zh" if any("一" <= c <= "鿿" for c in text) else "en"
-    assert not _text_claims_write(text, lang)
+    assert not text_claims_write(text, lang)
 
 
 @pytest.mark.parametrize("text,lang", [
@@ -115,7 +115,7 @@ def test_write_claim_ignores_negations(text):
     ("已删除豆豆的呕吐记录。", "zh"),
 ])
 def test_write_claim_still_catches_real_claims(text, lang):
-    assert _text_claims_write(text, lang)
+    assert text_claims_write(text, lang)
 
 
 # 4. skip_round2 must not fire when a tool was deferred behind a confirm card
@@ -123,13 +123,13 @@ def test_write_claim_still_catches_real_claims(text, lang):
 def test_skip_round2_blocked_by_waiting_confirm():
     tool_calls = [{"function": {"name": "create_calendar_event"}}]
     results = {"create_calendar_event": {"status": "waiting_confirm", "executed": False}}
-    assert not _can_skip_round2(tool_calls, results, OrchestratorResult(), "I'll jot that down, then give guidance.")
+    assert not can_skip_round2(tool_calls, results, OrchestratorResult(), "I'll jot that down, then give guidance.")
 
 
 def test_skip_round2_still_fires_on_success():
     tool_calls = [{"function": {"name": "create_calendar_event"}}]
     results = {"create_calendar_event": {"success": True, "card": {"type": "record"}}}
-    assert _can_skip_round2(tool_calls, results, OrchestratorResult(), "正在记录…")
+    assert can_skip_round2(tool_calls, results, OrchestratorResult(), "正在记录…")
 
 
 # 5. pre-processor must not suggest create for delete/update sentences ------

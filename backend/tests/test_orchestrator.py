@@ -1,7 +1,8 @@
 import pytest
 import json
 from unittest.mock import AsyncMock, patch, MagicMock
-from app.agents.orchestrator import run_orchestrator, OrchestratorResult
+from app.agents.loop import OrchestratorResult
+from tests.loop_driver import run_loop
 from app.agents.trace_collector import TraceCollector
 
 
@@ -60,8 +61,8 @@ async def test_path_a_pure_chat():
     async def capture_token(t):
         tokens.append(t)
 
-    with patch("app.agents.orchestrator.litellm.acompletion", new_callable=AsyncMock, return_value=MockAsyncIterator(chunks)):
-        result = await run_orchestrator(
+    with patch("app.agents.loop.litellm.acompletion", new_callable=AsyncMock, return_value=MockAsyncIterator(chunks)):
+        result = await run_loop(
             message="你好",
             system_prompt="test",
             context_messages=[{"role": "user", "content": "你好"}],
@@ -78,8 +79,8 @@ async def test_orchestrator_emits_runtime_events_for_model_round():
     chunks = _make_stream_chunks(content="你好")
     trace = TraceCollector(active=True)
 
-    with patch("app.agents.orchestrator.litellm.acompletion", new_callable=AsyncMock, return_value=MockAsyncIterator(chunks)):
-        await run_orchestrator(
+    with patch("app.agents.loop.litellm.acompletion", new_callable=AsyncMock, return_value=MockAsyncIterator(chunks)):
+        await run_loop(
             message="你好",
             system_prompt="test",
             context_messages=[{"role": "user", "content": "你好"}],
@@ -103,10 +104,10 @@ async def test_orchestrator_emits_runtime_events_for_tool_call():
 
     mock_execute = AsyncMock(return_value={"success": True, "card": {"type": "record"}})
 
-    with patch("app.agents.orchestrator.litellm.acompletion", new_callable=AsyncMock, return_value=MockAsyncIterator(chunks)), \
-         patch("app.agents.orchestrator.validate_tool_args", return_value=[]), \
-         patch("app.agents.orchestrator.execute_tool", mock_execute):
-        await run_orchestrator(
+    with patch("app.agents.loop.litellm.acompletion", new_callable=AsyncMock, return_value=MockAsyncIterator(chunks)), \
+         patch("app.agents.loop.validate_tool_args", return_value=[]), \
+         patch("app.agents.loop.execute_tool", mock_execute):
+        await run_loop(
             message="三妹吃了狗粮",
             system_prompt="test",
             context_messages=[{"role": "user", "content": "三妹吃了狗粮"}],
@@ -146,10 +147,10 @@ async def test_single_tool_call():
     async def capture_card(c):
         cards.append(c)
 
-    with patch("app.agents.orchestrator.litellm.acompletion", new_callable=AsyncMock, side_effect=mock_completion), \
-         patch("app.agents.orchestrator.validate_tool_args", return_value=[]), \
-         patch("app.agents.orchestrator.execute_tool", mock_execute):
-        result = await run_orchestrator(
+    with patch("app.agents.loop.litellm.acompletion", new_callable=AsyncMock, side_effect=mock_completion), \
+         patch("app.agents.loop.validate_tool_args", return_value=[]), \
+         patch("app.agents.loop.execute_tool", mock_execute):
+        result = await run_loop(
             message="三妹吃了狗粮",
             system_prompt="test",
             context_messages=[{"role": "user", "content": "三妹吃了狗粮"}],
@@ -191,10 +192,10 @@ async def test_multi_tool_calls():
     async def capture_card(c):
         cards.append(c)
 
-    with patch("app.agents.orchestrator.litellm.acompletion", new_callable=AsyncMock, side_effect=mock_completion), \
-         patch("app.agents.orchestrator.validate_tool_args", return_value=[]), \
-         patch("app.agents.orchestrator.execute_tool", mock_execute):
-        result = await run_orchestrator(
+    with patch("app.agents.loop.litellm.acompletion", new_callable=AsyncMock, side_effect=mock_completion), \
+         patch("app.agents.loop.validate_tool_args", return_value=[]), \
+         patch("app.agents.loop.execute_tool", mock_execute):
+        result = await run_loop(
             message="三妹吃了狗粮，豆豆打了疫苗",
             system_prompt="test",
             context_messages=[{"role": "user", "content": "三妹吃了狗粮，豆豆打了疫苗"}],
@@ -215,9 +216,9 @@ async def test_confirm_gate_single():
     async def capture_card(c):
         cards.append(c)
 
-    with patch("app.agents.orchestrator.litellm.acompletion", new_callable=AsyncMock, return_value=MockAsyncIterator(chunks)), \
-         patch("app.agents.orchestrator.validate_tool_args", return_value=[]):
-        result = await run_orchestrator(
+    with patch("app.agents.loop.litellm.acompletion", new_callable=AsyncMock, return_value=MockAsyncIterator(chunks)), \
+         patch("app.agents.loop.validate_tool_args", return_value=[]):
+        result = await run_loop(
             message="删除三妹",
             system_prompt="test",
             context_messages=[{"role": "user", "content": "删除三妹"}],
@@ -245,7 +246,7 @@ async def test_create_pet_confirm_card_includes_tool_fields():
         },
     }
 
-    from app.agents.orchestrator import OrchestratorResult, dispatch_tool
+    from app.agents.loop import OrchestratorResult, dispatch_tool
 
     result = OrchestratorResult()
     cards = []
@@ -282,9 +283,9 @@ async def test_create_pet_confirm_card_includes_tool_fields():
 @pytest.mark.asyncio
 async def test_error_handling():
     """LLM error -> graceful fallback."""
-    with patch("app.agents.orchestrator.litellm.acompletion", new_callable=AsyncMock, side_effect=Exception("API error")):
+    with patch("app.agents.loop.litellm.acompletion", new_callable=AsyncMock, side_effect=Exception("API error")):
         tokens = []
-        result = await run_orchestrator(
+        result = await run_loop(
             message="test",
             system_prompt="test",
             context_messages=[{"role": "user", "content": "test"}],
@@ -332,10 +333,10 @@ async def test_nudge_triggers_when_tools_missed():
         confidence=0.9,
     )]
 
-    with patch("app.agents.orchestrator.litellm.acompletion", new_callable=AsyncMock, side_effect=mock_completion), \
-         patch("app.agents.orchestrator.validate_tool_args", return_value=[]), \
-         patch("app.agents.orchestrator.execute_tool", mock_execute):
-        result = await run_orchestrator(
+    with patch("app.agents.loop.litellm.acompletion", new_callable=AsyncMock, side_effect=mock_completion), \
+         patch("app.agents.loop.validate_tool_args", return_value=[]), \
+         patch("app.agents.loop.execute_tool", mock_execute):
+        result = await run_loop(
             message="附近哪里有宠物医院",
             system_prompt="test",
             context_messages=[{"role": "user", "content": "附近哪里有宠物医院"}],
@@ -368,9 +369,9 @@ async def test_graph_streams_sse_events_in_order():
 
     seen = []
     result = None
-    with patch("app.agents.orchestrator.litellm.acompletion", new_callable=AsyncMock, side_effect=mock_completion), \
-         patch("app.agents.orchestrator.validate_tool_args", return_value=[]), \
-         patch("app.agents.orchestrator.execute_tool", mock_execute):
+    with patch("app.agents.loop.litellm.acompletion", new_callable=AsyncMock, side_effect=mock_completion), \
+         patch("app.agents.loop.validate_tool_args", return_value=[]), \
+         patch("app.agents.loop.execute_tool", mock_execute):
         async for kind, payload in stream_agent(
             system_prompt="test",
             context_messages=[{"role": "user", "content": "三妹吃了狗粮"}],

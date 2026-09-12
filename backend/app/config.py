@@ -91,8 +91,8 @@ class Settings(BaseSettings):
     # Apple In-App Purchase / StoreKit 2
     # app_apple_id is the numeric Apple ID from App Store Connect (Apple ID under your app listing)
     app_apple_id: int = 6761727110
-    # True for sandbox/TestFlight, False for App Store production. Clients may override via X-Apple-Env header.
-    iap_sandbox: bool = True
+    # Which StoreKit environment is accepted is derived from `environment`
+    # below (see storekit.allowed_environments) — never from the client.
 
     # Server public URL (for constructing image URLs for LLM vision)
     server_public_url: str = "http://168.138.75.153:8000"

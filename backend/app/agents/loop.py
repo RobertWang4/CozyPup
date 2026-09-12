@@ -1,17 +1,18 @@
-"""Unified Agent Loop — single orchestrator that replaced the old 4-path design.
+"""Shared building blocks of the unified Agent Loop.
 
-One `while` loop handles every scenario (pure chat, single tool call, multi
-tool call, image analysis). A `nudge` mechanism catches the case where the
-LLM failed to call a high-confidence suggested tool and retries once.
+The loop itself is the LangGraph state machine in `agents/graph.py`; this
+module holds the pieces its nodes are built from, so the graph stays a thin
+wiring layer:
 
-Flow per round:
-  1. Stream LLM completion (parallel non-streaming capture when trace is on)
-  2. If tool_calls returned → dispatch each (validate → confirm gate →
-     execute → emit card) → feed results back → loop
-  3. If no tool_calls → check plan nag, then nudge, then exit
+  - `dispatch_tool` — validate → confirm gate → execute → emit card
+  - `stream_completion` — streaming LLM call (+ trace capture)
+  - nudge helpers — retry once when the LLM skipped a high-confidence tool
+  - write-claim / pushback guards — catch fabricated "已更新/updated" replies
+  - `can_skip_round2` — reuse Round 1 text instead of a second LLM call
+  - `OrchestratorResult` — aggregate result of one turn
+  - `MAX_ROUNDS` — loop cap shared by every graph back-edge
 
 Key collaborators:
-  - dispatch_tool: validates, gates, and executes a single tool call
   - constants.needs_confirm: central confirm-gate policy
   - micro_compact: compresses old tool results between rounds
   - trace_collector: optional per-request trace for X-Debug header
@@ -29,14 +30,13 @@ import json
 import logging
 import re
 from dataclasses import dataclass, field
-from typing import Callable, Awaitable
+from typing import Callable
 
 import litellm
 
 from app.agents import llm_extra_kwargs
 from app.agents.constants import SKIP_ROUND2_TOOLS, maybe_await
 from app.agents.control_tools import handle_control_tool
-from app.agents.pre_processing.types import SuggestedAction
 from app.agents.tool_confirmation import (
     WAITING_CONFIRM_INSTRUCTION,
     build_confirm_card,
@@ -61,7 +61,7 @@ NUDGE_CONFIDENCE = 0.8    # Minimum pre-processor confidence to trigger a nudge
 
 @dataclass
 class OrchestratorResult:
-    """Aggregate result of one `run_orchestrator` call.
+    """Aggregate result of one agent turn.
 
     Streams are emitted live via on_token/on_card callbacks; this struct
     exists so the caller can also inspect final state (e.g. to persist the
@@ -208,7 +208,7 @@ async def dispatch_tool(
 # Nudge helpers — retry once when LLM skipped a high-confidence tool
 # ---------------------------------------------------------------------------
 
-def _find_missed_tools(
+def find_missed_tools(
     suggested_actions: list[dict],
     tools_called: set[str],
 ) -> list[dict]:
@@ -227,7 +227,7 @@ def _find_missed_tools(
     ]
 
 
-def _inject_nudge(
+def inject_nudge(
     messages: list[dict],
     last_text: str,
     missed: list[dict],
@@ -351,7 +351,7 @@ def _thinking_text(tool_name: str, lang: str) -> str:
 
 # All tools that actually mutate persisted state. If the LLM's text claims a
 # mutation happened but none of these were called, it's a fabrication.
-_WRITE_TOOLS: set[str] = {
+WRITE_TOOLS: set[str] = {
     "create_calendar_event", "update_calendar_event", "delete_calendar_event",
     "create_reminder", "update_reminder", "delete_reminder", "delete_all_reminders",
     "create_pet", "delete_pet", "update_pet_profile",
@@ -386,7 +386,7 @@ _WRITE_NEGATION_EN = re.compile(
 _WRITE_NEGATION_ZH = re.compile(r"(?:没有?|未|不会|无法|没能|不能|并未)[^。！？\n]{0,12}$")
 
 
-def _text_claims_write(text: str, lang: str) -> bool:
+def text_claims_write(text: str, lang: str) -> bool:
     """True if the reply text claims a mutation that we should verify happened."""
     if not text:
         return False
@@ -421,7 +421,7 @@ _PUSHBACK_EN = re.compile(
 )
 
 
-def _detect_pushback(text: str, lang: str) -> bool:
+def detect_pushback(text: str, lang: str) -> bool:
     """True if the user's latest message disputes a prior completion claim."""
     if not text:
         return False
@@ -431,7 +431,7 @@ def _detect_pushback(text: str, lang: str) -> bool:
     return bool(_PUSHBACK_EN.search(text) or _PUSHBACK_ZH.search(text))
 
 
-def _inject_pushback_preamble(messages: list[dict], lang: str) -> None:
+def inject_pushback_preamble(messages: list[dict], lang: str) -> None:
     """Append a high-priority system directive just before the final user turn.
 
     The LLM's own prior '已删除/updated' statements in chat history are
@@ -466,7 +466,7 @@ def _inject_pushback_preamble(messages: list[dict], lang: str) -> None:
     messages.append({"role": "system", "content": note})
 
 
-def _inject_write_claim_nag(
+def inject_write_claim_nag(
     messages: list[dict],
     last_text: str,
     lang: str,
@@ -493,7 +493,7 @@ def _inject_write_claim_nag(
 
 
 # ---------------------------------------------------------------------------
-# _stream_completion — streaming LLM call (with optional trace capture)
+# stream_completion — streaming LLM call (with optional trace capture)
 # ---------------------------------------------------------------------------
 
 async def _capture_non_streaming(
@@ -527,7 +527,7 @@ async def _capture_non_streaming(
         trace.record(f"llm_capture_error_round_{round_num}", str(exc)[:300])
 
 
-async def _stream_completion(
+async def stream_completion(
     messages: list[dict],
     model: str,
     on_token: Callable | None = None,
@@ -662,7 +662,7 @@ async def _stream_completion(
 # Skip Round 2 — reuse Round 1 text as the final reply for simple CRUD tools
 # ---------------------------------------------------------------------------
 
-def _can_skip_round2(
+def can_skip_round2(
     tool_calls: list[dict],
     tool_results_map: dict[str, dict],
     result: OrchestratorResult,
@@ -708,65 +708,3 @@ def _can_skip_round2(
             return False
 
     return True
-
-
-# ---------------------------------------------------------------------------
-# run_orchestrator — unified Agent Loop entry point
-# ---------------------------------------------------------------------------
-
-async def run_orchestrator(
-    message: str,
-    system_prompt: str,
-    context_messages: list[dict],
-    model: str | None = None,
-    db=None,
-    user_id=None,
-    session_id=None,
-    on_token: Callable[[str], Awaitable[None]] | None = None,
-    on_card: Callable[[dict], Awaitable[None]] | None = None,
-    on_thinking: Callable[[str, str], Awaitable[None]] | None = None,
-    today: str = "",
-    suggested_actions: list[SuggestedAction] | None = None,
-    trace: TraceCollector = INACTIVE_TRACE,
-    **kwargs,
-) -> OrchestratorResult:
-    """Callback-based wrapper around the LangGraph agent loop.
-
-    The loop itself lives in `agents/graph.py`; this shim keeps the old
-    callback signature for the CLI harness, evals and unit tests. The HTTP
-    route consumes `graph.stream_agent` directly.
-    """
-    from app.agents.graph import stream_agent
-
-    lang = kwargs.pop("lang", "zh")
-    result = OrchestratorResult()
-
-    async for kind, payload in stream_agent(
-        system_prompt=system_prompt,
-        context_messages=context_messages,
-        model=model,
-        db=db,
-        user_id=user_id,
-        session_id=session_id,
-        lang=lang,
-        today=today,
-        suggested_actions=suggested_actions,
-        trace=trace,
-        images=kwargs.pop("images", None),
-        image_urls=kwargs.pop("image_urls", None),
-        recent_image_urls=kwargs.pop("recent_image_urls", None),
-        location=kwargs.pop("location", None),
-        pets=kwargs.pop("pets", None),
-    ):
-        if kind == "result":
-            result = payload
-            continue
-        event, data = payload["event"], payload["data"]
-        if event == "token" and on_token:
-            await maybe_await(on_token, data["text"])
-        elif event == "thinking" and on_thinking:
-            await maybe_await(on_thinking, data["text"], data["tool"])
-        elif event == "card" and on_card:
-            await maybe_await(on_card, data)
-
-    return result
