@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: Backend lint + tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    env:
+      # The unit suite never touches a real database or LLM: tests that need
+      # persistence build their own in-memory SQLite (see tests/conftest.py,
+      # which teaches SQLite to accept the Postgres-only JSONB/vector types).
+      # DATABASE_URL is deliberately left at the pydantic-settings default:
+      # `app.database` builds the async engine at import time, so the URL must
+      # name an installed driver (asyncpg) — it is never connected to.
+      JWT_SECRET: ci-test-secret-not-used-anywhere-real
+      MODEL_API_KEY: ci-unused
+      ENVIRONMENT: dev
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+
+      - name: Install
+        run: pip install -e ".[dev]"
+
+      - name: Lint
+        run: ruff check app
+
+      - name: Tests
+        run: pytest tests --ignore=tests/e2e --cov=app --cov-report=term

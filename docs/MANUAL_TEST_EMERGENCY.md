@@ -1,5 +1,14 @@
 # Emergency 流程手动测试案例
 
+> **注意：本文写于紧急分类器之前。** 里面的用例假设升级模型的决定完全由
+> `app/agents/emergency.py` 的关键词正则做出。现在这个决定还可以来自
+> `backend/nano/` 的微调 Qwen3-0.6B 分类器，由 `app/agents/emergency_clf.py`
+> 按 `emergency_clf_mode` flag 合并两方结论（`off` / `shadow` / `union` /
+> `clf`，配了 `EMERGENCY_CLF_URL` 时默认 `shadow`）。
+> 线上仍是 `shadow`（只记日志不路由），所以下面的用例目前仍然有效；
+> 一旦切到 `union` 或 `clf`，"关键词命中"这一列就不再是唯一的触发条件。
+> `emergency_router.py` 的急救热线短路逻辑不受影响。
+
 ## 目的
 验证紧急情况从用户输入 → 后端检测 → SSE emergency 事件 → iOS 展示 EmergencyBanner 的完整链路。
 

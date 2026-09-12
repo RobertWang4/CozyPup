@@ -1,377 +1,147 @@
 # CozyPup
 
+[![CI](https://github.com/RobertWang4/CozyPup/actions/workflows/ci.yml/badge.svg)](https://github.com/RobertWang4/CozyPup/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/)
+
 **English** | [中文](README.zh.md)
 
 AI-powered pet health assistant. One chat interface handles everything — recording events, managing pet profiles, finding nearby vets, setting reminders. No forms, no buttons, no onboarding wizards. Users talk to the AI, and the AI executes.
 
-Native SwiftUI iOS app + FastAPI Python backend + PostgreSQL (Neon) + LLM via LiteLLM.
-
-**Live on Google Cloud Run.** iOS app in TestFlight.
+Live on Google Cloud Run; the iOS app ships through TestFlight. **This repo is the backend.** The SwiftUI client (`ios-app/`) is a private checkout and is not published here.
 
 ## Screenshots
 
 <p align="center">
-  <img src="Photos/IMG_1022.PNG" width="200" alt="Home — voice input">
-  <img src="Photos/IMG_1025.PNG" width="200" alt="Chat — event recording + place search">
-  <img src="Photos/IMG_1026.PNG" width="200" alt="Place detail card with reviews">
-  <img src="Photos/IMG_1027.PNG" width="200" alt="Calendar timeline">
+  <img src="docs/media/chat-voice-input.png" width="200" alt="Home — voice input">
+  <img src="docs/media/chat-record-and-places.png" width="200" alt="Chat — event recording + place search">
+  <img src="docs/media/place-detail-card.png" width="200" alt="Place detail card with reviews">
+  <img src="docs/media/calendar-timeline.png" width="200" alt="Calendar timeline">
 </p>
 
----
+## Results
 
-## Architecture Overview
+Every number below is reproducible from this repo; the source is named in each row. Nothing here is extrapolated.
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│  iOS (SwiftUI)                                                  │
-│  ChatView → ChatStore → ChatService (SSE) → APIClient          │
-│  CalendarDrawer / Settings / Cards (PlaceCard, RecordCard, ...) │
-└──────────────────────────┬──────────────────────────────────────┘
-                           │ SSE (token / card / emergency / done)
-┌──────────────────────────▼──────────────────────────────────────┐
-│  FastAPI Backend                                                │
-│                                                                 │
-│  POST /api/v1/chat ─── SSE EventSourceResponse                 │
-│    │                                                            │
-│    ├─ Phase 0: Session + Message persistence                    │
-│    ├─ Phase 1: Parallel pre-processing (regex, <1ms)            │
-│    │   ├─ Emergency keyword detection                           │
-│    │   ├─ Intent extraction → SuggestedActions                  │
-│    │   └─ Language detection                                    │
-│    ├─ Phase 2: Prompt assembly (cache-optimized order)          │
-│    │   ├─ Tool definitions + decision tree (100% cache hit)     │
-│    │   ├─ Pet profiles (high cache hit)                         │
-│    │   ├─ Context summary (lazy compression)                    │
-│    │   └─ Emergency/preprocessor hints (dynamic)                │
-│    └─ Phase 3: Orchestrator loop (max 5 rounds)                 │
-│        ├─ Stream LLM → tokens to client                        │
-│        ├─ Tool calls → validate → execute → feed back           │
-│        ├─ Nudge: retry if LLM missed expected tools             │
-│        └─ Plan nag: enforce multi-step completion               │
-│                                                                 │
-│  Parallel: Profile extractor (async, non-blocking)              │
-│  Parallel: Context compression (lazy, threshold-based)          │
-└─────────────────────────────────────────────────────────────────┘
-```
+| What | Result | Source |
+|---|---|---|
+| Agent regression suite, `pass^2` (18 curated scenarios, each run twice, both must pass) | **94%**, up from 83% before the LangGraph migration | [`docs/agent-request-flow.md`](docs/agent-request-flow.md#迁移结果) |
+| Emergency classifier (fine-tuned Qwen3-0.6B, Q8) | **F1 0.948** — recall 0.982, precision 0.917 | [`backend/nano/README.md`](backend/nano/README.md) |
+| …vs. the keyword regex it replaces | F1 0.47 — recall 0.375, precision 0.636 | same |
+| Classifier latency, 4 threads (Cloud Run sidecar budget: p95 < 300ms) | p50 20ms / p95 22ms | same |
+| Knowledge retrieval top-1 / top-3 (zh, n=60) | 88.3% / 96.7% | [`backend/eval_history/`](backend/eval_history/) |
+| Knowledge retrieval top-1 / top-3 (en, n=30) | 93.3% / 100% | same |
+| Safety red-line cases (dosage / diagnosis / human medicine) | 14 / 14 pass | same |
+| Unit suite | 650 passed, 9 skipped, 62% line coverage | `pytest tests --ignore=tests/e2e --cov=app` |
 
----
-
-## Constrained Agent Framework
-
-The core insight: **LLM outputs are treated as suggestions, not commands.** Every tool call is validated, gate-checked, and auto-corrected before execution. A deterministic pre-processor provides fallback — if the LLM fails, the system still executes the most-likely-intended action.
-
-This allows using cheaper, faster models (Grok 4.1 Fast for daily chat, Kimi K2.5 for emergencies) while maintaining accuracy that typically requires expensive models.
-
-### The Six Layers
+## Architecture
 
 ```
-User Message
-    │
-    ▼
-┌─────────────────────────────────────────────────┐
-│ 1. PRE-PROCESSOR (deterministic, <1ms)          │
-│    Regex extracts intent + args → SuggestedAction│
-│    Confidence 0.0-1.0 per action                │
-│    Injected as hints into system prompt          │
-└────────────────────┬────────────────────────────┘
-                     ▼
-┌─────────────────────────────────────────────────┐
-│ 2. LLM ORCHESTRATOR (streaming, max 5 rounds)   │
-│    LLM decides what to do via function calling   │
-│    Each tool call goes through layers 3-5:       │
-│    ┌───────────────────────────────────────────┐ │
-│    │ 3. VALIDATION — schema + format checks    │ │
-│    │    Errors fed back to LLM for auto-fix    │ │
-│    ├───────────────────────────────────────────┤ │
-│    │ 4. CONFIRM GATE — destructive ops blocked │ │
-│    │    Card shown to user, execution deferred │ │
-│    ├───────────────────────────────────────────┤ │
-│    │ 5. EXECUTOR — ownership check + DB write  │ │
-│    │    Returns result + card for frontend     │ │
-│    └───────────────────────────────────────────┘ │
-│    If LLM missed tools → NUDGE (one retry)       │
-│    If plan incomplete → PLAN NAG (continue)      │
-└────────────────────┬────────────────────────────┘
-                     ▼
-┌─────────────────────────────────────────────────┐
-│ 6. POST-PROCESSOR (deterministic fallback)       │
-│    If LLM claimed "done" but called no tools:    │
-│    Execute pre-processor's high-confidence        │
-│    suggestions directly (≥0.8 confidence)         │
-└─────────────────────────────────────────────────┘
+ iOS (SwiftUI, private repo)                    ChatView → ChatStore → ChatService
+        │  SSE: token / thinking / card / emergency / done
+        ▼
+ FastAPI   POST /api/v1/chat ── EventSourceResponse
+   Phase 0  session + message persistence (one session per calendar day)
+   Phase 1  parallel pre-processing: language, emergency regex, nano classifier,
+            intent extraction → SuggestedAction(tool, args, confidence)
+   Phase 2  prompt assembly, static → dynamic for prefix-cache hits
+            + MemWeaver retrieval (pgvector: user memory ∪ global knowledge)
+   Phase 3  LangGraph agent graph, MAX_ROUNDS = 5:
+
+              START → prepare → model ──tool_calls──→ tools ──→ model
+                                  │                     │
+                                  │ none                ├─deferred─→ confirm ⇄
+                                  ▼                     ▼      (interrupt)
+                                review ──retry──→     finalize → END
+
+   Phase 4  non-blocking: profile extraction, memory sync, context compression
+
+ Postgres (Supabase) — app tables + pgvector + LangGraph checkpoints
+ Sidecar  llama-server on :8081 — Qwen3-0.6B emergency classifier
 ```
 
-### Why This Matters
+### The constrained-agent idea
 
-| Problem | Naive LLM+Tools | Constrained Agent |
-|---------|-----------------|-------------------|
-| LLM says "recorded" but didn't call tool | Data loss | Post-processor catches and executes |
-| LLM passes invalid date format | Tool crashes | Validator rejects, LLM auto-corrects |
-| LLM merges "walked dog + gave bath" into one event | Lost data | Plan tool forces decomposition |
-| LLM forgets to call search_places | "I don't know nearby vets" | Nudge mechanism retries with explicit instruction |
-| User says "delete my pet" | Instant deletion | Confirm gate shows card, user must approve |
-| Emergency: "my dog is seizing" | Generic advice | Keyword detection → model upgrade → trigger_emergency tool |
+**LLM outputs are treated as suggestions, not commands.** Every tool call passes through code that can reject or repair it: a schema validator returns an error list instead of raising, and the errors are fed back as a tool result so the model fixes its own arguments next round; an ownership check makes a wrong `pet_id` impossible to write; destructive calls are deferred, never executed on the model's word alone. A deterministic regex pre-processor runs first and attaches confidence-scored `SuggestedAction`s to the prompt, so when the model skips an obvious write the `review` node can nudge it, and a post-processor can execute high-confidence actions outright if the nudge also fails. Nothing in the loop depends on the model behaving well. That is what makes a cheap model (DeepSeek V4.1 Flash) accurate enough to ship, with a stronger one (`gpt-5`) reserved for emergencies.
 
-### Tool Inventory (34 tools)
+Since 2026-09 the loop is a **LangGraph** graph rather than a hand-written `while`. The payoff is the confirm gate: a destructive call parks itself, the turn finishes normally so the model can still use its other tools' results, and then `interrupt()` checkpoints the whole graph to Postgres. Tapping confirm resumes that thread with `Command(resume=True)` and executes the *stored* arguments — the model is never asked again, so it cannot change its mind. Full walkthrough: [`docs/agent-request-flow.md`](docs/agent-request-flow.md).
 
-| Domain | Tools |
-|--------|-------|
-| Calendar | create/query/update/delete_calendar_event, upload/remove_event_photo, add_event_location |
-| Pets | create/delete_pet, update_pet_profile, set_pet_avatar, summarize_pet_profile, list_pets |
-| Reminders | create/update/delete/delete_all/list_reminders |
-| Places | search_places, search_places_text, get_place_details, get_directions |
-| Tasks | manage_daily_task |
-| Other | draft_email, trigger_emergency, set_language, plan, request_images |
+### Failure modes this buys you
 
-### Orchestrator Loop Detail
+| Problem | Naive LLM + tools | Here |
+|---|---|---|
+| Model says "recorded" but called no tool | Silent data loss | write-claim nag, then post-processor executes it |
+| Model passes an invalid date format | Tool crashes | validator rejects, model auto-corrects next round |
+| Model merges "walked dog + gave bath" into one event | Lost data | `plan` tool forces decomposition, plan nag enforces it |
+| Model forgets `search_places` | "I don't know any nearby vets" | nudge retries with an explicit instruction |
+| User says "delete my pet" | Instant deletion | deferred → confirm card → `interrupt` → resume with stored args |
+| "My dog is seizing" | Generic advice | classifier + regex → model upgrade → `trigger_emergency` |
 
-```python
-# Simplified orchestrator flow (orchestrator.py)
+## What's notable
 
-MAX_ROUNDS = 5
+**Fine-tuned emergency router** (`backend/nano/`) — a LoRA fine-tune of Qwen3-0.6B that decides whether a message is a real emergency and deserves the expensive model. Reads the logprobs of the `true`/`false` tokens from one forward pass, so it returns a probability rather than a label and the threshold is tunable toward recall. Exported to GGUF, Q8-quantized, and deployed as a llama-server sidecar container next to the backend on Cloud Run. `app/agents/emergency_clf.py` merges its verdict with the old regex under a four-stage rollout flag (`off` → `shadow` → `union` → `clf`); production is on **`shadow`** — the model is called and logged but the regex still routes, and every disagreement is logged with `disagree=true` for the next training round. The README in `nano/` is written as a teaching log: the 606-item hand-checked eval set, why accuracy is the wrong metric, and the shortcut the model learned at each round (r1: "short = false"; r2: "name + vomited = true") plus the minimal contrast pairs that fixed it.
 
-for round in range(MAX_ROUNDS):
-    # 1. Stream LLM response
-    text, tool_calls = await stream_completion(messages, tools)
+**Eval harness** (`backend/app/agent_harness/`) — scenario-driven evals against a live backend. Deterministic graders (`graders.py`) check tools called, tools actually executed, card types, and DB side effects; an LLM judge (`judge.py`) handles the text-quality rubrics code can't, with the product's own conventions in its system prompt so it doesn't fail a correct reply for being terse. `--repeat N` plus `--baseline` gives the `pass^2` metric that separates real regressions from model jitter, and `report.py` flags any scenario whose pass rate dropped against a previous report. 18 curated scenarios plus 354 migrated from the old e2e suite.
 
-    if not tool_calls:
-        # 2a. Check plan completion
-        if plan_steps and not all_covered:
-            inject_plan_nag()  # "You planned 3 steps but only did 2"
-            continue
+**MemWeaver memory + knowledge** (`backend/app/memory/`) — one pgvector query UNIONs the user's own `behavioral` / `cognitive` memory nodes with global `knowledge` chunks, filtered by species and cosine distance, with behavioral hits re-weighted by recency. Calendar writes and deletes sync their own memory nodes. Exposed both as eager prompt context and as a `search_knowledge` tool, which returns a references card the app can open.
 
-        # 2b. Check nudge
-        missed = find_missed_tools(suggested_actions, tools_called)
-        if missed and not nudge_used:
-            inject_nudge(missed)  # "You should have called search_places"
-            continue
+**Admin CLI** (`backend/app/admin_cli/`) — `admin` for real operations: user inspection, subscription grants and refunds, bans, feature flags, rate-limit and session resets, full pipeline replay of any request by correlation id. Every write leaves a row in `admin_audit_log` with the operator and a mandatory `--reason`. See [`docs/ADMIN_CLI.md`](docs/ADMIN_CLI.md).
 
-        break  # Normal exit
+**33 tools** across calendar, pets, reminders, places, daily tasks, knowledge, and control (`plan`, `request_images`, `set_language`); 5 of them gated behind confirmation.
 
-    # 3. Execute each tool call
-    for tc in tool_calls:
-        args = parse_arguments(tc)
-        errors = validate_tool_args(tc.name, args)  # Layer 3
-        if errors:
-            feed_error_to_llm(errors)
-            continue
+## Setup
 
-        if tc.name in CONFIRM_TOOLS:                # Layer 4
-            emit_confirm_card(tc)
-            continue
-
-        result = await execute_tool(tc.name, args)  # Layer 5
-        if result.get("card"):
-            emit_card(result["card"])
-        feed_result_to_llm(result)
-```
-
----
-
-## Context Management
-
-### Lazy Compression (`context_agent.py`)
-
-Instead of stuffing 20 raw messages into the prompt, CozyPup uses a context agent:
-
-```
-Long-term context: pet.profile_md (auto-updated by profile_extractor)
-Short-term context: session_summary (compressed by context_agent)
-Recent messages: last 3-5 raw messages
-```
-
-**Trigger**: When unsummarized messages ≥ 5, an async context agent (cheap model, temperature=0.1) compresses them into a structured summary:
-
-```json
-{
-  "topics": ["discussed vaccine schedule", "recorded daily walk"],
-  "key_facts": ["next vaccine due April 15", "vet appointment confirmed"],
-  "pending": "user asked about nearby groomers but hasn't chosen one",
-  "mood": "casual"
-}
-```
-
-This achieves ~60-70% token reduction while preserving conversation continuity.
-
-### Profile Extraction (`profile_extractor.py`)
-
-Runs in parallel with the main orchestrator (non-blocking). Extracts pet health info from natural conversation and merges it into `pet.profile_md`:
-
-```
-User: "维尼对鸡肉过敏，上次吃了就吐"
-→ Extractor detects: allergy info for pet "维尼"
-→ Merges into profile_md under ## 健康 section
-→ Future conversations reference this automatically
-```
-
----
-
-## Emergency Pipeline
-
-```
-User message: "我的狗在抽搐！"
-    │
-    ├─ emergency.py: regex matches "抽搐" → EmergencyCheckResult(detected=True)
-    │
-    ├─ Model switch: daily model (Grok 4.1 Fast) → emergency model (Kimi K2.5)
-    │
-    ├─ Prompt injection: "⚠️ Emergency keyword detected: [抽搐]. Evaluate and
-    │   call trigger_emergency if this is a real emergency."
-    │
-    └─ LLM decides:
-        ├─ Real emergency → trigger_emergency(action="find_er") → emergency SSE event
-        └─ False alarm ("上次抽搐是什么时候") → normal text reply
-```
-
-Key: regex does cheap pre-filtering, LLM makes the final judgment. No false positives from keyword-only detection.
-
----
-
-## SSE Streaming Protocol
-
-```
-event: token\ndata: {"text": "帮你"}\n\n
-event: token\ndata: {"text": "记录了"}\n\n
-event: card\ndata: {"type": "record", "pet_name": "维尼", "date": "2026-04-05", ...}\n\n
-event: emergency\ndata: {"message": "...", "action": "find_er"}\n\n
-event: done\ndata: {"intent": "chat", "session_id": "..."}\n\n
-```
-
-iOS `ChatService.swift` parses SSE events into a typed `AsyncStream<SSEEvent>` enum, yielding tokens for real-time display and cards for structured UI rendering.
-
----
-
-## iOS Architecture
-
-```
-ios-app/CozyPup/
-├── Services/
-│   ├── APIClient.swift       # Swift actor, JWT management, SSE streaming
-│   ├── ChatService.swift     # SSE parser → AsyncStream<SSEEvent>
-│   ├── CalendarSyncService.swift  # EventKit sync (per-pet calendars)
-│   └── SpeechService.swift   # Speech-to-text
-├── Stores/                   # @MainActor ObservableObject, API-first
-│   ├── ChatStore.swift       # Message persistence, daily session reset
-│   ├── CalendarStore.swift   # CRUD via API, Apple Calendar sync
-│   ├── PetStore.swift        # Pet CRUD with UserDefaults cache
-│   └── AuthStore.swift       # Apple/Google OAuth + JWT
-├── Models/
-│   └── ChatMessage.swift     # CardData enum (12 card types, auto-decoded from SSE)
-└── Views/
-    ├── Chat/ChatView.swift   # Main chat interface
-    ├── Calendar/             # Timeline, spending stats, drawer
-    ├── Cards/                # PlaceCard, PlaceDetailCard, DirectionsCard, RecordCard, ...
-    └── Settings/             # Pet management, calendar sync, language
-```
-
-**Design system**: Timepage-inspired minimalist aesthetic. All UI uses `Tokens.*` (colors, fonts, spacing, radius) — zero hardcoded values.
-
----
-
-## Backend Structure
-
-```
-backend/app/
-├── main.py                   # App factory, middleware stack
-├── config.py                 # pydantic-settings from env
-├── auth.py                   # JWT + Apple/Google OAuth
-├── models.py                 # SQLAlchemy models (User, Pet, CalendarEvent, Reminder, ...)
-├── database.py               # Async engine + session
-├── routers/                  # REST endpoints (chat, calendar, pets, reminders, ...)
-├── agents/
-│   ├── orchestrator.py       # Unified loop: stream → dispatch → validate → execute
-│   ├── validation.py         # Per-tool schema validators with auto-correction
-│   ├── locale.py             # Bilingual prompts + tool decision tree
-│   ├── prompts_v2.py         # Cache-optimized prompt assembly
-│   ├── emergency.py          # Keyword detection + model routing
-│   ├── context_agent.py      # Lazy context compression
-│   ├── profile_extractor.py  # Parallel pet profile enrichment
-│   ├── post_processor.py     # Deterministic fallback execution
-│   ├── trace_collector.py    # Debug trace (X-Debug: true header)
-│   ├── constants.py          # CONFIRM_TOOLS, MAX_ROUNDS
-│   ├── pre_processing/       # Regex-based intent extraction (6 domain modules)
-│   └── tools/
-│       ├── definitions.py    # 34 tool schemas (LLM function calling)
-│       ├── registry.py       # @register_tool decorator
-│       ├── calendar.py       # Event CRUD + photo + location
-│       ├── pets.py           # Pet management + profile
-│       ├── reminders.py      # Push notification reminders
-│       ├── misc.py           # Places, email, emergency, language, directions
-│       └── tasks.py          # Daily task management
-├── services/
-│   ├── places.py             # Google Places + Directions API (cached)
-│   └── push.py               # APNs push notifications
-├── middleware/                # Rate limiting, CORS
-└── debug/                    # Structured logging, error snapshots, CLI tools
-```
-
----
-
-## Deployment
-
-- **Backend**: Google Cloud Run (Montreal), auto-deployed via Cloud Build on push to main
-- **Database**: Neon PostgreSQL (serverless)
-- **LLM**: LiteLLM → Grok 4.1 Fast (daily) / Kimi K2.5 (emergency)
-- **Storage**: GCS bucket for pet avatars + local disk for event photos
-- **Secrets**: Google Secret Manager
-
----
-
-## Tech Stack
-
-| Layer | Technology |
-|-------|-----------|
-| iOS | SwiftUI, Combine, MapKit, EventKit, Speech |
-| Backend | FastAPI, SQLAlchemy (async), Alembic, LiteLLM |
-| Database | PostgreSQL (Neon serverless) |
-| LLM | Grok 4.1 Fast, Kimi K2.5 (via LiteLLM) |
-| Maps | Google Places API, Google Directions API |
-| Auth | Apple Sign-In, Google Sign-In, JWT |
-| Deploy | Google Cloud Run, Cloud Build, Secret Manager |
-| Push | APNs (Apple Push Notification service) |
-
----
-
-## Key Design Decisions
-
-1. **Chat-only input** — No forms, no onboarding. Everything through natural conversation.
-2. **Orchestrator + Executor** — LLM decides *what* to do (function calling), pure code *executes* it.
-3. **Constrained Agent** — Validation + nudge + plan tracking + post-processor makes cheap models reliable.
-4. **Daily sessions** — One chat session per calendar day, auto-created on first message.
-5. **Dual-model routing** — Fast model for chat, accurate model for emergencies.
-6. **API-first iOS** — Stores call backend first, fall back to UserDefaults cache on failure.
-7. **SSE streaming** — Real-time token display + structured card delivery in single stream.
-
----
-
-## Development
-
-### Setup
 ```bash
 cd backend
 python -m venv .venv && source .venv/bin/activate
-pip install -e .
+pip install -e ".[dev]"          # drop [dev] for a runtime-only install
 ```
 
-### Run
+Create `backend/.env` (see `.env.example`). Minimum for a working chat loop:
+
+| Key | Notes |
+|---|---|
+| `DATABASE_URL` | `postgresql+asyncpg://…` — Supabase session pooler in production |
+| `MODEL_API_BASE` / `MODEL_API_KEY` | OpenAI-compatible endpoint for `MODEL` (default `deepseek/deepseek-flash`) |
+| `JWT_SECRET` | any non-default value |
+
+Optional: `EMERGENCY_MODEL` with its own `EMERGENCY_MODEL_API_BASE` / `_API_KEY`; `EMBEDDING_API_KEY` for memory and knowledge retrieval; `GOOGLE_PLACES_API_KEY` for vet/groomer search; `EMERGENCY_CLF_URL` to enable the classifier sidecar; `APNS_*` for push; `DOUBAO_*` for streaming speech input; `GCS_BUCKET` for avatar uploads.
+
 ```bash
-uvicorn app.main:app --reload --port 8000
+alembic upgrade head                         # migrations
+uvicorn app.main:app --reload --port 8000    # server
+ruff check app                               # lint
+pytest tests --ignore=tests/e2e              # unit tests (no DB or API keys needed)
+docker build -t cozypup-backend .            # same image Cloud Build deploys
 ```
 
-### Database Migrations
+Evals hit a real backend and cost real tokens:
+
 ```bash
-alembic upgrade head                          # apply migrations
-alembic revision --autogenerate -m "msg"      # create migration
+agent eval scenarios/agent --env prod --repeat 2 --report reports/run.json
+python -m nano.cli eval --predictor keyword           # classifier baselines
 ```
 
-### Tests
-```bash
-pytest tests/ -v                              # all tests
-pytest tests/test_auth.py -v                  # single file
-```
+## Docs
 
-### E2E Audit (LLM tool-calling accuracy)
-```bash
-python tests/e2e/run_audit.py --lang zh               # full audit
-python tests/e2e/run_audit.py --lang zh --case 1.1    # single case
-```
+- [`docs/agent-request-flow.md`](docs/agent-request-flow.md) — one message end to end: the graph, its state, the confirm interrupt
+- [`docs/ADMIN_CLI.md`](docs/ADMIN_CLI.md) — full operator CLI reference
+- [`docs/debug-guide.md`](docs/debug-guide.md) — tracing a user-reported bug from error to regression test
+- [`backend/nano/README.md`](backend/nano/README.md) — the classifier fine-tune, written as a teaching log
+- [`CLAUDE.md`](CLAUDE.md) — working notes: conventions, deployment, the checklist for adding a tool
+- `web-demo/` — static HTML mockups of the iOS screens (design reference, no backend)
+
+## Stack
+
+| Layer | Technology |
+|---|---|
+| Backend | FastAPI, SQLAlchemy 2 (async), Alembic, LangGraph, LiteLLM |
+| Database | PostgreSQL on Supabase (session pooler) + pgvector |
+| LLM | DeepSeek V4.1 Flash (chat) · `gpt-5` (emergency) · Qwen3-0.6B LoRA (routing) · `text-embedding-3-small` |
+| iOS (private) | SwiftUI, Combine, MapKit, EventKit, Speech |
+| Platform | Cloud Run (Montreal), Cloud Build, Secret Manager, GCS, APNs |
+| Auth | Apple Sign-In, Google Sign-In, JWT |
+
+## License
+
+MIT — see [LICENSE](LICENSE).

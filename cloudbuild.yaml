@@ -1,4 +1,19 @@
 steps:
+  # Gate the deploy on the unit suite. e2e is excluded: it talks to the live
+  # Cloud Run service and needs real model credentials.
+  - name: 'python:3.12'
+    entrypoint: bash
+    env:
+      - 'JWT_SECRET=cloudbuild-test-secret-not-used-anywhere-real'
+      - 'ENVIRONMENT=dev'
+    args:
+      - '-ec'
+      - |
+        cd backend
+        pip install --quiet -e ".[dev]"
+        ruff check app
+        pytest tests --ignore=tests/e2e -q
+
   # Build backend image
   - name: 'gcr.io/cloud-builders/docker'
     args:

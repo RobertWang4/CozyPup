@@ -3,95 +3,83 @@ __pycache__/
 *.pyc
 .venv/
 *.egg-info/
+.coverage
+.coverage.*
+htmlcov/
+.pytest_cache/
+.ruff_cache/
 
 # Node
 node_modules/
 dist/
 .vite/
 
-# Logs (keep structure, ignore content)
-backend/logs/error_snapshots/*.json
-
-# Generated tests tracked separately
-# backend/tests/generated/*.py
+# OS
+.DS_Store
 
 # IDE
 .vscode/
 .idea/
 
-# Codex CLI config (contains API keys)
-.codex/
-
-# Backend runtime artifacts
-backend/backend.log
-backend/reports/
-
-# OS
-.DS_Store
-
 # Environment
 .env
 .env.local
 
-# APNs keys
+# Secrets / platform config
+# AuthKey_*.p8 = APNs signing keys; plist = Firebase/Google client IDs;
+# .codex/ = Codex CLI config (contains API keys)
 AuthKey_*.p8
-
-# Google/Firebase config (contains client IDs)
 GoogleService-Info.plist
+.codex/
 
 # iOS app (private, not open-sourced)
 ios-app/
-
-# Xcode
 *.xcuserstate
 xcuserdata/
 
-# Server logs
+# Runtime artifacts and logs
+backend/backend.log
 backend/server.log
 backend/server_stderr.log
+backend/reports/
+backend/logs/error_snapshots/*.json
+backend/supabase/
+# exported chat traces (scripts/export_traces.py)
+backend/traces/
 
-# Playwright/MCP (all generated files)
-.playwright-mcp/
-backend/.playwright-cli/
-docs/.playwright-cli/
+# User-uploaded media (real pet avatars and event photos)
+backend/app/uploads/
 
-# Photos (screenshots, not code)
-Photos/
-
-# Design previews
-design-preview-full.png
-docs/design-preview.html
-docs/paywall-designs.html
-invite-landing-preview.png
-
-# Old files
-logo_old.png
-
-# Claude Code working files
-.superpowers/
-.claude/
-
-# Claude Code worktrees
-.claude/worktrees/
-
-# Dev workflow artifacts
-claude-progress.txt
-
-# E2E test reports (generated, not tracked)
+# Generated test/eval output.
+# Persisted eval snapshots live in backend/eval_history/ and are tracked.
 backend/tests/e2e/reports/
-
-# Eval orchestrator intermediates — per-run _latest files overwritten each run.
-# Persisted snapshots live under backend/eval_history/.
 backend/knowledge/eval/result__latest*.json
 backend/knowledge/eval/e2e_result__latest.json
 backend/knowledge/eval/ab_result__latest.json
 
-
-# Superpowers plans/specs (Claude Code working docs)
-docs/superpowers/
-.DS_Store
-backend/supabase/
+# Screenshots and design previews. README screenshots live in docs/media/.
+Photos/
 screenshots/
+*-preview.png
+*-preview-full.png
+docs/*-preview.html
+docs/paywall-designs.html
+logo_old.png
 
-# exported chat traces (scripts/export_traces.py)
-backend/traces/
+# Playwright / MCP scratch output
+.playwright-mcp/
+backend/.playwright-cli/
+docs/.playwright-cli/
+
+# Agent working files
+.claude/
+.superpowers/
+# Claude Code plans/specs and working implementation plans
+docs/superpowers/
+docs/plans/
+claude-progress.txt
+dev-agent.py
+backend/dev-agent.py
+feature_list.json
+backend/feature_list.json
+backend/scripts/langgraph_demo.py
