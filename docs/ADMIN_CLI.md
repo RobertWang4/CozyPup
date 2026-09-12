@@ -227,7 +227,7 @@ Fetches the full pipeline trace for one request from Cloud Logging: `chat_reques
 $ admin trace 7a2f8b4c-3f1e-4a2b-9c8d-1234567890ab
 Trace: 7a2f8b4c…  user: alice@example.com  2026-04-12 09:14:03 UTC
   [0ms]  chat_request      "Is it normal for Mochi to skip breakfast?"
-  [12ms] llm_request       model=grok-4-1-fast  tokens_in=1842
+  [12ms] llm_request       model=deepseek-flash   tokens_in=1842
   [834ms] llm_response     tool_calls=[search_knowledge]
   [836ms] tool_call        search_knowledge  query="dog skip meals appetite"
   [941ms] tool_result      3 knowledge chunks returned

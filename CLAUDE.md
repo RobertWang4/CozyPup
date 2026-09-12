@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-CozyPup is an AI-powered pet health assistant. Native SwiftUI iOS app + FastAPI Python backend with PostgreSQL (Neon cloud). Chat uses SSE streaming via LiteLLM (DeepSeek).
+CozyPup is an AI-powered pet health assistant. Native SwiftUI iOS app + FastAPI Python backend with PostgreSQL (Supabase, session pooler). Chat uses SSE streaming via LiteLLM (DeepSeek).
 
 **Design Philosophy**: Interaction should be minimalist — everything AI can do, the user should NOT have to do manually. No forms, no onboarding wizards. Users talk to the AI, and the AI handles creating pet profiles, recording events, setting reminders, etc. through natural conversation.
 
@@ -35,7 +35,7 @@ Or open `ios-app/CozyPup.xcodeproj` in Xcode and Cmd+R. Bundle ID: `com.cozypup.
 
 ```bash
 cd backend && pytest tests/ -v                # all tests
-cd backend && pytest tests/test_auth.py -v    # single file
+cd backend && pytest tests/test_auth_me.py -v # single file
 ```
 
 ### Admin CLI
@@ -165,7 +165,7 @@ ios-app/CozyPup/
 - **Constrained Agent framework**: Schema validation + ownership checks + feedback loop to minimize LLM errors without needing expensive models
 - **Orchestrator + Executor**: LLM decides what to do (function calling), pure code executes it (DB writes, API calls)
 - **Plan tool**: LLM calls `plan(steps=[...])` to decompose multi-step requests before executing. Orchestrator checks plan completion and nags if steps are missed. Single-step requests skip plan entirely.
-- **Dual-model routing**: grok-4-1-fast for daily chat (cheap), Kimi K2.5 for emergencies (accurate). Routed via emergency keyword detection in `agents/emergency.py`. A LoRA-fine-tuned Qwen3-0.6B classifier (`backend/nano/`, served as a llama-server sidecar on `localhost:8081`) can take over this decision; `agents/emergency_clf.py` merges both verdicts per the `emergency_clf_mode` flag (`off` / `shadow` / `union` / `clf`, default `shadow` when `EMERGENCY_CLF_URL` is set). Every turn logs an `emergency_clf` trace entry with `disagree=true` when the two disagree. The hotline short-circuit in `emergency_router.py` is unaffected
+- **Dual-model routing**: `deepseek/deepseek-flash` (DeepSeek V4.1 Flash) for daily chat (cheap), `openai/gpt-5` for emergencies (accurate, reached through a separate `emergency_model_api_base`/`_key`). Routed via emergency keyword detection in `agents/emergency.py`. A LoRA-fine-tuned Qwen3-0.6B classifier (`backend/nano/`, served as a llama-server sidecar on `localhost:8081`) can take over this decision; `agents/emergency_clf.py` merges both verdicts per the `emergency_clf_mode` flag (`off` / `shadow` / `union` / `clf`, default `shadow` when `EMERGENCY_CLF_URL` is set). Every turn logs an `emergency_clf` trace entry with `disagree=true` when the two disagree. The hotline short-circuit in `emergency_router.py` is unaffected
 - **Debug trace**: `X-Debug: true` header activates per-request TraceCollector that records every pipeline step + parallel non-streaming LLM call for full response JSON. Emitted as `__debug__` SSE event. Zero overhead when inactive.
 - **pet_logs merged into calendar_events**: Added category, raw_text, edited, source fields
 - **Dev auth**: `POST /api/v1/auth/dev` bypasses OAuth for simulator testing
@@ -294,7 +294,7 @@ Backend env vars are managed via Cloud Run (secrets in Secret Manager, plain var
 
 - **Done**: All REST APIs, database models, iOS SwiftUI frontend, frontend-backend integration, Constrained Agent architecture, plan tool (multi-step planning), E2E audit infrastructure
 - **Not done**: Phase 4 push notifications, MemWeaver knowledge base content (pipeline done, needs knowledge articles), Phase 5 宠物共享（多主人共享 + 会员体系）
-- **Spec**: `docs/superpowers/specs/2026-03-17-petcare-agent-design.md` has the full architecture (incl. design system, agent evolution roadmap, iOS standards)
+- **Spec**: `docs/superpowers/specs/2026-03-17-petcare-agent-design.md` (local working doc, gitignored) has the full architecture (incl. design system, agent evolution roadmap, iOS standards)
 
 ## TODO: Production Readiness
 
@@ -303,7 +303,7 @@ Backend env vars are managed via Cloud Run (secrets in Secret Manager, plain var
 - **CORS 配置审查** — API 公开可访问，确认只允许必要的 origins
 
 ### Scalability
-- **Neon 数据库连接数** — 免费版有连接数限制，用户增长后最先碰到瓶颈，考虑连接池或升级
+- **Supabase 数据库连接数** — session pooler 有连接数上限，用户增长后最先碰到瓶颈，考虑连接池配置或升级套餐
 - **LLM API 限流** — 取决于中转站的 rate limit，需要确认并加 fallback
 - **LLM Observability 升级路径** — 用户量上来后考虑 OpenTelemetry + Cloud Trace，或 Langfuse（开源 LLM 追踪）
 
