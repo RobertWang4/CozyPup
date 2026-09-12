@@ -354,10 +354,10 @@ async def _verify_google_web_id_token(id_token: str) -> dict:
 
     The existing `app.auth.verify_google_token` helper verifies against
     settings.google_client_id (the iOS native client). The web flow uses a
-    different client_id, so we call into jose directly with the correct
-    audience.
+    different client_id, so we verify here with the correct audience.
     """
-    from jose import jwt
+    import jwt
+
     from app.auth import _get_google_public_keys  # reuse cached JWKS
 
     keys = await _get_google_public_keys()
@@ -373,13 +373,13 @@ async def _verify_google_web_id_token(id_token: str) -> dict:
         if key is None:
             raise ValueError("Unknown Google signing key")
 
+    public_key = jwt.algorithms.RSAAlgorithm.from_jwk(key)
     claims = jwt.decode(
         id_token,
-        key,
+        public_key,
         algorithms=["RS256"],
         audience=settings.google_web_client_id,
         issuer=["https://accounts.google.com", "accounts.google.com"],
-        options={"verify_at_hash": False},
     )
     return claims
 
