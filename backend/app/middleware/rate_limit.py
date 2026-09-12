@@ -3,7 +3,8 @@
 import time
 from collections import defaultdict
 
-from fastapi import HTTPException, Request, status
+from fastapi import Request, status
+from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 
 MAX_MESSAGES_PER_HOUR = 30
@@ -36,6 +37,8 @@ class _UserBucket:
         return max(1, int(WINDOW_SECONDS - (time.monotonic() - oldest)))
 
 
+# Per-instance state: each Cloud Run container keeps its own buckets, so the
+# effective limit scales with the instance count (a Redis backend would fix it).
 _buckets: dict[str, _UserBucket] = defaultdict(_UserBucket)
 
 
@@ -87,6 +90,23 @@ def current_limit_per_hour() -> int:
         return MAX_MESSAGES_PER_HOUR
 
 
+def bucket_key(request: Request) -> str:
+    """Bucket by the JWT `sub` claim so a user cannot get a fresh quota by
+    refreshing their token. Signature verification is the auth dependency's job;
+    here we only need a stable identity, so an unverified decode is enough."""
+    auth = request.headers.get("authorization", "")
+    token = auth[7:].strip() if auth[:7].lower() == "bearer " else ""
+    if token:
+        try:
+            import jwt as _jwt
+            sub = _jwt.decode(token, options={"verify_signature": False}).get("sub")
+            if sub:
+                return str(sub)
+        except Exception:
+            pass
+    return request.client.host if request.client else "unknown"
+
+
 class ChatRateLimitMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         # Only apply to POST /api/v1/chat
@@ -96,31 +116,29 @@ class ChatRateLimitMiddleware(BaseHTTPMiddleware):
             try:
                 import json as _json
                 msg_text = _json.loads(body).get("message", "")
-                if len(msg_text) > MAX_MESSAGE_LENGTH:
-                    raise HTTPException(
-                        status_code=status.HTTP_400_BAD_REQUEST,
-                        detail=f"Message too long (max {MAX_MESSAGE_LENGTH} characters)",
-                    )
             except (ValueError, AttributeError):
-                pass
+                msg_text = ""
+            if len(msg_text) > MAX_MESSAGE_LENGTH:
+                # Returned, not raised: an HTTPException raised inside
+                # BaseHTTPMiddleware.dispatch escapes the router's handlers and
+                # is turned into a 500 by ErrorCaptureMiddleware.
+                return JSONResponse(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    content={"detail": f"Message too long (max {MAX_MESSAGE_LENGTH} characters)"},
+                )
 
-            # Extract user from auth header for rate limiting
-            auth = request.headers.get("authorization", "")
-            # Use the token itself as key (unique per user)
-            key = auth[-16:] if auth else request.client.host if request.client else "unknown"
-
-            bucket = _buckets[key]
+            bucket = _buckets[bucket_key(request)]
             if not bucket.is_allowed():
-                raise HTTPException(
+                return JSONResponse(
                     status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-                    detail="Rate limit exceeded",
+                    content={"detail": "Rate limit exceeded"},
                     headers={"Retry-After": str(bucket.retry_after())},
                 )
 
             if _daily_cap_reached():
-                raise HTTPException(
+                return JSONResponse(
                     status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-                    detail="Daily chat capacity reached, please try again tomorrow",
+                    content={"detail": "Daily chat capacity reached, please try again tomorrow"},
                     headers={"Retry-After": "3600"},
                 )
 

@@ -159,7 +159,9 @@ class ErrorCaptureMiddleware(BaseHTTPMiddleware):
             return JSONResponse(
                 status_code=500,
                 content={
-                    "error": str(exc),
+                    # Never leak exception text to clients — the full traceback is
+                    # in the logs / snapshot, reachable via the correlation_id.
+                    "error": "Internal server error",
                     "correlation_id": cid,
                     "src_module": module,
                 },

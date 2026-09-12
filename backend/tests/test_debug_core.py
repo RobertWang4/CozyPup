@@ -188,6 +188,7 @@ class TestMiddleware:
         resp = self.client.get("/fail")
         assert resp.status_code == 500
         body = resp.json()
-        assert "error" in body
+        # Generic message only — exception text must not leak to clients.
+        assert body["error"] == "Internal server error"
         assert "correlation_id" in body
         assert re.match(r"^req-[0-9a-f]{12}$", body["correlation_id"])

@@ -21,7 +21,9 @@ from datetime import date
 from pathlib import Path
 
 from fastapi import APIRouter, Depends, HTTPException, Request
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
+
+from app.middleware.rate_limit import MAX_MESSAGE_LENGTH
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sse_starlette.sse import EventSourceResponse
@@ -80,11 +82,11 @@ def _track_task(coro):
 
 class ChatRequest(BaseModel):
     """聊天请求体 — iOS 客户端发送的 JSON 结构。"""
-    message: str                           # 用户输入的文本消息
+    message: str = Field(max_length=MAX_MESSAGE_LENGTH)   # 用户输入的文本消息
     session_id: str | None = None          # 会话 ID（目前未使用，服务端按日期自动管理）
     location: dict | None = None           # 用户位置 {"lat": float, "lng": float}，用于附近搜索
     language: str | None = None            # 语言偏好 "zh"/"en"，None 时自动检测
-    images: list[str] | None = None        # base64 编码的 JPEG 图片列表
+    images: list[str] | None = Field(default=None, max_length=4)   # base64 编码的 JPEG 图片列表
     new_session: bool = False              # True 时强制开新会话（iOS /clear 后置位一次）
 
 
@@ -334,7 +336,8 @@ async def _event_generator(
     trace_log("chat_request", data={
         "message": request.message,
         "image_urls": [img[:100] for img in (request.images or [])],
-        "image_urls_full": request.images or [],
+        "image_count": len(request.images or []),
+        "image_sizes": [len(img) for img in (request.images or [])],
         "session_id": session_id,
         "pet_snapshot": _pet_snapshot,
         "session_history_tail": _tail,
