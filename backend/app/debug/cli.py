@@ -43,7 +43,7 @@ def _gcloud_read(filter_expr: str, limit: int = 100, order: str = "asc") -> list
         if result.returncode != 0:
             return []
         return json.loads(result.stdout) if result.stdout.strip() else []
-    except (subprocess.TimeoutExpired, json.JSONDecodeError):
+    except (FileNotFoundError, subprocess.TimeoutExpired, json.JSONDecodeError):
         return []
 
 
