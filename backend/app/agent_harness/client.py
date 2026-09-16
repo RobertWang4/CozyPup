@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 import base64
 import json
+import os
 import time
 from dataclasses import dataclass, field
 from datetime import date, timedelta
@@ -163,7 +164,13 @@ class AgentHarnessClient:
         self.email: str | None = None
         self.last_session_id: str | None = None
         self.debug = debug
-        self._client = httpx.AsyncClient(timeout=TIMEOUT)
+        # /auth/dev* is closed on the production backend unless the request
+        # carries the shared key (backend setting HARNESS_API_KEY).
+        default_headers: dict[str, str] = {}
+        harness_key = os.environ.get("HARNESS_API_KEY")
+        if harness_key:
+            default_headers["X-Harness-Key"] = harness_key
+        self._client = httpx.AsyncClient(timeout=TIMEOUT, headers=default_headers)
 
     @property
     def headers(self) -> dict:

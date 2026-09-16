@@ -100,7 +100,7 @@ async def oauth_finish(
             data={
                 "code": code,
                 "client_id": settings.google_client_id,
-                "client_secret": getattr(settings, "google_client_secret", ""),
+                "client_secret": settings.google_web_client_secret,
                 "redirect_uri": redirect_uri,
                 "grant_type": "authorization_code",
             },

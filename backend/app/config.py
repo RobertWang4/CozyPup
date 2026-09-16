@@ -117,6 +117,11 @@ class Settings(BaseSettings):
     # back to "*" without credentials; empty in production means no cross-origin access.
     cors_origins: str = ""
 
+    # Shared secret that lets the eval harness / E2E audit use the /auth/dev*
+    # routes in production (sent as X-Harness-Key). Empty = those routes stay
+    # closed in production.
+    harness_api_key: str = ""
+
     @property
     def is_production(self) -> bool:
         return (self.environment or "").strip().lower() == "production"

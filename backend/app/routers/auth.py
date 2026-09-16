@@ -2,7 +2,9 @@ import logging
 import uuid
 from datetime import datetime, timezone
 
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
+import secrets as _secrets
+
+from fastapi import APIRouter, Depends, HTTPException, Request, UploadFile, File
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -82,25 +84,37 @@ def _make_tokens(user: User) -> AuthResponse:
     )
 
 
-def _require_dev_env():
-    """Gate for every /dev/* route. Primary check is the deployment environment,
-    which defaults to "production" so a missing APP_ENV fails closed. The
-    auth_dev_enabled flag is an extra kill switch on top of that."""
+def _require_dev_env(request: Request):
+    """Route dependency gating every /dev/* route.
+
+    Non-production: open, subject to the auth_dev_enabled kill-switch flag.
+    Production (the default when APP_ENV is unset): closed, unless
+    HARNESS_API_KEY is configured and the request carries a matching
+    X-Harness-Key header. That is how the eval harness / E2E audit create
+    throwaway users against the live backend.
+    """
     from fastapi import status
     from app.flags import get_bool_flag
-    if settings.is_production or not get_bool_flag("auth_dev_enabled", default=True):
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Not Found")
+
+    not_found = HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Not Found")
+    if settings.is_production:
+        expected = settings.harness_api_key
+        supplied = request.headers.get("X-Harness-Key", "")
+        if not expected or not _secrets.compare_digest(supplied, expected):
+            raise not_found
+        return
+    if not get_bool_flag("auth_dev_enabled", default=True):
+        raise not_found
 
 
-@router.post("/dev", response_model=AuthResponse)
+@router.post("/dev", response_model=AuthResponse, dependencies=[Depends(_require_dev_env)])
 async def login_dev(req: DevAuthRequest, db: AsyncSession = Depends(get_db)):
     """Dev-only login — no OAuth verification, just creates/finds user and returns tokens."""
-    _require_dev_env()
     user = await _find_or_create_user(db, req.email, req.name, "dev")
     return _make_tokens(user)
 
 
-@router.post("/dev/expire-me")
+@router.post("/dev/expire-me", dependencies=[Depends(_require_dev_env)])
 async def dev_expire_me(
     user_id: uuid.UUID = Depends(get_current_user_id),
     db: AsyncSession = Depends(get_db),
@@ -108,7 +122,6 @@ async def dev_expire_me(
     """DEV ONLY — force current user's subscription to expired so the free-user
     chat gate can be tested. Do not expose once the app is public.
     """
-    _require_dev_env()
     from datetime import datetime, timezone, timedelta
     result = await db.execute(select(User).where(User.id == user_id))
     user = result.scalar_one_or_none()
@@ -123,7 +136,7 @@ async def dev_expire_me(
     return {"status": "expired"}
 
 
-@router.post("/dev/restore-me")
+@router.post("/dev/restore-me", dependencies=[Depends(_require_dev_env)])
 async def dev_restore_me(
     user_id: uuid.UUID = Depends(get_current_user_id),
     db: AsyncSession = Depends(get_db),
@@ -131,7 +144,6 @@ async def dev_restore_me(
     """DEV ONLY — reverse of /dev/expire-me. Puts the current user back into a
     fresh 7-day trial.
     """
-    _require_dev_env()
     from datetime import datetime, timezone
     result = await db.execute(select(User).where(User.id == user_id))
     user = result.scalar_one_or_none()
@@ -145,7 +157,7 @@ async def dev_restore_me(
     return {"status": "trial"}
 
 
-@router.post("/dev/set-subscription")
+@router.post("/dev/set-subscription", dependencies=[Depends(_require_dev_env)])
 async def dev_set_subscription(
     req: dict,
     user_id: uuid.UUID = Depends(get_current_user_id),
@@ -155,7 +167,6 @@ async def dev_set_subscription(
 
     Body: {"status": "active", "product_id": "com.cozypup.duo.monthly"}
     """
-    _require_dev_env()
     result = await db.execute(select(User).where(User.id == user_id))
     user = result.scalar_one_or_none()
     if user is None:

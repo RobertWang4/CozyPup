@@ -493,6 +493,9 @@ if name == "my_new_tool":
 cd backend
 # 指向云端 backend
 export E2E_BASE_URL="https://backend-601329501885.northamerica-northeast1.run.app"
+# 生产环境的 /auth/dev* 只对带 X-Harness-Key 的请求开放；harness 客户端自动从这个变量读取，
+# 值要和 Cloud Run 上的 HARNESS_API_KEY 一致（建议放在 ~/.zshrc）
+export HARNESS_API_KEY="..."
 python tests/e2e/run_audit.py --lang zh --case X.X   # single case
 python tests/e2e/run_audit.py --lang zh               # full audit
 
