@@ -3,12 +3,15 @@
 [![CI](https://github.com/RobertWang4/CozyPup/actions/workflows/ci.yml/badge.svg)](https://github.com/RobertWang4/CozyPup/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/)
+[![scope: backend](https://img.shields.io/badge/scope-backend-orange.svg)](#架构)
 
 [English](README.md) | **中文**
 
+> **本仓库是后端。** SwiftUI iOS 客户端在另一个私有仓库，通过 TestFlight 分发；两端如何衔接见 [架构](#架构)。
+
 AI 宠物健康助手。一个聊天界面搞定一切——记录事件、管理宠物档案、找附近宠物医院、设提醒。没有表单，没有按钮，没有引导流程。用户说话，AI 执行。
 
-后端跑在 Google Cloud Run，iOS 应用走 TestFlight 分发。**本仓库是后端。** SwiftUI 客户端（`ios-app/`）是私有代码，不在这里。
+后端跑在 Google Cloud Run，iOS 应用走 TestFlight 分发。
 
 ## 截图
 

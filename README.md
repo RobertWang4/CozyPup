@@ -3,12 +3,15 @@
 [![CI](https://github.com/RobertWang4/CozyPup/actions/workflows/ci.yml/badge.svg)](https://github.com/RobertWang4/CozyPup/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/)
+[![scope: backend](https://img.shields.io/badge/scope-backend-orange.svg)](#architecture)
 
 **English** | [中文](README.zh.md)
 
+> **This repository is the backend.** The SwiftUI iOS client lives in a separate private repo and ships through TestFlight; see [Architecture](#architecture) for how the two halves fit together.
+
 AI-powered pet health assistant. One chat interface handles everything — recording events, managing pet profiles, finding nearby vets, setting reminders. No forms, no buttons, no onboarding wizards. Users talk to the AI, and the AI executes.
 
-Live on Google Cloud Run; the iOS app ships through TestFlight. **This repo is the backend.** The SwiftUI client (`ios-app/`) is a private checkout and is not published here.
+Live on Google Cloud Run; the iOS app ships through TestFlight.
 
 ## Screenshots
 
