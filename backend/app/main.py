@@ -1,10 +1,12 @@
 from pathlib import Path
 
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from fastapi.responses import JSONResponse
+from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from app.config import settings
+from app.database import get_db
 from app.debug.logging_config import setup_logging
 from app.routers.auth import router as auth_router
 from app.routers.calendar import router as calendar_router
@@ -142,18 +144,16 @@ async def _start_flag_refresher():
 
 
 @app.get("/health")
-async def health():
+async def health(db: AsyncSession = Depends(get_db)):
     """Liveness + a real DB round trip.
 
     The DB query is what keeps the Supabase free tier from auto-pausing after
     7 idle days: a Cloud Scheduler job hits this endpoint on a schedule.
     """
     from sqlalchemy import text
-    from app.database import engine
 
     try:
-        async with engine.connect() as conn:
-            await conn.execute(text("SELECT 1"))
+        await db.execute(text("SELECT 1"))
     except Exception:
         return JSONResponse(status_code=503, content={"status": "degraded", "db": "unreachable"})
     return {"status": "ok", "db": "ok"}

@@ -6,14 +6,22 @@ from pathlib import Path
 from unittest.mock import patch
 
 import pytest
+from types import SimpleNamespace
+from unittest.mock import AsyncMock
 from fastapi.testclient import TestClient
 
+from app.database import get_db
 from app.main import app
 
 
 @pytest.fixture()
 def client():
-    return TestClient(app, raise_server_exceptions=False)
+    async def fake_db():
+        yield SimpleNamespace(execute=AsyncMock(return_value=None))
+
+    app.dependency_overrides[get_db] = fake_db
+    yield TestClient(app, raise_server_exceptions=False)
+    app.dependency_overrides.pop(get_db, None)
 
 
 @pytest.fixture(autouse=True)
