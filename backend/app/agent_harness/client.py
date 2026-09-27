@@ -320,7 +320,10 @@ class AgentHarnessClient:
     async def _auto_confirm(self, result: ChatResult) -> None:
         """Confirm every pending confirm_action card and fold the executed
         tool's card into ``result.cards`` (marking the confirm card confirmed)."""
-        for card in list(result.cards):
+        i = 0
+        while i < len(result.cards):  # the list grows as follow-up confirms arrive
+            card = result.cards[i]
+            i += 1
             if card.get("type") != "confirm_action" or card.get("status") == "confirmed":
                 continue
             try:
@@ -331,6 +334,7 @@ class AgentHarnessClient:
             card["status"] = "confirmed"
             if resp.get("card"):
                 result.cards.append(resp["card"])
+            result.cards.extend(resp.get("next_cards") or [])
 
     async def confirm_action(self, action_id: str) -> dict:
         resp = await self._client.post(

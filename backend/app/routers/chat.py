@@ -806,7 +806,7 @@ async def confirm_action(
     """
     from langgraph.types import Command
     from app.agents.checkpointer import get_checkpointer
-    from app.agents.graph import get_graph
+    from app.agents.graph import _interrupt_cards, get_graph
 
     saver = get_checkpointer()
     if saver is None:
@@ -838,6 +838,7 @@ async def confirm_action(
     config["configurable"]["session_id"] = values.get("session_id") or ""
 
     cards: list[dict] = []
+    next_cards: list[dict] = []  # further confirms parked behind this one
     node_update: dict = {}
     try:
         async for mode, chunk in graph.astream(
@@ -848,6 +849,8 @@ async def confirm_action(
                     cards.append(chunk["data"])
             elif isinstance(chunk, dict) and isinstance(chunk.get("confirm"), dict):
                 node_update = chunk["confirm"]
+            elif mode == "updates":
+                next_cards.extend(_interrupt_cards(chunk))
     except Exception as exc:
         logger.error("confirm_action_error", extra={
             "action_id": thread_id,
@@ -876,6 +879,9 @@ async def confirm_action(
         "success": bool(node_update.get("confirm_success", True)),
         "card": card,
         "message": description,
+        # When one turn parked several writes, the graph interrupts again on
+        # the next one; hand its card to the client so it can be confirmed too.
+        "next_cards": next_cards,
     }
 
 

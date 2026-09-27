@@ -211,8 +211,11 @@ def sanitize_info(info: dict) -> tuple[dict, list[str]]:
 def apply_profile_updates(pet, info: dict, existing: dict):
     """Apply standard profile field updates to pet model columns."""
     if "birthday" in info:
+        raw = str(info["birthday"]).strip()
+        if len(raw) == 7:  # "YYYY-MM" (e.g. 「2023年3月」) → first of that month
+            raw = f"{raw}-01"
         try:
-            pet.birthday = date.fromisoformat(str(info["birthday"]))
+            pet.birthday = date.fromisoformat(raw)
         except (ValueError, TypeError):
             pass
     if "weight" in info or "weight_kg" in info:
@@ -358,6 +361,10 @@ async def update_pet_profile(
         if "species" in info:
             pet.species = Species(info["species"])
             pet.species_locked = True
+        # The generic confirm gate also lands here (any update_pet_profile the
+        # user tapped "confirm" on), so column fields (weight/birthday/name/
+        # breed) must be written just like on the direct path.
+        apply_profile_updates(pet, info, existing)
         existing.update(info)
         pet.profile = existing
         pet.profile_md = sync_profile_md(pet)
