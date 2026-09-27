@@ -6,6 +6,8 @@ from contextvars import ContextVar
 correlation_id_var: ContextVar[str] = ContextVar("correlation_id", default="")
 user_id_var: ContextVar[str] = ContextVar("user_id", default="")
 pet_id_var: ContextVar[str] = ContextVar("pet_id", default="")
+# Chat session the current request belongs to (stable across turns of one conversation).
+session_id_var: ContextVar[str] = ContextVar("session_id", default="")
 
 
 def generate_correlation_id() -> str:

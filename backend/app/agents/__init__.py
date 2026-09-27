@@ -53,6 +53,14 @@ def llm_extra_kwargs(vision: bool = False, model: str | None = None) -> dict:
         kw["api_base"] = api_base
     if api_key:
         kw["api_key"] = api_key
+    if api_base and "opencode.ai" in api_base:
+        # OpenCode Zen/Go asks clients to identify themselves and to send a
+        # stable per-conversation id (routing + prompt caching).
+        from app.debug.correlation import correlation_id_var, session_id_var
+        kw["extra_headers"] = {
+            "User-Agent": "CozyPup/1.0",
+            "x-opencode-session": session_id_var.get() or correlation_id_var.get() or "cozypup",
+        }
     return kw
 
 

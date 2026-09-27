@@ -47,7 +47,7 @@ from app.agents.post_processor import execute_suggested_actions           # 后�
 from app.agents.pre_processing import pre_process                        # 预处理：从用户消息中预分析可能的工具调用
 from app.agents.trace_collector import TraceCollector, INACTIVE_TRACE    # Debug trace 收集器
 from app.auth import get_current_user_id                                 # JWT 认证依赖，提取 user_id
-from app.debug.correlation import get_correlation_id                      # 当前请求的 correlation ID
+from app.debug.correlation import get_correlation_id, session_id_var   # 当前请求的 correlation ID / 会话 ID
 from app.middleware.subscription import require_active_subscription, billing_enabled  # 订阅状态检查
 from app.config import settings                                           # 模型名等运行配置
 from app.database import get_db                                          # 数据库会话依赖
@@ -297,6 +297,7 @@ async def _event_generator(
         db, user_id, force_new=bool(request.new_session), today=user_today,
     )
     session_id = str(session.id)
+    session_id_var.set(session_id)
 
     # 2. 启动图片保存（在线程池中并行运行，不阻塞主流程）
     image_save_task = None
@@ -863,6 +864,7 @@ async def confirm_action(
 
     card = cards[0] if cards else None
     session_id = config["configurable"]["session_id"]
+    session_id_var.set(session_id)
     if session_id:
         await _save_message(
             db, uuid.UUID(str(session_id)), user_id, MessageRole.assistant,
