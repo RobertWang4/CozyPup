@@ -53,3 +53,21 @@ def test_apply_profile_updates_accepts_month_only_birthday():
     apply_profile_updates(p, {"birthday": "2023-03", "weight": 12.5}, {})
     assert p.birthday == date(2023, 3, 1)
     assert p.weight == 12.5
+
+
+@pytest.mark.asyncio
+async def test_chat_pet_snapshot_includes_co_owned_pets(db):
+    """A co-owner's chat must see the shared pet, exactly like GET /pets."""
+    from app.models import PetCoOwner
+    from app.routers.chat import _get_pets
+
+    owner_id = uuid.uuid4()
+    db.add(User(id=owner_id, email="owner@example.com", auth_provider="dev"))
+    pet = Pet(id=uuid.uuid4(), user_id=owner_id, name="小维", species=Species.dog, color_hex="E8835C")
+    db.add(pet)
+    await db.flush()
+    db.add(PetCoOwner(pet_id=pet.id, user_id=USER_ID))
+    await db.flush()
+
+    names = [p.name for p in await _get_pets(db, USER_ID)]
+    assert names == ["小维"]

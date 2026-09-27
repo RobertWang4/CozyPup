@@ -147,11 +147,13 @@ async def _get_or_create_session(
 
 
 async def _get_pets(db: AsyncSession, user_id: uuid.UUID) -> list[Pet]:
-    """加载用户的所有宠物档案，用于注入 system prompt 让 LLM 了解宠物信息。"""
-    result = await db.execute(
-        select(Pet).where(Pet.user_id == user_id).order_by(Pet.created_at)
-    )
-    return list(result.scalars().all())
+    """加载用户能看到的所有宠物档案（自己的 + 共享给自己的），注入 system prompt。
+
+    Must match GET /pets: a co-owner who chats about a shared pet would
+    otherwise be told the pet has no profile yet.
+    """
+    from app.agents.tools.ownership import get_user_pets
+    return await get_user_pets(db, user_id)
 
 
 async def _get_recent_messages(
