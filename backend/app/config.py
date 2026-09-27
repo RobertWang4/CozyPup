@@ -21,6 +21,9 @@ class Settings(BaseSettings):
     emergency_clf_url: str = ""            # e.g. http://127.0.0.1:8081
     emergency_clf_timeout_ms: int = 300    # past this we fall back to keywords
     emergency_clf_threshold: float = 0.5   # P(true) >= threshold → emergency
+    # P(true) below this lets the classifier VETO the keyword hotline short-circuit
+    # (e.g. "上次中毒是什么时候" scores ~1e-4; real poisonings score 0.5-0.99).
+    emergency_clf_veto_threshold: float = 0.01
     # Vision model — used for rounds where images are injected into the message list
     # (after request_images). Must support multimodal input. Falls back to `model` if unset.
     vision_model: str = ""

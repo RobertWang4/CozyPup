@@ -381,6 +381,23 @@ async def _event_generator(
     # The legal logic: we are NOT giving diagnosis or dosage — we are directing
     # the user to call a pet-poison hotline or go to an emergency vet.
     emergency_match = classify_emergency(request.message)
+    if emergency_match is not None and clf_task is not None:
+        # Keyword hit on e.g. "中毒" cannot tell "my dog was poisoned" from
+        # "when was the last poisoning?". Let the classifier veto obvious
+        # non-emergencies; a timed-out / unavailable classifier never vetoes.
+        clf_early = await clf_task
+        if emergency_clf.vetoes_short_circuit(clf_early):
+            trace.record("emergency_short_circuit_vetoed", {
+                "category": emergency_match.category,
+                "keywords": emergency_match.keywords,
+                "clf_p_true": round(clf_early.p_true, 6),
+            })
+            logger.info("emergency_short_circuit_vetoed", extra={
+                "category": emergency_match.category,
+                "keywords": emergency_match.keywords,
+                "clf_p_true": round(clf_early.p_true, 6),
+            })
+            emergency_match = None
     if emergency_match is not None:
         audit_is_emergency_route = True
         if clf_task is not None:

@@ -124,3 +124,14 @@ async def test_classify_server_error_falls_back_to_none(monkeypatch):
     monkeypatch.setattr(emergency_clf.settings, "emergency_clf_url", "http://clf")
     _patch_transport(monkeypatch, lambda request: httpx.Response(503, text="loading"))
     assert await emergency_clf.classify("狗吃了老鼠药") is None
+
+
+@pytest.mark.parametrize("p_true, expected", [(0.0001, True), (0.009, True), (0.01, False), (0.499, False), (0.99, False)])
+def test_vetoes_short_circuit_threshold(p_true, expected):
+    from app.agents.emergency_clf import vetoes_short_circuit
+    assert vetoes_short_circuit(ClfResult(p_true=p_true, decided=p_true >= 0.5, latency_ms=1)) is expected
+
+
+def test_unavailable_classifier_never_vetoes():
+    from app.agents.emergency_clf import vetoes_short_circuit
+    assert vetoes_short_circuit(None) is False

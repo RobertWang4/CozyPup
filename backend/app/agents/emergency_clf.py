@@ -92,3 +92,11 @@ def resolve(keyword: EmergencyCheckResult, clf: ClfResult | None, mode: str) -> 
     else:  # off / shadow
         detected = keyword.detected
     return EmergencyCheckResult(detected=detected, keywords=keyword.keywords if detected else [])
+
+
+def vetoes_short_circuit(clf: ClfResult | None) -> bool:
+    """True when the classifier is confident enough that a keyword hotline hit is NOT
+    an emergency (history questions like "上次中毒是什么时候"). A missing / timed-out
+    result never vetoes, so the short-circuit stays fail-safe.
+    """
+    return clf is not None and clf.p_true < settings.emergency_clf_veto_threshold
