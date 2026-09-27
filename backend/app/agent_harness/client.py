@@ -378,8 +378,15 @@ class AgentHarnessClient:
 
     async def billing_enabled(self) -> bool:
         """False when the backend runs with billing_enabled=false (free mode):
-        /subscription/status then reports every user as active+duo with no product."""
-        st = await self.get_subscription_status()
+        /subscription/status then reports a brand-new user as active+duo with
+        no product. Probed with a throwaway user so fixtures that already set
+        a subscription on this client don't skew the answer."""
+        probe = E2EClient(self.base_url)
+        try:
+            await probe.auth_dev()
+            st = await probe.get_subscription_status()
+        finally:
+            await probe.close()
         return not (st.get("status") == "active" and not st.get("product_id") and not st.get("expires_at"))
 
     async def set_subscription(self, status: str = "active", product_id: str | None = None) -> dict:
