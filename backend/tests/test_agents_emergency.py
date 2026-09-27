@@ -54,5 +54,6 @@ def test_emergency_event_payload_is_flat_strings():
     match = classify_emergency("我的狗中毒了")
     assert match is not None
     payload = emergency_event_payload(render_for_user(match, lang="zh"))
-    assert payload["message"] and payload["action"]
+    assert payload["message"]
+    assert payload["action"] in {"call_vet", "find_er", "first_aid"}
     assert all(isinstance(v, str) for v in payload.values()), payload

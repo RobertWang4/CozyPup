@@ -365,9 +365,11 @@ def emergency_event_payload(card: dict) -> dict:
     iOS decodes this event as `[String: String]` and requires `message` and
     `action`, so every value must be a plain string (no lists, no None).
     """
+    # `action` is an enum the client understands: call_vet | find_er | first_aid.
+    action = "call_vet" if card.get("category") == "toxin_ingestion" else "find_er"
     return {
         "message": str(card.get("message", "")),
-        "action": str(card.get("hotline", "")),
+        "action": action,
         "category": str(card.get("category", "")),
         "hotline": str(card.get("hotline", "")),
         "article_slug": str(card.get("article_slug", "")),
