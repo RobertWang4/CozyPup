@@ -37,7 +37,7 @@ from app.agents.chat_finalizer import (
     record_chat_audit,
     should_run_final_fallback,
 )
-from app.agents.emergency import detect_emergency                        # 紧急关键词检测
+from app.agents.emergency import EmergencyCheckResult, detect_emergency  # 紧急关键词检测
 from app.agents import emergency_clf                                     # 紧急分类模型 sidecar（flag 控制 off/shadow/union/clf）
 from app.agents.emergency_router import classify_emergency, emergency_event_payload, render_for_user  # 紧急情况短路路由（跳过 memory + LLM）
 from app.agents.engine import AgentEngine, AgentRunInput
@@ -397,6 +397,14 @@ async def _event_generator(
                 "keywords": emergency_match.keywords,
                 "clf_p_true": round(clf_early.p_true, 6),
             })
+            # Only the instant hotline card is skipped. The turn still goes
+            # to the emergency model with the toxin/seizure hint, so a veto
+            # can never downgrade the safety routing (e.g. "狗狗吃了巧克力怎么办").
+            if not keyword_result.detected:
+                keyword_result = EmergencyCheckResult(
+                    detected=True, keywords=list(emergency_match.keywords),
+                )
+                emergency_result = keyword_result
             emergency_match = None
     if emergency_match is not None:
         audit_is_emergency_route = True
