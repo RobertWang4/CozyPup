@@ -1,7 +1,9 @@
 """Emergency classifier client — the fine-tuned Qwen3-0.6B sidecar (see backend/nano/).
 
 Replaces the keyword regex in `emergency.detect_emergency` for MODEL SELECTION only.
-`emergency_router.classify_emergency` (hotline card short-circuit) is untouched.
+`emergency_router.classify_emergency` (hotline card short-circuit) still fires on keywords, but
+`vetoes_short_circuit` lets a confident-negative classifier answer skip it (see chat.py) in every
+mode except `off` — that veto is independent of the model-selection modes below.
 
 Rollout is controlled by the `emergency_clf_mode` feature flag:
     off     keyword regex decides; classifier not called
