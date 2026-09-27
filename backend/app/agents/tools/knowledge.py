@@ -34,7 +34,8 @@ async def _resolve_species(
         if pet and pet.user_id == user_id:
             val = pet.species
             return val.value if hasattr(val, "value") else str(val)
-    rows = (await db.execute(select(Pet).where(Pet.user_id == user_id))).scalars().all()
+    from app.agents.tools.ownership import get_user_pets
+    rows = await get_user_pets(db, user_id)  # owner or co-owner
     if len(rows) == 1:
         val = rows[0].species
         return val.value if hasattr(val, "value") else str(val)

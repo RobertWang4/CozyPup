@@ -335,10 +335,7 @@ async def update_pet_profile(
     if not info:
         return {"success": False, "error": "No info provided"}
 
-    result = await db.execute(
-        select(Pet).where(Pet.id == pet_id, Pet.user_id == user_id)
-    )
-    pet = result.scalar_one_or_none()
+    pet = await verify_pet_ownership(db, str(pet_id), user_id)  # owner or co-owner
     if not pet:
         return {"success": False, "error": "Pet not found"}
 
@@ -483,10 +480,7 @@ async def save_pet_profile_md(
     if len(profile_md) > 5000:
         return {"success": False, "error": "profile_md too long (max 5000 chars)"}
 
-    result = await db.execute(
-        select(Pet).where(Pet.id == pet_id, Pet.user_id == user_id)
-    )
-    pet = result.scalar_one_or_none()
+    pet = await verify_pet_ownership(db, str(pet_id), user_id)  # owner or co-owner
     if not pet:
         return {"success": False, "error": "Pet not found"}
 
@@ -508,11 +502,9 @@ async def list_pets(
     db: AsyncSession,
     user_id: uuid.UUID,
 ) -> dict:
-    """List all pets for the user."""
-    result = await db.execute(
-        select(Pet).where(Pet.user_id == user_id).order_by(Pet.created_at)
-    )
-    pets = result.scalars().all()
+    """List all pets the user owns or co-owns (same set as GET /pets)."""
+    from app.agents.tools.ownership import get_user_pets
+    pets = await get_user_pets(db, user_id)
 
     return {
         "pets": [
@@ -572,10 +564,7 @@ async def set_pet_avatar(
     """Set a pet's avatar. Uses already-saved image_urls from chat flow."""
     pet_id = uuid.UUID(arguments["pet_id"])
 
-    result = await db.execute(
-        select(Pet).where(Pet.id == pet_id, Pet.user_id == user_id)
-    )
-    pet = result.scalar_one_or_none()
+    pet = await verify_pet_ownership(db, str(pet_id), user_id)  # owner or co-owner
     if not pet:
         return {"success": False, "error": "Pet not found"}
 

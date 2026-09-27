@@ -15,6 +15,7 @@ from sqlalchemy.orm.attributes import flag_modified
 
 from app.models import CalendarEvent, EventCategory, EventSource, EventType, Pet
 from app.agents.tools.registry import register_tool
+from app.agents.tools.ownership import can_access_pet
 
 
 @register_tool("create_calendar_event", accepts_kwargs=True)
@@ -48,8 +49,7 @@ async def create_calendar_event(
     if pet_ids_str:
         for pid_str in pet_ids_str:
             pid = uuid.UUID(pid_str)
-            result = await db.execute(select(Pet).where(Pet.id == pid, Pet.user_id == user_id))
-            pet = result.scalar_one_or_none()
+            pet = await can_access_pet(db, pid_str, user_id)  # owner or co-owner
             if pet:
                 pet_names.append(pet.name)
                 if first_pet_id is None:
@@ -234,8 +234,7 @@ async def update_calendar_event(
         first_valid: uuid.UUID | None = None
         for pid_str in new_pet_ids_str:
             pid = uuid.UUID(pid_str)
-            owned = await db.execute(select(Pet).where(Pet.id == pid, Pet.user_id == user_id))
-            if owned.scalar_one_or_none():
+            if await can_access_pet(db, pid_str, user_id):  # owner or co-owner
                 validated.append(pid_str)
                 if first_valid is None:
                     first_valid = pid

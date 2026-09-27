@@ -71,3 +71,34 @@ async def test_chat_pet_snapshot_includes_co_owned_pets(db):
 
     names = [p.name for p in await _get_pets(db, USER_ID)]
     assert names == ["小维"]
+
+
+@pytest.mark.asyncio
+async def test_co_owner_can_record_events_but_not_delete_pet(db):
+    """Tools honour co-ownership for writes on the shared pet; deleting stays owner-only."""
+    from app.agents.tools.calendar import create_calendar_event
+    from app.agents.tools.pets import delete_pet
+    from app.models import PetCoOwner
+
+    owner_id = uuid.uuid4()
+    db.add(User(id=owner_id, email="owner2@example.com", auth_provider="dev"))
+    pet = Pet(id=uuid.uuid4(), user_id=owner_id, name="小维", species=Species.dog, color_hex="E8835C")
+    db.add(pet)
+    await db.flush()
+    db.add(PetCoOwner(pet_id=pet.id, user_id=USER_ID))
+    await db.flush()
+
+    created = await create_calendar_event(
+        {"pet_id": str(pet.id), "event_date": "2026-09-27", "title": "下午散步", "category": "daily"},
+        db, USER_ID,
+    )
+    assert created.get("success") is True, created
+
+    updated = await update_pet_profile(
+        {"pet_id": str(pet.id), "info": {"weight_kg": 11}, "_force_lock": True}, db, USER_ID,
+    )
+    assert updated.get("success") is True, updated
+    assert pet.weight == 11.0
+
+    deleted = await delete_pet({"pet_id": str(pet.id)}, db, USER_ID)
+    assert deleted.get("success") is not True, deleted
