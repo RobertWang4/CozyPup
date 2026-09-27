@@ -405,8 +405,8 @@ async def _event_generator(
         # iOS has no decoder for a card of type "emergency", so stream the
         # hotline text as a normal token so the chat bubble is never empty.
         yield {"event": "token", "data": json.dumps({"text": card["message"]}, ensure_ascii=False)}
-        yield {"event": "card", "data": json.dumps(card, ensure_ascii=False)}
-        # iOS decodes event="emergency" as [String: String]; keep it flat.
+        # Contract: emergencies travel ONLY on event="emergency" (never as a
+        # card); iOS decodes that event as [String: String], so keep it flat.
         yield {
             "event": "emergency",
             "data": json.dumps(emergency_event_payload(card), ensure_ascii=False),
