@@ -1,6 +1,7 @@
 from pathlib import Path
 
 from fastapi import FastAPI
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from app.config import settings
@@ -142,7 +143,20 @@ async def _start_flag_refresher():
 
 @app.get("/health")
 async def health():
-    return {"status": "ok"}
+    """Liveness + a real DB round trip.
+
+    The DB query is what keeps the Supabase free tier from auto-pausing after
+    7 idle days: a Cloud Scheduler job hits this endpoint on a schedule.
+    """
+    from sqlalchemy import text
+    from app.database import engine
+
+    try:
+        async with engine.connect() as conn:
+            await conn.execute(text("SELECT 1"))
+    except Exception:
+        return JSONResponse(status_code=503, content={"status": "degraded", "db": "unreachable"})
+    return {"status": "ok", "db": "ok"}
 
 
 # Only register dev-only routes outside production

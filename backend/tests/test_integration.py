@@ -28,7 +28,7 @@ class TestHealthEndpoint:
     def test_health_returns_ok(self, client):
         response = client.get("/health")
         assert response.status_code == 200
-        assert response.json() == {"status": "ok"}
+        assert response.json() == {"status": "ok", "db": "ok"}
 
     def test_health_has_correlation_id(self, client):
         response = client.get("/health")
