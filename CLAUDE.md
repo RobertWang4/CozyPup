@@ -135,6 +135,8 @@ event: __debug__\ndata: {trace JSON}\n\n          # only when X-Debug: true head
 event: done\ndata: {"intent": "chat", "session_id": "..."}\n\n
 ```
 
+**Confirm endpoint** `POST /chat/confirm-action {action_id}` → `{success, card, message, next_cards}`. `next_cards` holds the confirm cards for any further writes the same turn parked (one turn can defer several); the client renders them and confirms each with the same `action_id`.
+
 ### iOS (SwiftUI)
 
 ```

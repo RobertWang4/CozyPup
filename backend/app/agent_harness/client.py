@@ -332,6 +332,11 @@ class AgentHarnessClient:
                 result.error = f"auto_confirm failed: {type(exc).__name__}: {exc}"
                 return
             card["status"] = "confirmed"
+            if resp.get("success") is False:
+                # The tool ran after confirmation and reported failure; make
+                # the test see it instead of a silent "no record card".
+                result.error = f"confirm_action failed: {resp.get('message')!r}"
+                return
             if resp.get("card"):
                 result.cards.append(resp["card"])
             result.cards.extend(resp.get("next_cards") or [])
@@ -365,6 +370,17 @@ class AgentHarnessClient:
         )
         resp.raise_for_status()
         return resp.json()
+
+    async def get_subscription_status(self) -> dict:
+        resp = await self._client.get(f"{self.api}/subscription/status", headers=self.headers)
+        resp.raise_for_status()
+        return resp.json()
+
+    async def billing_enabled(self) -> bool:
+        """False when the backend runs with billing_enabled=false (free mode):
+        /subscription/status then reports every user as active+duo with no product."""
+        st = await self.get_subscription_status()
+        return not (st.get("status") == "active" and not st.get("product_id") and not st.get("expires_at"))
 
     async def set_subscription(self, status: str = "active", product_id: str | None = None) -> dict:
         body: dict = {"status": status}

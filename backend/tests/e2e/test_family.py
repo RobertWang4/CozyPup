@@ -125,6 +125,8 @@ class TestPermissionControl:
         try:
             await a.auth_dev()
             await b.auth_dev()
+            if not await a.billing_enabled():
+                pytest.skip("billing_enabled=false: every user is treated as Duo")
             # Give A an Individual (non-Duo) subscription
             await a.set_subscription(status="active", product_id=INDIVIDUAL_PRODUCT)
 
@@ -187,6 +189,8 @@ class TestRevoke:
         the user their trial/subscription has ended.
         """
         a, b = duo_pair
+        if not await a.billing_enabled():
+            pytest.skip("billing_enabled=false: no upgrade prompt is ever emitted")
         invite = await a.invite_family(b.email)
         await b.accept_family(invite["invite_id"])
 
