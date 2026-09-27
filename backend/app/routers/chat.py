@@ -39,7 +39,7 @@ from app.agents.chat_finalizer import (
 )
 from app.agents.emergency import detect_emergency                        # 紧急关键词检测
 from app.agents import emergency_clf                                     # 紧急分类模型 sidecar（flag 控制 off/shadow/union/clf）
-from app.agents.emergency_router import classify_emergency, render_for_user  # 紧急情况短路路由（跳过 memory + LLM）
+from app.agents.emergency_router import classify_emergency, emergency_event_payload, render_for_user  # 紧急情况短路路由（跳过 memory + LLM）
 from app.agents.engine import AgentEngine, AgentRunInput
 from app.agents.locale import detect_language                            # 语言检测（中/英）
 from app.agents.loop import OrchestratorResult                           # 统一 Agent Loop
@@ -402,9 +402,15 @@ async def _event_generator(
         )
 
         card = render_for_user(emergency_match, lang=lang)
+        # iOS has no decoder for a card of type "emergency", so stream the
+        # hotline text as a normal token so the chat bubble is never empty.
+        yield {"event": "token", "data": json.dumps({"text": card["message"]}, ensure_ascii=False)}
         yield {"event": "card", "data": json.dumps(card, ensure_ascii=False)}
-        # iOS also listens for event="emergency" per the docstring below; mirror it.
-        yield {"event": "emergency", "data": json.dumps(card, ensure_ascii=False)}
+        # iOS decodes event="emergency" as [String: String]; keep it flat.
+        yield {
+            "event": "emergency",
+            "data": json.dumps(emergency_event_payload(card), ensure_ascii=False),
+        }
 
         # Save a minimal assistant turn so history + audit have the emitted content.
         await _save_message(

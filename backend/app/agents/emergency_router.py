@@ -357,3 +357,19 @@ def render_for_user(match: EmergencyMatch, lang: str = "zh") -> dict:
         "message": msg,
         "article_slug": match.article_slug,
     }
+
+
+def emergency_event_payload(card: dict) -> dict:
+    """Flatten an emergency card into the `event: emergency` SSE payload.
+
+    iOS decodes this event as `[String: String]` and requires `message` and
+    `action`, so every value must be a plain string (no lists, no None).
+    """
+    return {
+        "message": str(card.get("message", "")),
+        "action": str(card.get("hotline", "")),
+        "category": str(card.get("category", "")),
+        "hotline": str(card.get("hotline", "")),
+        "article_slug": str(card.get("article_slug", "")),
+        "keywords": ", ".join(card.get("keywords") or []),
+    }

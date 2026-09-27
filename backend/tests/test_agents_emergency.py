@@ -45,3 +45,14 @@ class TestDetectEmergency:
         assert detect_emergency("snake bite on the leg").detected is True
         assert detect_emergency("difficulty breathing at night").detected is True
         assert detect_emergency("not breathing anymore").detected is True
+
+
+def test_emergency_event_payload_is_flat_strings():
+    """iOS decodes `event: emergency` as [String: String] and needs message+action."""
+    from app.agents.emergency_router import classify_emergency, emergency_event_payload, render_for_user
+
+    match = classify_emergency("我的狗中毒了")
+    assert match is not None
+    payload = emergency_event_payload(render_for_user(match, lang="zh"))
+    assert payload["message"] and payload["action"]
+    assert all(isinstance(v, str) for v in payload.values()), payload
