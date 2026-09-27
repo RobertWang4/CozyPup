@@ -180,7 +180,7 @@ async def test_41_9_delete_does_not_cross_pets(e2e_debug_with_three_pets: E2ECli
     ]
 
     # Try to delete 花花's records (which don't exist)
-    r = await e2e_debug_with_three_pets.chat(MESSAGES["41.9"]["zh"])
+    r = await e2e_debug_with_three_pets.chat(MESSAGES["41.9"]["zh"], auto_confirm=False)
     assert r.error is None, f"41.9 chat error: {r.error}\n{r.dump()}"
 
     # If confirm_action card returned, confirm it
@@ -288,7 +288,7 @@ async def test_41_12_task_only_for_xiaowei(e2e_debug_with_three_pets: E2EClient)
 async def test_41_13_deleted_pet_no_association(e2e_debug_with_three_pets: E2EClient):
     """41.13 After deleting 花花, '花花今天吃了猫粮' → doesn't associate to 小维."""
     # Delete 花花 via chat
-    r = await e2e_debug_with_three_pets.chat("删除花花")
+    r = await e2e_debug_with_three_pets.chat("删除花花", auto_confirm=False)
     assert r.error is None, f"41.13 delete request error: {r.error}\n{r.dump()}"
 
     # Confirm deletion if needed
@@ -331,7 +331,7 @@ async def test_41_14_deleted_pet_records_hidden(e2e_debug_with_three_pets: E2ECl
     assert r2.error is None, f"41.14 setup2 error: {r2.error}\n{r2.dump()}"
 
     # Delete 花花
-    r3 = await e2e_debug_with_three_pets.chat("删除花花")
+    r3 = await e2e_debug_with_three_pets.chat("删除花花", auto_confirm=False)
     assert r3.error is None, f"41.14 delete error: {r3.error}\n{r3.dump()}"
 
     if r3.has_card("confirm_action"):

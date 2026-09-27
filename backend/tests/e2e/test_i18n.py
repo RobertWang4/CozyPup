@@ -125,7 +125,7 @@ async def test_22_4_en_task_deleted_card_no_cjk(e2e_debug_with_pet: E2EClient):
     )
 
     # Delete the task — may require confirm flow
-    delete_result = await e2e.chat(MESSAGES["22.4"]["en"], language="en")
+    delete_result = await e2e.chat(MESSAGES["22.4"]["en"], language="en", auto_confirm=False)
     assert delete_result.error is None, f"Chat error: {delete_result.error}\n{delete_result.dump()}"
 
     # If we got a confirm_action card, confirm it to get the actual deletion card
@@ -179,7 +179,7 @@ async def test_22_5_zh_task_deleted_card_has_cjk(e2e_debug_with_pet: E2EClient):
     )
 
     # Delete the task in Chinese
-    delete_result = await e2e.chat(MESSAGES["22.5"]["zh"], language="zh")
+    delete_result = await e2e.chat(MESSAGES["22.5"]["zh"], language="zh", auto_confirm=False)
     assert delete_result.error is None, f"Chat error: {delete_result.error}\n{delete_result.dump()}"
 
     # If we got a confirm_action card, verify it's in Chinese

@@ -313,7 +313,7 @@ async def test_4_2_delete_with_confirm(e2e_with_pet: E2EClient, lang: str):
     assert setup.has_card("record"), f"Setup: no record card.\n{setup.dump()}"
 
     # Delete request
-    result = await e2e.chat(MESSAGES["4.2"][lang])
+    result = await e2e.chat(MESSAGES["4.2"][lang], auto_confirm=False)
     assert result.error is None, f"Chat error: {result.error}"
     assert result.has_card("confirm_action"), (
         f"Expected a confirm_action card for delete.\n{result.dump()}"
@@ -343,7 +343,7 @@ async def test_4_3_confirm_delete(e2e_with_pet: E2EClient, lang: str):
     )
 
     # Delete request -> get confirm card
-    delete_result = await e2e.chat(MESSAGES["4.2"][lang])
+    delete_result = await e2e.chat(MESSAGES["4.2"][lang], auto_confirm=False)
     assert delete_result.error is None, f"Delete request error: {delete_result.error}"
     assert delete_result.has_card("confirm_action"), (
         f"Expected confirm_action card.\n{delete_result.dump()}"

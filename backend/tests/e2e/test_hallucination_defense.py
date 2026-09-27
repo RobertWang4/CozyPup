@@ -67,7 +67,7 @@ async def _list_events(client: E2EClient) -> list[dict]:
 
 
 async def _fresh_client_with_pet(base_url: str) -> tuple[E2EClient, dict]:
-    c = E2EClient(base_url, debug=True)
+    c = E2EClient(base_url, debug=True, auto_confirm=True)
     await c.auth_dev()
     # Seed a pet deterministically via chat so ownership is set up.
     r = await c.chat("我养了一只狗，叫维尼")

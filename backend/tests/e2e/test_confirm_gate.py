@@ -13,6 +13,7 @@ Test logic:
 from __future__ import annotations
 
 import pytest
+import pytest_asyncio
 
 from .conftest import E2EClient
 from app.agents.constants import (
@@ -60,6 +61,13 @@ CASES: list[tuple[str, bool, str]] = [
     ("帮我写一封邮件给兽医问一下用药",         False, "explicit: 写邮件"),
     ("切换成英文",                            False, "explicit: 切换成"),
 ]
+
+
+@pytest_asyncio.fixture
+async def e2e_debug_with_pet(e2e_debug_with_pet):
+    """This file tests the confirm gate itself, so never auto-confirm."""
+    e2e_debug_with_pet.auto_confirm = False
+    return e2e_debug_with_pet
 
 
 @pytest.mark.asyncio

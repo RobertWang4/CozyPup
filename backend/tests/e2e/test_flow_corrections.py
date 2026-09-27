@@ -80,7 +80,7 @@ async def test_29_correction_chain(e2e_debug_with_pet: E2EClient):
     )
 
     # ── 29.5  Request delete: "算了，删掉这条" ──
-    r5 = await e2e.chat(msgs[4])
+    r5 = await e2e.chat(msgs[4], auto_confirm=False)
     assert r5.error is None, f"29.5 error: {r5.error}\n{r5.dump()}"
     assert r5.has_card("confirm_action"), (
         f"29.5: Expected confirm_action card for delete.\n{r5.dump()}"

@@ -99,7 +99,7 @@ async def test_34_task_lifecycle(e2e_debug_with_pet: E2EClient):
         )
 
     # ── 34.6  Cancel temperature task → confirm_action ──
-    r6 = await e2e.chat(msgs[5])
+    r6 = await e2e.chat(msgs[5], auto_confirm=False)
     assert r6.error is None, f"34.6 error: {r6.error}\n{r6.dump()}"
     assert r6.has_card("confirm_action"), (
         f"34.6: Expected confirm_action card.\n{r6.dump()}"
@@ -118,7 +118,7 @@ async def test_34_task_lifecycle(e2e_debug_with_pet: E2EClient):
     )
 
     # ── 34.8  Delete all tasks → confirm_action ──
-    r8 = await e2e.chat(msgs[6])
+    r8 = await e2e.chat(msgs[6], auto_confirm=False)
     assert r8.error is None, f"34.8 error: {r8.error}\n{r8.dump()}"
     assert r8.has_card("confirm_action"), (
         f"34.8: Expected confirm_action card.\n{r8.dump()}"

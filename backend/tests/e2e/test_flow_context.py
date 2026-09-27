@@ -74,7 +74,7 @@ async def test_27_context_reference(e2e_debug_with_pet: E2EClient):
     )
 
     # ── 27.5  Delete the reminder (context: "刚才那个提醒") ──
-    r5 = await e2e.chat(msgs[4])
+    r5 = await e2e.chat(msgs[4], auto_confirm=False)
     assert r5.error is None, f"27.5 error: {r5.error}\n{r5.dump()}"
     assert r5.has_card("confirm_action"), (
         f"27.5: Expected confirm_action card for destructive delete.\n{r5.dump()}"

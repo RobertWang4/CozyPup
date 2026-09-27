@@ -44,7 +44,7 @@ async def test_5_1_to_5_7_pet_management_flow(e2e: E2EClient, lang: str):
     pet_id = created[0]["id"]
 
     # ── 5.2 Set gender ──────────────────────────────────────────────────
-    r = await e2e.chat(MESSAGES["5.2"][lang])
+    r = await e2e.chat(MESSAGES["5.2"][lang], auto_confirm=False)
     assert r.error is None, f"5.2 chat error: {r.error}\n{r.dump()}"
     # Gender first-time set may return confirm_action (design behavior) or pet_updated
     # LLM may also create another pet instead — accept any non-error response
@@ -189,7 +189,7 @@ async def test_5_9_delete_confirm(e2e: E2EClient, lang: str):
     )
 
     # Request deletion — should get confirm_action card
-    r = await e2e.chat(MESSAGES["5.9"][lang])
+    r = await e2e.chat(MESSAGES["5.9"][lang], auto_confirm=False)
     assert r.error is None, f"5.9 delete chat error: {r.error}\n{r.dump()}"
     assert r.has_card("confirm_action"), (
         f"5.9 Expected confirm_action card for delete.\n{r.dump()}"

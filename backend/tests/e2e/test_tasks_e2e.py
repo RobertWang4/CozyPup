@@ -183,7 +183,7 @@ async def test_8_7_delete_all_tasks_confirm(e2e_debug_with_pet: E2EClient, lang:
     )
 
     # Delete all request -> get confirm card
-    result = await e2e.chat(MESSAGES["8.7"][lang])
+    result = await e2e.chat(MESSAGES["8.7"][lang], auto_confirm=False)
     assert result.error is None, f"Chat error: {result.error}"
     assert result.has_card("confirm_action"), (
         f"Expected a confirm_action card for delete all.\n{result.dump()}"

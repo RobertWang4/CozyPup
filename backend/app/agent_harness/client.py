@@ -156,8 +156,12 @@ def build_chat_result(raw_text: str, elapsed_ms: int) -> ChatResult:
 class AgentHarnessClient:
     """HTTP/SSE client for running CozyPup agent interactions from tools."""
 
-    def __init__(self, base_url: str, debug: bool = False):
+    def __init__(self, base_url: str, debug: bool = False, auto_confirm: bool = False):
         self.base_url = base_url.rstrip("/")
+        # When True, chat() presses "confirm" on every confirm_action card it
+        # gets back and appends the executed tool's card, so tests that only
+        # care about the end state don't have to drive the confirm gate.
+        self.auto_confirm = auto_confirm
         self.api = f"{self.base_url}/api/v1"
         self.token: str | None = None
         self.user_id: str | None = None
@@ -206,6 +210,7 @@ class AgentHarnessClient:
         location: dict | None = None,
         language: str | None = None,
         images: list[str] | None = None,
+        auto_confirm: bool | None = None,
     ) -> ChatResult:
         body: dict = {"message": message}
         if session_id or self.last_session_id:
@@ -241,6 +246,8 @@ class AgentHarnessClient:
             result = build_chat_result("".join(raw_parts), elapsed)
             if result.session_id:
                 self.last_session_id = result.session_id
+            if self.auto_confirm if auto_confirm is None else auto_confirm:
+                await self._auto_confirm(result)
             return result
         except Exception as exc:
             elapsed = int((time.monotonic() - start) * 1000)
@@ -309,6 +316,21 @@ class AgentHarnessClient:
         )
         resp.raise_for_status()
         return resp.json()
+
+    async def _auto_confirm(self, result: ChatResult) -> None:
+        """Confirm every pending confirm_action card and fold the executed
+        tool's card into ``result.cards`` (marking the confirm card confirmed)."""
+        for card in list(result.cards):
+            if card.get("type") != "confirm_action" or card.get("status") == "confirmed":
+                continue
+            try:
+                resp = await self.confirm_action(card["action_id"])
+            except Exception as exc:
+                result.error = f"auto_confirm failed: {type(exc).__name__}: {exc}"
+                return
+            card["status"] = "confirmed"
+            if resp.get("card"):
+                result.cards.append(resp["card"])
 
     async def confirm_action(self, action_id: str) -> dict:
         resp = await self._client.post(

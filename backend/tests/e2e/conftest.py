@@ -50,7 +50,7 @@ def base_url(request):
 @pytest_asyncio.fixture
 async def e2e(base_url):
     """Create an isolated E2E client with a fresh dev user."""
-    client = E2EClient(base_url)
+    client = E2EClient(base_url, auto_confirm=True)
     await client.auth_dev()
     client.last_session_id = None  # force new session
     yield client
@@ -81,7 +81,7 @@ async def e2e_with_two_pets(e2e):
 @pytest_asyncio.fixture
 async def e2e_debug(base_url):
     """E2E client with debug=True for trace inspection."""
-    client = E2EClient(base_url, debug=True)
+    client = E2EClient(base_url, debug=True, auto_confirm=True)
     await client.auth_dev()
     client.last_session_id = None  # force new session
     yield client
@@ -122,8 +122,8 @@ async def e2e_debug_with_three_pets(e2e_debug):
 @pytest_asyncio.fixture
 async def e2e_pair(base_url):
     """Two isolated debug-enabled E2E clients (A and B) for sharing/family tests."""
-    a = E2EClient(base_url, debug=True)
-    b = E2EClient(base_url, debug=True)
+    a = E2EClient(base_url, debug=True, auto_confirm=True)
+    b = E2EClient(base_url, debug=True, auto_confirm=True)
     await a.auth_dev()
     await b.auth_dev()
     yield a, b
