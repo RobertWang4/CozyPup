@@ -94,8 +94,17 @@ def _register(name: str):
 
 @_register("create_calendar_event")
 def _validate_create_calendar_event(args: dict) -> list[str]:
-    errors = _check_required(args, ["pet_id", "event_date", "title", "category"])
+    # pet_id is optional (matches the tool schema): multi-pet events use
+    # pet_ids, and owner-only events ("买了新项圈") have no pet at all.
+    errors = _check_required(args, ["event_date", "title", "category"])
     errors += _check_uuid(args, "pet_id")
+    pet_ids = args.get("pet_ids")
+    if pet_ids is not None:
+        if not isinstance(pet_ids, list):
+            errors.append(f"pet_ids must be a list, got: {pet_ids!r}")
+        else:
+            for i, pid in enumerate(pet_ids):
+                errors += _check_uuid({"pet_ids": pid}, "pet_ids") if isinstance(pid, str) else [f"pet_ids[{i}] must be a UUID string"]
     errors += _check_date(args, "event_date")
     errors += _check_enum(args, "category", _CATEGORIES, "category")
     errors += _check_time(args, "event_time")

@@ -131,3 +131,23 @@ class TestValidateToolArgs:
         }
         errors = validate_tool_args("create_calendar_event", args)
         assert any("time" in e.lower() for e in errors)
+
+
+class TestCreateCalendarEventPetTargets:
+    """pet_id is optional in the tool schema; the validator must agree."""
+
+    def test_multi_pet_event_is_valid(self):
+        args = {
+            "pet_ids": ["550e8400-e29b-41d4-a716-446655440000", "550e8400-e29b-41d4-a716-446655440001"],
+            "event_date": "2026-09-27", "title": "两只狗散步", "category": "daily",
+        }
+        assert validate_tool_args("create_calendar_event", args) == []
+
+    def test_owner_only_event_without_pet_is_valid(self):
+        args = {"event_date": "2026-09-27", "title": "买新项圈", "category": "daily", "cost": 50}
+        assert validate_tool_args("create_calendar_event", args) == []
+
+    def test_bad_pet_ids_entries_are_rejected(self):
+        args = {"pet_ids": ["nope", 3], "event_date": "2026-09-27", "title": "x", "category": "daily"}
+        errors = validate_tool_args("create_calendar_event", args)
+        assert len(errors) == 2 and all("pet_ids" in e for e in errors)
