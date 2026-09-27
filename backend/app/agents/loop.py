@@ -630,8 +630,13 @@ async def stream_completion(
             break  # success, exit retry loop
 
         except Exception as exc:
+            _resp = getattr(exc, "response", None)
             logger.error("stream_completion_error", extra={
                 "error": str(exc)[:300],
+                "status_code": getattr(exc, "status_code", None),
+                # Provider body — gateways (e.g. OpenCode) sometimes 400 with a
+                # body that litellm does not fold into str(exc).
+                "response_body": (getattr(_resp, "text", None) or str(getattr(exc, "body", "") or ""))[:500],
                 "attempt": attempt + 1,
                 "max_retries": max_retries,
             })
