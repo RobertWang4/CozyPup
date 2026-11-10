@@ -74,6 +74,7 @@ docs/.playwright-cli/
 # Agent working files
 .claude/
 .superpowers/
+/CLAUDE.md
 # Claude Code plans/specs and working implementation plans
 docs/superpowers/
 docs/plans/
